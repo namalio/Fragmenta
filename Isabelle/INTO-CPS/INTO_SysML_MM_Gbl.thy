@@ -569,9 +569,10 @@ fun INTO_SysML_toPDG_Edges:: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> E list"
 where
   "INTO_SysML_toPDG_Edges M mt = INTO_SysML_toPDG_Edges0 mt ((EsG o sg_ls) (consUMdlFs M))"
 
-fun INTO_SysML_toPDG:: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> PDGr"
+fun INTO_SysML_toPDG:: "MdlTy_ls \<Rightarrow> PDGr"
 where
-  "INTO_SysML_toPDG ML mt = 
-    removeDupNsGL(INTO_SysML_toPDG_GL mt (consUMdlFs ML) ((NsG o sg_ls) (consUMdlFs ML)))"
+  "INTO_SysML_toPDG MLT = 
+    removeDupNsGL(INTO_SysML_toPDG_GL 
+      (toMorph (mtyL MLT)) (consUMdlFs (mdlL MLT)) ((NsG o sg_ls) (consUMdlFs (mdlL MLT))))"
 
 end
