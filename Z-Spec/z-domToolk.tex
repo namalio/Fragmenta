@@ -1,0 +1,133 @@
+
+\paragraph{Given Sets Class and Objects}
+
+\begin{zsection}
+\SECTION ZOO\_toolkit \parents standard\_toolkit
+\end{zsection}
+
+\begin{zed}
+[OBJ]
+\end{zed}
+
+\paragraph{Relation Generics}
+
+\begin{zed}
+\Acyclic[X] == \{rel : X \rel X | rel\plus \cap \id X = \emptyset \}
+\also
+\Dag [X] == \Acyclic [X]
+\also
+\Tree [X] == \{rel : X \rel X | rel \in \Dag \land rel \in X \pfun X\}
+\end{zed}
+
+\paragraph{Generic of Class Extension State}
+
+\begin{schema}{\classGen}[OS, OST]
+os : \power OS \\
+oSt : OS \pfun OST
+\where
+ \dom oSt = os
+\end{schema}
+
+\paragraph{Association Multiplicity Generics}
+
+\begin{zed}
+MultTy ::= mm | mo | om | mzo | zom | oo | zozo | zoo | ozo | ms | sm
+| ss \\ \t1 
+| so | os | szo | zos
+\end{zed}
+
+%%prerel \mult
+%%ignore \M \O
+
+\begin{gendef}[X, Y]
+  \mult\_: \power  ((X \rel  Y) \cross  \power  X \cross  \power  Y \cross  MultTy \cross  \finset  \nat  \cross  \finset  \nat )
+\where
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2: \finset
+\nat  @ \\ \t1
+     (\mult (r, sx, sy, mm, s_1, s_2)) \iff  r \in sx \rel  sy
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2: \finset
+\nat  @ \\ \t1
+  (\mult (r, sx, sy, mo, s_1, s_2)) \iff  r \in sx \fun  sy
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2: \finset
+\nat  @ \\ \t1
+  (\mult (r, sx, sy, om, s_1, s_2)) \iff  r \inv
+  \in  sy \fun  sx
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2: \finset
+\nat  @ \\ \t1
+    (\mult (r, sx, sy, mzo, s_1, s_2)) \iff  r \in sx \pfun  sy
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+  (\mult (r, sx, sy, zom, s_1, s_2)) \iff  r \inv \in  sy \pfun  sx
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+     (\mult (r, sx, sy, oo, s_1, s_2)) \iff  r \in  sx \bij  sy
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+   \finset  \nat  @ \\ \t1
+   (\mult (r, sx, sy, zozo, s_1, s_2)) \iff  r \in  sx \pinj  sy
+\also
+\forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+  (\mult (r, sx, sy, zoo, s_1, s_2)) \iff  r \in  sx \inj  sy
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+   (\mult (r, sx, sy, ozo, s_1, s_2)) \iff  r \inv  \in  sy \inj  sx
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+   (\mult (r, sx, sy, ms, s_1, s_2)) \iff  \M (\mult (r, sx, sy, mm, s_1, s_2)) \\ 
+  \land  (\forall  x: \dom  r @ \# (\{x\} \dres  r) \in  s_1) \O
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1 
+  (\mult (r, sx, sy, sm, s_1, s_2)) \iff  \M (\mult
+  (r, sx, sy, mm, s_1, s_2)) \\ 
+  \land  (\forall  y: \ran  r @ \# (r \rres  \{y\}) \in  s_1) \O
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+   (\mult (r, sx, sy, ss, s_1, s_2)) \iff  \M (\mult
+  (r, sx, sy, ms, s_1, \{\})) \\ \land  (\mult (r, sx, sy, sm, s_2,
+  \{\})) \O
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1{}, s_2{}:
+  \finset  \nat  @ \\ \t1 
+  (\mult (r, sx, sy, so, s_1{}, s_2{})) \iff  \M (\mult
+  (r, sx, sy, mo, s_1, s_2)) \\ \land  (\mult (r, sx, sy, sm, s_1,
+  s_2)) \O
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1 
+   (\mult (r, sx, sy, os, s_1, s_2)) \iff  \M (\mult
+  (r, sx, sy, om, \{\}, \{\})) \\ \land  (\mult (r, sx, sy, ms, s_1,
+  \{\})) \O
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+    (\mult (r, sx, sy, szo, s_1, s_2)) \iff  \M (\mult
+  (r, sx, sy, mzo, \{\}, \{\})) \\ \land  (\mult (r, sx, sy, sm, s_1,
+  \{\})) \O
+\also
+  \forall  r: X \rel  Y; sx: \power  X; sy: \power  Y; s_1, s_2:
+  \finset  \nat  @ \\ \t1
+    (\mult (r, sx, sy, zos, s_1, s_2)) \iff \M (\mult (r, sx, sy, zom,
+    \{\}, \{\})) \\ \land  
+   (\mult (r, sx, sy, ms, s_1{}, \{\})) \O
+\end{gendef}
+
+\paragraph{Other Generics}
+
+\begin{gendef}[L]
+\Sigma : (L \ffun \num) \fun \num
+\where
+\Sigma \emptyset = 0
+\also
+\forall l : L; n : \num; S : L \ffun \num | l \notin \dom S @\\
+\t1 \Sigma(\{l \mapsto n\} \cup S) = n + \Sigma S
+\end{gendef}

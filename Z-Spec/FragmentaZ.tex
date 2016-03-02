@@ -1,0 +1,1237 @@
+
+\chapter{Z Specification of \Fragmenta}
+\label{ch:Z-Fragmenta}
+
+\section{Generics}
+
+\begin{zed}
+acyclic [X] == \{  r: X \rel  X | r \plus  \cap  \id  X = \emptyset \}
+\also
+connected [X] == \{  r: X \rel  X | \forall  x: \dom  r; y: \ran  r @ x \mapsto  y \in  r \plus  \}
+\also
+tree [X] == \{  r: X \rel  X | r \in  acyclic \land  r \in  X \pfun  X \}
+\also
+forest [X] == \{  r: X \rel  X | r \in  acyclic \land  (\forall  s: X \rel  X | s \subseteq  r \land  s \in  connected @ s \in  tree) \}
+\also
+injrel[X, Y] == \{  r: X \rel  Y | (\forall  x: X; y_1, y_2: Y @ (x, y_1) \in  r \land  (x, y_2) \in  r \implies  y_1 = y_2) \}
+\end{zed}
+
+\section{Graphs}
+
+\begin{zed}
+  [V, E]
+\also
+Gr == \{  vs: \power  V; es: \power  E; s, t: E \pfun  V | s \in  es \fun  vs \land  t \in  es \fun  vs \}
+\end{zed}
+
+\begin{axdef}
+  Ns: Gr \fun  \power  V\\
+  Es, EsId: Gr \fun  \power  E\\
+  src, tgt: Gr \fun  E \pfun  V\\
+\where
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ Ns (vs, es, s, t) = vs
+\also
+  \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ Es (vs, es, s, t) = es
+\also
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ src (vs, es, s, t) = s
+\also
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ tgt (vs, es, s, t) = t
+\also
+  \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ EsId (vs, es, s, t) = \{  e: es | s~ e = t~ e \}
+\end{axdef}
+
+%%prerel \adjacent
+\begin{axdef}
+  \adjacent\_: \power  (V \cross  V \cross  Gr)
+\where
+  \forall  v_1, v_2: V; G: Gr @ (\adjacent (v_1, v_2, G)) \iff  (\exists  e: Es~ G @ src~ G~ e = v_1 \land  tgt~ G~ e = v_2)
+\end{axdef}
+
+\begin{axdef}
+  successors: V \cross  Gr \fun  \power  V
+\where
+  \forall  v: V; G: Gr @ successors (v, G) = \{  v_1: Ns~ G | \adjacent (v, v_1, G) \}
+\end{axdef}
+
+\begin{axdef}
+  rel: Gr \fun  V \rel  V
+\where
+  \forall  G: Gr @ rel~ G = \{  v_1, v_2: Ns~ G | \adjacent (v_1, v_2, G) \}
+\end{axdef}
+
+%%prerel \acyclicG
+
+\begin{axdef}
+  \acyclicG\_: \power  Gr
+\where
+  \forall  G: Gr @ (\acyclicG~G) \iff  rel~G \in  acyclic
+\end{axdef}
+
+\begin{axdef}
+  restrict: Gr \cross  \power  E \fun  Gr
+\where
+  \forall  G: Gr; Er: \power  E @ restrict (G, Er) = (Ns~ G, Es~ G \cap  Er, Er \dres  src~ G, Er \dres  tgt~ G)
+\end{axdef}
+
+%%prerel \disjGs
+
+\begin{axdef}
+  \disjGs\_: \power  (Gr \cross  Gr)
+\where
+  \forall  G_1, G_2: Gr @ (\disjGs (G_1, G_2)) \iff  Ns~ G_1 \cap  Ns ~G_2 = \emptyset \land  Es~ G_1 \cap  Es ~G_2 = \emptyset
+\end{axdef}
+
+%%inop \UG 3
+\begin{axdef}
+  \_\UG\_: Gr \cross  Gr \pfun  Gr
+\where
+  \forall  G_1, G_2: Gr @ G_1 ~\UG ~G_2 = (Ns~ G_1 \cup  Ns~ G_2, Es~ G_1 \cup  Es~ G_2, src ~G_1 \cup  src~ G_2, tgt~ G_1 \cup  tgt~ G_2) \\ \quad \iff  (\disjGs (G_1, G_2))
+\end{axdef}
+
+\begin{zed}
+GrMorph == (V \pfun  V) \cross  (E \pfun  E)
+\end{zed}
+
+\begin{axdef}
+  fV: GrMorph \fun  V \pfun  V\\
+  fE: GrMorph \fun  E \pfun  E
+\where
+  \forall  fv: V \pfun  V; fe: E \pfun  E @ fV (fv, fe) = fv\\
+  \forall  fv: V \pfun  V; fe: E \pfun  E @ fE (fv, fe) = fe
+\end{axdef}
+
+%%inop \UGM 3
+
+\begin{axdef}
+  \_ \UGM\_: GrMorph \cross  GrMorph \pfun  GrMorph
+\where
+  \forall  GM_1, GM_2: GrMorph @ \\ \quad 
+  GM_1 \UGM GM_2 = (fV~ GM_1 \cup  fV~ GM_2, fE~ GM_1 \cup  fE~ GM_2) \iff  \\ \qquad  
+  fV~ GM_1 \cap  fV~ GM_2 = \emptyset 
+  \land  fE~ GM_1 \cap  fE~ GM_2 = \emptyset
+\end{axdef}
+
+\begin{axdef}
+  morphG: Gr \cross  Gr \fun  \power  GrMorph
+\where
+  \forall  G_1, G_2: Gr @ morphG (G_1, G_2) = \{  fv: Ns~ G_1 \fun  Ns~ G_2; fe: Es~ G_1 \fun  Es~ G_2 | \\ \quad
+  src~ G_2 \circ  fe = fv \circ  src~ G_1 \land  tgt~ G_2 \circ  fe = fv \circ  tgt~ G_1 \}
+\end{axdef}
+
+%%inop \OGM 3
+\begin{axdef}
+  \_ \OGM \_: GrMorph \cross  GrMorph \fun  GrMorph
+\where
+  \forall  m_1, m_2: GrMorph @ m_1 \OGM m_2 = (fV~ m_1 \circ  fV~m_2, fE~ m_1 \circ  fE~ m_2)
+\end{axdef}
+
+\section{Structural Graphs}
+
+\begin{zed}
+SGNT ::= nnrml | nabst | nprxy
+\also
+SGET ::= einh | ecomp | erel | elnk | eref
+\also
+MultUVal ::= val\ldata \nat \rdata | many
+\also
+MultVal ::= rg\ldata \nat  \cross  MultUVal\rdata | sg\ldata MultUVal\rdata
+\end{zed}
+
+\begin{axdef}
+  Mult: \power  MultVal
+\where
+  Mult = \{  mv: MultVal | (\exists  lb: \nat ; ub: MultUVal @ mv = rg (lb, ub) \land  ub = many \\ \quad 
+  \lor  (\exists  ubn: \nat  @ ub = val~ ubn \land  lb \leq  ubn)) \lor  (\exists  umv: MultUVal @ mv = sg~ umv) \}
+\end{axdef}
+
+
+%%prerel \multOk
+\begin{axdef}
+\multOk \_: \power  (\power  V \cross  Mult)
+\where
+  \forall  vs: \power  V; lb: \nat; ub: MultUVal @ (\multOk (vs, rg (lb, ub))) \iff  \\ \quad 
+  \# vs \geq  lb \land  (ub = many \lor  (\exists  ubn: \nat  @ ub = val~ ubn \land  \# vs \leq  ubn))\\
+  \forall  vs: \power  V; v: MultUVal @ (\multOk (vs, sg~ v)) \iff  v = many \\ \quad 
+  \lor  (\exists  bn: \nat  @ v = val~ bn \land  \# vs = bn)
+\end{axdef}
+
+\begin{zed}
+SGr_0 == \{  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult | \\ \quad  
+nt \in  Ns~ G \fun  SGNT 
+\land  et \in  Es~ G \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  gr: SGr_0 \fun  Gr\\
+  sgr\_Ns: SGr_0 \fun  \power  V\\
+  sgr\_Es: SGr_0 \fun  \power  E\\
+  sgr\_src: SGr_0 \fun  E \pfun  V\\
+  sgr\_tgt: SGr_0 \fun  E \pfun  V\\
+  nty: SGr_0 \fun  V \pfun  SGNT\\
+  ety: SGr_0 \fun  E \pfun  SGET\\
+  srcm: SGr_0 \fun  E \pfun  Mult\\
+  tgtm: SGr_0 \fun  E \pfun  Mult
+\where
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ gr (G, nt, et, sm, tm) = G\\
+  \forall  SG: SGr_0 @ sgr\_Ns~ SG = Ns (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_Es~ SG = Es (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_src~ SG = src (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_tgt~ SG = tgt (gr~ SG)\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ nty (G, nt, et, sm, tm) = nt\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ ety (G, nt, et, sm, tm) = et\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ srcm (G, nt, et, sm, tm) = sm\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ tgtm (G, nt, et, sm, tm) = tm
+\end{axdef}
+
+\begin{axdef}
+  NsTy: SGr_0 \cross  \power  SGNT \fun  \power  V\\
+  EsTy: SGr_0 \cross  \power  SGET \fun  \power  E
+\where
+  \forall  SG: SGr_0; nts: \power  SGNT @ NsTy (SG, nts) = (nty~ SG) \inv  \limg  nts \rimg \\
+  \forall  SG: SGr_0; ets: \power  SGET @ EsTy (SG, ets) = (ety~ SG) \inv  \limg  ets \rimg 
+\end{axdef}
+
+\begin{axdef}
+  EsA: SGr_0 \fun  \power  E\\
+  EsR: SGr_0 \fun  \power  E
+\where
+  \forall  SG: SGr_0 @ EsA~ SG = EsTy (SG, \{erel, ecomp, elnk\})\\
+  \forall  SG: SGr_0 @ EsR~ SG = EsTy (SG, \{eref\})
+\end{axdef}
+
+\begin{axdef}
+  NsP: SGr_0 \fun  \power  V
+\where
+  \forall  SG: SGr_0 @ NsP~ SG = NsTy (SG, \{nprxy\})
+\end{axdef}
+
+\begin{axdef}
+  inh: SGr_0 \fun  V \rel  V
+\where
+  \forall  SG: SGr_0 @ inh~ SG = rel (restrict ((gr~ SG), (EsTy (SG, \{einh\}) \setminus  EsId (gr~ SG))))
+\end{axdef}
+
+%%prerel \acyclicSG
+\begin{axdef}
+  \acyclicI\_: \power  SGr_0{}
+\where
+  \forall  SG: SGr_0 @ (\acyclicI~ SG) \iff  inh~ SG \in  acyclic
+\end{axdef}
+
+\begin{zed}
+SGr == \{  SG: SGr_0 | EsR~ SG \subseteq  EsId (gr~ SG) \land  srcm~ SG \in  EsTy (SG, \{erel, ecomp\}) \fun  Mult \\ \quad 
+\land  tgtm~ SG \in  EsTy (SG, \{erel, ecomp\}) \fun  Mult \land  (\acyclicI~ SG) \}
+\end{zed}
+
+\begin{axdef}
+  EsRP: SGr \fun  \power  E
+\where
+  \forall  SG: SGr @ EsRP~ SG = \{  e: EsR ~SG | sgr\_src~ SG~ e \in  NsP~ SG \}
+\end{axdef}
+
+\begin{axdef}
+  inhst: SGr \fun  V \rel  V\\
+  clan: V \cross  SGr \fun  \power  V
+\where
+  \forall  SG: SGr @ inhst~ SG = (inh~ SG) \star \\
+  \forall  v: V; SG: SGr @ clan (v, SG) = \{  v': sgr\_Ns~ SG | v' \mapsto  v \in  inhst~ SG \}
+\end{axdef}
+
+\begin{axdef}
+  srcst: SGr \fun  E \rel  V
+\where
+  \forall  SG: SGr @ srcst~ SG = \{  e: EsA~ SG; v: sgr\_Ns~ SG | \\ \quad 
+  \exists  v_2 : sgr\_Ns~ SG @ v \in  clan (v_2, SG) \land  sgr\_src~ SG~ e = v_2 \}
+\end{axdef}
+
+\begin{axdef}
+  tgtst: SGr \fun  E \rel  V
+\where
+  \forall  SG: SGr @ tgtst~SG = \{  e: EsA~SG; v: sgr\_Ns~SG | \\ \quad 
+   \exists  v_2: sgr\_Ns~ SG @ v \in  clan (v_2, SG) \land  sgr\_tgt~ SG~ e = v_2 \}
+\end{axdef}
+
+%%prerel \disjSGs
+\begin{axdef}
+  \disjSGs\_: \power  (SGr \cross  SGr)
+\where
+  \forall  SG_1, SG_2: SGr @ (\disjSGs (SG_1, SG_2)) \iff  (\disjGs (gr~ SG_1, gr~ SG_2))
+\end{axdef}
+
+%%inop \USG 3
+\begin{axdef}
+  \_ \USG\_: SGr \cross  SGr \pfun  SGr
+\where
+  \forall  SG_1, SG_2: SGr @ SG_1 \USG SG_2 = (gr~ SG_1 \UG gr~ SG_2, nty~ SG_1 \cup  nty~SG_2, \\ \quad 
+  ety~ SG_1 \cup  ety~ SG_2, srcm~ SG_1 \cup  srcm~ SG_2, tgtm~ SG_1 \cup  tgtm~ SG_2) \iff  (\disjSGs (SG_1, SG_2))
+\end{axdef}
+
+\begin{axdef}
+  morphSG: SGr \cross  SGr \fun  \power  GrMorph
+\where
+  \forall  SG_1, SG_2: SGr @ \\ \quad 
+  morphSG (SG_1, SG_2) = \{  fv: sgr\_Ns~ SG_1 \fun  sgr\_Ns~ SG_2; fe: sgr\_Es~ SG_1 \fun  sgr\_Es~ SG_2 | \\ \qquad 
+  fv \circ  srcst~ SG_1 \subseteq  srcst~ SG_2 \circ  fe \land  fv \circ  tgtst~ SG_1 \subseteq  tgtst~ SG_2 \circ  fe \\ \qquad 
+  	\land  fv \circ  inhst~ SG_1 \subseteq  inhst~ SG_2 \circ  fv \}
+\end{axdef}
+
+
+
+\section{Fragments}
+
+%\begin{axdef}
+%  VC, VF, VL: \power  V\\
+%  EC, EF, EL: \power  E
+%\where
+%  VC \cap  VF \cap  VL = \{\}\\
+%  EC \cap  EF \cap  EL = \emptyset
+%\end{axdef}
+
+\begin{zed}
+Fr_0 == \{  SG: SGr; tr: E \pfun  V | tr \in  EsRP~ SG \fun  V \land  EsTy (SG, \{einh\}) \dres  sgr\_src~ SG \rres  NsP~ SG = \{\} \}
+\end{zed}
+
+\begin{axdef}
+  fr\_srcGr: Fr_0 \fun  Gr\\
+  fr\_tgtr: Fr_0 \fun  E \pfun  V\\
+  fr\_Ns: Fr_0 \fun  \power  V\\
+  fr\_Es: Fr_0 \fun  \power  E\\
+  fr\_EsR: Fr_0 \fun  \power  E\\
+  fr\_sg: Fr_0 \fun  SGr\\
+  fr\_src: Fr_0 \fun  E \pfun  V\\
+  fr\_tgt: Fr_0 \fun  E \pfun  V
+\where
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_srcGr (SG, tr) = gr~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_tgtr (SG, tr) = tr\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_Ns (SG, tr) = sgr\_Ns~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_Es (SG, tr) = sgr\_Es~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_EsR (SG, tr) = EsR~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_sg (SG, tr) = SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_src (SG, tr) = sgr\_src~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_tgt (SG, tr) = sgr\_tgt~ SG
+\end{axdef}
+
+\begin{axdef}
+  tgtr: Fr_0 \fun  E \pfun  V\\
+  withRsG: Fr_0 \fun  Gr\\
+  refsG: Fr_0 \fun  Gr\\
+  refs: Fr_0 \fun  V \rel  V\\
+  reps: Fr_0 \fun  V \rel  V\\
+  referenced: Fr_0 \fun  \power  V
+\where
+  \forall  SG: SGr; tr: E \pfun  V @ tgtr (SG, tr) = sgr\_tgt~ SG \oplus  tr\\
+  \forall  SG: SGr; tr: E \pfun  V @ \\ \quad 
+   withRsG (SG, tr) = (sgr\_Ns~ SG \cup  \ran  tr, sgr\_Es~ SG, sgr\_src~ SG, tgtr (SG, tr))\\
+  \forall  F: Fr_0 @ refsG~ F = restrict ((withRsG~ F), (EsRP (fr\_sg~ F)))\\
+  \forall  F: Fr_0  @ refs ~F = rel (refsG~ F)\\
+  \forall  F: Fr_0 @ reps ~F = refs~ F \cup  (refs~ F) \inv \\
+  \forall  SG: SGr; tr: E \pfun  V @ referenced (SG, tr) = \ran  tr
+\end{axdef}
+
+\begin{axdef}
+  inhF: Fr_0 \fun  V \rel  V
+\where
+  \forall  F: Fr_0 @ inhF~ F = inh (fr\_sg~ F) \cup  reps~ F
+\end{axdef}
+
+%%prerel \acyclicF
+
+\begin{axdef}
+  \acyclicF\_: \power  Fr_0
+\where
+  \forall  F: Fr_0 @ (\acyclicF~ F) \iff  inhF~ F \in  acyclic
+\end{axdef}
+
+\begin{zed}
+Fr == \{  F: Fr_0 | \acyclicF~ F \}
+\end{zed}
+
+\begin{axdef}
+  repsOf: V \fun  Fr \fun  \power  V
+\where
+  \forall  v: V; F: Fr @ repsOf~ v~ F = \{  v': fr\_Ns~ F | (v', v) \in  (reps~ F) \star  \}
+\end{axdef}
+
+\begin{axdef}
+  fr\_NsAbst: Fr \fun  \power  V
+\where
+  \forall  F: Fr @ fr\_NsAbst~ F = \bigcup  \{  va: NsTy ((fr\_sg~ F), \{nabst\}) @ (repsOf~ va ~F) \}
+\end{axdef}
+
+%%prerel \disjFs
+
+\begin{axdef}
+  \disjFs\_: \power  (Fr \cross  Fr)
+\where
+  \forall  F_1, F_2: Fr @ (\disjFs (F_1, F_2)) \iff  (\disjSGs (fr\_sg~ F_1, fr\_sg~ F_2))
+\end{axdef}
+
+%%inop \UF 3
+
+\begin{axdef}
+  \_ \UF\_: Fr \cross  Fr \pfun  Fr
+\where
+  \forall  F_1, F_2: Fr @ F_1 \UF~ F_2 = (fr\_sg~ F_1 \USG~ fr\_sg~ F_2, fr\_tgtr~ F_1 \cup  fr\_tgtr~ F_2) \iff  (\disjFs (F_1, F_2))
+\end{axdef}
+
+\begin{axdef}
+  inhstF: Fr \fun  V \rel  V
+\where
+  \forall  F: Fr @ inhstF~ F = (inhF~ F) \star 
+\end{axdef}
+
+\begin{axdef}
+  clanF: V \cross  Fr \fun  \power  V
+\where
+  \forall  v: V; F: Fr @ clanF (v, F) = \{  v': fr\_Ns~ F | (v', v) \in  inhstF~ F \}
+\end{axdef}
+
+\begin{axdef}
+  srcstF: Fr \fun  E \rel  V
+\where
+  \forall  F: Fr @ srcstF~ F = \{  e: EsA (fr\_sg~ F); v: fr\_Ns~ F | \exists  v_2: fr\_Ns~ F @ \\ \quad  
+  v \in  clanF (v_2, F) \land  (e, v_2) \in  srcst (fr\_sg~ F) \}
+\end{axdef}
+
+\begin{axdef}
+  tgtstF: Fr \fun  E \rel  V
+\where
+  \forall  F: Fr @  tgtstF~ F = \{  e: EsA (fr\_sg~ F); v: fr\_Ns~ F | \exists  v_2: fr\_Ns ~F @ \\ \quad 
+  	v \in  clanF (v_2, F) \land  (e, v_2) \in  tgtst (fr\_sg ~F) \}
+\end{axdef}
+
+\begin{axdef}
+  morphF: Fr \cross  Fr \fun  \power  GrMorph
+\where
+  \forall  F_1, F_2: Fr @ morphF (F_1, F_2) = \{  fv: fr\_Ns~ F_1 \fun  fr\_Ns~ F_2; fe: fr\_Es~ F_1 \fun  fr\_Es~ F_2 |  \\ \quad  
+  fv \circ  srcstF~ F_1 \subseteq  srcstF ~F_2 \circ  fe \land  fv \circ  tgtstF ~F_1 \subseteq  tgtstF~ F_2 \circ  fe \land  \\ \quad
+  	 fv \circ  inhstF ~F_1 \subseteq  inhstF ~F_2 \circ  fv \}
+\end{axdef}
+
+
+\section{Global Fragment Graphs (GFGs)}
+
+\begin{zed}
+FGCGEdgeTy ::= eimpo | econta | econti
+\also
+ExtEdgeTy == \{eimpo, econti\}
+\also
+GFGr == \{  G: Gr; et: E \pfun  ExtEdgeTy | et \in  Es~ G \fun  ExtEdgeTy  \\ \quad  
+	\land \acyclicG (restrict (G, (Es~ G \setminus  EsId~ G))) \}
+\end{zed}
+
+\begin{axdef}
+  fg\_gr: GFGr \fun  Gr\\
+  fety: GFGr \fun  E \pfun  ExtEdgeTy\\
+  fg\_Ns: GFGr \fun  \power  V\\
+  fg\_Es: GFGr \fun  \power  E\\
+  fg\_EsOfTy: GFGr \cross  \power  ExtEdgeTy \fun  \power  E\\
+  importsOf: V \cross  GFGr \fun  \power  V\\
+  continuationsOf: V \cross  GFGr \fun  \power  V\\
+  continuesOf: V \cross  GFGr \fun  \power  V
+\where
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ fg\_gr (G, et) = G\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ fety (G, et) = et\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ fg\_Ns (G, et) = Ns~ G\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ fg\_Es (G, et) = Es~G\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy; fets: \power  ExtEdgeTy @ 
+  fg\_EsOfTy ((G, et), fets) = et \inv  \limg  fets \rimg \\
+  \forall  vf: V; GFG: GFGr @ \\ \quad 
+  importsOf (vf, GFG) = successors (vf, (restrict ((fg\_gr~ GFG), (fg\_EsOfTy (GFG, \{eimpo\})))))\\
+  \forall  vf: V; GFG: GFGr @ \\ \quad
+  	 continuationsOf (vf, GFG) = successors (vf, (restrict ((fg\_gr~ GFG), (fg\_EsOfTy (GFG, \{econti\})))))\\
+  \forall  vf: V; GFG: GFGr @ \\ \quad 
+  continuesOf (vf, GFG) = \{  vf_2 : V | \\ \qquad 
+  \adjacent (vf_2, vf, restrict ((fg\_gr~ GFG), (fg\_EsOfTy (GFG, \{econti\})))) \}
+\end{axdef}
+
+\begin{zed}
+morphFG == (\lambda  GFG_1, GFG_2: GFGr @ \\ \quad 
+\{  fV: fg\_Ns~ GFG_1 \fun  fg\_Ns~ GFG_2; fE: fg\_Es~ GFG_1 \fun  fg\_Es~ GFG_2 | \\ \qquad
+ (fV, fE) \in  morphG ((fg\_gr~ GFG_1), (fg\_gr ~GFG_2)) \land  fety ~GFG_2 \circ  fE = fety ~GFG_1 \})
+\also
+morphFFG == (\lambda  F: Fr; GFG: GFGr @ \\ \quad 
+ \{  fv: fr\_Ns~ F \fun  fg\_Ns ~GFG; fe: fr\_Es~ F \fun  fg\_Es~ GFG | \\ \qquad 
+  (fv, fe) \in  morphG ((withRsG ~F), (fg\_gr~ GFG))  \\ \qquad 
+  \land  (\exists  vfg: fg\_Ns~ GFG; efg: fg\_Es~ GFG @ \\ \qquad \quad 
+  	(fv \limg  fr\_Ns~ F \rimg  = \{vfg\} \land  fe \limg  fr\_Es~ F \setminus  EsR (fr\_sg~ F) \rimg  = \{efg\} \\ \qquad \quad 
+	\land  efg \in  EsId (fg\_gr~ GFG) \land  src (fg\_gr ~GFG) efg = vfg \\ \qquad \quad  
+	\land  fv \limg  (fr\_tgt~ F) \limg  EsR (fr\_sg ~F) \rimg  \rimg  = \{vfg\})) \})
+\end{zed}
+
+\section{Cluster Graphs}
+
+\begin{zed}
+CGr == \{  G: Gr; et: E \pfun  FGCGEdgeTy | et \in  Es~ G \fun  FGCGEdgeTy  \\ \quad 
+\land  (\acyclicG~ restrict (G, ((et \inv  \limg  \{eimpo\} \rimg ) \setminus  EsId~ G))) \\ \quad 
+\land  (\acyclicG~ restrict (G, ((et \inv  \limg  \{econti\} \rimg ) \setminus  EsId~ G))) \\ \quad 
+ \land  rel (restrict (G, ((et \inv  \limg  \{econta\} \rimg ) \setminus  EsId~ G))) \in  forest \}
+\end{zed}
+
+\begin{axdef}
+  cg\_gr: CGr \fun  Gr\\
+  cg\_Ns: CGr \fun  \power  V\\
+  cg\_Es: CGr \fun  \power  E\\
+  cety: CGr \fun  E \pfun  FGCGEdgeTy\\
+  cg\_EsTy: CGr \cross  \power  FGCGEdgeTy \fun  \power  E
+\where
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cg\_gr (G, et) = G\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cg\_Ns (G, et) = Ns~ G\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cg\_Es (G, et) = Es~ G\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cety (G, et) = et\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy; crts: \power  FGCGEdgeTy @ cg\_EsTy ((G, et), crts) = et \inv  \limg  crts \rimg 
+\end{axdef}
+
+\begin{zed}
+morphCG == (\lambda  CG_1, CG_2: CGr @ \\ \quad 
+	\{  fV: cg\_Ns~ CG_1 \fun  cg\_Ns~ CG_2; fE: cg\_Es~ CG_1 \fun  cg\_Es~ CG_2 | \\ \qquad  (fV, fE) \in  morphG ((cg\_gr~ CG_1), (cg\_gr~CG_2)) \land  cety~ CG_2 \circ  fE = cety~ CG_1 \})
+\also
+morphFGCG == (\lambda  GFG: GFGr; CG: CGr @ \\ \quad 
+\{  fV: fg\_Ns~ GFG \fun  cg\_Ns ~CG; fE: fg\_Es~ GFG \fun  cg\_Es~ CG | \\ \qquad  
+(fV, fE) \in  morphG ((fg\_gr ~GFG), (cg\_gr~ CG)) \land  cety ~CG \circ  fE = fety~ GFG \})
+\end{zed}
+
+
+\section{Models}
+
+\begin{zed}
+Mdl_0 == \{  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr | \\ \quad 
+	fcl \in  morphFGCG (GFG, CG) \land  fdef \in  fg\_Ns~ GFG \fun  Fr \}
+\end{zed}
+
+\begin{axdef}
+  m\_fg: Mdl_0 \fun  GFGr\\
+  m\_cg: Mdl_0 \fun  CGr\\
+  m\_fcl: Mdl_0 \fun  GrMorph\\
+  m\_fdef: Mdl_0 \fun  V \pfun  Fr
+\where
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @ \\ \quad  
+  m\_fg (GFG, CG, fcl, fdef) = GFG\\
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @ \\ \quad 
+  m\_cg (GFG, CG, fcl, fdef) = CG\\
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @\\ \quad 
+   m\_fcl (GFG, CG, fcl, fdef) = fcl\\
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @ \\ \quad 
+  m\_fdef (GFG, CG, fcl, fdef) = fdef
+\end{axdef}
+
+\begin{axdef}
+  UFs: Mdl_0 \fun  Fr\\
+  UFs_0: \power_1 Fr \fun  Fr
+\where
+  \forall  M: Mdl_0 @ UFs~ M = UFs_0 (\ran  (m\_fdef~ M))\\
+  \forall  F: Fr @ UFs_0 \{F\} = F\\
+  \forall  F: Fr; Fs: \power_1 Fr @ UFs_0 (\{F\} \cup  Fs) = F \UF (UFs_0~ Fs)
+\end{axdef}
+
+\begin{axdef}
+  fromV: V \cross  Mdl_0 \fun  V
+\where
+  \forall  vl: V; M: Mdl_0; vf: V @ fromV (vl, M) = vf \iff  vl \in  fr\_Ns (m\_fdef~ M ~vf)
+\end{axdef}
+
+\begin{axdef}
+  consFToGFG: V \cross  Mdl_0 \fun  GrMorph\\
+  consFToGFGRefs: V \cross  \power  E \cross  Mdl_0 \fun  E \pfun  E
+\where
+  \forall  vf: V; M: Mdl_0; fv: V \pfun  V; fe: E \pfun  E @ \\ \quad 
+  consFToGFG (vf, M) = (fv, fe) \iff  \\ \qquad  
+  	(\exists  F: Fr; GFG: GFGr @ F = m\_fdef~ M~ vf \land  GFG = m\_fg~ M \land  fv \in  fr\_Ns~ F \fun  fg\_Ns~ GFG \\ \qquad   
+	\land  fe \in  fr\_Es~ F \fun  fg\_Es~ GFG \land  vf \in  fg\_Ns~ GFG \\ \qquad 
+	\land  (\exists  ef: fg\_Es~ GFG @ (src (fg\_gr~ GFG) ef = tgt (fg\_gr~ GFG) ef = vf \land  fv = fr\_Ns~ F \cross  \{vf\} \\ \qquad  \quad 
+	\land  fe = (fr\_Es~ F \setminus  fr\_EsR~ F \cross  \{ef\}) \cup  consFToGFGRefs (vf, (fr\_EsR~ F), M))))
+\also
+  \forall  vf: V; M: Mdl_0; fe: E \pfun  E @ consFToGFGRefs (vf, \{\}, M) = \{\}
+\also  
+  \forall  vf: V; M: Mdl_0; el: E; Er: \power  E; fe: E \pfun  E @ \\ \quad 
+   consFToGFGRefs (vf, (\{el\} \cup  Er), M) = fe \iff \\ \qquad  
+     (\exists  F: Fr; GFG: GFGr @ F = m\_fdef~ M~ vf \land  GFG = m\_fg~ M \\ \qquad 
+     \land  (\exists  ef: fg\_Es~ GFG @ (src (fg\_gr~ GFG) ef = vf \\ \qquad 
+     \land  tgt (fg\_gr~ GFG) ef = fromV ((fr\_tgtr~ F~ el), M))))
+\end{axdef}
+
+\begin{axdef}
+  mUMToGFG: Mdl_0 \fun  GrMorph\\
+  buildUFsToGFG: (V \pfun  Fr) \cross  Mdl_0 \fun  GrMorph
+\where
+  \forall  M: Mdl_0; fv: V \pfun  V; fe: E \pfun  E @ mUMToGFG~ M = (fv, fe) \iff \\ \quad  
+    (\exists  F: Fr @ F = UFs~ M \land  (fv, fe) = buildUFsToGFG ((m\_fdef~ M), M))
+\also
+  \forall  vf: V; F: Fr; M: Mdl_0 @ buildUFsToGFG (\{(vf \mapsto  F)\}, M) = consFToGFG (vf, M)
+\also
+  \forall  vf: V; F: Fr; fdef: V \pfun  Fr; M: Mdl_0 @ \\ \quad 
+  	 buildUFsToGFG ((\{(vf \mapsto  F)\} \cup  fdef), M) = consFToGFG (vf, M) \UGM buildUFsToGFG (fdef, M)
+\end{axdef}
+
+\begin{axdef}
+  mFrToFG: Mdl_0 \cross  V \fun  GrMorph
+\where
+  \forall  M: Mdl_0; vf: V; fv: V \pfun  V; fe: E \pfun  E @  \\ \quad 
+  	mFrToFG (M, vf) = (fv, fe) \iff  vf \in  fg\_Ns (m\_fg~ M) \\ \qquad 
+	 \land  (\exists  F: Fr; ef: fg\_Es (m\_fg~ M) @ \\ \qquad \quad 
+	 (F = m\_fdef~ M~ vf \land  src (fg\_gr (m\_fg~ M)) ef = vf \land  tgt (fg\_gr (m\_fg~ M)) ef = vf  \\ \qquad \quad 
+	 \land  fv \in  fr\_Ns~ F \fun  fg\_Ns (m\_fg~ M)  \\ \qquad \quad  
+	 \land  fe \in  fr\_Es~ F \fun  fg\_Es (m\_fg~ M) 
+	 \land  fv = fr\_Ns~ F \cross  \{vf\} \land  fe = fr\_Es~ F \cross  \{ef\}))
+\end{axdef}
+
+\begin{zed}
+Mdl == \{  M: Mdl_0 | \exists  m: GrMorph @ m = mUMToGFG~ M \land  m \in  morphFFG ((UFs~ M), (m\_fg~ M)) \\ \quad
+ \land  (\forall  vf_1, vf_2: fg\_Ns (m\_fg~ M) @ (vf_1 \neq  vf_2 \implies  ((fV~ m) \inv  \limg  \{vf_1\} \rimg ) \cap  ((fV~ m) \inv  \limg  \{vf_2\} \rimg ) = \emptyset)) \}
+\end{zed}
+
+\section{Typed Structural Graphs}
+
+\begin{zed}
+TySGr == \{  SG: SGr; iet: E \pfun  SGET | iet \in  EsA~ SG \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  sgr: TySGr \fun  SGr\\
+  tysgr\_iet: TySGr \fun  E \pfun  SGET\\
+  tysgr\_EsA: TySGr \fun  \power  E\\
+  tysgr\_EsC: TySGr \fun  \power  E\\
+  tysgr\_srcm: TySGr \fun  E \pfun  Mult\\
+  tysgr\_tgtm: TySGr \fun  E \pfun  Mult
+\where
+  \forall  SG: SGr; iet: E \pfun  SGET @ sgr (SG, iet) = SG\\
+  \forall  SG: SGr; iet: E \pfun  SGET @ tysgr\_iet (SG, iet) = iet\\
+  \forall  TSG: TySGr @ tysgr\_EsA~ TSG = EsA (sgr~ TSG)\\
+  \forall  TSG: TySGr @ tysgr\_EsC~ TSG = EsTy ((sgr~ TSG), \{ecomp\})\\
+  \forall  TSG: TySGr @ tysgr\_srcm~ TSG = srcm (sgr~ TSG)\\
+  \forall  TSG: TySGr @ tysgr\_tgtm~ TSG = tgtm (sgr~ TSG)
+\end{axdef}
+
+%%prerel \instanceEdgesOk
+\begin{axdef}
+  \instanceEdgesOk\_: \power  (SGr \cross  SGr \cross  (E \pfun  SGET) \cross  GrMorph)
+\where
+  \forall  SG, TSG: SGr; iet: E \pfun  SGET; type: GrMorph @ \\ \quad 
+  (\instanceEdgesOk (SG, TSG, iet, type)) \iff  iet \circ  fE~ type = ety~ SG
+\end{axdef}
+
+\begin{zed}
+SGTy == \{  SG: SGr; TSG: TySGr; type: GrMorph | type \in  morphSG (SG, (sgr~ TSG)) \land  \\ \quad 
+(\instanceEdgesOk (SG, sgr~ TSG, tysgr\_iet~ TSG, type)) \}
+\end{zed}
+
+\begin{axdef}
+  srcGr: SGTy \fun  SGr\\
+  tyGr: SGTy \fun  TySGr\\
+  tymorph: SGTy \fun  GrMorph
+\where
+  \forall  SG: SGr; TSG: TySGr; type: GrMorph @ srcGr (SG, TSG, type) = SG\\
+  \forall  SG: SGr; TSG: TySGr; type: GrMorph @ tyGr (SG, TSG, type) = TSG\\
+  \forall  SG: SGr; TSG: TySGr; type: GrMorph @ tymorph (SG, TSG, type) = type
+\end{axdef}
+
+\begin{axdef}
+  sgty\_Ns: SGTy \fun  \power  V\\
+  sgty\_Es: SGTy \fun  \power  E\\
+  sgty\_EsI: SGTy \fun  \power  E\\
+  sgty\_src: SGTy \fun  E \pfun  V\\
+  sgty\_tgt: SGTy \fun  E \pfun  V
+\where
+  \forall  SGT: SGTy @ sgty\_Ns~ SGT = sgr\_Ns (srcGr~ SGT)\\
+  \forall  SGT: SGTy @ sgty\_Es~ SGT = sgr\_Es (srcGr~ SGT)\\
+  \forall  SGT: SGTy @ sgty\_EsI~ SGT = EsTy ((srcGr~ SGT), \{einh\})\\
+  \forall  SGT: SGTy @ sgty\_src~ SGT = sgr\_src (srcGr~ SGT)\\
+  \forall  SGT: SGTy @ sgty\_tgt~ SGT = sgr\_tgt (srcGr~ SGT)
+\end{axdef}
+
+%%prerel \abstractNoDirectInstances
+\begin{axdef}
+  \abstractNoDirectInstances\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\abstractNoDirectInstances (SG, TSG, type)) \iff \\ \quad
+   (fV~ type) \inv  \limg  NsTy (TSG, \{nabst\}) \rimg  = \{\}
+\end{axdef}
+
+%%prerel \containmentNoSharing
+\begin{axdef}
+  \containmentNoSharing\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\containmentNoSharing (SG, TSG, type)) \iff  \\ \quad 
+  ((fE~ type) \inv  \limg  EsTy (TSG, \{ecomp\}) \rimg ) \dres  tgtst~ SG \in injrel
+\end{axdef}
+
+%%prerel \instMultsOk
+\begin{axdef}
+  \instMultsOk\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\instMultsOk (SG, TSG, type)) \iff \\ \quad 
+   (\forall  te: EsA~ TSG @ (\exists  r: V \rel  V @ r = rel (restrict ((gr~ SG), ((fE~ type) \inv  \limg  \{te\} \rimg ))) \\ \quad 
+    \land  (\forall  v: \dom  r @ (\multOk (r \limg  \{v\} \rimg , srcm~ TSG~ te))) \\ \quad  
+    \land  (\forall  v: \ran  r @ (\multOk (r \inv  \limg  \{v\} \rimg , tgtm~TSG~ te)))))
+\end{axdef}
+
+%%prerel \instContainmentAcyclic
+
+\begin{axdef}
+  \instContainmentAcyclic\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\instContainmentAcyclic (SG, TSG, type)) \iff \\ \quad 
+   (\acyclicG~ restrict ((gr~ SG), ((fE~ type) \inv  \limg  EsTy (TSG, \{ecomp\}) \rimg )))
+\end{axdef}
+
+%%prerel \isConformable
+\begin{axdef}
+  \isConformable\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG, TSG: SGr; type: GrMorph @ (\isConformable (SG, TSG, type)) \iff  \\ \quad  
+  (\abstractNoDirectInstances (SG, TSG, type)) \land  (\containmentNoSharing (SG, TSG, type)) \\ \quad
+  \land  (\instMultsOk (SG, TSG, type)) \land  (\instContainmentAcyclic (SG, TSG, type))
+\end{axdef}
+
+\begin{zed}
+SGTyConf == \{  SG: SGr; TSG: TySGr; type: GrMorph | \isConformable (SG, sgr~ TSG, type) \}
+\end{zed}
+
+\begin{zed}
+morphSGT == (\lambda  SGT_1, SGT_2: SGTy @ \\ \quad 
+\{  m: morphSG ((srcGr~ SGT_1), (srcGr~ SGT_2)) | tymorph~ SGT_2 \OGM m = tymorph~ SGT_1 \})
+\end{zed}
+
+\section{Typed Fragments}
+
+\begin{zed}
+TFr == \{  F: Fr; iet: E \pfun  SGET | iet \in  EsA (fr\_sg~ F) \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  tfr\_srcGr: TFr \fun  Gr\\
+  tfr\_Ns: TFr \fun  \power  V\\
+  tfr\_Es: TFr \fun  \power  E\\
+  tfr\_EsR: TFr \fun  \power  E\\
+  tfr\_fr: TFr \fun  Fr\\
+  tfr\_iet: TFr \fun  E \pfun  SGET
+\where
+  \forall  F: Fr; iet: E \pfun  SGET @ tfr\_srcGr (F, iet) = fr\_srcGr~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfr\_Ns (F, iet) = fr\_Ns~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfr\_Es (F, iet) = fr\_Es~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfr\_EsR (F, iet) = fr\_EsR~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfr\_fr (F, iet) = F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfr\_iet (F, iet) = iet
+\end{axdef}
+
+%%inop \UTF 3
+\begin{axdef}
+  \_\UTF\_: TFr \cross  TFr \fun  TFr
+\where
+  \forall  TF_1, TF_2: TFr @ TF_1 \UTF TF_2 = (tfr\_fr~ TF_1 \UF tfr\_fr~ TF_2, tfr\_iet~ TF_1 \cup  tfr\_iet~ TF_2)
+\end{axdef}
+
+\begin{zed}
+FrTy == \{  F: Fr; TF: TFr; type: GrMorph | type \in  morphF (F, (tfr\_fr~ TF)) \}
+\end{zed}
+
+%%prerel \instanceEdgeTypesOkF
+\begin{axdef}
+  \instanceEdgeTypesOkF\_: \power  (Fr \cross  TFr \cross  GrMorph)
+\where
+  \forall  F: Fr; TF: TFr; type: GrMorph @ (\instanceEdgeTypesOkF (F, TF, type)) \iff  \\ \quad 
+  tfr\_iet ~TF \circ  fE ~type = ety (fr\_sg~ F)
+\end{axdef}
+
+%%prerel \abstractNoDirectInstancesF
+\begin{axdef}
+  \abstractNoDirectInstancesF\_: \power  FrTy
+\where
+  \forall  F: Fr; TF: TFr; type: GrMorph @ (\abstractNoDirectInstancesF (F, TF, type)) \iff  \\ \quad
+  (fV~ type) \inv  \limg  fr\_NsAbst (tfr\_fr~ TF) \rimg  = \{\}
+\end{axdef}
+
+%%prerel \containmentNoSharingF
+\begin{axdef}
+  \containmentNoSharingF\_: \power  (Fr \cross  Fr \cross  GrMorph)
+\where
+  \forall  F, TF: Fr; type: GrMorph @ (\containmentNoSharingF (F, TF, type)) \iff  \\ \quad
+   ((fE~ type) \inv  \limg  EsTy ((fr\_sg~ TF), \{ecomp\}) \rimg ) \dres  tgtstF~ F \in injrel
+\end{axdef}
+
+%%prerel \instMultsOkF
+\begin{axdef}
+  \instMultsOkF\_: \power  (Fr \cross  Fr \cross  GrMorph)
+\where
+  \forall  F, TF: Fr; type: GrMorph @ \\ \quad 
+  \instMultsOkF (F, TF, type) \iff  (\forall  te: EsA (fr\_sg~ TF) @ \\ \qquad 
+  (\exists  r: V \rel  V @ r = rel (restrict ((fr\_srcGr~ F), ((fE~ type) \inv  \limg  \{te\} \rimg ))) \\ \qquad
+  \land  (\forall  v: \dom  r @ (\multOk (r \limg  (repsOf~ v~ F) \rimg , srcm (fr\_sg~ TF) te))) \\ \qquad 
+  \land  (\forall  v: \ran  r @ (\multOk (r \inv  \limg  (repsOf~ v~ F) \rimg , tgtm (fr\_sg~ TF) te)))))
+\end{axdef}
+
+%%prerel \instContainmentForest
+\begin{axdef}
+  \instContainmentForest \_: \power  (Fr \cross  Fr \cross  GrMorph)
+\where
+  \forall  F, TF: Fr; type: GrMorph @ \instContainmentForest (F, TF, type) \iff \\ \quad
+    rel (restrict ((fr\_srcGr~ F), ((fE~ type) \inv  \limg  EsTy ((fr\_sg~ TF), \{ecomp\}) \rimg ))) \in forest
+\end{axdef}
+
+%%prerel \isConformableF
+\begin{axdef}
+  \isConformableF\_: \power  (Fr \cross  TFr \cross  GrMorph)
+\where
+  \forall  F: Fr; TF: TFr; type: GrMorph @ (\isConformableF (F, TF, type)) \iff  \\ \quad
+  (\instanceEdgeTypesOkF (F, TF, type)) 
+\land  (\abstractNoDirectInstancesF (F, TF, type)) \\ \quad
+\land  (\containmentNoSharingF (F, tfr\_fr~ TF, type)) \\ \quad
+\land  (\instMultsOkF (F, tfr\_fr~ TF, type)) \land  (\instContainmentForest (F, tfr\_fr~ TF, type))
+\end{axdef}
+
+\begin{zed}
+FrTyConf == \{  FT: FrTy | \isConformableF~ FT \}
+\end{zed}
+
+\section{Typed Models}
+
+\begin{zed}
+TMdl_0 == \{  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr | \\ \quad 
+	fcl \in  morphFGCG (GFG, CG) \land  fdef \in  fg\_Ns~ GFG \fun  TFr \}
+\end{zed}
+
+\begin{axdef}
+  tm\_fg: TMdl_0 \fun  GFGr\\
+  tm\_cg: TMdl_0 \fun  CGr\\
+  tm\_fcl: TMdl_0 \fun  GrMorph\\
+  tm\_fdef: TMdl_0 \fun  V \pfun  TFr
+\where
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tm\_fg (GFG, CG, fcl, fdef) = GFG
+\also
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tm\_cg (GFG, CG, fcl, fdef) = CG
+\also
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tm\_fcl (GFG, CG, fcl, fdef) = fcl
+\also
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tm\_fdef (GFG, CG, fcl, fdef) = fdef
+\end{axdef}
+
+\begin{axdef}
+  UTFs: TMdl_0 \fun  TFr\\
+  UTFs_0: \power_1 TFr \fun  TFr
+\where
+  \forall  TM: TMdl_0 @ UTFs~ TM = UTFs_0 (\ran  (tm\_fdef~ TM))
+ \also
+  \forall  TF: TFr @ UTFs_0~\{TF\} = TF
+ \also
+  \forall  TF: TFr; TFs: \power  TFr @ UTFs_0 (\{TF\} \cup  TFs) = TF~ \UTF (UTFs_0 ~TFs)
+\end{axdef}s
+
+\begin{axdef}
+  fromVT: V \cross  TMdl_0 \fun  V
+\where
+  \forall  vl: V; TM: TMdl_0; vf: V @ fromVT (vl, TM) = vf \iff  vl \in  tfr\_Ns (tm\_fdef~ TM ~vf)
+\end{axdef}
+
+\begin{axdef}
+  consTFToGFG: V \cross  TMdl_0{} \fun  GrMorph\\
+  consTFToGFGRefs: V \cross  \power  E \cross  TMdl_0{} \fun  E \pfun  E
+\where
+  \forall  vf: V; TM: TMdl_0{}; fv: V \pfun  V; fe: E \pfun  E @ \\ \quad 
+  consTFToGFG (vf, TM) = (fv, fe) \iff  (\exists  TF: TFr; GFG: GFGr @ \\ \qquad
+  	TF = tm\_fdef~ TM~ vf \land  GFG = tm\_fg~ TM \land  fv \in  tfr\_Ns~ TF \fun  fg\_Ns~ GFG \\ \qquad
+	\land  fe \in  tfr\_Es~ TF \fun  fg\_Es~ GFG \land  vf \in  fg\_Ns~ GFG \\ \qquad  
+	\land  (\exists  ef: fg\_Es~ GFG @ \\ \qquad  \quad 
+		(src (fg\_gr~ GFG) ef = tgt (fg\_gr~ GFG) ef = vf \land  fv = tfr\_Ns~ TF \cross  \{vf\} \\ \qquad \quad 
+	\land  fe = (tfr\_Es~ TF \setminus  tfr\_EsR~ TF \cross  \{ef\}) \cup  consTFToGFGRefs (vf, (tfr\_EsR~ TF), TM))))
+\also
+  \forall  vf: V; TM: TMdl_0; fe: E \pfun  E @ consTFToGFGRefs (vf, \{\}, TM) = \{\}
+\also
+  \forall  vf: V; TM: TMdl_0; el: E; Er: \power  E; fe: E \pfun  E @ \\ \quad
+  	consTFToGFGRefs (vf, (\{el\} \cup  Er), TM) = fe \iff  (\exists  TF: TFr; GFG: GFGr @ \\ \quad
+		TF = tm\_fdef~ TM~ vf \land  GFG = tm\_fg~ TM \\ \quad 
+		\land  (\exists  ef: fg\_Es~ GFG @ (src (fg\_gr~ GFG) ef = vf \\ \quad 
+		\land  tgt (fg\_gr~ GFG) ef = fromVT ((fr\_tgtr (tfr\_fr~ TF) el), TM))))
+\end{axdef}
+
+\begin{axdef}
+  mUTMToGFG: TMdl_0 \fun  GrMorph\\
+  buildUTFsToGFG: (V \pfun  TFr) \cross  TMdl_0 \fun  GrMorph
+\where
+  \forall  TM: TMdl_0; fv: V \pfun  V; fe: E \pfun  E @ \\ \quad 
+  mUTMToGFG~ TM = (fv, fe) \iff \\ \qquad
+   (\exists  TF: TFr @ TF = UTFs~ TM \land  (fv, fe) = buildUTFsToGFG ((tm\_fdef~ TM), TM))
+ \also
+  \forall  vf: V; TF: TFr; TM: TMdl_0 @ \\ \quad  
+  	buildUTFsToGFG (\{(vf \mapsto  TF)\}, TM) = consTFToGFG (vf, TM)
+ \also
+  \forall  vf: V; TF: TFr; fdef: V \pfun  TFr; TM: TMdl_0 @ \\ \quad 
+   buildUTFsToGFG ((\{(vf \mapsto  TF)\} \cup  fdef), TM) = \\ \qquad 
+   	consTFToGFG (vf, TM) \UGM buildUTFsToGFG (fdef, TM)
+\end{axdef}
+
+
+\begin{zed}
+TMdl == \{  TM: TMdl_0 | \exists  m: GrMorph @ m = mUTMToGFG~ TM \\ \quad 
+\land  m \in  morphFFG ((tfr\_fr (UTFs~ TM)), (tm\_fg~ TM)) \\ \quad 
+\land  (\forall  vf_1, vf_2: fg\_Ns (tm\_fg~ TM) @ (vf_1 \neq  vf_2 \implies  ((fV~ m) \inv  \limg  \{vf_1\} \rimg ) \cap  ((fV~ m) \inv  \limg  \{vf_2\} \rimg ) = \emptyset)) \}
+\end{zed}
+
+\begin{zed}
+MdlTy == \{  M: Mdl; TM: TMdl; m\_tcg, m\_tfg, ty: GrMorph | \\ \quad 
+\exists  FM: Fr; FTM: TFr @ FM = UFs~ M \land  FTM = UTFs~ TM \\ \qquad 
+\land  m\_tcg \in  morphCG ((m\_cg~ M), (tm\_cg~ TM)) \\ \qquad  
+\land  m\_tfg \in  morphFG ((m\_fg~ M), (tm\_fg~ TM)) \\ \qquad  
+\land  (FM, FTM, ty) \in  FrTyConf \\ \qquad 
+\land  m\_tfg \OGM mUMToGFG~ M = mUTMToGFG~ TM \OGM ty \\ \qquad  
+\land  m\_tcg \OGM m\_fcl~ M = tm\_fcl~ TM \OGM m\_tfg\}
+\end{zed}
+
+\section{Fragmentation Strategies}
+
+\begin{zed}
+TFSMdl == \{  TM: TMdl; CGS: CGr; GFGS: GFGr; m\_scl, m\_sfr: GrMorph | \\ \quad 
+ m\_scl \in  morphFGCG (GFGS, CGS) \\ \quad  
+ \land  m\_sfr \in  morphFFG ((tfr\_fr (UTFs~ TM)), GFGS) \}
+\end{zed}
+
+\begin{axdef}
+  tfsm\_tm: TFSMdl \fun  TMdl\\
+  tfsm\_scg: TFSMdl \fun  CGr\\
+  tfsm\_sfg: TFSMdl \fun  GFGr\\
+  tfsm\_mscl: TFSMdl \fun  GrMorph\\
+  tfsm\_msfr: TFSMdl \fun  GrMorph
+\where
+  \forall  TM: TMdl; SCG: CGr; SFG: GFGr; m\_scl, m\_sfr: GrMorph @ \\ \quad  
+  tfsm\_tm~ (TM, SCG, SFG, m\_scl, m\_sfr) = TM\\
+  \forall  TM: TMdl; SCG: CGr; SFG: GFGr; m\_scl, m\_sfr: GrMorph @ \\ \quad 
+   tfsm\_scg~ (TM, SCG, SFG, m\_scl, m\_sfr) = SCG\\
+  \forall  TM: TMdl; SCG: CGr; SFG: GFGr; m\_scl, m\_sfr: GrMorph @ \\ \quad 
+  tfsm\_scg~ (TM, SCG, SFG, m\_scl, m\_sfr) = SFG\\
+  \forall  TM: TMdl; SCG: CGr; SFG: GFGr; m\_scl, m\_sfr: GrMorph @\\ \quad 
+   tfsm\_mscl~ (TM, SCG, SFG, m\_scl, m\_sfr) = m\_scl\\
+  \forall  TM: TMdl; SCG: CGr; SFG: GFGr; m\_scl, m\_sfr: GrMorph @\\ \quad 
+   tfsm\_msfr~ (TM, SCG, SFG, m\_scl, m\_sfr) = m\_sfr
+\end{axdef}
+
+\begin{zed}
+MdlTyFS == \{  M: Mdl; TM: TFSMdl; m\_tcg, m\_scg, m\_tfg, m\_sfg, ty: GrMorph | \\ \quad 
+(M, tfsm\_tm~ TM, m\_tcg, m\_tfg, ty) \in  MdlTy \\ \quad
+\land  m\_scg \in  morphCG ((m\_cg~ M), (tfsm\_scg~ TM))  \\ \quad 
+\land  m\_sfg \in  morphFG ((m\_fg~ M), (tfsm\_sfg~ TM)) \\ \quad 
+\land  m\_sfg \OGM mUMToGFG~ M = mUTMToGFG (tfsm\_tm~ TM) \OGM ty \\ \quad  
+\land  m\_scg \OGM m\_fcl~ M = tm\_fcl (tfsm\_tm~ TM) \OGM m\_sfg \}
+\end{zed}
+
+
+\section{Category Theory}
+
+\begin{zed}
+  [O, M]
+\end{zed}
+
+\begin{zed}
+Cat0 == \{  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M | \\ \quad 
+ dm \in  ms \fun  os \land  cd \in  ms \fun  os \land  idn \in  os \fun  ms \land  cmp \in  ms \cross  ms \fun  ms \}
+\end{zed}
+
+\begin{axdef}
+  obs: Cat0 \fun  \power  O\\
+  morphs: Cat0 \fun  \power  M\\
+  dom, cod: Cat0 \fun  M \pfun  O\\
+  id: Cat0 \pfun  O \pfun  M\\
+  comp: Cat0 \pfun  M \cross  M \pfun  M
+\where
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+   obs (os, ms, dm, cd, idn, cmp) = os\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+  morphs (os, ms, dm, cd, idn, cmp) = ms\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+  dom (os, ms, dm, cd, idn, cmp) = dm\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+   cod (os, ms, dm, cd, idn, cmp) = cd\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+  id (os, ms, dm, cd, idn, cmp) = idn\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+   comp (os, ms, dm, cd, idn, cmp) = cmp
+\end{axdef}
+
+\begin{zed}
+MorphC == (\lambda  C: Cat0 @ (\lambda  A, B: obs~ C @ \{  m: morphs~ C | dom~ C~ m = A \land  cod~ C~ m = B \}))
+\end{zed}
+
+\begin{zed}
+Cat == \{  C: Cat0 | (\forall  A: obs~ C @ id~ C~ A \in  MorphC~ C (A, A)) \\ \quad
+\land  (\forall  f, g: morphs~C | dom~ C~ g = cod~ C~ f @ \\ \qquad 
+comp~ C (g, f) \in  MorphC~ C ((dom~ C~ f), (cod~ C~ g)))  \\ \quad
+\land  (\forall  A, B, C_1, D: obs~ C @ \\ \qquad 
+(\forall  f: MorphC~ C (A, B); g: MorphC~ C (B, C_1); h: MorphC~ C (C_1, D) @  \\ \quad \qquad
+comp~ C (h, (comp~ C (g, f))) = comp~ C ((comp~ C (h, g)), f))) \\ \quad
+\land  (\forall  A, B: obs~ C @ (\forall  f: MorphC~ C (A, B) @ \\ \qquad
+ (comp~ C ((id~ C~ B), f) = f 
+\land  comp~ C (f, (id~ C~ A)) = f))) \}
+\end{zed}
+
+\begin{zed}
+MorphG2C == (V \pfun  O) \cross  (E \pfun  M)
+\end{zed}
+
+\begin{axdef}
+  mV: MorphG2C \fun  V \pfun  O\\
+  mE: MorphG2C \fun  E \pfun  M
+\where
+  \forall  mv: V \pfun  O; me: E \pfun  M @ mV (mv, me) = mv\\
+  \forall  mv: V \pfun  O; me: E \pfun  M @ mE (mv, me) = me
+\end{axdef}
+
+\begin{zed}
+morphGC == (\lambda  G: Gr; C: Cat @ \{  mv: Ns~ G \fun  obs~ C; me: Es~ G \fun  morphs~ C | \\ \quad
+ mv \circ  src~ G = dom~ C \circ  me \land  mv \circ  tgt~ G = cod~ C \circ  me \})
+\end{zed}
+
+\begin{zed}
+PPO == (\lambda  C: Cat @ (\lambda  f, g: morphs~ C | dom~ C~ f = dom~ C~ g  @ \\ \quad
+\{  D: obs~ C; f', g': morphs~ C | f' \in  MorphC~ C ((cod~ C~ g), D) \land \\ \quad
+ g' \in  MorphC~ C ((cod~ C~ f), D) \land  comp~ C (f', g) = comp~ C (g', f) \}))
+\end{zed}
+
+\begin{zed}
+PO == (\lambda  C: Cat @ (\lambda  f, g: morphs~ C @ \\ \quad 
+(\mu  D: obs~ C; f', g': morphs~ C | (D, f', g') \in  PPO~ C (f, g) \\ \qquad
+ \land  (\forall  X: obs~ C; h, k: morphs~ C @ ((X, h, k) \in  PPO~ C (f, g)  \\ \qquad
+ \land (\exists  x: MorphC~ C (D, X) @ (comp~ C (x, f') = k \land  comp~ C (x, g') = h)))))))
+\end{zed}
+
+
+\begin{zed}
+Diag == \{  C: Cat; G: Gr; m: MorphG2C | m \in  morphGC (G, C) \}
+\end{zed}
+
+\begin{axdef}
+  grD: Diag \fun  Gr\\
+  cat: Diag \fun  Cat\\
+  morphD: Diag \fun  MorphG2C\\
+  NsD: Diag \fun  \power  V\\
+  obsD: Diag \fun  \power  O\\
+  morphsD: Diag \fun  \power  M
+\where
+  \forall  C: Cat; G: Gr; m: MorphG2C @ grD (C, G, m) = G\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ cat (C, G, m) = C\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ morphD (C, G, m) = m\\
+  \forall  D: Diag @  NsD~ D = Ns (grD~ D)\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ obsD (C, G, m) = \ran  (mV~ m)\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ morphsD (C, G, m) = \ran  (mE~ m)
+\end{axdef}
+
+\begin{zed}
+CC == (\lambda  D: Diag @ \{  X: obs (cat~ D); ms: \power  (morphs (cat~ D)) | \\ \quad 
+\forall  m: ms @ dom (cat~ D) m \in  obsD~ D \land  cod (cat~ D) m = X \})
+\end{zed}
+
+\begin{axdef}
+  ValCC: Diag \fun  \power  (O \cross  \power  M)
+\where
+  \forall  D: Diag; X: O; ms: \power  M @ (X, ms) \in  ValCC~ D \iff  (X, ms) \in  CC~ D \\ \quad 
+\land  (\forall  m: morphsD~ D @ (\exists  f, g: ms @ (dom (cat~ D) m = dom (cat~ D) f \\ \qquad 
+\land  cod (cat~ D) m = dom (cat~ D) g \land  comp (cat~ D) (g, m) = f)))
+\end{axdef}
+
+\begin{zed}
+Colimit == (\lambda  D: Diag @ 
+(\mu  X: O; ms: \power  M | (X, ms) \in  ValCC~ D  \\ \quad 
+\land  (\forall  X': obs (cat~ D); ms': \power  M | X \neq  X' \land  (X', ms') \in  ValCC~ D 
+@  \\ \qquad 
+(\exists  k: MorphC (cat~ D) (X, X') @ (\forall  f: ms; g: ms' | dom (cat~ D) f = dom (cat~ D) g @ \\ \qquad  \quad 
+comp (cat~ D) (k, f) = g)))))
+\end{zed}
+
+\begin{axdef}
+  obCC: O \cross  \power  M \fun  O\\
+  morphsCC: O \cross  \power  M \fun  \power  M
+\where
+  \forall  X: O; ms: \power  M @ obCC (X, ms) = X\\
+  \forall  X: O; ms: \power  M @ morphsCC (X, ms) = ms
+\end{axdef}
+
+\section{Colimit Composition in \Fragmenta}
+
+\begin{axdef}
+  OGr: \power  O\\
+  MGr: \power  M
+\end{axdef}
+
+\begin{axdef}
+  mOGr: OGr \inj  Gr\\
+  mMGr: MGr \inj  GrMorph
+\end{axdef}
+
+\begin{axdef}
+  domGr, codGr: MGr \fun  OGr
+\where
+  \forall  mG: MGr; oG: OGr @  domGr~ mG = oG \iff  (\exists  GM: GrMorph; G_1, G_2: Gr @ \\ \quad  
+  GM = mMGr~ mG \land  G_1 = mOGr~ oG \land  GM \in  morphG (G_1, G_2))\\
+  \forall  mG: MGr; oG: OGr @ \\ \quad 
+   codGr~ mG = oG \iff  (\exists  GM: GrMorph; G_1, G_2: Gr @ \\ \quad  
+   GM = mMGr~ mG \land  G_2 = mOGr~ oG \land  GM \in  morphG (G_1, G_2))
+\end{axdef}
+
+\begin{axdef}
+  idGr: OGr \fun  MGr
+\where
+  \forall  oG: OGr; mG: MGr @ idGr~ oG = mG \iff  (\exists  G: Gr; GM: GrMorph @ \\ \quad  
+  G = mOGr~ oG \land  mMGr~ mG = GM \land  GM = (\id  (Ns~ G), \id  (Es~ G)))
+\end{axdef}
+
+\begin{axdef}
+  cmpGr: MGr \cross  MGr \fun  MGr
+\where
+  \forall  mG_1, mG_2, mG_3: MGr @ cmpGr (mG_1, mG_2) = mG_3 \iff \\ \quad 
+   (\exists  GM_1, GM_2, GM_3: GrMorph @ GM_1 = mMGr~ mG_1 \land  GM_2 = mMGr~ mG_2 \\ \qquad  
+   \land  GM_3 = mMGr~ mG_3 \land  GM_3 = GM_1 \OGM GM_2)
+\end{axdef}
+
+\begin{axdef}
+  GrCat: Cat
+\where
+  GrCat = (OGr, MGr, domGr, codGr, idGr, cmpGr)
+\end{axdef}
+
+\begin{axdef}
+  emptyG: Gr
+\where
+  emptyG = (\emptyset, \emptyset, \emptyset, \emptyset)
+\end{axdef}
+
+\begin{axdef}
+  addNodeToGr: V \cross  Gr \fun  Gr
+\where
+  \forall  v: V; G, G': Gr @ addNodeToGr (v, G) = G' \iff  G' = (Ns~ G \cup  \{v\}, Es~ G, src~ G, tgt~ G)
+\end{axdef}
+
+\begin{axdef}
+  addEdgeToGr: E \cross  V \cross  V \cross  Gr \fun  Gr
+\where
+  \forall  e: E; v_1, v_2: V; G, G': Gr @ \\ \quad  
+  addEdgeToGr (e, v_1, v_2, G) = G \iff  e \in  Es~ G \lor  \lnot  v_1 \in  Ns~ G \lor  \lnot  v_2 \in  Ns~ G\\
+  \forall  e: E; v_1, v_2: V; G, G': Gr @ \\ \quad  
+  addEdgeToGr (e, v_1, v_2, G) = G' \iff  \lnot  e \in  Es~ G \land  v_1 \in  Ns~ G \land  v_2 \in  Ns~ G \\ \quad 
+  \land  G' = (Ns~ G, Es~ G \cup  \{e\}, src~ G \cup  \{(e \mapsto  v_1)\}, tgt~ G \cup  \{(e \mapsto  v_2)\})
+\end{axdef}
+
+\begin{axdef}
+  emptyDiag: Cat \fun  Diag
+\where
+  \forall  C: Cat @ emptyDiag~ C = (C, emptyG, (\emptyset, \emptyset))
+\end{axdef}
+
+\begin{axdef}
+  addNodeToDiag: V \cross  O \cross  Diag \fun  Diag
+\where
+  \forall  vf: V; A: O; D, D': Diag | vf \in  Ns (grD~ D) @ addNodeToDiag (vf, A, D) = D
+\also
+  \forall  vf: V; A: O; D, D': Diag | \lnot  vf \in  Ns (grD~ D) @ \\ \quad
+ addNodeToDiag (vf, A, D) = D' \iff  (\exists  G': Gr; m': MorphG2C @ G' = addNodeToGr (vf, (grD~ D)) \land  m' = (mV (morphD~ D) \cup  \{(vf \mapsto  A)\}, mE (morphD~ D)) \land  D' = (cat~ D, G', m'))
+\end{axdef}
+
+
+\begin{axdef}
+  addEdgeToDiag: E \cross  V \cross  V \cross  M \cross  Diag \fun  Diag
+\where
+  \forall  e: E; vf_1, vf_2: V; m: M; D, D': Diag | \\ \quad  
+  \lnot  vf_1 \in  Ns (grD~D) \lor  \lnot  vf_2 \in  Ns (grD~ D) \lor  e \in  Es (grD~D) @  \\ \quad  
+  addEdgeToDiag (e, vf_1, vf_2, m, D) = D\\
+  \forall  e: E; vf_1, vf_2: V; m: M; D, D': Diag | \\ \quad 
+  vf_1 \in  Ns (grD~ D) \land  vf_2 \in  Ns (grD~ D) \land  \lnot  e \in  Es (grD~ D) @  \\ \quad  
+  addEdgeToDiag (e, vf_1, vf_2, m, D) = D' \iff  (\exists  G: Gr; mD: MorphG2C @ \\ \qquad 
+  G = addEdgeToGr (e, vf_1, vf_2, (grD~ D)) \\ \quad 
+  \land  mD = (mV (morphD~ D), mE (morphD~ D) \cup  \{(e \mapsto  m)\}) \land  D' = (cat ~D, G, mD))
+\end{axdef}
+
+\begin{axdef}
+  buildStartDiag: V \cross  Mdl \fun  Diag
+\where
+  \forall  vf: V; M: Mdl; D: Diag @ \\ \quad
+   buildStartDiag (vf, M) = addNodeToDiag (vf, (mOGr \inv  (fr\_srcGr (m\_fdef~ M~ vf))), \\ \qquad 
+   (emptyDiag~ GrCat))
+\end{axdef}
+
+\begin{axdef}
+  diagDepNodes: \power  V \cross  Mdl \cross  Diag \fun  Diag
+\where
+  \forall  M: Mdl; D: Diag @ diagDepNodes (\{\}, M, D) = D\\
+  \forall  vfs: \power  V; vf_1: V; M: Mdl; D, D': Diag @ \\ \quad
+   diagDepNodes ((\{vf_1\} \cup  vfs), M, D) = D' \iff \\ \qquad
+    (\exists  D_0, D_1, D_2: Diag @ D_0 = addNodeToDiag (vf_1, (mOGr \inv  (fr\_srcGr (m\_fdef~ M~ vf_1))), D)  \\ \quad \qquad
+    \land  D_1 = diagDepNodes ((importsOf (vf_1, (m\_fg~ M))), M, D_0) \\ \quad \qquad
+    \land  D_2 = diagDepNodes ((continuationsOf (vf_1, (m\_fg~ M))), M, D_1) \\ \quad \qquad
+    \land  D' = diagDepNodes (vfs, M, D_2))
+\end{axdef}
+
+\begin{axdef}
+  addMergeMorphisms: Gr \cross  Mdl \cross  Diag \cross  V \cross  \power  V \fun  Diag
+\where
+  \forall  GI: Gr; M: Mdl; D: Diag; v: V @ addMergeMorphisms (GI, M, D, v, \emptyset) = D\\
+  \forall  GI: Gr; M: Mdl; D, D': Diag; vs, vt: V; vls: \power  V @ \\ \quad
+   addMergeMorphisms (GI, M, D, vs, (\{vt\} \cup  vls)) = D' \iff \\ \qquad
+    (\exists  vfs, vft: V; F: Fr; m, mM: GrMorph; e: E; D_0, D_1: Diag @ \\ \qquad \quad
+    mM = mUMToGFG~M \land  vft = fV~ mM~ vt \land  vfs = fV~ mM~ vs \land  \lnot  e \in  Es (grD~ D) \\ \qquad \quad
+    \land  F = m\_fdef~ M~ vft \land  D_0 = addNodeToDiag (vft, (mOGr \inv  (fr\_srcGr~ F)), D) \\ \qquad \quad
+    \land  m \in  morphG (GI, (fr\_srcGr~ F)) \land  m = (\{vs \mapsto  vt\}, \emptyset) \\ \qquad \quad 
+    \land  D_1 = addEdgeToDiag (e, vfs, vft, (mMGr \inv  m), D_0) \\ \qquad
+    \land  D' = addMergeMorphisms (GI, M, D, vs, vls))
+\end{axdef}
+
+%%prerel \HasImpRefs
+\begin{axdef}
+  \HasImpRefs\_: \power  (V \cross  V \cross  Mdl)
+\where
+  \forall  vf_1, vf_2: V; M: Mdl @ (\HasImpRefs (vf_1, vf_2, M)) \iff \\ \quad  
+  (\exists  F_1, F_2: Fr @ F_1 = m\_fdef~ M~ vf_1 \land  F_2 = m\_fdef~ M~ vf_2 \land  refs~ F_1 \rres  fr\_Ns~ F_2 \neq  \emptyset)
+\end{axdef}
+
+\begin{axdef}
+  diagRefs: V \cross  \power  V \cross  Mdl \cross  Diag \fun  Diag
+\where
+  \forall  vf: V; M: Mdl; D: Diag @ diagRefs (vf, \emptyset, M, D) = D
+\also
+  \forall  vf_1, vf_2: V; svf: \power  V; M: Mdl; D: Diag @  \\ \quad
+  diagRefs (vf_1, (\{vf_2\} \cup  svf), M, D) = diagRefs (vf_1, svf, M, D) \iff  \lnot  \HasImpRefs (vf_1, vf_2, M)
+\also
+  \forall  vf_1, vf_2: V; svf: \power  V; M: Mdl; D, D': Diag @ \\ \quad 
+diagRefs (vf_1, (\{vf_2\} \cup  svf), M, D) = D' \iff \\ \qquad
+ \HasImpRefs (vf_1, vf_2, M) \\ \qquad \quad
+ \land  (\exists  F_1, F_2: Fr; GI: Gr; vfi: V; m_1, m_2: GrMorph; D_0, D_1, D_2: Diag; e_1, e_2: E @ \\ \qquad \qquad
+  (F_1 = m\_fdef~ M~ vf_1 \land  F_2 = m\_fdef~ M~ vf_2 \\ \qquad \qquad 
+  \land  GI = (\dom  (refs~ F_1 \rres  fr\_Ns~ F_2), \emptyset, \emptyset, \emptyset) \land  m_1 \in  morphG (GI, (fr\_srcGr~ F_1)) \\ \qquad \qquad 
+  \land  m_1 = (\id  (\dom  (refs~ F_1 \rres  fr\_Ns~ F_2)), \emptyset) \land  m_2 \in  morphG (GI, (fr\_srcGr~ F_2)) \\ \qquad \qquad
+   \land  m_2 = (refs~ F_1 \rres  fr\_Ns~ F_2, \emptyset) \land  \lnot  vfi \in  Ns (grD~ D) \\ \qquad \qquad
+   \land  D_0 = addNodeToDiag (vfi, (mOGr \inv  GI), D) \land  \lnot  \{e_1, e_2\} \subseteq  Es (grD~ D_0)  \\ \qquad \qquad 
+   \land  D_1 = addEdgeToDiag (e_1, vfi, vf_1, (mMGr \inv  m_1), D_0) \\ \qquad \qquad 
+   \land  D_2 = addEdgeToDiag (e_2, vfi, vf_2, (mMGr \inv  m_2), D_1) \\ \qquad \qquad 
+   \land  D' = diagRefs (vf_1, svf, M, D_2)))
+\end{axdef}
+
+\begin{axdef}
+  diagMorphisms: V \cross  Mdl \cross  Diag \fun  Diag\\
+  diagMorphisms_0: V \cross  Mdl \cross  Diag \cross  \power  V \fun  Diag \cross  \power  V\\
+  diagMorphismsSet: \power  V \cross  Mdl \cross  Diag \cross  \power  V \fun  Diag \cross  \power  V
+\where
+  \forall  vf: V; M: Mdl; D, D': Diag @ \\ \quad 
+  diagMorphisms (vf, M, D) = D' \iff  (\exists  p\_vfs: \power  V @ diagMorphisms_0 (vf, M, D, \emptyset) = (D', p\_vfs))
+\also
+  \forall  vf: V; p\_vfs, p\_vfs': \power  V; M: Mdl; D, D': Diag @  \\ \quad 
+   diagMorphisms_0 (vf, M, D, p\_vfs) = (D', p\_vfs') \iff  (\exists  F: Fr; D_1: Diag @ \\ \qquad 
+  F = m\_fdef~ M~ vf \\ \qquad 
+  \land  D_1 = diagRefs (vf, (importsOf (vf, (m\_fg~ M)) \cup  continuesOf (vf, (m\_fg~ M))), M, D) \\ \qquad 
+  \land  diagMorphismsSet ((importsOf (vf, (m\_fg~ M)) \cup  continuesOf (vf, (m\_fg~ M))), M, D_1, \\ \qquad \quad
+   (p\_vfs \cup  \{vf\})) = (D', p\_vfs'))
+ \also
+  \forall  p\_vfs: \power  V; M: Mdl; D: Diag @ diagMorphismsSet (\emptyset, M, D, p\_vfs) = (D, p\_vfs)
+ \also
+  \forall  vf: V; p\_vfs, vfs: \power  V; M: Mdl; D: Diag @  \\ \quad 
+   diagMorphismsSet ((\{vf\} \cup  vfs), M, D, p\_vfs) = diagMorphismsSet (vfs, M, D, p\_vfs) \iff  vf \in  p\_vfs
+ \also
+  \forall  vf: V; p\_vfs, p\_vfs', vfs: \power  V; M: Mdl; D, D': Diag @  \\ \quad 
+   diagMorphismsSet ((\{vf\} \cup  vfs), M, D, p\_vfs) = (D, p\_vfs') \iff  \\ \qquad 
+    vf \notin  p\_vfs \land  (\exists  D'': Diag; p\_vfs'': \power  V @ (diagMorphisms_0 (vf, M, D, p\_vfs) = (D'', p\_vfs'') \\ \qquad 
+     \land  diagMorphismsSet (vfs, M, D'', p\_vfs'') = (D', p\_vfs')))
+\end{axdef}
+
+\begin{axdef}
+  compDiag: V \cross  Mdl \fun  Diag
+\where
+  \forall  vf: V; M: Mdl; D: Diag @ compDiag (vf, M) = D \iff \\ \quad 
+    (\exists  D_0, D_1, D_2: Diag @ D_0 = buildStartDiag (vf, M) \\ \qquad 
+     \land  diagDepNodes ((importsOf (vf, (m\_fg~ M))), M, D_0) = D_1  \\ \qquad 
+     \land  diagDepNodes ((continuesOf (vf, (m\_fg~ M))), M, D_1) = D_2  \\ \qquad 
+     \land  diagMorphisms (vf, M, D_2) = D)
+\end{axdef}

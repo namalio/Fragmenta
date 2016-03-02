@@ -3,7 +3,7 @@
     Author:      Nuno Amálio
 *)
 theory Fragmenta_Frs
-imports Fragmenta_SGs "Extra/Rel_Extra" 
+imports Fragmenta_SGs "../Extra/Rel_Extra" 
                     
 begin
 

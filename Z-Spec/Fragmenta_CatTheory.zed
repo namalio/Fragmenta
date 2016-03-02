@@ -1,0 +1,134 @@
+\begin{zsection}
+  \SECTION Fragmenta\_CatTheory \parents standard\_toolkit, Fragmenta\_Graphs
+\end{zsection}
+
+\begin{zed}
+  [O, M]
+\end{zed}
+
+\begin{zed}
+Cat0 == \{  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M | \\ \quad 
+ dm \in  ms \fun  os \land  cd \in  ms \fun  os \land  idn \in  os \fun  ms \land  cmp \in  ms \cross  ms \fun  ms \}
+\end{zed}
+
+\begin{axdef}
+  obs: Cat0 \fun  \power  O\\
+  morphs: Cat0 \fun  \power  M\\
+  domC, codC: Cat0 \fun  M \pfun  O\\
+  idC: Cat0 \pfun  O \pfun  M\\
+  comp: Cat0 \pfun  M \cross  M \pfun  M
+\where
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+   obs (os, ms, dm, cd, idn, cmp) = os\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+  morphs (os, ms, dm, cd, idn, cmp) = ms\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+  domC (os, ms, dm, cd, idn, cmp) = dm\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+   codC (os, ms, dm, cd, idn, cmp) = cd\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+  idC (os, ms, dm, cd, idn, cmp) = idn\\
+  \forall  os: \power  O; ms: \power  M; dm, cd: M \fun  O; idn: O \pfun  M; cmp: M \cross  M \pfun  M @ \\ \quad 
+   comp (os, ms, dm, cd, idn, cmp) = cmp
+\end{axdef}
+
+\begin{axdef}
+CatMorphs: Cat0 \fun (O \cross O) \fun \power M
+\where
+\forall C : Cat0; A, B : O @ \\ \quad
+	CatMorphs~ C (A, B) = \{ m: morphs~ C |  domC~ C~ m = A \land  codC~ C~ m = B \}
+\end{axdef}
+
+\begin{zed}
+Cat == \{  C: Cat0 | 
+(\forall  A: obs~ C @ idC~ C~ A \in  CatMorphs~ C (A, A)) \\ \quad
+\land  (\forall  f, g: morphs~C | domC~ C~ g = codC~ C~ f @ \\ \qquad 
+comp~ C (g, f) \in  CatMorphs~ C ((domC~ C~ f), (codC~ C~ g)))  \\ \quad
+\land  (\forall  A, B, C_1, D: obs~ C @ \\ \qquad 
+(\forall  f: CatMorphs~ C (A, B); g: CatMorphs~ C (B, C_1); h: CatMorphs~ C (C_1, D) @  \\ \quad \qquad
+comp~ C (h, (comp~ C (g, f))) = comp~ C ((comp~ C (h, g)), f))) \\ \quad
+\land  (\forall  A, B: obs~ C @ (\forall  f: CatMorphs~ C (A, B) @ \\ \qquad
+ (comp~ C ((idC~ C~ B), f) = f 
+\land  comp~ C (f, (idC~ C~ A)) = f))) \}
+\end{zed}
+
+\begin{zed}
+MorphG2C == (V \pfun  O) \cross  (E \pfun  M)
+\end{zed}
+
+\begin{axdef}
+  mV: MorphG2C \fun  V \pfun  O\\
+  mE: MorphG2C \fun  E \pfun  M
+\where
+  \forall  mv: V \pfun  O; me: E \pfun  M @ mV (mv, me) = mv\\
+  \forall  mv: V \pfun  O; me: E \pfun  M @ mE (mv, me) = me
+\end{axdef}
+
+\begin{zed}
+morphGC == (\lambda  G: Gr; C: Cat @ \{  mv: Ns~ G \fun  obs~ C; me: Es~ G \fun  morphs~ C | \\ \quad
+ mv \circ  src~ G = domC~ C \circ  me \land  mv \circ  tgt~ G = codC~ C \circ  me \})
+\end{zed}
+
+\begin{zed}
+PPO == (\lambda  C: Cat @ (\lambda  f, g: morphs~ C | domC~ C~ f = domC~ C~ g  @ \\ \quad
+\{  D: obs~ C; f', g': morphs~ C | f' \in  CatMorphs~ C ((codC~ C~ g), D) \land \\ \quad
+ g' \in  CatMorphs~ C ((codC~ C~ f), D) \land  comp~ C (f', g) = comp~ C (g', f) \}))
+\end{zed}
+
+\begin{zed}
+PO == (\lambda  C: Cat @ (\lambda  f, g: morphs~ C @ \\ \quad 
+(\mu  D: obs~ C; f', g': morphs~ C | (D, f', g') \in  PPO~ C (f, g) \\ \qquad
+ \land  (\forall  X: obs~ C; h, k: morphs~ C @ ((X, h, k) \in  PPO~ C (f, g)  \\ \qquad
+ \land (\exists  x: CatMorphs~ C (D, X) @ (comp~ C (x, f') = k \land  comp~ C (x, g') = h)))))))
+\end{zed}
+
+
+\begin{zed}
+Diag == \{  C: Cat; G: Gr; m: MorphG2C | m \in  morphGC (G, C) \}
+\end{zed}
+
+\begin{axdef}
+  grD: Diag \fun  Gr\\
+  cat: Diag \fun  Cat\\
+  morphD: Diag \fun  MorphG2C\\
+  NsD: Diag \fun  \power  V\\
+  obsD: Diag \fun  \power  O\\
+  morphsD: Diag \fun  \power  M
+\where
+  \forall  C: Cat; G: Gr; m: MorphG2C @ grD (C, G, m) = G\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ cat (C, G, m) = C\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ morphD (C, G, m) = m\\
+  \forall  D: Diag @  NsD~ D = Ns (grD~ D)\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ obsD (C, G, m) = \ran  (mV~ m)\\
+  \forall  C: Cat; G: Gr; m: MorphG2C @ morphsD (C, G, m) = \ran  (mE~ m)
+\end{axdef}
+
+\begin{zed}
+CC == (\lambda  D: Diag @ \{  X: obs (cat~ D); ms: \power  (morphs (cat~ D)) | \\ \quad 
+\forall  m: ms @ domC (cat~ D) m \in  obsD~ D \land  codC (cat~ D) m = X \})
+\end{zed}
+
+\begin{axdef}
+  ValCC: Diag \fun  \power  (O \cross  \power  M)
+\where
+  \forall  D: Diag; X: O; ms: \power  M @ (X, ms) \in  ValCC~ D \iff  (X, ms) \in  CC~ D \\ \quad 
+\land  (\forall  m: morphsD~ D @ (\exists  f, g: ms @ (domC (cat~ D) m = domC (cat~ D) f \\ \qquad 
+\land  codC (cat~ D) m = domC (cat~ D) g \land  comp (cat~ D) (g, m) = f)))
+\end{axdef}
+
+\begin{zed}
+Colimit == (\lambda  D: Diag @ 
+(\mu  X: O; ms: \power  M | (X, ms) \in  ValCC~ D  \\ \quad 
+\land  (\forall  X': obs (cat~ D); ms': \power  M | X \neq  X' \land  (X', ms') \in  ValCC~ D 
+@  \\ \qquad 
+(\exists  k: CatMorphs (cat~ D) (X, X') @ (\forall  f: ms; g: ms' | domC (cat~ D) f = domC (cat~ D) g @ \\ \qquad  \quad 
+comp (cat~ D) (k, f) = g)))))
+\end{zed}
+
+\begin{axdef}
+  obCC: O \cross  \power  M \fun  O\\
+  morphsCC: O \cross  \power  M \fun  \power  M
+\where
+  \forall  X: O; ms: \power  M @ obCC (X, ms) = X\\
+  \forall  X: O; ms: \power  M @ morphsCC (X, ms) = ms
+\end{axdef}

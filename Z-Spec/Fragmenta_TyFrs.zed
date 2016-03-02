@@ -1,0 +1,128 @@
+\begin{zsection}
+  \SECTION Fragmenta\_TyFrs \parents standard\_toolkit, Fragmenta\_Frs
+\end{zsection}
+
+\begin{zed}
+TFr == \{  F: Fr; iet: E \pfun  SGET | iet \in  EsA (fsg~ F) \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  tfG: TFr \fun  Gr\\
+  tfNs: TFr \fun  \power  V\\
+  tfEs: TFr \fun  \power  E\\
+  tfEsR: TFr \fun  \power  E\\
+  tfF: TFr \fun  Fr\\
+  tfiet: TFr \fun  E \pfun  SGET
+\where
+  \forall  F: Fr; iet: E \pfun  SGET @ tfG (F, iet) = fsrcGr~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfNs (F, iet) = fNs~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfEs (F, iet) = fEs~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfEsR (F, iet) = fEsR~ F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfF (F, iet) = F\\
+  \forall  F: Fr; iet: E \pfun  SGET @ tfiet (F, iet) = iet
+\end{axdef}
+
+%%Zinword \UTF UTF
+
+\begin{zed}
+\function 10 \leftassoc (\_ \UTF \_)
+\end{zed}
+
+\begin{axdef}
+  \_\UTF\_: TFr \cross  TFr \fun  TFr
+\where
+  \forall  TF_1, TF_2: TFr @ TF_1 \UTF TF_2 = (tfF~ TF_1 \UF tfF~ TF_2, tfiet~ TF_1 \cup  tfiet~ TF_2)
+\end{axdef}
+
+\begin{zed}
+FrTy == \{  F: Fr; TF: TFr; type: GrMorph | type \in  morphF (F, (tfF~ TF)) \}
+\end{zed}
+
+%%Zpreword \instanceEdgeTypesOkF instanceEdgeTypesOkF
+
+\begin{zed}
+  \relation (\instanceEdgeTypesOkF~\_~)
+\end{zed}
+
+\begin{axdef}
+  \instanceEdgeTypesOkF\_: \power  (Fr \cross  TFr \cross  GrMorph)
+\where
+  \forall  F: Fr; TF: TFr; type: GrMorph @ (\instanceEdgeTypesOkF (F, TF, type)) \iff  \\ \quad 
+  tfiet ~TF \circ  fE ~type = ety (fsg~ F)
+\end{axdef}
+
+%%Zpreword \abstractNoDirectInstancesF abstractNoDirectInstancesF
+
+\begin{zed}
+  \relation (\abstractNoDirectInstancesF~\_~)
+\end{zed}
+
+\begin{axdef}
+  \abstractNoDirectInstancesF\_: \power  FrTy
+\where
+  \forall  F: Fr; TF: TFr; type: GrMorph @ (\abstractNoDirectInstancesF (F, TF, type)) \iff  \\ \quad
+  (fV~ type) \inv  \limg  fr\_NsAbst (tfF~ TF) \rimg  = \{\}
+\end{axdef}
+
+%%Zpreword \containmentNoSharingF containmentNoSharingF
+
+\begin{zed}
+  \relation (\containmentNoSharingF~\_~)
+\end{zed}
+
+\begin{axdef}
+  \containmentNoSharingF\_: \power  (Fr \cross  Fr \cross  GrMorph)
+\where
+  \forall  F, TF: Fr; type: GrMorph @ (\containmentNoSharingF (F, TF, type)) \iff  \\ \quad
+   ((fE~ type) \inv  \limg  EsTy ((fsg~ TF), \{ecomp\}) \rimg ) \dres  tgtstF~ F \in injrel
+\end{axdef}
+
+%%Zpreword \instMultsOkF instMultsOkF
+
+\begin{zed}
+  \relation (\instMultsOkF~\_~)
+\end{zed}
+
+\begin{axdef}
+  \instMultsOkF\_: \power  (Fr \cross  Fr \cross  GrMorph)
+\where
+  \forall  F, TF: Fr; type: GrMorph @ \\ \quad 
+  \instMultsOkF (F, TF, type) \iff  (\forall  te: EsA (fsg~ TF) @ \\ \qquad 
+  (\exists  r: V \rel  V @ r = rel (restrict ((fsrcGr~ F), ((fE~ type) \inv  \limg  \{te\} \rimg ))) \\ \qquad
+  \land  (\forall  v: \dom  r @ (\multOk (r \limg  (repsOf~ v~ F) \rimg , srcm (fsg~ TF) te))) \\ \qquad 
+  \land  (\forall  v: \ran  r @ (\multOk (r \inv  \limg  (repsOf~ v~ F) \rimg , tgtm (fsg~ TF) te)))))
+\end{axdef}
+
+%%Zpreword \instContainmentForest instContainmentForest
+
+\begin{zed}
+  \relation (\instContainmentForest~\_~)
+\end{zed}
+
+\begin{axdef}
+  \instContainmentForest \_: \power  (Fr \cross  Fr \cross  GrMorph)
+\where
+  \forall  F, TF: Fr; type: GrMorph @ \instContainmentForest (F, TF, type) \iff \\ \quad
+    rel (restrict ((fsrcGr~ F), ((fE~ type) \inv  \limg  EsTy ((fsg~ TF), \{ecomp\}) \rimg ))) \in forest
+\end{axdef}
+
+%%Zpreword \isConformableF isConformableF
+
+\begin{zed}
+  \relation (\isConformableF~\_~)
+\end{zed}
+
+%%prerel \isConformableF
+\begin{axdef}
+  \isConformableF\_: \power  (Fr \cross  TFr \cross  GrMorph)
+\where
+  \forall  F: Fr; TF: TFr; type: GrMorph @ (\isConformableF (F, TF, type)) \iff  \\ \quad
+  (\instanceEdgeTypesOkF (F, TF, type)) 
+\land  (\abstractNoDirectInstancesF (F, TF, type)) \\ \quad
+\land  (\containmentNoSharingF (F, tfF~ TF, type)) \\ \quad
+\land  (\instMultsOkF (F, tfF~ TF, type)) \land  (\instContainmentForest (F, tfF~ TF, type))
+\end{axdef}
+
+\begin{zed}
+FrTyConf == \{  FT: FrTy | \isConformableF~ FT \}
+\end{zed}

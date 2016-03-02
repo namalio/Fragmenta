@@ -1,0 +1,158 @@
+
+\begin{zsection}
+  \SECTION Fragmenta\_Graphs \parents standard\_toolkit, Fragmenta\_Generics
+\end{zsection}
+
+%%Zword \quad {}
+%%Zword \qquad {}
+
+\begin{zed}
+  [V, E]
+\also
+Gr == \{  vs: \power  V; es: \power  E; s, t: E \pfun  V | s \in  es \fun  vs \land  t \in  es \fun  vs \}
+\end{zed}
+
+\begin{axdef}
+  Ns: Gr \fun  \power  V\\
+  Es, EsId: Gr \fun  \power  E\\
+  src, tgt: Gr \fun  E \pfun  V\\
+\where
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ Ns (vs, es, s, t) = vs
+\also
+  \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ Es (vs, es, s, t) = es
+\also
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ src (vs, es, s, t) = s
+\also
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ tgt (vs, es, s, t) = t
+\also
+  \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ EsId (vs, es, s, t) = \{  e: es | s~ e = t~ e \}
+\end{axdef}
+
+%%Zpreword \adjacent adjacent
+
+\begin{zed}
+  \relation (\adjacent~\_~)
+\end{zed}
+
+\begin{axdef}
+  \adjacent\_: \power  (V \cross  V \cross  Gr)
+\where
+  \forall  v_1, v_2: V; G: Gr @ (\adjacent (v_1, v_2, G)) \iff  (\exists  e: Es~ G @ src~ G~ e = v_1 \land  tgt~ G~ e = v_2)
+\end{axdef}
+
+\begin{axdef}
+  successors: V \cross  Gr \fun  \power  V
+\where
+  \forall  v: V; G: Gr @ successors (v, G) = \{  v_1: Ns~ G | \adjacent (v, v_1, G) \}
+\end{axdef}
+
+\begin{axdef}
+  rel: Gr \fun  V \rel  V
+\where
+  \forall  G: Gr @ rel~ G = \{  v_1, v_2: Ns~ G | \adjacent (v_1, v_2, G) \}
+\end{axdef}
+
+%%Zpreword \acyclicG acyclicG
+
+\begin{zed}
+  \relation (\acyclicG~\_~)
+\end{zed}
+
+\begin{axdef}
+  \acyclicG\_: \power  Gr
+\where
+  \forall  G: Gr @ (\acyclicG~G) \iff  rel~G \in  acyclic
+\end{axdef}
+
+\begin{axdef}
+  restrict: Gr \cross  \power  E \fun  Gr
+\where
+  \forall  G: Gr; Er: \power  E @ restrict (G, Er) = (Ns~ G, Es~ G \cap  Er, Er \dres  src~ G, Er \dres  tgt~ G)
+\end{axdef}
+
+%%Zpreword \disjGs disjGs
+
+\begin{zed}
+  \relation (\disjGs~\_~)
+\end{zed}
+
+\begin{axdef}
+  \disjGs\_: \power  (Gr \cross  Gr)
+\where
+  \forall  G_1, G_2: Gr @ (\disjGs (G_1, G_2)) \iff  Ns~ G_1 \cap  Ns ~G_2 = \emptyset \land  Es~ G_1 \cap  Es ~G_2 = \emptyset
+\end{axdef}
+
+%%Zinword \UG UG
+
+\begin{zed}
+\function 10 \leftassoc (\_ \UG \_)
+\end{zed}
+
+\begin{axdef}
+  \_\UG\_: Gr \cross  Gr \pfun  Gr
+\where
+  \forall  G_1, G_2: Gr @ G_1 ~\UG ~G_2 = (Ns~ G_1 \cup  Ns~ G_2, Es~ G_1 \cup  Es~ G_2, src ~G_1 \cup  src~ G_2, tgt~ G_1 \cup  tgt~ G_2) \\
+  	 \quad \iff  (\disjGs (G_1, G_2))
+\end{axdef}
+
+\begin{axdef}
+replaceGfun: (E \pfun V) \fun (V \pfun V) \fun (E \pfun V)
+\where
+	\forall f : E \pfun V; sub : V \pfun V @\\ \quad
+	replaceGfun~ f~ sub = f \oplus \{e : \dom f; v : V | (f~e) \in \dom sub \land sub~(f~e) = v\} 
+\end{axdef}
+
+\begin{axdef}
+replaceG: Gr \fun (V \pfun V) \fun Gr
+\where
+\forall G : Gr; sub: V \pfun V @
+	replaceG~G~sub = (Ns~G \setminus \dom sub \cup \ran (Ns~G \dres sub), Es~G, \\ \quad
+		replaceGfun~(src~G)~sub, replaceGfun~(tgt~G)~sub)
+\end{axdef}
+
+\begin{zed}
+GrMorph == (V \pfun  V) \cross  (E \pfun  E)
+\end{zed}
+
+\begin{axdef}
+  fV: GrMorph \fun  V \pfun  V\\
+  fE: GrMorph \fun  E \pfun  E
+\where
+  \forall  fv: V \pfun  V; fe: E \pfun  E @ fV (fv, fe) = fv\\
+  \forall  fv: V \pfun  V; fe: E \pfun  E @ fE (fv, fe) = fe
+\end{axdef}
+
+%%Zinword \UGM UGM
+
+\begin{zed}
+\function 10 \leftassoc (\_ \UGM \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \UGM\_: GrMorph \cross  GrMorph \pfun  GrMorph
+\where
+  \forall  GM_1, GM_2: GrMorph @ \\ \quad 
+  GM_1 \UGM GM_2 = (fV~ GM_1 \cup  fV~ GM_2, fE~ GM_1 \cup  fE~ GM_2) \iff  \\ 
+  	\qquad  
+  fV~ GM_1 \cap  fV~ GM_2 = \emptyset 
+  \land  fE~ GM_1 \cap  fE~ GM_2 = \emptyset
+\end{axdef}
+
+\begin{axdef}
+  morphG: Gr \cross  Gr \fun  \power  GrMorph
+\where
+  \forall  G_1, G_2: Gr @ morphG (G_1, G_2) = \{  fv: Ns~ G_1 \fun  Ns~ G_2; fe: Es~ G_1 \fun  Es~ G_2 | \\ \quad
+  src~ G_2 \circ  fe = fv \circ  src~ G_1 \land  tgt~ G_2 \circ  fe = fv \circ  tgt~ G_1 \}
+\end{axdef}
+
+%%Zinword \OGM OGM
+
+\begin{zed}
+\function 10 \leftassoc (\_ \OGM \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \OGM \_: GrMorph \cross  GrMorph \fun  GrMorph
+\where
+  \forall  m_1, m_2: GrMorph @ m_1 \OGM m_2 = (fV~ m_1 \circ  fV~m_2, fE~ m_1 \circ  fE~ m_2)
+\end{axdef}

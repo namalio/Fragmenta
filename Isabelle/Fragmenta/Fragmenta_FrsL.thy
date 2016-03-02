@@ -3,8 +3,8 @@
     Author:      Nuno Amálio
 *)
 theory Fragmenta_FrsL
-imports Fragmenta_Frs Fragmenta_SGsL "Extra/List_Extra" 
-  "Extra/Finite_Transitive_Closure_Simprocs"
+imports Fragmenta_Frs Fragmenta_SGsL "../Extra/List_Extra" 
+  "../Extra/Finite_Transitive_Closure_Simprocs"
                     
 begin
 

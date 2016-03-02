@@ -1,0 +1,142 @@
+\begin{zsection}
+  \SECTION Fragmenta\_TySGs \parents standard\_toolkit, Fragmenta\_SGs
+\end{zsection}
+
+\begin{zed}
+TSGr == \{  SG: SGr; iet: E \pfun  SGET | iet \in  EsA~ SG \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  tsgSG: TSGr \fun  SGr\\
+  tsgiet: TSGr \fun  E \pfun  SGET\\
+  tsgEsA: TSGr \fun  \power  E\\
+  tsgEsC: TSGr \fun  \power  E\\
+  tsgsrcm: TSGr \fun  E \pfun  Mult\\
+  tsgtgtm: TSGr \fun  E \pfun  Mult
+\where
+  \forall  SG: SGr; iet: E \pfun  SGET @ tsgSG (SG, iet) = SG\\
+  \forall  SG: SGr; iet: E \pfun  SGET @ tsgiet (SG, iet) = iet\\
+  \forall  TSG: TSGr @ tsgEsA~ TSG = EsA (tsgSG~ TSG)\\
+  \forall  TSG: TSGr @ tsgEsC~ TSG = EsTy ((tsgSG~ TSG), \{ecomp\})\\
+  \forall  TSG: TSGr @ tsgsrcm~ TSG = srcm (tsgSG~ TSG)\\
+  \forall  TSG: TSGr @ tsgtgtm~ TSG = tgtm (tsgSG~ TSG)
+\end{axdef}
+
+%%Zpreword \instanceEdgesOk instanceEdgesOk
+
+\begin{zed}
+  \relation (\instanceEdgesOk~\_~)
+\end{zed}
+
+\begin{axdef}
+  \instanceEdgesOk\_: \power  (SGr \cross  SGr \cross  (E \pfun  SGET) \cross  GrMorph)
+\where
+  \forall  SG, TSG: SGr; iet: E \pfun  SGET; type: GrMorph @ \\ \quad 
+  (\instanceEdgesOk (SG, TSG, iet, type)) \iff  iet \circ  fE~ type = ety~ SG
+\end{axdef}
+
+\begin{zed}
+SGrTy == \{  SG: SGr; TSG: TSGr; type: GrMorph | type \in  morphSG (SG, (tsgSG~ TSG)) \land  \\ \quad 
+(\instanceEdgesOk (SG, tsgSG~ TSG, tsgiet~ TSG, type)) \}
+\end{zed}
+
+\begin{axdef}
+  sgtSG: SGrTy \fun  SGr\\
+  sgtTSG: SGrTy \fun  TSGr\\
+  sgtType: SGrTy \fun  GrMorph
+\where
+  \forall  SG: SGr; TSG: TSGr; type: GrMorph @ sgtSG (SG, TSG, type) = SG\\
+  \forall  SG: SGr; TSG: TSGr; type: GrMorph @ sgtTSG (SG, TSG, type) = TSG\\
+  \forall  SG: SGr; TSG: TSGr; type: GrMorph @ sgtType (SG, TSG, type) = type
+\end{axdef}
+
+\begin{axdef}
+  sgtNs: SGrTy \fun  \power  V\\
+  sgtEs: SGrTy \fun  \power  E\\
+  sgtEsI: SGrTy \fun  \power  E\\
+  sgtSrc: SGrTy \fun  E \pfun  V\\
+  sgtTgt: SGrTy \fun  E \pfun  V
+\where
+  \forall  SGT: SGrTy @ sgtNs~ SGT = sgr\_Ns (sgtSG~ SGT)\\
+  \forall  SGT: SGrTy @ sgtEs~ SGT = sgr\_Es (sgtSG~ SGT)\\
+  \forall  SGT: SGrTy @ sgtEsI~ SGT = EsTy ((sgtSG~ SGT), \{einh\})\\
+  \forall  SGT: SGrTy @ sgtSrc~ SGT = sgr\_src (sgtSG~ SGT)\\
+  \forall  SGT: SGrTy @ sgtTgt~ SGT = sgr\_tgt (sgtSG~ SGT)
+\end{axdef}
+
+%%Zpreword \abstractNoDirectInstances abstractNoDirectInstances
+
+\begin{zed}
+  \relation (\abstractNoDirectInstances~\_~)
+\end{zed}
+
+\begin{axdef}
+  \abstractNoDirectInstances\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\abstractNoDirectInstances (SG, TSG, type)) \iff \\ \quad
+   (fV~ type) \inv  \limg  NsTy (TSG, \{nabst\}) \rimg  = \{\}
+\end{axdef}
+
+%%Zpreword \containmentNoSharing containmentNoSharing
+
+\begin{zed}
+  \relation (\containmentNoSharing~\_~)
+\end{zed}
+
+\begin{axdef}
+  \containmentNoSharing\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\containmentNoSharing (SG, TSG, type)) \iff  \\ \quad 
+  ((fE~ type) \inv  \limg  EsTy (TSG, \{ecomp\}) \rimg ) \dres  tgtst~ SG \in injrel
+\end{axdef}
+
+%%Zpreword \instMultsOk instMultsOk
+
+\begin{zed}
+  \relation (\instMultsOk~\_~)
+\end{zed}
+
+\begin{axdef}
+  \instMultsOk\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\instMultsOk (SG, TSG, type)) \iff \\ \quad 
+   (\forall  te: EsA~ TSG @ (\exists  r: V \rel  V @ r = rel (restrict ((gr~ SG), ((fE~ type) \inv  \limg  \{te\} \rimg ))) \\ \quad 
+    \land  (\forall  v: \dom  r @ (\multOk (r \limg  \{v\} \rimg , srcm~ TSG~ te))) \\ \quad  
+    \land  (\forall  v: \ran  r @ (\multOk (r \inv  \limg  \{v\} \rimg , tgtm~TSG~ te)))))
+\end{axdef}
+
+%%Zpreword \instContainmentAcyclic instContainmentAcyclic
+
+\begin{zed}
+  \relation (\instContainmentAcyclic~\_~)
+\end{zed}
+
+\begin{axdef}
+  \instContainmentAcyclic\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG: SGr; TSG: SGr; type: GrMorph @ (\instContainmentAcyclic (SG, TSG, type)) \iff \\ \quad 
+   (\acyclicG~ restrict ((gr~ SG), ((fE~ type) \inv  \limg  EsTy (TSG, \{ecomp\}) \rimg )))
+\end{axdef}
+
+%%Zpreword \isConformable isConformable
+
+\begin{zed}
+  \relation (\isConformable~\_~)
+\end{zed}
+
+\begin{axdef}
+  \isConformable\_: \power  (SGr \cross  SGr \cross  GrMorph)
+\where
+  \forall  SG, TSG: SGr; type: GrMorph @ (\isConformable (SG, TSG, type)) \iff  \\ \quad  
+  (\abstractNoDirectInstances (SG, TSG, type)) \land  (\containmentNoSharing (SG, TSG, type)) \\ \quad
+  \land  (\instMultsOk (SG, TSG, type)) \land  (\instContainmentAcyclic (SG, TSG, type))
+\end{axdef}
+
+\begin{zed}
+SGTyConf == \{  SG: SGr; TSG: TSGr; type: GrMorph | \isConformable (SG, tsgSG~ TSG, type) \}
+\end{zed}
+
+\begin{zed}
+morphSGT == (\lambda  SGT_1, SGT_2: SGrTy @ \\ \quad 
+\{  m: morphSG ((sgtSG~ SGT_1), (sgtSG~ SGT_2)) | sgtType~ SGT_2 \OGM m = sgtType~ SGT_1 \})
+\end{zed}

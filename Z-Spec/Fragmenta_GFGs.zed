@@ -1,0 +1,54 @@
+\begin{zsection}
+  \SECTION Fragmenta\_GFGs \parents standard\_toolkit, Fragmenta\_Frs
+\end{zsection}
+
+\begin{zed}
+FGCGEdgeTy ::= eimpo | econta | econti
+\also
+ExtEdgeTy == \{eimpo, econti\}
+\also
+GFGr == \{  G: Gr; et: E \pfun  ExtEdgeTy | et \in  Es~ G \fun  ExtEdgeTy  \\ \quad  
+	\forall v : Ns~G @ \exists e : Es~G @ src~G~e = v \land tgt~G~e = v
+	\land \acyclicG (restrict (G, (Es~ G \setminus  EsId~ G))) \}
+\end{zed}
+
+\begin{axdef}
+  gfgG: GFGr \fun  Gr\\
+  fety: GFGr \fun  E \pfun  ExtEdgeTy\\
+  gfgNs: GFGr \fun  \power  V\\
+  gfgEs: GFGr \fun  \power  E\\
+  gfgEsOfTy: GFGr \cross  \power  ExtEdgeTy \fun  \power  E\\
+  importsOf: V \cross  GFGr \fun  \power  V\\
+  continuationsOf: V \cross  GFGr \fun  \power  V\\
+  continuesOf: V \cross  GFGr \fun  \power  V
+\where
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ gfgG (G, et) = G\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ fety (G, et) = et\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ gfgNs (G, et) = Ns~ G\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy @ gfgEs (G, et) = Es~G\\
+  \forall  G: Gr; et: E \fun  ExtEdgeTy; fets: \power  ExtEdgeTy @ 
+  gfgEsOfTy ((G, et), fets) = et \inv  \limg  fets \rimg \\
+  \forall  vf: V; GFG: GFGr @ \\ \quad 
+  importsOf (vf, GFG) = successors (vf, (restrict ((gfgG~ GFG), (gfgEsOfTy (GFG, \{eimpo\})))))\\
+  \forall  vf: V; GFG: GFGr @ \\ \quad
+  	 continuationsOf (vf, GFG) = successors (vf, (restrict ((gfgG~ GFG), (gfgEsOfTy (GFG, \{econti\})))))\\
+  \forall  vf: V; GFG: GFGr @ \\ \quad 
+  continuesOf (vf, GFG) = \{  vf_2 : V | \\ \qquad 
+  \adjacent (vf_2, vf, restrict ((gfgG~ GFG), (gfgEsOfTy (GFG, \{econti\})))) \}
+\end{axdef}
+
+\begin{zed}
+morphGFG == (\lambda  GFG_1, GFG_2: GFGr @ \\ \quad 
+\{  fV: gfgNs~ GFG_1 \fun  gfgNs~ GFG_2; fE: gfgEs~ GFG_1 \fun  gfgEs~ GFG_2 | \\ \qquad
+ (fV, fE) \in  morphG ((gfgG~ GFG_1), (gfgG ~GFG_2)) \land  fety ~GFG_2 \circ  fE = fety ~GFG_1 \})
+\also
+morphFGFG == (\lambda  F: Fr; GFG: GFGr @ \\ \quad 
+ \{  fv: fNs~ F \fun  gfgNs ~GFG; fe: fEs~ F \fun  gfgEs~ GFG | \\ \qquad 
+  (fv, fe) \in  morphG ((withRsG ~F), (gfgG~ GFG))  \\ \qquad 
+  \land fNs~ F \neq \emptyset \implies (\exists  vfg: gfgNs~ GFG @ fv \limg  (fNs~ F) \rimg  = \{vfg\}) \\ \qquad
+  \land fEs~ F \neq \emptyset \implies (\exists  efg: gfgEs~ GFG @  \\ \qquad \quad
+  	fe \limg  fEs~ F \setminus  EsR (fsg~ F) \rimg  = \{efg\} \land  efg \in  EsId (gfgG~ GFG))\\ \qquad
+  \land fEs~ F \neq \emptyset \land fNs~ F \neq \emptyset \implies \\ \qquad \quad
+  	(\exists  vfg: gfgNs~ GFG; efg: gfgEs~ GFG @ src (gfgG ~GFG) efg = vfg \\ \qquad \quad
+  	\land   fv \limg  (ftgt~ F) \limg  EsR (fsg ~F) \rimg  \rimg  = \{vfg\}) \})
+\end{zed}

@@ -1,0 +1,42 @@
+
+\begin{zsection}
+  \SECTION Fragmenta\_GraphsCat \parents standard\_toolkit, Fragmenta\_Graphs,
+  	Fragmenta\_CatTheory
+\end{zsection}
+
+\begin{axdef}
+OGr : \power O\\
+MGr : \power M \\
+OGrToGr : O \inj Gr\\
+MGrToGrM : M \inj GrMorph\\
+\end{axdef}
+
+\begin{axdef}
+	idGr : OGr \fun MGr\\	
+  	domGr, codGr: MGr \fun  OGr
+\where
+  \forall  oG: OGr; mG: MGr @ idGr~ oG = mG \iff  (\exists  G: Gr; GM: GrMorph @ \\ \quad  
+  G = OGrToGr~ oG \land  MGrToGrM~ mG = GM \land  GM = (\id  (Ns~ G), \id  (Es~ G)))
+\also
+\forall  mG: MGr; oG1: OGr @  
+	domGr~ mG = oG1 \iff  (\exists  GM: GrMorph; G_1, G_2: Gr @ \\ \quad  
+  	GM = MGrToGrM~ mG \land  G_1 = OGrToGr~ oG1 \land  GM \in  morphG (G_1, G_2))
+\also
+\forall  mG: MGr; oG2: OGr @ \\ \quad 
+   codGr~ mG = oG2 \iff  (\exists  GM: GrMorph; G_1, G_2: Gr @ \\ \quad  
+   GM = MGrToGrM~ mG \land G_2 = OGrToGr~ oG2 \land  GM \in  morphG (G_1, G_2))
+\end{axdef}
+
+\begin{axdef}
+  cmpGr: MGr \cross  MGr \fun  MGr
+\where
+  \forall  mG_1, mG_2, mG_3: MGr @ cmpGr (mG_1, mG_2) = mG_3 \iff \\ \quad 
+   (\exists  GM_1, GM_2, GM_3: GrMorph @ GM_1 = MGrToGrM~ mG_1 \land  GM_2 = MGrToGrM~ mG_2 \\ \qquad  
+   \land  GM_3 = MGrToGrM~ mG_3 \land  GM_3 = GM_1 \OGM GM_2)
+\end{axdef}
+
+\begin{axdef}
+GraphsC : Cat
+\where
+GraphsC= (OGr, MGr, domGr, codGr, idGr, cmpGr)
+\end{axdef}

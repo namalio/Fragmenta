@@ -1,0 +1,101 @@
+
+\begin{zsection}
+\SECTION Fragmenta\_TyMdls \parents standard\_toolkit, Fragmenta\_TyFrs, 
+	Fragmenta\_Mdls
+\end{zsection}
+
+\begin{zed}
+TMdl_0 == \{  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr | \\ \quad 
+	fcl \in  morphGFGCG (GFG, CG) \land  fdef \in  gfgNs~ GFG \fun  TFr \}
+\end{zed}
+
+\begin{axdef}
+  tmGFG: TMdl_0 \fun  GFGr\\
+  tmCG: TMdl_0 \fun  CGr\\
+  tmfcl: TMdl_0 \fun  GrMorph\\
+  tmfdef: TMdl_0 \fun  V \pfun  TFr
+\where
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tmGFG (GFG, CG, fcl, fdef) = GFG
+\also
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tmCG (GFG, CG, fcl, fdef) = CG
+\also
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tmfcl (GFG, CG, fcl, fdef) = fcl
+\also
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  TFr @ tmfdef (GFG, CG, fcl, fdef) = fdef
+\end{axdef}
+
+\begin{axdef}
+  UTFs: TMdl_0 \fun  TFr\\
+  UTFs_0: \power_1 TFr \fun  TFr
+\where
+  \forall  TM: TMdl_0 @ UTFs~ TM = UTFs_0 (\ran  (tmfdef~ TM))
+ \also
+  \forall  TF: TFr @ UTFs_0~\{TF\} = TF
+ \also
+  \forall  TF: TFr; TFs: \power  TFr @ UTFs_0 (\{TF\} \cup  TFs) = TF~ \UTF (UTFs_0 ~TFs)
+\end{axdef}
+
+\begin{axdef}
+  fromVT: V \cross  TMdl_0 \fun  V
+\where
+  \forall  vl: V; TM: TMdl_0; vf: V @ fromVT (vl, TM) = vf \iff  vl \in  tfNs (tmfdef~ TM ~vf)
+\end{axdef}
+
+\begin{axdef}
+  consTFToGFG: V \cross  TMdl_0{} \fun  GrMorph\\
+  consTFToGFGRefs: V \cross  \power  E \cross  TMdl_0{} \fun  E \pfun  E
+\where
+  \forall  vf: V; TM: TMdl_0{}; fv: V \pfun  V; fe: E \pfun  E @ \\ \quad 
+  consTFToGFG (vf, TM) = (fv, fe) \iff  (\exists  TF: TFr; GFG: GFGr @ \\ \qquad
+  	TF = tmfdef~ TM~ vf \land  GFG = tmGFG~ TM \land  fv \in  tfNs~ TF \fun  gfgNs~ GFG \\ \qquad
+	\land  fe \in  tfEs~ TF \fun  gfgEs~ GFG \land  vf \in  gfgNs~ GFG \\ \qquad  
+	\land  (\exists  ef: gfgEs~ GFG @ \\ \qquad  \quad 
+		(src (gfgG~ GFG) ef = tgt (gfgG~ GFG) ef = vf \land  fv = tfNs~ TF \cross  \{vf\} \\ \qquad \quad 
+	\land  fe = (tfEs~ TF \setminus  tfEsR~ TF \cross  \{ef\}) \cup  consTFToGFGRefs (vf, (tfEsR~ TF), TM))))
+\also
+  \forall  vf: V; TM: TMdl_0; fe: E \pfun  E @ consTFToGFGRefs (vf, \{\}, TM) = \{\}
+\also
+  \forall  vf: V; TM: TMdl_0; el: E; Er: \power  E; fe: E \pfun  E @ \\ \quad
+  	consTFToGFGRefs (vf, (\{el\} \cup  Er), TM) = fe \iff  (\exists  TF: TFr; GFG: GFGr @ \\ \quad
+		TF = tmfdef~ TM~ vf \land  GFG = tmGFG~ TM \\ \quad 
+		\land  (\exists  ef: gfgEs~ GFG @ (src (gfgG~ GFG) ef = vf \\ \quad 
+		\land  tgt (gfgG~ GFG) ef = fromVT ((ftgtr (tfF~ TF) el), TM))))
+\end{axdef}
+
+\begin{axdef}
+  mUTMToGFG: TMdl_0 \fun  GrMorph\\
+  buildUTFsToGFG: (V \pfun  TFr) \cross  TMdl_0 \fun  GrMorph
+\where
+  \forall  TM: TMdl_0; fv: V \pfun  V; fe: E \pfun  E @ \\ \quad 
+  mUTMToGFG~ TM = (fv, fe) \iff \\ \qquad
+   (\exists  TF: TFr @ TF = UTFs~ TM \land  (fv, fe) = buildUTFsToGFG ((tmfdef~ TM), TM))
+ \also
+  \forall  vf: V; TF: TFr; TM: TMdl_0 @ \\ \quad  
+  	buildUTFsToGFG (\{(vf \mapsto  TF)\}, TM) = consTFToGFG (vf, TM)
+ \also
+  \forall  vf: V; TF: TFr; fdef: V \pfun  TFr; TM: TMdl_0 @ \\ \quad 
+   buildUTFsToGFG ((\{(vf \mapsto  TF)\} \cup  fdef), TM) = \\ \qquad 
+   	consTFToGFG (vf, TM) \UGM buildUTFsToGFG (fdef, TM)
+\end{axdef}
+
+
+\begin{zed}
+TMdl == \{  TM: TMdl_0 | \exists  m: GrMorph @ m = mUTMToGFG~ TM \\ \quad 
+\land  m \in  morphFGFG ((tfF (UTFs~ TM)), (tmGFG~ TM)) \\ \quad 
+\land  (\forall  vf_1, vf_2: gfgNs (tmGFG~ TM) @ (vf_1 \neq  vf_2 \implies  ((fV~ m) \inv  \limg  \{vf_1\} \rimg ) \cap  ((fV~ m) \inv  \limg  \{vf_2\} \rimg ) = \emptyset)) \}
+\end{zed}
+
+\begin{zed}
+MdlTy == \{  M: Mdl; TM: TMdl; tcg, tgfg, ty: GrMorph | \\ \quad 
+\exists  FM: Fr; FTM: TFr @ FM = UFs~ M \land  FTM = UTFs~ TM \\ \qquad 
+\land  tcg \in  morphCG ((mcg~ M), (tmCG~ TM)) \\ \qquad  
+\land  tgfg \in  morphGFG ((mgfg~ M), (tmGFG~ TM)) \\ \qquad  
+\land  (FM, FTM, ty) \in  FrTyConf \\ \qquad 
+\land  tgfg \OGM mUMToGFG~ M = mUTMToGFG~ TM \OGM ty \\ \qquad  
+\land  tcg \OGM mfcl~ M = tmfcl~ TM \OGM tgfg\}
+\end{zed}
+
+
+
+
+

@@ -1,0 +1,168 @@
+
+
+\begin{zsection}
+  \SECTION Fragmenta\_SGs \parents standard\_toolkit, Fragmenta\_Generics, 
+  	Fragmenta\_Graphs
+\end{zsection}
+
+\begin{zed}
+SGNT ::= nnrml | nabst | nprxy
+\also
+SGET ::= einh | ecomp | erel | elnk | eref
+\also
+MultUVal ::= val\ldata \nat \rdata | many
+\also
+MultVal ::= mr\ldata \nat  \cross  MultUVal\rdata | ms\ldata MultUVal\rdata
+\end{zed}
+
+\begin{axdef}
+  Mult: \power  MultVal
+\where
+  Mult = \{  mv: MultVal | (\exists  lb: \nat ; ub: MultUVal @ mv = mr (lb, ub) \land  ub = many \\ \quad 
+  \lor  (\exists  ubn: \nat  @ ub = val~ ubn \land  lb \leq  ubn)) \lor  (\exists  umv: MultUVal @ mv = ms~ umv) \}
+\end{axdef}
+
+
+%%Zpreword \multOk multOk
+
+\begin{zed}
+  \relation (\multOk~\_~)
+\end{zed}
+
+\begin{axdef}
+\multOk \_: \power  (\power  V \cross  Mult)
+\where
+  \forall  vs: \power  V; lb: \nat; ub: MultUVal @ (\multOk (vs, mr (lb, ub))) \iff  \\ \quad 
+  \# vs \geq  lb \land  (ub = many \lor  (\exists  ubn: \nat  @ ub = val~ ubn \land  \# vs \leq  ubn))\\
+  \forall  vs: \power  V; v: MultUVal @ (\multOk (vs, ms~ v)) \iff  v = many \\ \quad 
+  \lor  (\exists  bn: \nat  @ v = val~ bn \land  \# vs = bn)
+\end{axdef}
+
+\begin{zed}
+SGr_0 == \{  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult | \\ \quad  
+nt \in  Ns~ G \fun  SGNT 
+\land  et \in  Es~ G \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  gr: SGr_0 \fun  Gr\\
+  sgr\_Ns: SGr_0 \fun  \power  V\\
+  sgr\_Es: SGr_0 \fun  \power  E\\
+  sgr\_src: SGr_0 \fun  E \pfun  V\\
+  sgr\_tgt: SGr_0 \fun  E \pfun  V\\
+  nty: SGr_0 \fun  V \pfun  SGNT\\
+  ety: SGr_0 \fun  E \pfun  SGET\\
+  srcm: SGr_0 \fun  E \pfun  Mult\\
+  tgtm: SGr_0 \fun  E \pfun  Mult
+\where
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ gr (G, nt, et, sm, tm) = G\\
+  \forall  SG: SGr_0 @ sgr\_Ns~ SG = Ns (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_Es~ SG = Es (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_src~ SG = src (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_tgt~ SG = tgt (gr~ SG)\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ nty (G, nt, et, sm, tm) = nt\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ ety (G, nt, et, sm, tm) = et\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ srcm (G, nt, et, sm, tm) = sm\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ tgtm (G, nt, et, sm, tm) = tm
+\end{axdef}
+
+\begin{axdef}
+  NsTy: SGr_0 \cross  \power  SGNT \fun  \power  V\\
+  EsTy: SGr_0 \cross  \power  SGET \fun  \power  E
+\where
+  \forall  SG: SGr_0; nts: \power  SGNT @ NsTy (SG, nts) = (nty~ SG) \inv  \limg  nts \rimg \\
+  \forall  SG: SGr_0; ets: \power  SGET @ EsTy (SG, ets) = (ety~ SG) \inv  \limg  ets \rimg 
+\end{axdef}
+
+\begin{axdef}
+  EsA: SGr_0 \fun  \power  E\\
+  EsR: SGr_0 \fun  \power  E
+\where
+  \forall  SG: SGr_0 @ EsA~ SG = EsTy (SG, \{erel, ecomp, elnk\})\\
+  \forall  SG: SGr_0 @ EsR~ SG = EsTy (SG, \{eref\})
+\end{axdef}
+
+\begin{axdef}
+  NsP: SGr_0 \fun  \power  V
+\where
+  \forall  SG: SGr_0 @ NsP~ SG = NsTy (SG, \{nprxy\})
+\end{axdef}
+
+\begin{axdef}
+  inhG: SGr_0 \fun  Gr\\
+  inh: SGr_0 \fun  V \rel  V
+\where
+  \forall SG: SGr_0 @ inhG~SG = restrict ((gr~ SG), (EsTy (SG, \{einh\}) \setminus  EsId (gr~ SG)))
+ \also
+  \forall  SG: SGr_0 @ inh~ SG = rel (inhG~SG)
+\end{axdef}
+
+\begin{zed}
+SGr == \{  SG: SGr_0 | EsR~ SG \subseteq  EsId (gr~ SG) \land  srcm~ SG \in  EsTy (SG, \{erel, ecomp\}) \fun  Mult \\ \quad 
+\land  tgtm~ SG \in  EsTy (SG, \{erel, ecomp\}) \fun  Mult \\ \quad 
+	\land 
+	srcm~ SG \limg EsTy (SG, \{ecomp\}) \rimg \subseteq \{mr (0, val~1), ms~(val~1)\} \\ \quad
+		\land  \acyclicG~ (inhG~SG) \}
+\end{zed}
+
+\begin{axdef}
+  EsRP: SGr \fun  \power  E
+\where
+  \forall  SG: SGr @ EsRP~ SG = \{  e: EsR ~SG | sgr\_src~ SG~ e \in  NsP~ SG \}
+\end{axdef}
+
+\begin{axdef}
+  inhst: SGr \fun  V \rel  V\\
+  clan: V \cross  SGr \fun  \power  V
+\where
+  \forall  SG: SGr @ inhst~ SG = (inh~ SG) \star \\
+  \forall  v: V; SG: SGr @ clan (v, SG) = \{  v': sgr\_Ns~ SG | v' \mapsto  v \in  inhst~ SG \}
+\end{axdef}
+
+\begin{axdef}
+  srcst: SGr \fun  E \rel  V
+\where
+  \forall  SG: SGr @ srcst~ SG = \{  e: EsA~ SG; v: sgr\_Ns~ SG | \\ \quad 
+  \exists  v_2 : sgr\_Ns~ SG @ v \in  clan (v_2, SG) \land  sgr\_src~ SG~ e = v_2 \}
+\end{axdef}
+
+\begin{axdef}
+  tgtst: SGr \fun  E \rel  V
+\where
+  \forall  SG: SGr @ tgtst~SG = \{  e: EsA~SG; v: sgr\_Ns~SG | \\ \quad 
+   \exists  v_2: sgr\_Ns~ SG @ v \in  clan (v_2, SG) \land  sgr\_tgt~ SG~ e = v_2 \}
+\end{axdef}
+
+%%Zpreword \disjSGs disjSGs
+
+\begin{zed}
+  \relation (\disjSGs~\_~)
+\end{zed}
+
+\begin{axdef}
+  \disjSGs\_: \power  (SGr \cross  SGr)
+\where
+  \forall  SG_1, SG_2: SGr @ (\disjSGs (SG_1, SG_2)) \iff  (\disjGs (gr~ SG_1, gr~ SG_2))
+\end{axdef}
+
+%%Zinword \USG USG
+
+\begin{zed}
+\function 10 \leftassoc (\_ \USG \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \USG\_: SGr \cross  SGr \pfun  SGr
+\where
+  \forall  SG_1, SG_2: SGr @ SG_1 \USG SG_2 = (gr~ SG_1 \UG gr~ SG_2, nty~ SG_1 \cup  nty~SG_2, \\ \quad 
+  ety~ SG_1 \cup  ety~ SG_2, srcm~ SG_1 \cup  srcm~ SG_2, tgtm~ SG_1 \cup  tgtm~ SG_2) \iff  (\disjSGs (SG_1, SG_2))
+\end{axdef}
+
+\begin{axdef}
+  morphSG: SGr \cross  SGr \fun  \power  GrMorph
+\where
+  \forall  SG_1, SG_2: SGr @ \\ \quad 
+  morphSG (SG_1, SG_2) = \{  fv: sgr\_Ns~ SG_1 \fun  sgr\_Ns~ SG_2; fe: sgr\_Es~ SG_1 \fun  sgr\_Es~ SG_2 | \\ \qquad 
+  fv \circ  srcst~ SG_1 \subseteq  srcst~ SG_2 \circ  fe \land  fv \circ  tgtst~ SG_1 \subseteq  tgtst~ SG_2 \circ  fe \\ \qquad 
+  	\land  fv \circ  inhst~ SG_1 \subseteq  inhst~ SG_2 \circ  fv \}
+\end{axdef}

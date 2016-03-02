@@ -1,0 +1,472 @@
+\documentclass{article}
+\usepackage{czt}
+
+\begin{document}
+
+\begin{zsection}
+  \SECTION FragmentaSpec \parents standard\_toolkit
+\end{zsection}
+
+
+%%Zword \quad {}
+%%Zword \qquad {}
+
+\section{Generics}
+
+\begin{zed}
+acyclic [X] == \{  r: X \rel  X | r \plus  \cap  \id  X = \emptyset \}
+\also
+connected [X] == \{  r: X \rel  X | \forall  x: \dom  r; y: \ran  r @ x \mapsto  y \in  r \plus  \}
+\also
+tree [X] == \{  r: X \rel  X | r \in  acyclic \land  r \in  X \pfun  X \}
+\also
+forest [X] == \{  r: X \rel  X | r \in  acyclic \land  (\forall  s: X \rel  X | s \subseteq  r \land  s \in  connected @ s \in  tree) \}
+\also
+injrel[X, Y] == \{  r: X \rel  Y | (\forall  x: X; y_1, y_2: Y @ (x, y_1) \in  r \land  (x, y_2) \in  r \implies  y_1 = y_2) \}
+\end{zed}
+
+\section{Graphs}
+
+\begin{zed}
+  [V, E]
+\also
+Gr == \{  vs: \power  V; es: \power  E; s, t: E \pfun  V | s \in  es \fun  vs \land  t \in  es \fun  vs \}
+\end{zed}
+
+\begin{axdef}
+  Ns: Gr \fun  \power  V\\
+  Es, EsId: Gr \fun  \power  E\\
+  src, tgt: Gr \fun  E \pfun  V\\
+\where
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ Ns (vs, es, s, t) = vs
+\also
+  \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ Es (vs, es, s, t) = es
+\also
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ src (vs, es, s, t) = s
+\also
+   \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ tgt (vs, es, s, t) = t
+\also
+  \forall  vs: \power  V; es: \power  E; s: E \pfun  V; t: E \pfun  V @ EsId (vs, es, s, t) = \{  e: es | s~ e = t~ e \}
+\end{axdef}
+
+%%Zpreword \adjacent adjacent
+
+\begin{zed}
+  \relation (\adjacent~\_~)
+\end{zed}
+
+\begin{axdef}
+  \adjacent\_: \power  (V \cross  V \cross  Gr)
+\where
+  \forall  v_1, v_2: V; G: Gr @ (\adjacent (v_1, v_2, G)) \iff  (\exists  e: Es~ G @ src~ G~ e = v_1 \land  tgt~ G~ e = v_2)
+\end{axdef}
+
+\begin{axdef}
+  successors: V \cross  Gr \fun  \power  V
+\where
+  \forall  v: V; G: Gr @ successors (v, G) = \{  v_1: Ns~ G | \adjacent (v, v_1, G) \}
+\end{axdef}
+
+\begin{axdef}
+  rel: Gr \fun  V \rel  V
+\where
+  \forall  G: Gr @ rel~ G = \{  v_1, v_2: Ns~ G | \adjacent (v_1, v_2, G) \}
+\end{axdef}
+
+%%Zpreword \acyclicG acyclicG
+
+\begin{zed}
+  \relation (\acyclicG~\_~)
+\end{zed}
+
+\begin{axdef}
+  \acyclicG\_: \power  Gr
+\where
+  \forall  G: Gr @ (\acyclicG~G) \iff  rel~G \in  acyclic
+\end{axdef}
+
+\begin{axdef}
+  restrict: Gr \cross  \power  E \fun  Gr
+\where
+  \forall  G: Gr; Er: \power  E @ restrict (G, Er) = (Ns~ G, Es~ G \cap  Er, Er \dres  src~ G, Er \dres  tgt~ G)
+\end{axdef}
+
+%%Zpreword \disjGs disjGs
+
+\begin{zed}
+  \relation (\disjGs~\_~)
+\end{zed}
+
+\begin{axdef}
+  \disjGs\_: \power  (Gr \cross  Gr)
+\where
+  \forall  G_1, G_2: Gr @ (\disjGs (G_1, G_2)) \iff  Ns~ G_1 \cap  Ns ~G_2 = \emptyset \land  Es~ G_1 \cap  Es ~G_2 = \emptyset
+\end{axdef}
+
+%%Zinword \UG UG
+
+\begin{zed}
+\function 10 \leftassoc (\_ \UG \_)
+\end{zed}
+
+\begin{axdef}
+  \_\UG\_: Gr \cross  Gr \pfun  Gr
+\where
+  \forall  G_1, G_2: Gr @ G_1 ~\UG ~G_2 = (Ns~ G_1 \cup  Ns~ G_2, Es~ G_1 \cup  Es~ G_2, src ~G_1 \cup  src~ G_2, tgt~ G_1 \cup  tgt~ G_2) \\
+  	 \quad \iff  (\disjGs (G_1, G_2))
+\end{axdef}
+
+\begin{zed}
+GrMorph == (V \pfun  V) \cross  (E \pfun  E)
+\end{zed}
+
+\begin{axdef}
+  fV: GrMorph \fun  V \pfun  V\\
+  fE: GrMorph \fun  E \pfun  E
+\where
+  \forall  fv: V \pfun  V; fe: E \pfun  E @ fV (fv, fe) = fv\\
+  \forall  fv: V \pfun  V; fe: E \pfun  E @ fE (fv, fe) = fe
+\end{axdef}
+
+%%Zinword \UGM UGM
+
+\begin{zed}
+\function 10 \leftassoc (\_ \UGM \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \UGM\_: GrMorph \cross  GrMorph \pfun  GrMorph
+\where
+  \forall  GM_1, GM_2: GrMorph @ \\ \quad 
+  GM_1 \UGM GM_2 = (fV~ GM_1 \cup  fV~ GM_2, fE~ GM_1 \cup  fE~ GM_2) \iff  \\ 
+  	\qquad  
+  fV~ GM_1 \cap  fV~ GM_2 = \emptyset 
+  \land  fE~ GM_1 \cap  fE~ GM_2 = \emptyset
+\end{axdef}
+
+\begin{axdef}
+  morphG: Gr \cross  Gr \fun  \power  GrMorph
+\where
+  \forall  G_1, G_2: Gr @ morphG (G_1, G_2) = \{  fv: Ns~ G_1 \fun  Ns~ G_2; fe: Es~ G_1 \fun  Es~ G_2 | \\ \quad
+  src~ G_2 \circ  fe = fv \circ  src~ G_1 \land  tgt~ G_2 \circ  fe = fv \circ  tgt~ G_1 \}
+\end{axdef}
+
+%%Zinword \OGM OGM
+
+\begin{zed}
+\function 10 \leftassoc (\_ \OGM \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \OGM \_: GrMorph \cross  GrMorph \fun  GrMorph
+\where
+  \forall  m_1, m_2: GrMorph @ m_1 \OGM m_2 = (fV~ m_1 \circ  fV~m_2, fE~ m_1 \circ  fE~ m_2)
+\end{axdef}
+
+\section{Structural Graphs}
+
+\begin{zed}
+SGNT ::= nnrml | nabst | nprxy
+\also
+SGET ::= einh | ecomp | erel | elnk | eref
+\also
+MultUVal ::= val\ldata \nat \rdata | many
+\also
+MultVal ::= rg\ldata \nat  \cross  MultUVal\rdata | sg\ldata MultUVal\rdata
+\end{zed}
+
+\begin{axdef}
+  Mult: \power  MultVal
+\where
+  Mult = \{  mv: MultVal | (\exists  lb: \nat ; ub: MultUVal @ mv = rg (lb, ub) \land  ub = many \\ \quad 
+  \lor  (\exists  ubn: \nat  @ ub = val~ ubn \land  lb \leq  ubn)) \lor  (\exists  umv: MultUVal @ mv = sg~ umv) \}
+\end{axdef}
+
+
+%%Zpreword \multOk multOk
+
+\begin{zed}
+  \relation (\multOk~\_~)
+\end{zed}
+
+\begin{axdef}
+\multOk \_: \power  (\power  V \cross  Mult)
+\where
+  \forall  vs: \power  V; lb: \nat; ub: MultUVal @ (\multOk (vs, rg (lb, ub))) \iff  \\ \quad 
+  \# vs \geq  lb \land  (ub = many \lor  (\exists  ubn: \nat  @ ub = val~ ubn \land  \# vs \leq  ubn))\\
+  \forall  vs: \power  V; v: MultUVal @ (\multOk (vs, sg~ v)) \iff  v = many \\ \quad 
+  \lor  (\exists  bn: \nat  @ v = val~ bn \land  \# vs = bn)
+\end{axdef}
+
+\begin{zed}
+SGr_0 == \{  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult | \\ \quad  
+nt \in  Ns~ G \fun  SGNT 
+\land  et \in  Es~ G \fun  SGET \}
+\end{zed}
+
+\begin{axdef}
+  gr: SGr_0 \fun  Gr\\
+  sgr\_Ns: SGr_0 \fun  \power  V\\
+  sgr\_Es: SGr_0 \fun  \power  E\\
+  sgr\_src: SGr_0 \fun  E \pfun  V\\
+  sgr\_tgt: SGr_0 \fun  E \pfun  V\\
+  nty: SGr_0 \fun  V \pfun  SGNT\\
+  ety: SGr_0 \fun  E \pfun  SGET\\
+  srcm: SGr_0 \fun  E \pfun  Mult\\
+  tgtm: SGr_0 \fun  E \pfun  Mult
+\where
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ gr (G, nt, et, sm, tm) = G\\
+  \forall  SG: SGr_0 @ sgr\_Ns~ SG = Ns (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_Es~ SG = Es (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_src~ SG = src (gr~ SG)\\
+  \forall  SG: SGr_0 @ sgr\_tgt~ SG = tgt (gr~ SG)\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ nty (G, nt, et, sm, tm) = nt\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ ety (G, nt, et, sm, tm) = et\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ srcm (G, nt, et, sm, tm) = sm\\
+  \forall  G: Gr; nt: V \pfun  SGNT; et: E \pfun  SGET; sm, tm: E \pfun  Mult @ tgtm (G, nt, et, sm, tm) = tm
+\end{axdef}
+
+\begin{axdef}
+  NsTy: SGr_0 \cross  \power  SGNT \fun  \power  V\\
+  EsTy: SGr_0 \cross  \power  SGET \fun  \power  E
+\where
+  \forall  SG: SGr_0; nts: \power  SGNT @ NsTy (SG, nts) = (nty~ SG) \inv  \limg  nts \rimg \\
+  \forall  SG: SGr_0; ets: \power  SGET @ EsTy (SG, ets) = (ety~ SG) \inv  \limg  ets \rimg 
+\end{axdef}
+
+\begin{axdef}
+  EsA: SGr_0 \fun  \power  E\\
+  EsR: SGr_0 \fun  \power  E
+\where
+  \forall  SG: SGr_0 @ EsA~ SG = EsTy (SG, \{erel, ecomp, elnk\})\\
+  \forall  SG: SGr_0 @ EsR~ SG = EsTy (SG, \{eref\})
+\end{axdef}
+
+\begin{axdef}
+  NsP: SGr_0 \fun  \power  V
+\where
+  \forall  SG: SGr_0 @ NsP~ SG = NsTy (SG, \{nprxy\})
+\end{axdef}
+
+\begin{axdef}
+  inh: SGr_0 \fun  V \rel  V
+\where
+  \forall  SG: SGr_0 @ inh~ SG = rel (restrict ((gr~ SG), (EsTy (SG, \{einh\}) \setminus  EsId (gr~ SG))))
+\end{axdef}
+
+%%Zpreword \acyclicSG acyclicSG
+
+\begin{zed}
+  \relation (\acyclicSG~\_~)
+\end{zed}
+
+\begin{axdef}
+  \acyclicSG\_: \power  SGr_0
+\where
+  \forall  SG: SGr_0 @ (\acyclicSG~ SG) \iff  inh~ SG \in  acyclic
+\end{axdef}
+
+\begin{zed}
+SGr == \{  SG: SGr_0 | EsR~ SG \subseteq  EsId (gr~ SG) \land  srcm~ SG \in  EsTy (SG, \{erel, ecomp\}) \fun  Mult \\ \quad 
+\land  tgtm~ SG \in  EsTy (SG, \{erel, ecomp\}) \fun  Mult \land  (\acyclicSG~ SG) \}
+\end{zed}
+
+\begin{axdef}
+  EsRP: SGr \fun  \power  E
+\where
+  \forall  SG: SGr @ EsRP~ SG = \{  e: EsR ~SG | sgr\_src~ SG~ e \in  NsP~ SG \}
+\end{axdef}
+
+\begin{axdef}
+  inhst: SGr \fun  V \rel  V\\
+  clan: V \cross  SGr \fun  \power  V
+\where
+  \forall  SG: SGr @ inhst~ SG = (inh~ SG) \star \\
+  \forall  v: V; SG: SGr @ clan (v, SG) = \{  v': sgr\_Ns~ SG | v' \mapsto  v \in  inhst~ SG \}
+\end{axdef}
+
+\begin{axdef}
+  srcst: SGr \fun  E \rel  V
+\where
+  \forall  SG: SGr @ srcst~ SG = \{  e: EsA~ SG; v: sgr\_Ns~ SG | \\ \quad 
+  \exists  v_2 : sgr\_Ns~ SG @ v \in  clan (v_2, SG) \land  sgr\_src~ SG~ e = v_2 \}
+\end{axdef}
+
+\begin{axdef}
+  tgtst: SGr \fun  E \rel  V
+\where
+  \forall  SG: SGr @ tgtst~SG = \{  e: EsA~SG; v: sgr\_Ns~SG | \\ \quad 
+   \exists  v_2: sgr\_Ns~ SG @ v \in  clan (v_2, SG) \land  sgr\_tgt~ SG~ e = v_2 \}
+\end{axdef}
+
+%%Zpreword \disjSGs disjSGs
+
+\begin{zed}
+  \relation (\disjSGs~\_~)
+\end{zed}
+
+\begin{axdef}
+  \disjSGs\_: \power  (SGr \cross  SGr)
+\where
+  \forall  SG_1, SG_2: SGr @ (\disjSGs (SG_1, SG_2)) \iff  (\disjGs (gr~ SG_1, gr~ SG_2))
+\end{axdef}
+
+%%Zinword \USG USG
+
+\begin{zed}
+\function 10 \leftassoc (\_ \USG \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \USG\_: SGr \cross  SGr \pfun  SGr
+\where
+  \forall  SG_1, SG_2: SGr @ SG_1 \USG SG_2 = (gr~ SG_1 \UG gr~ SG_2, nty~ SG_1 \cup  nty~SG_2, \\ \quad 
+  ety~ SG_1 \cup  ety~ SG_2, srcm~ SG_1 \cup  srcm~ SG_2, tgtm~ SG_1 \cup  tgtm~ SG_2) \iff  (\disjSGs (SG_1, SG_2))
+\end{axdef}
+
+\begin{axdef}
+  morphSG: SGr \cross  SGr \fun  \power  GrMorph
+\where
+  \forall  SG_1, SG_2: SGr @ \\ \quad 
+  morphSG (SG_1, SG_2) = \{  fv: sgr\_Ns~ SG_1 \fun  sgr\_Ns~ SG_2; fe: sgr\_Es~ SG_1 \fun  sgr\_Es~ SG_2 | \\ \qquad 
+  fv \circ  srcst~ SG_1 \subseteq  srcst~ SG_2 \circ  fe \land  fv \circ  tgtst~ SG_1 \subseteq  tgtst~ SG_2 \circ  fe \\ \qquad 
+  	\land  fv \circ  inhst~ SG_1 \subseteq  inhst~ SG_2 \circ  fv \}
+\end{axdef}
+
+\section{Fragments}
+
+\begin{zed}
+Fr_0 == \{  SG: SGr; tr: E \pfun  V | tr \in  EsRP~ SG \fun  V \land  EsTy (SG, \{einh\}) \dres  sgr\_src~ SG \rres  NsP~ SG = \{\} \}
+\end{zed}
+
+\begin{axdef}
+  fr\_srcGr: Fr_0 \fun  Gr\\
+  fr\_tgtr: Fr_0 \fun  E \pfun  V\\
+  fr\_Ns: Fr_0 \fun  \power  V\\
+  fr\_Es: Fr_0 \fun  \power  E\\
+  fr\_EsR: Fr_0 \fun  \power  E\\
+  fr\_sg: Fr_0 \fun  SGr\\
+  fr\_src: Fr_0 \fun  E \pfun  V\\
+  fr\_tgt: Fr_0 \fun  E \pfun  V
+\where
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_srcGr (SG, tr) = gr~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_tgtr (SG, tr) = tr\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_Ns (SG, tr) = sgr\_Ns~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_Es (SG, tr) = sgr\_Es~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_EsR (SG, tr) = EsR~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_sg (SG, tr) = SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_src (SG, tr) = sgr\_src~ SG\\
+  \forall  SG: SGr; tr: E \pfun  V @ fr\_tgt (SG, tr) = sgr\_tgt~ SG
+\end{axdef}
+
+\begin{axdef}
+  tgtr: Fr_0 \fun  E \pfun  V\\
+  withRsG: Fr_0 \fun  Gr\\
+  refsG: Fr_0 \fun  Gr\\
+  refs: Fr_0 \fun  V \rel  V\\
+  reps: Fr_0 \fun  V \rel  V\\
+  referenced: Fr_0 \fun  \power  V
+\where
+  \forall  SG: SGr; tr: E \pfun  V @ tgtr (SG, tr) = sgr\_tgt~ SG \oplus  tr\\
+  \forall  SG: SGr; tr: E \pfun  V @ \\ \quad 
+   withRsG (SG, tr) = (sgr\_Ns~ SG \cup  \ran  tr, sgr\_Es~ SG, sgr\_src~ SG, tgtr (SG, tr))\\
+  \forall  F: Fr_0 @ refsG~ F = restrict ((withRsG~ F), (EsRP (fr\_sg~ F)))\\
+  \forall  F: Fr_0  @ refs ~F = rel (refsG~ F)\\
+  \forall  F: Fr_0 @ reps ~F = refs~ F \cup  (refs~ F) \inv \\
+  \forall  SG: SGr; tr: E \pfun  V @ referenced (SG, tr) = \ran  tr
+\end{axdef}
+
+\begin{axdef}
+  inhF: Fr_0 \fun  V \rel  V
+\where
+  \forall  F: Fr_0 @ inhF~ F = inh (fr\_sg~ F) \cup  reps~ F
+\end{axdef}
+
+%%Zpreword \acyclicF acyclicF
+
+\begin{zed}
+  \relation (\acyclicF~\_~)
+\end{zed}
+
+\begin{axdef}
+  \acyclicF\_: \power  Fr_0
+\where
+  \forall  F: Fr_0 @ (\acyclicF~ F) \iff  inhF~ F \in  acyclic
+\end{axdef}
+
+\begin{zed}
+Fr == \{  F: Fr_0 | \acyclicF~ F \}
+\end{zed}
+
+\begin{axdef}
+  repsOf: V \fun  Fr \fun  \power  V
+\where
+  \forall  v: V; F: Fr @ repsOf~ v~ F = \{  v': fr\_Ns~ F | (v', v) \in  (reps~ F) \star  \}
+\end{axdef}
+
+\begin{axdef}
+  fr\_NsAbst: Fr \fun  \power  V
+\where
+  \forall  F: Fr @ fr\_NsAbst~ F = \bigcup  \{  va: NsTy ((fr\_sg~ F), \{nabst\}) @ (repsOf~ va ~F) \}
+\end{axdef}
+
+%%Zpreword \disjFs disjFs
+
+\begin{zed}
+  \relation (\disjFs~\_~)
+\end{zed}
+
+\begin{axdef}
+  \disjFs\_: \power  (Fr \cross  Fr)
+\where
+  \forall  F_1, F_2: Fr @ (\disjFs (F_1, F_2)) \iff  (\disjSGs (fr\_sg~ F_1, fr\_sg~ F_2))
+\end{axdef}
+
+%%Zinword \UF UF
+
+\begin{zed}
+\function 10 \leftassoc (\_ \UF \_)
+\end{zed}
+
+\begin{axdef}
+  \_ \UF\_: Fr \cross  Fr \pfun  Fr
+\where
+  \forall  F_1, F_2: Fr @ F_1 \UF~ F_2 = (fr\_sg~ F_1 \USG~ fr\_sg~ F_2, fr\_tgtr~ F_1 \cup  fr\_tgtr~ F_2) \iff  (\disjFs (F_1, F_2))
+\end{axdef}
+
+\begin{axdef}
+  inhstF: Fr \fun  V \rel  V
+\where
+  \forall  F: Fr @ inhstF~ F = (inhF~ F) \star 
+\end{axdef}
+
+\begin{axdef}
+  clanF: V \cross  Fr \fun  \power  V
+\where
+  \forall  v: V; F: Fr @ clanF (v, F) = \{  v': fr\_Ns~ F | (v', v) \in  inhstF~ F \}
+\end{axdef}
+
+\begin{axdef}
+  srcstF: Fr \fun  E \rel  V
+\where
+  \forall  F: Fr @ srcstF~ F = \{  e: EsA (fr\_sg~ F); v: fr\_Ns~ F | \exists  v_2: fr\_Ns~ F @ \\ \quad  
+  v \in  clanF (v_2, F) \land  (e, v_2) \in  srcst (fr\_sg~ F) \}
+\end{axdef}
+
+\begin{axdef}
+  tgtstF: Fr \fun  E \rel  V
+\where
+  \forall  F: Fr @  tgtstF~ F = \{  e: EsA (fr\_sg~ F); v: fr\_Ns~ F | \exists  v_2: fr\_Ns ~F @ \\ \quad 
+  	v \in  clanF (v_2, F) \land  (e, v_2) \in  tgtst (fr\_sg ~F) \}
+\end{axdef}
+
+\begin{axdef}
+  morphF: Fr \cross  Fr \fun  \power  GrMorph
+\where
+  \forall  F_1, F_2: Fr @ morphF (F_1, F_2) = \{  fv: fr\_Ns~ F_1 \fun  fr\_Ns~ F_2; fe: fr\_Es~ F_1 \fun  fr\_Es~ F_2 |  \\ \quad  
+  fv \circ  srcstF~ F_1 \subseteq  srcstF ~F_2 \circ  fe \land  fv \circ  tgtstF ~F_1 \subseteq  tgtstF~ F_2 \circ  fe \land  \\ \quad
+  	 fv \circ  inhstF ~F_1 \subseteq  inhstF ~F_2 \circ  fv \}
+\end{axdef}
+
+
+\end{document}

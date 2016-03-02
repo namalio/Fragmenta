@@ -1,0 +1,160 @@
+
+\begin{zsection}
+  \SECTION Fragmenta\_Colimit\_Composition \parents standard\_toolkit, Fragmenta\_GraphsCat, Fragmenta\_Mdls
+\end{zsection}
+
+\begin{axdef}
+  emptyG: Gr
+\where
+  emptyG = (\emptyset, \emptyset, \emptyset, \emptyset)
+\end{axdef}
+
+\begin{axdef}
+  addNodeToGr: V \cross  Gr \fun  Gr
+\where
+  \forall  v: V; G, G': Gr @ addNodeToGr (v, G) = G' \iff  G' = (Ns~ G \cup  \{v\}, Es~ G, src~ G, tgt~ G)
+\end{axdef}
+
+\begin{axdef}
+  addEdgeToGr: E \cross  V \cross  V \cross  Gr \fun  Gr
+\where
+  \forall  e: E; v_1, v_2: V; G, G': Gr @ \\ \quad  
+  addEdgeToGr (e, v_1, v_2, G) = G \iff  e \in  Es~ G \lor  \lnot  v_1 \in  Ns~ G \lor  \lnot  v_2 \in  Ns~ G\\
+  \forall  e: E; v_1, v_2: V; G, G': Gr @ \\ \quad  
+  addEdgeToGr (e, v_1, v_2, G) = G' \iff  \lnot  e \in  Es~ G \land  v_1 \in  Ns~ G \land  v_2 \in  Ns~ G \\ \quad 
+  \land  G' = (Ns~ G, Es~ G \cup  \{e\}, src~ G \cup  \{(e \mapsto  v_1)\}, tgt~ G \cup  \{(e \mapsto  v_2)\})
+\end{axdef}
+
+\begin{axdef}
+  emptyDiag: Cat \fun  Diag
+\where
+  \forall  C: Cat @ emptyDiag~ C = (C, emptyG, (\emptyset, \emptyset))
+\end{axdef}
+
+\begin{axdef}
+  addNodeToDiag: V \cross  O \cross  Diag \fun  Diag
+\where
+  \forall  vf: V; A: O; D, D': Diag | vf \in  Ns (grD~ D) @ addNodeToDiag (vf, A, D) = D
+\also
+  \forall  vf: V; A: O; D, D': Diag | \lnot  vf \in  Ns (grD~ D) @ \\ \quad
+ addNodeToDiag (vf, A, D) = D' \iff  (\exists  G': Gr; m': MorphG2C @ G' = addNodeToGr (vf, (grD~ D)) \land  m' = (mV (morphD~ D) \cup  \{(vf \mapsto  A)\}, mE (morphD~ D)) \land  D' = (cat~ D, G', m'))
+\end{axdef}
+
+
+\begin{axdef}
+  addEdgeToDiag: E \cross  V \cross  V \cross  M \cross  Diag \fun  Diag
+\where
+  \forall  e: E; vf_1, vf_2: V; m: M; D, D': Diag | \\ \quad  
+  \lnot  vf_1 \in  Ns (grD~D) \lor  \lnot  vf_2 \in  Ns (grD~ D) \lor  e \in  Es (grD~D) @  \\ \quad  
+  addEdgeToDiag (e, vf_1, vf_2, m, D) = D\\
+  \forall  e: E; vf_1, vf_2: V; m: M; D, D': Diag | \\ \quad 
+  vf_1 \in  Ns (grD~ D) \land  vf_2 \in  Ns (grD~ D) \land  \lnot  e \in  Es (grD~ D) @  \\ \quad  
+  addEdgeToDiag (e, vf_1, vf_2, m, D) = D' \iff  (\exists  G: Gr; mD: MorphG2C @ \\ \qquad 
+  G = addEdgeToGr (e, vf_1, vf_2, (grD~ D)) \\ \quad 
+  \land  mD = (mV (morphD~ D), mE (morphD~ D) \cup  \{(e \mapsto  m)\}) \land  D' = (cat ~D, G, mD))
+\end{axdef}
+
+\begin{axdef}
+  buildStartDiag: V \cross  Mdl \fun  Diag
+\where
+  \forall  vf: V; M: Mdl; D: Diag @ \\ \quad
+   buildStartDiag (vf, M) = addNodeToDiag (vf, (OGrToGr \inv)  (fsrcGr (mfdef~ M~ vf)), emptyDiag~ GraphsC)
+\end{axdef}
+
+\begin{axdef}
+  diagDepNodes: \power  V \cross  Mdl \cross  Diag \fun  Diag
+\where
+  \forall  M: Mdl; D: Diag @ diagDepNodes (\{\}, M, D) = D\\
+  \forall  vfs: \power  V; vf_1: V; M: Mdl; D, D': Diag @ \\ \quad
+   diagDepNodes ((\{vf_1\} \cup  vfs), M, D) = D' \iff \\ \qquad
+    (\exists  D_0, D_1, D_2: Diag @ D_0 = addNodeToDiag (vf_1, (OGrToGr \inv)  (fsrcGr (mfdef~ M~ vf_1)), D)  \\ \quad \qquad
+    \land  D_1 = diagDepNodes ((importsOf (vf_1, (mgfg~ M))), M, D_0) \\ \quad \qquad
+    \land  D_2 = diagDepNodes ((continuationsOf (vf_1, (mgfg~ M))), M, D_1) \\ \quad \qquad
+    \land  D' = diagDepNodes (vfs, M, D_2))
+\end{axdef}
+
+\begin{axdef}
+  addMergeMorphisms: Gr \cross  Mdl \cross  Diag \cross  V \cross  \power  V \fun  Diag
+\where
+  \forall  GI: Gr; M: Mdl; D: Diag; v: V @ addMergeMorphisms (GI, M, D, v, \emptyset) = D\\
+  \forall  GI: Gr; M: Mdl; D, D': Diag; vs, vt: V; vls: \power  V @ \\ \quad
+   addMergeMorphisms (GI, M, D, vs, (\{vt\} \cup  vls)) = D' \iff \\ \qquad
+    (\exists  vfs, vft: V; F: Fr; m, mM: GrMorph; e: E; D_0, D_1: Diag @ \\ \qquad \quad
+    mM = mUMToGFG~M \land  vft = fV~ mM~ vt \land  vfs = fV~ mM~ vs \land  \lnot  e \in  Es (grD~ D) \\ \qquad \quad
+    \land  F = mfdef~ M~ vft \land  D_0 = addNodeToDiag (vft, (OGrToGr \inv)  (fsrcGr~ F), D) \\ \qquad \quad
+    \land  m \in  morphG (GI, (fsrcGr~ F)) \land  m = (\{vs \mapsto  vt\}, \emptyset) \\ \qquad \quad 
+    \land  D_1 = addEdgeToDiag (e, vfs, vft, (MGrToGrM \inv)  m, D_0) \\ \qquad
+    \land  D' = addMergeMorphisms (GI, M, D, vs, vls))
+\end{axdef}
+
+%%Zpreword \HasImpRefs HasImpRefs
+
+\begin{zed}
+  \relation (\HasImpRefs~\_~)
+\end{zed}
+
+\begin{axdef}
+  \HasImpRefs \_: \power  (V \cross  V \cross  Mdl)
+\where
+  \forall  vf_1, vf_2: V; M: Mdl @ (\HasImpRefs (vf_1, vf_2, M)) \iff \\ \quad  
+  (\exists  F_1, F_2: Fr @ F_1 = mfdef~ M~ vf_1 \land  F_2 = mfdef~ M~ vf_2 \land  refs~ F_1 \rres  fNs~ F_2 \neq  \emptyset)
+\end{axdef}
+
+\begin{axdef}
+  diagRefs: V \cross  \power  V \cross  Mdl \cross  Diag \fun  Diag
+\where
+  \forall  vf: V; M: Mdl; D: Diag @ diagRefs (vf, \emptyset, M, D) = D
+\also
+  \forall  vf_1, vf_2: V; svf: \power  V; M: Mdl; D: Diag @  \\ \quad
+  diagRefs (vf_1, (\{vf_2\} \cup  svf), M, D) = diagRefs (vf_1, svf, M, D) \iff  \lnot  \HasImpRefs (vf_1, vf_2, M)
+\also
+  \forall  vf_1, vf_2: V; svf: \power  V; M: Mdl; D, D': Diag @ \\ \quad 
+diagRefs (vf_1, (\{vf_2\} \cup  svf), M, D) = D' \iff \\ \qquad
+ \HasImpRefs (vf_1, vf_2, M) \\ \qquad \quad
+ \land  (\exists  F_1, F_2: Fr; GI: Gr; vfi: V; m_1, m_2: GrMorph; D_0, D_1, D_2: Diag; e_1, e_2: E @ \\ \qquad \qquad
+  (F_1 = mfdef~ M~ vf_1 \land  F_2 = mfdef~ M~ vf_2 \\ \qquad \qquad 
+  \land  GI = (\dom  (refs~ F_1 \rres  fNs~ F_2), \emptyset, \emptyset, \emptyset) \land  m_1 \in  morphG (GI, (fsrcGr~ F_1)) \\ \qquad \qquad 
+  \land  m_1 = (\id  (\dom  (refs~ F_1 \rres  fNs~ F_2)), \emptyset) \land  m_2 \in  morphG (GI, (fsrcGr~ F_2)) \\ \qquad \qquad
+   \land  m_2 = (refs~ F_1 \rres  fNs~ F_2, \emptyset) \land  \lnot  vfi \in  Ns (grD~ D) \\ \qquad \qquad
+   \land  D_0 = addNodeToDiag (vfi, (OGrToGr \inv)  GI, D) \land  \lnot  \{e_1, e_2\} \subseteq  Es (grD~ D_0)  \\ \qquad \qquad 
+   \land  D_1 = addEdgeToDiag (e_1, vfi, vf_1, (MGrToGrM \inv)  m_1, D_0) \\ \qquad \qquad 
+   \land  D_2 = addEdgeToDiag (e_2, vfi, vf_2, (MGrToGrM \inv)  m_2, D_1) \\ \qquad \qquad 
+   \land  D' = diagRefs (vf_1, svf, M, D_2)))
+\end{axdef}
+
+\begin{axdef}
+  diagMorphisms: V \cross  Mdl \cross  Diag \fun  Diag\\
+  diagMorphisms_0: V \cross  Mdl \cross  Diag \cross  \power  V \fun  Diag \cross  \power  V\\
+  diagMorphismsSet: \power  V \cross  Mdl \cross  Diag \cross  \power  V \fun  Diag \cross  \power  V
+\where
+  \forall  vf: V; M: Mdl; D, D': Diag @ \\ \quad 
+  diagMorphisms (vf, M, D) = D' \iff  (\exists  p\_vfs: \power  V @ diagMorphisms_0 (vf, M, D, \emptyset) = (D', p\_vfs))
+\also
+  \forall  vf: V; p\_vfs, p\_vfs': \power  V; M: Mdl; D, D': Diag @  \\ \quad 
+   diagMorphisms_0 (vf, M, D, p\_vfs) = (D', p\_vfs') \iff  (\exists  F: Fr; D_1: Diag @ \\ \qquad 
+  F = mfdef~ M~ vf \\ \qquad 
+  \land  D_1 = diagRefs (vf, (importsOf (vf, (mgfg~ M)) \cup  continuesOf (vf, (mgfg~ M))), M, D) \\ \qquad 
+  \land  diagMorphismsSet ((importsOf (vf, (mgfg~ M)) \cup  continuesOf (vf, (mgfg~ M))), M, D_1, \\ \qquad \quad
+   (p\_vfs \cup  \{vf\})) = (D', p\_vfs'))
+ \also
+  \forall  p\_vfs: \power  V; M: Mdl; D: Diag @ diagMorphismsSet (\emptyset, M, D, p\_vfs) = (D, p\_vfs)
+ \also
+  \forall  vf: V; p\_vfs, vfs: \power  V; M: Mdl; D: Diag @  \\ \quad 
+   diagMorphismsSet ((\{vf\} \cup  vfs), M, D, p\_vfs) = diagMorphismsSet (vfs, M, D, p\_vfs) \iff  vf \in  p\_vfs
+ \also
+  \forall  vf: V; p\_vfs, p\_vfs', vfs: \power  V; M: Mdl; D, D': Diag @  \\ \quad 
+   diagMorphismsSet ((\{vf\} \cup  vfs), M, D, p\_vfs) = (D, p\_vfs') \iff  \\ \qquad 
+    vf \notin  p\_vfs \land  (\exists  D'': Diag; p\_vfs'': \power  V @ (diagMorphisms_0 (vf, M, D, p\_vfs) = (D'', p\_vfs'') \\ \qquad 
+     \land  diagMorphismsSet (vfs, M, D'', p\_vfs'') = (D', p\_vfs')))
+\end{axdef}
+
+\begin{axdef}
+  compDiag: V \cross  Mdl \fun  Diag
+\where
+  \forall  vf: V; M: Mdl; D: Diag @ compDiag (vf, M) = D \iff \\ \quad 
+    (\exists  D_0, D_1, D_2: Diag @ D_0 = buildStartDiag (vf, M) \\ \qquad 
+     \land  diagDepNodes ((importsOf (vf, (mgfg~ M))), M, D_0) = D_1  \\ \qquad 
+     \land  diagDepNodes ((continuesOf (vf, (mgfg~ M))), M, D_1) = D_2  \\ \qquad 
+     \land  diagMorphisms (vf, M, D_2) = D)
+\end{axdef}
+

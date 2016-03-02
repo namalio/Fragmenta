@@ -1,0 +1,89 @@
+\begin{zsection}
+  \SECTION Fragmenta\_Mdls \parents standard\_toolkit, Fragmenta\_CGs
+\end{zsection}
+
+\begin{zed}
+Mdl_0 == \{  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr | \\ \quad 
+	fcl \in  morphGFGCG (GFG, CG) \land  fdef \in  gfgNs~ GFG \fun  Fr \}
+\end{zed}
+
+\begin{axdef}
+  mgfg: Mdl_0 \fun  GFGr\\
+  mcg: Mdl_0 \fun  CGr\\
+  mfcl: Mdl_0 \fun  GrMorph\\
+  mfdef: Mdl_0 \fun  V \pfun  Fr
+\where
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @ \\ \quad  
+  mgfg (GFG, CG, fcl, fdef) = GFG\\
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @ \\ \quad 
+  mcg (GFG, CG, fcl, fdef) = CG\\
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @\\ \quad 
+   mfcl (GFG, CG, fcl, fdef) = fcl\\
+  \forall  GFG: GFGr; CG: CGr; fcl: GrMorph; fdef: V \pfun  Fr @ \\ \quad 
+  mfdef (GFG, CG, fcl, fdef) = fdef
+\end{axdef}
+
+\begin{axdef}
+  UFs: Mdl_0 \fun  Fr\\
+  UFs_0: \power_1 Fr \fun  Fr
+\where
+  \forall  M: Mdl_0 @ UFs~ M = UFs_0 (\ran  (mfdef~ M))\\
+  \forall  F: Fr @ UFs_0 \{F\} = F\\
+  \forall  F: Fr; Fs: \power_1 Fr @ UFs_0 (\{F\} \cup  Fs) = F \UF (UFs_0~ Fs)
+\end{axdef}
+
+\begin{axdef}
+  fromV: V \cross  Mdl_0 \fun  V
+\where
+  \forall  vl: V; M: Mdl_0; vf: V @ fromV (vl, M) = vf \iff  vl \in  fNs (mfdef~ M ~vf)
+\end{axdef}
+
+\begin{axdef}
+  consFToGFG: V \cross  Mdl_0 \fun  GrMorph\\
+  consFToGFGRefs: V \cross  \power  E \cross  Mdl_0 \fun  E \pfun  E
+\where
+  \forall  vf: V; M: Mdl_0; fv: V \pfun  V; fe: E \pfun  E @ \\ \quad 
+  consFToGFG (vf, M) = (fv, fe) \iff  \\ \qquad  
+  	(\exists  F: Fr; GFG: GFGr @ F = mfdef~ M~ vf \land  GFG = mgfg~ M \land  fv \in  fNs~ F \fun  gfgNs~ GFG \\ \qquad   
+	\land  fe \in  fEs~ F \fun  gfgEs~ GFG \land  vf \in  gfgNs~ GFG \\ \qquad 
+	\land  (\exists  ef: gfgEs~ GFG @ (src (gfgG~ GFG) ef = tgt (gfgG~ GFG) ef = vf \land  fv = fNs~ F \cross  \{vf\} \\ \qquad  \quad 
+	\land  fe = (fEs~ F \setminus  fEsR~ F \cross  \{ef\}) \cup  consFToGFGRefs (vf, (fEsR~ F), M))))
+\also
+  \forall  vf: V; M: Mdl_0; fe: E \pfun  E @ consFToGFGRefs (vf, \{\}, M) = \{\}
+\also  
+  \forall  vf: V; M: Mdl_0; el: E; Er: \power  E; fe: E \pfun  E @ \\ \quad 
+   consFToGFGRefs (vf, (\{el\} \cup  Er), M) = fe \iff \\ \qquad  
+     (\exists  F: Fr; GFG: GFGr @ F = mfdef~ M~ vf \land  GFG = mgfg~ M \\ \qquad 
+     \land  (\exists  ef: gfgEs~ GFG @ (src (gfgG~ GFG) ef = vf \\ \qquad 
+     \land  tgt (gfgG~ GFG) ef = fromV ((ftgtr~ F~ el), M))))
+\end{axdef}
+
+\begin{axdef}
+  mUMToGFG: Mdl_0 \fun  GrMorph\\
+  buildUFsToGFG: (V \pfun  Fr) \cross  Mdl_0 \fun  GrMorph
+\where
+  \forall  M: Mdl_0; fv: V \pfun  V; fe: E \pfun  E @ mUMToGFG~ M = (fv, fe) \iff \\ \quad  
+    (\exists  F: Fr @ F = UFs~ M \land  (fv, fe) = buildUFsToGFG ((mfdef~ M), M))
+\also
+  \forall  vf: V; F: Fr; M: Mdl_0 @ buildUFsToGFG (\{(vf \mapsto  F)\}, M) = consFToGFG (vf, M)
+\also
+  \forall  vf: V; F: Fr; fdef: V \pfun  Fr; M: Mdl_0 @ \\ \quad 
+  	 buildUFsToGFG ((\{(vf \mapsto  F)\} \cup  fdef), M) = consFToGFG (vf, M) \UGM buildUFsToGFG (fdef, M)
+\end{axdef}
+
+\begin{axdef}
+  mFrToFG: Mdl_0 \cross  V \fun  GrMorph
+\where
+  \forall  M: Mdl_0; vf: V; fv: V \pfun  V; fe: E \pfun  E @  \\ \quad 
+  	mFrToFG (M, vf) = (fv, fe) \iff  vf \in  gfgNs (mgfg~ M) \\ \qquad 
+	 \land  (\exists  F: Fr; ef: gfgEs (mgfg~ M) @ \\ \qquad \quad 
+	 (F = mfdef~ M~ vf \land  src (gfgG (mgfg~ M)) ef = vf \land  tgt (gfgG (mgfg~ M)) ef = vf  \\ \qquad \quad 
+	 \land  fv \in  fNs~ F \fun  gfgNs (mgfg~ M)  \\ \qquad \quad  
+	 \land  fe \in  fEs~ F \fun  gfgEs (mgfg~ M) 
+	 \land  fv = fNs~ F \cross  \{vf\} \land  fe = fEs~ F \cross  \{ef\}))
+\end{axdef}
+
+\begin{zed}
+Mdl == \{  M: Mdl_0 | mUMToGFG~ M \in  morphFGFG ((UFs~ M), (mgfg~ M)) \\ \quad
+ \land (\forall vf_1, vf_2 :  gfgNs (mgfg~ M) | vf_1 \neq vf_2 @ \disjFs (mfdef~M~vf_1, mfdef~M~vf_2))\}
+\end{zed}

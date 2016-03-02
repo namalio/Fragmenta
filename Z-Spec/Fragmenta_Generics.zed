@@ -1,0 +1,17 @@
+
+
+\begin{zsection}
+  \SECTION Fragmenta\_Generics \parents standard\_toolkit
+\end{zsection}
+
+\begin{zed}
+acyclic [X] == \{  r: X \rel  X | r \plus  \cap  \id  X = \emptyset \}
+\also
+connected [X] == \{  r: X \rel  X | \forall  x: \dom r; y: \ran  r @ x \mapsto  y \in  r \plus  \}
+\also
+tree [X] == \{  r: X \rel  X | r \in  acyclic \land  r \in  X \pfun  X \}
+\also
+forest [X] == \{  r: X \rel  X | r \in  acyclic \land  (\forall  s: X \rel  X | s \subseteq  r \land  s \in  connected @ s \in  tree) \}
+\also
+injrel[X, Y] == \{  r: X \rel  Y | (\forall  x: X; y_1, y_2: Y @ (x, y_1) \in  r \land  (x, y_2) \in  r \implies  y_1 = y_2) \}
+\end{zed}

@@ -1,0 +1,33 @@
+\begin{zsection}
+  \SECTION Fragmenta\_CGs \parents standard\_toolkit, Fragmenta\_GFGs
+\end{zsection}
+
+\begin{zed}
+CGr == \{  G: Gr; et: E \pfun  FGCGEdgeTy | et \in  Es~ G \fun  FGCGEdgeTy  \\ \quad 
+\land  (\acyclicG~ restrict (G, ((et \inv  \limg  \{eimpo, econti\} \rimg ) \setminus  EsId~ G))) \\ \quad 
+ \land  rel (restrict (G, ((et \inv  \limg  \{econta\} \rimg ) \setminus  EsId~ G))) \in  forest \}
+\end{zed}
+
+\begin{axdef}
+  cgG: CGr \fun  Gr\\
+  cgNs: CGr \fun  \power  V\\
+  cgEs: CGr \fun  \power  E\\
+  cety: CGr \fun  E \pfun  FGCGEdgeTy\\
+  cgEsTy: CGr \cross  \power  FGCGEdgeTy \fun  \power  E
+\where
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cgG (G, et) = G\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cgNs (G, et) = Ns~ G\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cgEs (G, et) = Es~ G\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy @ cety (G, et) = et\\
+  \forall  G: Gr; et: E \fun  FGCGEdgeTy; crts: \power  FGCGEdgeTy @ cgEsTy ((G, et), crts) = et \inv  \limg  crts \rimg 
+\end{axdef}
+
+\begin{zed}
+morphCG == (\lambda  CG_1, CG_2: CGr @ \\ \quad 
+	\{  fV: cgNs~ CG_1 \fun  cgNs~ CG_2; fE: cgEs~ CG_1 \fun  cgEs~ CG_2 | \\ \qquad  
+		(fV, fE) \in  morphG ((cgG~ CG_1), (cgG~CG_2)) \land  cety~ CG_2 \circ  fE = cety~ CG_1 \})
+\also
+morphGFGCG == (\lambda  GFG: GFGr; CG: CGr @ \\ \quad 
+\{  fV: gfgNs~ GFG \fun  cgNs ~CG; fE: gfgEs~ GFG \fun  cgEs~ CG | \\ \qquad  
+(fV, fE) \in  morphG ((gfgG ~GFG), (cgG~ CG)) \land  cety ~CG \circ  fE = fety~ GFG \})
+\end{zed}

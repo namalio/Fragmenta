@@ -1,0 +1,61 @@
+\begin{zsection}
+\SECTION Fragmenta\_TyFSMdls \parents standard\_toolkit, Fragmenta\_TyFrs, 
+	Fragmenta\_TyMdls
+\end{zsection}
+
+\begin{zed}
+FSs == \{SCG: CGr; SGFG: GFGr; scl, sgfg : GrMorph | \\ \quad
+	scl \in  morphGFGCG (SGFG, SCG)\}
+\end{zed}
+
+\begin{axdef}
+	fsCG: FSs \fun CGr\\
+	fsGFG: FSs \fun GFGr\\
+	fsmcl:  FSs \fun GrMorph\\
+	fsmgfg:  FSs \fun GrMorph\\
+\where
+\forall SCG: CGr; SGFG: GFGr; mcl, mgfg : GrMorph @ \\
+	fsCG (SCG, SGFG, mcl, mgfg) = SCG
+\also
+\forall SCG: CGr; SGFG: GFGr; mcl, mgfg : GrMorph @ \\
+	fsGFG (SCG, SGFG, mcl, mgfg) = SGFG
+\also
+\forall SCG: CGr; SGFG: GFGr; mcl, mgfg : GrMorph @ \\
+	fsmcl (SCG, SGFG, mcl, mgfg) = mcl	
+\also
+\forall SCG: CGr; SGFG: GFGr; mcl, mgfg : GrMorph @ \\
+	fsmgfg (SCG, SGFG, mcl, mgfg) = mgfg	
+\end{axdef}
+
+\begin{zed}
+TFSMdl == \{  TM: TMdl; FS : FSs | \\ 
+ \quad (fsmgfg~FS) \in  morphFGFG ((tfF (UTFs~ TM)), fsGFG~FS) \}
+\end{zed}
+
+\begin{axdef}
+  tfsmTM: TFSMdl \fun  TMdl\\
+  tfsmFS: TFSMdl \fun  FSs\\
+  tfsmscg: TFSMdl \fun  CGr\\
+  tfsmsgfg: TFSMdl \fun  GFGr\\
+\where
+\forall  TM: TMdl; FS : FSs @ \\ \quad  
+  tfsmTM~ (TM, FS) = TM
+\also
+\forall  TM: TMdl; FS : FSs @ \\ \quad  
+  tfsmFS~ (TM, FS) = FS
+\also
+\forall  TM: TMdl; FS : FSs @ \\ \quad  
+  tfsmscg~ (TM, FS) = fsCG~FS
+\also
+\forall  TM: TMdl; FS : FSs @ \\ \quad  
+  tfsmsgfg~ (TM, FS) = fsGFG~FS
+\end{axdef}
+
+\begin{zed}
+MdlTyFS == \{  M: Mdl; TM: TFSMdl; scg, sgfg, ty: GrMorph | \\ \quad 
+	scg \in  morphCG ((mcg~ M), (tfsmscg~ TM))  \\ \quad
+	\land  sgfg \in  morphGFG ((mgfg~ M), (tfsmsgfg~ TM)) \\ \quad 
+	\land  (UFs~ M, UTFs~ (tfsmTM~TM), ty) \in  FrTyConf \\ \qquad 
+	\land  sgfg \OGM mUMToGFG~ M = fsmgfg~(tfsmFS~TM) \OGM ty \\ \quad  
+\land  scg \OGM mfcl~ M = fsmcl (tfsmFS~ TM) \OGM sgfg \}
+\end{zed}
