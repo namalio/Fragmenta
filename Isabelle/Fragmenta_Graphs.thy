@@ -4,7 +4,7 @@
 *)
 
 theory Fragmenta_Graphs
-imports Base_Graphs "Extra/Trcl_Extra"
+imports Base_Graphs "../Extra/Trcl_Extra"
 begin
 
 definition cupG :: "'a Gr_scheme \<Rightarrow> 'a Gr_scheme \<Rightarrow> Gr" (infixl "UG" 100)

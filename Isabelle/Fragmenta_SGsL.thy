@@ -3,7 +3,7 @@
     Author:     Nuno Amálio
 *)
 theory Fragmenta_SGsL
-imports Fragmenta_SGs Fragmenta_GraphsL "Extra/Finite_Transitive_Closure_Simprocs"
+imports Fragmenta_SGs Fragmenta_GraphsL "../Extra/Finite_Transitive_Closure_Simprocs"
 
 begin
 

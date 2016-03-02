@@ -5,7 +5,7 @@
 ***********)
 
 theory Base_Graphs
-imports Main "Extra/Map_Extra" "Extra/Set_Extra"
+imports Main "../Extra/Map_Extra" "../Extra/Set_Extra"
 begin
 
 type_synonym V = string
