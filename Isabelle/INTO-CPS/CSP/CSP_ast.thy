@@ -1,0 +1,55 @@
+
+(********  
+  Title:      Theory defining abstract syntax of CSP for the purpose of CSP generation
+  Author:     Nuno Amálio
+***********)
+
+theory CSP_ast
+imports Main "My_Str" "../../Extra/List_Extra" "~~/src/HOL/Library/Code_Char"
+begin
+
+(* Type 'CSPId'*)
+type_synonym CSPId = "string"
+
+(*Datype defining expressions*)
+datatype 
+    Decl = channel "CSPId list" 
+      | eqdecl Exp Exp (infixr "\<triangleq>" 60)
+      | assert Exp Exp (infixr "\<sqsubseteq>" 60)
+  and
+    Stmt = stmt CSPId Exp
+  and
+    Exp = 
+      (*A name*)
+      expid CSPId
+      (*Function application*)
+      | expapp Exp "Exp list" (infixr "\<lparr>\<rparr>" 60)
+      (*Parenthesised expression*)
+      | exppar Exp
+      (* Arithmetic expressions*)
+      | num int 
+      | plusExp Exp Exp (infixl "|+|" 75) 
+      | minusExp Exp Exp (infixl "|-|" 75)
+      (* Comparison expressions*)
+      | gtExp Exp Exp (infixl "|>|" 75) 
+      | gtEqExp Exp Exp (infixl "|\<ge>|" 75) 
+      | ltExp Exp Exp (infixl "|<|" 75) 
+      | ltEqExp Exp Exp (infixl "|\<le>|" 75) 
+      (* Expressions involving sets*)
+      | srange Exp Exp (infix ".." 60) 
+      | ext "Exp list"
+      (*Process Expressions*)
+      | prfx Exp Exp (infixr "\<longrightarrow>" 60) 
+      | STOP | SKIP 
+      | let_within "Decl list" Exp
+      | if_then_else Exp Exp Exp
+      | seqComp Exp Exp (infixl "|;|" 60)
+      | interleave Exp Exp (infixl "\<parallel>|" 60)
+      | parallel Exp Exp "Exp list"
+      | intChoice Exp Exp (infixl "\<sqinter>" 60)
+      | extChoice Exp Exp (infixl "\<box>" 60)
+      | repExtChoice Stmt Exp ("\<box>")
+
+datatype CSPSpec = csp "Decl list"
+
+end
