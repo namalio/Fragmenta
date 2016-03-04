@@ -1,5 +1,7 @@
-# Fragmenta
-The FRAGMENTA Theory that is presented in the paper:
+# FRAGMENTA
+FRAGMENTA is a theory to support modular model design. It lets designers to break an overall model into pieces that can be put together to build meaningful wholes, in contrast to more classical MDE approaches that are essentially monolithic. The theory is based on an algebraic description of models and fragments based on graphs and morphisms.
+
+FRAGMENTA is presented in the following paper:
 
 Nuno Amálio, Juan de Lara and Esther Guerra. FRAGMENTA: A Theory of Fragmentation for MDE. Models 2015.
 
