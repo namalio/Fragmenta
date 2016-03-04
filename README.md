@@ -12,5 +12,6 @@ This is the repository of FRAGMENTA. It includes:
 
 #References
 [1] Nuno Amálio, Juan de Lara and Esther Guerra. FRAGMENTA: A Theory of Fragmentation for MDE. Models 2015.
+
 [2] Nuno Amálio, Juan de Lara and Esther Guerra. Fragmenta: a theory of separation to design fragmented MDE models. Technical Report. Universidad Autónoma de Madrid. 2014
 
