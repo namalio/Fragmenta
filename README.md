@@ -7,7 +7,7 @@ FRAGMENTA is presented in the following paper:
 
 This is the repository of FRAGMENTA. It includes:
 * The paper presented at Models 2015 and the technical report that presents the full theory; under '/docs'
-* The complete Z specification of FRAGMENTA; under 'z-spec'
+* The complete Z specification of FRAGMENTA; under 'Z-Spec'
 * The Isabelle files that define 'FRAGMENTA'; under 'Isabelle'
 
 
