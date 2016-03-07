@@ -4,7 +4,7 @@
 *)
 
 theory INTO_SysML_3WTs_loop
-imports INTO_SysML_MM_Gbl PDGs
+imports INTO_SysML_MM_Gbl INTO_SysML_ToPDG
   
 begin
 
@@ -174,6 +174,8 @@ lemma wf_SG_ASD_3WTs_loop: "is_wf_sg (toSGr SG_ASD_3WTs_loop)"
         show "ftotal_on (tgt (toSGr SG_ASD_3WTs_loop)) (Es (toSGr SG_ASD_3WTs_loop)) (Ns (toSGr SG_ASD_3WTs_loop))"
           by (simp add: ftotal_on_def toSGr_def SG_ASD_3WTs_loop_def)
       qed
+    have ftotal_on_ety: "ftotal_on (ety (toSGr SG_ASD_3WTs_loop)) (Es (toSGr SG_ASD_3WTs_loop)) SGETy_set"
+      by (simp add: ftotal_on_def SGNTy_set_def SG_ASD_3WTs_loop_def toSGr_def SGETy_set_def)
     show ?thesis
     proof (simp add: is_wf_sg_def, rule conjI)
       show "is_wf_g (toSGr SG_ASD_3WTs_loop)"
@@ -185,7 +187,7 @@ lemma wf_SG_ASD_3WTs_loop: "is_wf_sg (toSGr SG_ASD_3WTs_loop)"
     next
       apply_end(rule conjI) 
       show "ftotal_on (ety (toSGr SG_ASD_3WTs_loop)) (Es (toSGr SG_ASD_3WTs_loop)) SGETy_set"
-        by (simp add: ftotal_on_def SGNTy_set_def SG_ASD_3WTs_loop_def toSGr_def SGETy_set_def)
+        by (simp add: ftotal_on_ety)
     next
       apply_end(rule conjI) 
       show "dom (srcm (toSGr SG_ASD_3WTs_loop)) = EsTy (toSGr SG_ASD_3WTs_loop) {Some erelbi, Some ecompbi}"
@@ -199,7 +201,7 @@ lemma wf_SG_ASD_3WTs_loop: "is_wf_sg (toSGr SG_ASD_3WTs_loop)"
     next
       apply_end(rule conjI)
       show "EsR (toSGr SG_ASD_3WTs_loop) \<subseteq> EsId (toSGr SG_ASD_3WTs_loop)"
-        by (simp add: EsR_def toSGr_def EsTy_def vimage_def SG_ASD_3WTs_loop_def)
+        using h_wf_g ftotal_on_ety by (simp add: EsId_eq_EsIdL EsR_eq_EsRL)(eval)
     next
       apply_end(rule conjI)
       show "srcm (toSGr SG_ASD_3WTs_loop) ` EsTy (toSGr SG_ASD_3WTs_loop) {Some ecompbi}
@@ -219,10 +221,14 @@ where
 
 value "consRefs F_ASD_3WTs_loop"
 
+value "EsRPL SG_ASD_3WTs_loop"
+
 (* Well-formedness proof obligation of fragments"*)
 lemma wf_F_ASD_3WTs_loop: "is_wf_fr (toFr F_ASD_3WTs_loop)"
   proof -
     let ?refs_F_ASD_3WTs_loop = "{}"
+    have EsRP_ASD_3WTs: "EsRP (sg (toFr F_ASD_3WTs_loop)) = {}"
+      using wf_SG_ASD_3WTs_loop by (simp add: EsRP_eq_EsRPL toFr_def F_ASD_3WTs_loop_def, eval)
     have h_ftotal_tr: "ftotal_on (tr (toFr F_ASD_3WTs_loop)) (EsRP (sg (toFr F_ASD_3WTs_loop))) V_A"
       proof (simp add: ftotal_on_def)
         apply_end(rule conjI)
@@ -233,8 +239,7 @@ lemma wf_F_ASD_3WTs_loop: "is_wf_fr (toFr F_ASD_3WTs_loop)"
           SG_F_Props_def EsRP_def EsR_def NsP_def EsTy_def NsTy_def) 
         next
           show "EsRP (sg (toFr F_ASD_3WTs_loop)) \<subseteq> dom (tr (toFr F_ASD_3WTs_loop))"
-            by (auto simp add: F_ASD_3WTs_loop_def SG_ASD_3WTs_loop_def toSGr_def toFr_def SG_F_Common_def 
-              SG_F_Props_def EsRP_def EsR_def NsP_def EsTy_def NsTy_def)
+            by (simp add: EsRP_ASD_3WTs)
         qed
       next
         show "ran (tr (toFr F_ASD_3WTs_loop)) \<subseteq> V_A"
@@ -258,13 +263,12 @@ lemma wf_F_ASD_3WTs_loop: "is_wf_fr (toFr F_ASD_3WTs_loop)"
     next
       apply_end(rule conjI)  
       show "inj_on (src (sg (toFr F_ASD_3WTs_loop))) (EsRP (sg (toFr F_ASD_3WTs_loop)))"
-        by (simp add: F_ASD_3WTs_loop_def inj_on_def EsRP_def EsR_def NsP_def EsTy_def NsTy_def 
-          SG_ASD_3WTs_loop_def toFr_def toSGr_def) 
+        by (simp add: EsRP_ASD_3WTs)
     next
       apply_end(rule conjI)  
       show "ran (src (sg (toFr F_ASD_3WTs_loop)) |` EsRP (sg (toFr F_ASD_3WTs_loop))) = NsP (sg (toFr F_ASD_3WTs_loop))"
-        by (simp add: F_ASD_3WTs_loop_def restrict_map_def NsP_def NsTy_def EsRP_def 
-          toFr_def SG_ASD_3WTs_loop_def EsR_def EsTy_def toSGr_def vimage_def)
+        by (simp add: EsRP_ASD_3WTs) (simp add: F_ASD_3WTs_loop_def restrict_map_def NsP_def NsTy_def 
+          toFr_def SG_ASD_3WTs_loop_def toSGr_def vimage_def)
     next
       apply_end(rule conjI)
       show "\<forall>v. v \<in> NsP (sg (toFr F_ASD_3WTs_loop)) \<longrightarrow> nonPRefsOf (toFr F_ASD_3WTs_loop) v \<noteq> {}"
@@ -467,7 +471,10 @@ lemma wf_SG_CD_3WTs_loop: "is_wf_sg (toSGr SG_CD_3WTs_loop)"
     next
       show "ftotal_on (tgt (toSGr SG_CD_3WTs_loop)) (Es (toSGr SG_CD_3WTs_loop)) (Ns (toSGr SG_CD_3WTs_loop))"
       by (simp add: SG_CD_3WTs_loop_def ftotal_on_def toSGr_def)
-    qed      
+    qed 
+    have ftotal_ety: "ftotal_on (ety (toSGr SG_CD_3WTs_loop)) (Es (toSGr SG_CD_3WTs_loop)) SGETy_set"
+      by (simp add: ftotal_on_def, rule conjI, rule equalityI)
+        (simp_all add: SGNTy_set_def SG_CD_3WTs_loop_def toSGr_def SGETy_set_def)
     show ?thesis
     proof (simp add: is_wf_sg_def, rule conjI)
       show "is_wf_g (toSGr SG_CD_3WTs_loop)"
@@ -479,8 +486,7 @@ lemma wf_SG_CD_3WTs_loop: "is_wf_sg (toSGr SG_CD_3WTs_loop)"
     next
       apply_end(rule conjI) 
       show "ftotal_on (ety (toSGr SG_CD_3WTs_loop)) (Es (toSGr SG_CD_3WTs_loop)) SGETy_set"
-        by (simp add: ftotal_on_def, rule conjI, rule equalityI)
-        (simp_all add: SGNTy_set_def SG_CD_3WTs_loop_def toSGr_def SGETy_set_def)
+        by (simp add: ftotal_ety)
     next
       apply_end(rule conjI) 
       show "dom (srcm (toSGr SG_CD_3WTs_loop)) = EsTy (toSGr SG_CD_3WTs_loop) {Some erelbi, Some ecompbi}"
@@ -492,13 +498,7 @@ lemma wf_SG_CD_3WTs_loop: "is_wf_sg (toSGr SG_CD_3WTs_loop)"
     next
       apply_end(rule conjI)
       show "EsR (toSGr SG_CD_3WTs_loop) \<subseteq> EsId (toSGr SG_CD_3WTs_loop)"
-      proof
-        fix x
-        assume " x \<in> EsR (toSGr SG_CD_3WTs_loop)"
-        then show "x \<in> EsId (toSGr SG_CD_3WTs_loop)"
-        by (auto simp add: EsR_def toSGr_def EsTy_def vimage_def SG_CD_3WTs_loop_def EsId_def
-          split: if_splits)
-      qed
+        using h_wf_g ftotal_ety by (simp add: EsId_eq_EsIdL EsR_eq_EsRL)(eval)
     next
       apply_end(rule conjI)
       show "srcm (toSGr SG_CD_3WTs_loop) ` EsTy (toSGr SG_CD_3WTs_loop) {Some ecompbi}
@@ -546,8 +546,7 @@ lemma wf_F_CD_3WTs_loop: "is_wf_fr (toFr F_CD_3WTs_loop)"
           ''ERPrController'', ''ERPrValve_v2'',
           ''ERPrValve_w'', ''ERPrWaterTank_win'', 
           ''ERPrWaterTank_wout'', ''ERPrController_v1'', ''ERPrController_win''}"
-      by (rule equalityI, rule subsetI, simp_all add: EsRP_def EsR_def EsTy_def NsP_def NsTy_def 
-        toFr_def F_CD_3WTs_loop_def toSGr_def SG_CD_3WTs_loop_def split: if_splits)
+      using wf_SG_CD_3WTs_loop by (simp add: EsRP_eq_EsRPL toFr_def F_CD_3WTs_loop_def, eval)
     have h_ftotal_tr: "ftotal_on (tr (toFr F_CD_3WTs_loop)) (EsRP (sg (toFr F_CD_3WTs_loop))) V_A"
       using Ns_SG_ASD_3WTs_loop
       by (simp add: h_EsRP)(simp add: F_CD_3WTs_loop_def SG_CD_3WTs_loop_def toSGr_def toFr_def  
@@ -1045,17 +1044,9 @@ value "consClanF ''PrController_v1'' (consUMdlFs (mdlL MdlTy_3WTs_loop))"
 
 fun internalConnectionsOf :: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
-  "internalConnectionsOf ML m v = buildGrForInternalPortConnections m (consUMdlFs ML) v 
-    (getFlowPortTypeOfPort m (consUMdlFs ML) v)"
-
-fun dependsGrOf :: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> V \<Rightarrow> Gr_ls"
-where
-  "dependsGrOf ML m v = consGLFrDepends m (consUMdlFs ML) v
-    (filter (\<lambda> e. (getFlowPortTypeOfPort m (consUMdlFs ML) v) \<in> (set (consSrcStF (consUMdlFs ML))) ``{e})
-            (filter (\<lambda> e. (fE m) e = Some ''EFlowPortDepends'') (EsG (sg_ls (consUMdlFs ML)))))"
+  "internalConnectionsOf ML m v = buildGrForInternalPortConnections m (consUMdlFs ML) v"
 
 value "buildGrForConnector (toMorph (mtyL MdlTy_3WTs_loop)) (consUMdlFs (mdlL MdlTy_3WTs_loop)) ''C_v1_v2''"
-value "dependsGrOf (mdlL MdlTy_3WTs_loop) (toMorph (mtyL MdlTy_3WTs_loop)) ''v1''"
 value "internalConnectionsOf (mdlL MdlTy_3WTs_loop) (toMorph (mtyL MdlTy_3WTs_loop)) ''win''"
 
 end
