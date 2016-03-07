@@ -1,13 +1,8 @@
 # FRAGMENTA
-FRAGMENTA is a theory of modular model design that can be used to design DSLs whose structure is defined by metamodels. Fragmenta is, essentialy, a theory to design fragmented or modularised class models. Using FRAGMENTA, designers can break an overall model into pieces (called fragments) that can be put together to build meaningful wholes. This is in contrast with more classical MDE approaches that are essentially monolithic. The theory is based on an algebraic description of models and fragments based on graphs and morphisms.
+This contains the Isabelle files of the 'FRAGMENTA' theory.
 
-FRAGMENTA is presented in the following paper:
-
-* Nuno Amálio, Juan de Lara and Esther Guerra. FRAGMENTA: A Theory of Fragmentation for MDE. Models 2015.
-
-This is the repository of FRAGMENTA. It includes:
-* The paper presented at Models 2015 and the technical report that presents the full theory; under '/docs'
-* The complete Z specification of FRAGMENTA; under 'Z-Spec'
-* The Isabelle files that define 'FRAGMENTA'; under 'Isabelle'
-
+The contents of this folder are as follows:
+* The actual theory is in the folder '/Fragmenta'
+* The folder 'Extra' contains extra theorems and definitions, required by 'Fragmenta', that supplement the library of theorems and definitions provided by Isabelle.
+* The folder 'INTO-CPS' contains the application of Fragmenta to the INTO-CPS EU project.
 
