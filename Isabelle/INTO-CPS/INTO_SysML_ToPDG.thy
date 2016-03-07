@@ -95,16 +95,21 @@ where
 primrec consGLFrDepends:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> E list \<Rightarrow> Gr_ls"
 where
   "consGLFrDepends m FL v [] = emptyGL" |
-  "consGLFrDepends m FL v (e#es) = (let vdeps = (set (consTgtStF FL)) ``{e} in
+  "consGLFrDepends m FL v (e#es) = (let vdeps = set(map snd [p\<leftarrow>(consTgtStF FL). (fst p) = e ]) in
     consUG (consGlFrNodePair (toFr FL) 
       (getDependentPortOfV m FL v vdeps) v) (consGLFrDepends m FL v es))"
+
+fun edgesOfMMTy :: "Fr_ls \<Rightarrow> Morph \<Rightarrow> E \<Rightarrow>E list"
+where
+   "edgesOfMMTy FL m e = 
+    (filter (\<lambda>v . (fE m) v = Some e )((EsG o sg_ls) FL))"
 
 fun buildGrForInternalPortConnections:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
   "buildGrForInternalPortConnections m FL v = 
       consGLFrDepends m FL v
-          (filter (\<lambda> e. (getFlowPortTypeOfPort m FL v) \<in> (set (consSrcStF FL)) ``{e})
-            (filter (\<lambda> e. (fE m) e = Some ''EFlowPortDepends'') (EsG (sg_ls FL))))"
+          (map fst ([p\<leftarrow>consSrcStF FL. (fst p) \<in> set (edgesOfMMTy FL m ''EFlowPortDepends'')
+          \<and> (snd p) = (getFlowPortTypeOfPort m FL v)]))"
 
 primrec INTO_SysML_toPDG_GL:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
 where

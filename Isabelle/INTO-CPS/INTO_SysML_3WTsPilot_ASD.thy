@@ -47,7 +47,7 @@ where
         ''E_TankIO_wout'', 
         ''E_TankIOV_win'', ''E_TankIOV_wout'', ''E_TankIOV_wlout'', ''E_TankIOV_vi'',
         ''E_Drain_win'', ''E_Dep_Pipe_wout_win'', ''E_Dep_TankIO_wout_win'',
-        ''E_Dep_WaterTanks2_wlout_win'', ''E_Dep_TankIOV_wlout_win'',
+        ''E_Dep_WaterTanks2_wlout_win'', 
         ''E_Dep_TankIOV_wout_win'', ''E_Dep_TankIOV_wlout_win'',
         ''E_Dep_TankIOV_wout_vi'', ''E_Dep_Controller_vo_wlin''], 
       srcG =  [(''E_3WaterTanksASD_3WaterTanksSys'', ''3WaterTanksASD''), 
