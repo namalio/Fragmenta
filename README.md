@@ -11,6 +11,6 @@ This is the repository of FRAGMENTA. It includes:
 * The Isabelle files that define 'FRAGMENTA'; under 'Isabelle'
 
 #References
-[1] Nuno Amálio, Juan de Lara and Esther Guerra. [FRAGMENTA: A Theory of Fragmentation for MDE. Models 2015.](docs/Models2015-article.pdf)
+[1] Nuno Amálio, Juan de Lara and Esther Guerra. [FRAGMENTA: A Theory of Fragmentation for MDE. Models 2015.](docs/MODELS2015-article.pdf)
 
 [2] Nuno Amálio, Juan de Lara and Esther Guerra. Fragmenta: a theory of separation to design fragmented MDE models. Technical Report. Universidad Autónoma de Madrid. 2014
