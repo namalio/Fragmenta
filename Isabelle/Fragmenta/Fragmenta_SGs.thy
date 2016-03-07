@@ -101,7 +101,7 @@ where
 (*Reference edges attached to proxies*)
 definition EsRP ::"SGr \<Rightarrow> E set"
 where
-  "EsRP SG \<equiv> {e. e \<in> EsR SG \<and> (\<exists>v. src SG e = Some v \<and> v \<in> (NsP SG))}"
+  "EsRP SG \<equiv> {e. e \<in> EsR SG \<and> the(src SG e) \<in> (NsP SG)}"
 
 definition inhG ::"SGr \<Rightarrow> Gr"
 where

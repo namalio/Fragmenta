@@ -355,7 +355,10 @@ lemma wf_SG_CD_3WTsP: "is_wf_sg (toSGr SG_CD_3WTsP)"
       show "ftotal_on (tgt (toSGr SG_CD_3WTsP)) (Es (toSGr SG_CD_3WTsP)) (Ns (toSGr SG_CD_3WTsP))"
       by (simp add: ftotal_on_def, rule conjI, simp add: SG_CD_3WTsP_def toSGr_def)
         (rule subsetI, auto simp add: SG_CD_3WTsP_def toSGr_def)
-    qed      
+    qed 
+    have ftotal_ety: "ftotal_on (ety (toSGr SG_CD_3WTsP)) (Es (toSGr SG_CD_3WTsP)) SGETy_set"
+      by (simp add: ftotal_on_def, rule conjI, rule equalityI)
+        (simp_all add: SGNTy_set_def SG_CD_3WTsP_def toSGr_def SGETy_set_def)
     show ?thesis
     proof (simp add: is_wf_sg_def, rule conjI)
       show "is_wf_g (toSGr SG_CD_3WTsP)"
@@ -367,8 +370,7 @@ lemma wf_SG_CD_3WTsP: "is_wf_sg (toSGr SG_CD_3WTsP)"
     next
       apply_end(rule conjI) 
       show "ftotal_on (ety (toSGr SG_CD_3WTsP)) (Es (toSGr SG_CD_3WTsP)) SGETy_set"
-        by (simp add: ftotal_on_def, rule conjI, rule equalityI)
-        (simp_all add: SGNTy_set_def SG_CD_3WTsP_def toSGr_def SGETy_set_def)
+        by (simp add: ftotal_ety)
     next
       apply_end(rule conjI) 
       show "dom (srcm (toSGr SG_CD_3WTsP)) = EsTy (toSGr SG_CD_3WTsP) {Some erelbi, Some ecompbi}"
@@ -380,13 +382,7 @@ lemma wf_SG_CD_3WTsP: "is_wf_sg (toSGr SG_CD_3WTsP)"
     next
       apply_end(rule conjI)
       show "EsR (toSGr SG_CD_3WTsP) \<subseteq> EsId (toSGr SG_CD_3WTsP)"
-      proof
-        fix x
-        assume " x \<in> EsR (toSGr SG_CD_3WTsP)"
-        then show "x \<in> EsId (toSGr SG_CD_3WTsP)"
-        by (auto simp add: EsR_def toSGr_def EsTy_def vimage_def SG_CD_3WTsP_def EsId_def
-          split: if_splits)
-      qed
+      using h_wf_g ftotal_ety by (simp add: EsId_eq_EsIdL EsR_eq_EsRL)(eval)
     next
       apply_end(rule conjI)
       show "srcm (toSGr SG_CD_3WTsP) ` EsTy (toSGr SG_CD_3WTsP) {Some ecompbi}
@@ -461,8 +457,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
       ''ERPrController_wlin'', ''ERPrController_vo'',
       ''ERPrDrain_win'', ''ERPrTankIOV_win'',
       ''ERPrTankIOV_wout'', ''ERPrTankIOV_wlout'', ''ERPrTankIOV_vi''}"
-      by (rule equalityI, rule subsetI, simp_all add: EsRP_def EsR_def EsTy_def NsP_def NsTy_def 
-        toFr_def F_CD_3WTsP_def toSGr_def SG_CD_3WTsP_def split: if_splits)
+      using wf_SG_CD_3WTsP by (simp add: EsRP_eq_EsRPL toFr_def F_CD_3WTsP_def, eval)
     have h_ftotal_tr: "ftotal_on (tr (toFr F_CD_3WTsP)) (EsRP (sg (toFr F_CD_3WTsP))) V_A"
       using Ns_SG_ASD_3WTsP
       by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def SG_CD_3WTsP_def toSGr_def toFr_def  
@@ -505,7 +500,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
         proof (case_tac  "y = ''ERPrTankIO''")
           assume "y = ''ERPrTankIO''"
           then show "x = y"
-          using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+          using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def 
             SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
         next
           assume h4: "y \<noteq> ''ERPrTankIO''" 
@@ -513,7 +508,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
           proof (case_tac  "y = ''ERPrTankIOV''")
             assume "y = ''ERPrTankIOV''"
             then show "x = y"
-            using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+            using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def 
               SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
           next
             assume h5: "y \<noteq> ''ERPrTankIOV''"
@@ -521,7 +516,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
             proof (case_tac  "y = ''ERPrInflow''")
               assume "y = ''ERPrInflow''"
               then show "x = y"
-              using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+              using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def 
                 SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
             next
               assume h6: "y \<noteq> ''ERPrInflow''"
@@ -529,7 +524,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
               proof (case_tac  "y = ''ERPrPipe''")
                 assume "y = ''ERPrPipe''"
                 then show "x = y"
-                using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def 
                   SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
               next
                 assume h7: "y \<noteq> ''ERPrPipe''"
@@ -537,7 +532,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                 proof (case_tac "y = ''ERPrDrain''")
                   assume "y = ''ERPrDrain''"
                   then show "x = y"
-                  using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                  using h1 h2 h3 by (simp add: h_EsRP)(simp add: F_CD_3WTsP_def 
                     SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                 next
                   assume h8: "y \<noteq> ''ERPrDrain''"
@@ -546,7 +541,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                     assume "y = ''ERPrWaterTanks1''"
                     then show "x = y"
                     using h1 h2 h3 by (simp add: h_EsRP)
-                      (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                      (simp add: F_CD_3WTsP_def 
                       SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                   next
                     assume h9: "y \<noteq> ''ERPrWaterTanks1''"
@@ -555,7 +550,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                       assume "y = ''ERPrWaterTanks2''"
                       then show "x = y"
                       using h1 h2 h3 by (simp add: h_EsRP)
-                        (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                        (simp add: F_CD_3WTsP_def 
                         SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                     next
                       assume h10: "y \<noteq> ''ERPrWaterTanks2''"
@@ -564,7 +559,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                         assume "y = ''ERPrController''"
                         then show "x = y"
                         using h1 h2 h3 by (simp add: h_EsRP)
-                          (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                          (simp add: F_CD_3WTsP_def 
                             SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                       next
                         assume h11: "y \<noteq> ''ERPrController''"
@@ -573,7 +568,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                           assume "y = ''ERPrInflow_wout''"
                           then show "x = y"
                           using h1 h2 h3 by (simp add: h_EsRP)
-                            (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                            (simp add: F_CD_3WTsP_def 
                               SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                         next
                           assume h12: "y \<noteq> ''ERPrInflow_wout''"
@@ -582,7 +577,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                             assume "y = ''ERPrTankIO_win''"
                             then show "x = y"
                             using h1 h2 h3 by (simp add: h_EsRP)
-                              (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                              (simp add: F_CD_3WTsP_def 
                               SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                           next
                             assume h13: "y \<noteq> ''ERPrTankIO_win''"
@@ -591,7 +586,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                               assume "y = ''ERPrTankIO_wout''"
                               then show "x = y"
                                 using h1 h2 h3 by (simp add: h_EsRP)
-                                (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                (simp add: F_CD_3WTsP_def 
                                   SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                             next
                               assume h14: "y \<noteq> ''ERPrTankIO_wout''"
@@ -600,7 +595,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                 assume "y = ''ERPrPipe_win''"
                                 then show "x = y"
                                 using h1 h2 h3 by (simp add: h_EsRP)
-                                  (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                  (simp add: F_CD_3WTsP_def 
                                     SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                               next
                                 assume h15: "y \<noteq> ''ERPrPipe_win''"
@@ -609,7 +604,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                   assume "y = ''ERPrPipe_wout''"
                                   then show "x = y"
                                   using h1 h2 h3 by (simp add: h_EsRP)
-                                    (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                    (simp add: F_CD_3WTsP_def 
                                     SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                 next
                                   assume h16: "y \<noteq> ''ERPrPipe_wout''"
@@ -618,7 +613,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                     assume "y = ''ERPrWaterTanks1_wout''"
                                     then show "x = y"
                                     using h1 h2 h3 by (simp add: h_EsRP)
-                                      (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                      (simp add: F_CD_3WTsP_def 
                                         SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                   next
                                     assume h17: "y \<noteq> ''ERPrWaterTanks1_wout''"
@@ -627,7 +622,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                       assume "y = ''ERPrWaterTanks2_win''"
                                       then show "x = y"
                                       using h1 h2 h3 by (simp add: h_EsRP)
-                                      (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                      (simp add: F_CD_3WTsP_def 
                                         SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                     next
                                       assume h18: "y \<noteq> ''ERPrWaterTanks2_win''"
@@ -636,7 +631,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                         assume "y = ''ERPrWaterTanks2_wlout''"
                                         then show "x = y"
                                         using h1 h2 h3 by (simp add: h_EsRP)
-                                        (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                        (simp add: F_CD_3WTsP_def 
                                           SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                       next
                                         assume h19: "y \<noteq> ''ERPrWaterTanks2_wlout''"
@@ -645,7 +640,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                           assume "y=''ERPrWaterTanks2_vi''"
                                           then show "x = y"
                                           using h1 h2 h3 by (simp add: h_EsRP)
-                                          (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                          (simp add: F_CD_3WTsP_def 
                                             SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                         next
                                           assume h20: "y \<noteq> ''ERPrWaterTanks2_vi''"
@@ -654,7 +649,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                             assume "y=''ERPrController_wlin''"
                                             then show "x = y"
                                             using h1 h2 h3 by (simp add: h_EsRP)
-                                            (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                            (simp add: F_CD_3WTsP_def 
                                             SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                           next
                                             assume h21: "y\<noteq>''ERPrController_wlin''" 
@@ -663,7 +658,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                               assume "y = ''ERPrController_vo''"
                                               then show "x = y"
                                               using h1 h2 h3 by (simp add: h_EsRP)
-                                              (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                              (simp add: F_CD_3WTsP_def 
                                                   SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                             next
                                               assume h22: "y \<noteq> ''ERPrController_vo''"
@@ -672,7 +667,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                                 assume "y = ''ERPrDrain_win''"
                                                 then show "x = y"
                                                 using h1 h2 h3 by (simp add: h_EsRP)
-                                                (simp add: F_CD_3WTsP_def EsRP_def EsR_def EsTy_def
+                                                (simp add: F_CD_3WTsP_def 
                                                   SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                               next
                                                 assume h23: "y \<noteq> ''ERPrDrain_win''"
@@ -681,8 +676,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                                   assume "y = ''ERPrTankIOV_win''"
                                                   then show "x = y"
                                                   using h1 h2 h3 by (simp add: h_EsRP)
-                                                  (simp add: F_CD_3WTsP_def EsRP_def EsR_def 
-                                                    EsTy_def
+                                                  (simp add: F_CD_3WTsP_def 
                                                   SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                                 next
                                                   assume h24: "y \<noteq> ''ERPrTankIOV_win''"
@@ -691,8 +685,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                                     assume "y = ''ERPrTankIOV_wout''"
                                                     then show "x = y"
                                                     using h1 h2 h3 by (simp add: h_EsRP)
-                                                    (simp add: F_CD_3WTsP_def EsRP_def EsR_def 
-                                                    EsTy_def
+                                                    (simp add: F_CD_3WTsP_def 
                                                     SG_CD_3WTsP_def toFr_def toSGr_def split: if_splits)
                                                   next
                                                     assume h25: "y \<noteq> ''ERPrTankIOV_wout''"
@@ -701,8 +694,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                                       assume "y = ''ERPrTankIOV_wlout''"
                                                       then show "x = y"
                                                       using h1 h2 h3 by (simp add: h_EsRP)
-                                                      (simp add: F_CD_3WTsP_def EsRP_def EsR_def 
-                                                        EsTy_def
+                                                      (simp add: F_CD_3WTsP_def 
                                                         SG_CD_3WTsP_def toFr_def 
                                                         toSGr_def split: if_splits)
                                                     next
@@ -712,8 +704,7 @@ lemma wf_F_CD_3WTs: "is_wf_fr (toFr F_CD_3WTsP)"
                                                         assume "y = ''ERPrTankIOV_vi''"
                                                         then show "x = y"
                                                         using h1 h2 h3 by (simp add: h_EsRP)
-                                                        (simp add: F_CD_3WTsP_def EsRP_def EsR_def 
-                                                          EsTy_def SG_CD_3WTsP_def toFr_def 
+                                                        (simp add: F_CD_3WTsP_def SG_CD_3WTsP_def toFr_def 
                                                           toSGr_def split: if_splits)
                                                       next  
                                                         assume "y \<noteq> ''ERPrTankIOV_vi''"

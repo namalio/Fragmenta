@@ -194,6 +194,34 @@ lemma inh_eq_consInh:
     qed
   qed
 
+definition EsRL:: "SGr_ls \<Rightarrow> E list"
+where
+  "EsRL SGL \<equiv> (filter (\<lambda> e. ety (toSGr SGL) e = Some eref) (EsG SGL))"
+
+lemma EsR_eq_EsRL: 
+  assumes "ftotal_on (ety (toSGr SGL)) (Es (toSGr SGL)) SGETy_set "
+  shows "EsR (toSGr SGL) = set(EsRL SGL)"
+  using assms by (simp add: toSGr_def EsRL_def EsR_def EsTy_def vimage_def ftotal_on_def)
+    (rule equalityI, rule subsetI, auto)
+
+definition EsIdL:: "'a Gr_ls_scheme \<Rightarrow> E list"
+where
+  "EsIdL GL \<equiv> (filter (\<lambda> e. src (toGr GL) e = tgt (toGr GL) e ) (EsG GL))"
+
+lemma EsId_eq_EsIdL: 
+  assumes "is_wf_g (toSGr SGL)"
+  shows "EsId (toSGr SGL) = set(EsIdL SGL)"
+  using assms in_set_EsG by (simp add: toSGr_def toGr_def EsIdL_def EsId_def is_wf_g_def ftotal_on_def)
+
+definition EsRPL:: "SGr_ls \<Rightarrow> E list"
+where
+  "EsRPL SGL \<equiv> (filter (\<lambda> e. nty (toSGr SGL) (the(src (toSGr SGL) e)) = Some nprxy)(EsRL SGL))"
+
+lemma EsRP_eq_EsRPL: 
+  assumes "is_wf_sg(toSGr SGL)"
+  shows "EsRP (toSGr SGL) = set(EsRPL SGL)"
+  using assms by (simp only: EsR_eq_EsRL EsRPL_def EsRP_def is_wf_sg_def)(simp add: EsRL_def NsP_def NsTy_def)
+
 definition consClan::"V \<Rightarrow> SGr_ls \<Rightarrow> V list"
 where
   "consClan v SGL \<equiv> 

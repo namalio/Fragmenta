@@ -22,7 +22,7 @@ where
   "emptyGL \<equiv> \<lparr>NsG = [], EsG = [], srcG = [], tgtG = []\<rparr>"
 
 (*A function that converts the list-based representation to the set-based one*)
-definition toGr :: "Gr_ls \<Rightarrow> Gr"
+definition toGr :: "'a Gr_ls_scheme \<Rightarrow> Gr"
 where
   "toGr GL \<equiv> \<lparr>Ns = set (NsG GL), Es = set (EsG GL), 
     src = map_of (srcG GL), tgt = map_of (tgtG GL)\<rparr>"

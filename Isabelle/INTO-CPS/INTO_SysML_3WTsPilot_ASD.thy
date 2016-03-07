@@ -252,6 +252,8 @@ lemma wf_SG_ASD_3WTsP: "is_wf_sg (toSGr SG_ASD_3WTsP)"
         show "ftotal_on (tgt (toSGr SG_ASD_3WTsP)) (Es (toSGr SG_ASD_3WTsP)) (Ns (toSGr SG_ASD_3WTsP))"
           by (auto simp add: ftotal_on_def toSGr_def SG_ASD_3WTsP_def)
       qed
+    have ftotal_on_ety: "ftotal_on (ety (toSGr SG_ASD_3WTsP)) (Es (toSGr SG_ASD_3WTsP)) SGETy_set"
+      by (auto simp add: ftotal_on_def SGNTy_set_def SG_ASD_3WTsP_def toSGr_def SGETy_set_def)
     show ?thesis
     proof (simp add: is_wf_sg_def, rule conjI)
       show "is_wf_g (toSGr SG_ASD_3WTsP)"
@@ -263,7 +265,7 @@ lemma wf_SG_ASD_3WTsP: "is_wf_sg (toSGr SG_ASD_3WTsP)"
     next
       apply_end(rule conjI) 
       show "ftotal_on (ety (toSGr SG_ASD_3WTsP)) (Es (toSGr SG_ASD_3WTsP)) SGETy_set"
-        by (auto simp add: ftotal_on_def SGNTy_set_def SG_ASD_3WTsP_def toSGr_def SGETy_set_def)
+        by (simp only: ftotal_on_ety)
     next
       apply_end(rule conjI) 
       show "dom (srcm (toSGr SG_ASD_3WTsP)) = EsTy (toSGr SG_ASD_3WTsP) {Some erelbi, Some ecompbi}"
@@ -277,7 +279,7 @@ lemma wf_SG_ASD_3WTsP: "is_wf_sg (toSGr SG_ASD_3WTsP)"
     next
       apply_end(rule conjI)
       show "EsR (toSGr SG_ASD_3WTsP) \<subseteq> EsId (toSGr SG_ASD_3WTsP)"
-        by (simp add: EsR_def toSGr_def EsTy_def vimage_def SG_ASD_3WTsP_def)
+        using h_wf_g ftotal_on_ety by (simp add: EsId_eq_EsIdL EsR_eq_EsRL)(eval)
     next
       apply_end(rule conjI)
       show "srcm (toSGr SG_ASD_3WTsP) ` EsTy (toSGr SG_ASD_3WTsP) {Some ecompbi}
@@ -297,10 +299,14 @@ where
 
 value "consRefs F_ASD_3WTsP"
 
+value "EsRPL SG_ASD_3WTsP"
+
 (* Well-formedness proof obligation of fragments"*)
 lemma wf_F_ASD_3WTsP: "is_wf_fr (toFr F_ASD_3WTsP)"
   proof -
     let ?refs_F_ASD_3WTsP = "{}"
+    have EsRP_ASD_3WTsP: "EsRP (sg (toFr F_ASD_3WTsP)) = {}"
+      using wf_SG_ASD_3WTsP by (simp add: EsRP_eq_EsRPL toFr_def F_ASD_3WTsP_def, eval)
     have h_ftotal_tr: "ftotal_on (tr (toFr F_ASD_3WTsP)) (EsRP (sg (toFr F_ASD_3WTsP))) V_A"
       proof (simp add: ftotal_on_def)
         apply_end(rule conjI)
@@ -311,8 +317,7 @@ lemma wf_F_ASD_3WTsP: "is_wf_fr (toFr F_ASD_3WTsP)"
           SG_F_Props_def EsRP_def EsR_def NsP_def EsTy_def NsTy_def) 
         next
           show "EsRP (sg (toFr F_ASD_3WTsP)) \<subseteq> dom (tr (toFr F_ASD_3WTsP))"
-            by (auto simp add: F_ASD_3WTsP_def SG_ASD_3WTsP_def toSGr_def toFr_def SG_F_Common_def 
-              SG_F_Props_def EsRP_def EsR_def NsP_def EsTy_def NsTy_def)
+            by (simp add: EsRP_ASD_3WTsP)
         qed
       next
         show "ran (tr (toFr F_ASD_3WTsP)) \<subseteq> V_A"
@@ -336,13 +341,12 @@ lemma wf_F_ASD_3WTsP: "is_wf_fr (toFr F_ASD_3WTsP)"
     next
       apply_end(rule conjI)  
       show "inj_on (src (sg (toFr F_ASD_3WTsP))) (EsRP (sg (toFr F_ASD_3WTsP)))"
-        by (simp add: F_ASD_3WTsP_def inj_on_def EsRP_def EsR_def NsP_def EsTy_def NsTy_def 
-          SG_ASD_3WTsP_def toFr_def toSGr_def) 
+        by (simp add: EsRP_ASD_3WTsP)
     next
       apply_end(rule conjI)  
       show "ran (src (sg (toFr F_ASD_3WTsP)) |` EsRP (sg (toFr F_ASD_3WTsP))) = NsP (sg (toFr F_ASD_3WTsP))"
-        by (simp add: F_ASD_3WTsP_def restrict_map_def NsP_def NsTy_def EsRP_def 
-          toFr_def SG_ASD_3WTsP_def EsR_def EsTy_def toSGr_def vimage_def)
+        by (simp add: EsRP_ASD_3WTsP)(simp add: F_ASD_3WTsP_def NsP_def NsTy_def 
+          toFr_def SG_ASD_3WTsP_def toSGr_def vimage_def)
     next
       apply_end(rule conjI)
       show "\<forall>v. v \<in> NsP (sg (toFr F_ASD_3WTsP)) \<longrightarrow> nonPRefsOf (toFr F_ASD_3WTsP) v \<noteq> {}"
