@@ -498,9 +498,10 @@ where
 
 fun buildGrForConnector:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
-  "buildGrForConnector m FL v = 
-    consGlFrNodePair (toFr FL) (the (getSrcPortOfC m (toFr FL) v (EsG (sg_ls FL))))
-        (the (getTgtPortOfC m (toFr FL) v (EsG (sg_ls FL))))"
+  "buildGrForConnector m FL v = (if v \<in> Ns (sg (toFr FL))
+      then consGlFrNodePair (toFr FL) (the (getSrcPortOfC m (toFr FL) v (EsG (sg_ls FL))))
+        (the (getTgtPortOfC m (toFr FL) v (EsG (sg_ls FL))))
+      else emptyGL)"
 
 fun getBlockInstanceOfPort:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow>V"
 where
@@ -536,11 +537,11 @@ where
     consUG (consGlFrNodePair (toFr FL) 
       (getDependentPortOfV m FL v vdeps) v) (consGLFrDepends m FL v es))"
 
-fun buildGrForInternalPortConnections:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> V \<Rightarrow> Gr_ls"
+fun buildGrForInternalPortConnections:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
-  "buildGrForInternalPortConnections m FL v p_ty = 
+  "buildGrForInternalPortConnections m FL v = 
       consGLFrDepends m FL v
-          (filter (\<lambda> e. p_ty \<in> (set (consSrcStF FL)) ``{e})
+          (filter (\<lambda> e. (getFlowPortTypeOfPort m FL v) \<in> (set (consSrcStF FL)) ``{e})
             (filter (\<lambda> e. (fE m) e = Some ''EFlowPortDepends'') (EsG (sg_ls FL))))"
 
 primrec INTO_SysML_toPDG_GL:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
@@ -551,7 +552,7 @@ where
     (if (fV m) v = Some ''Connector'' 
       then consUG (buildGrForConnector m FL v) restL
       else (if (fV m) v = Some ''Port'' 
-        then consUG (buildGrForInternalPortConnections m FL v (getFlowPortTypeOfPort m FL v)) restL
+        then consUG (buildGrForInternalPortConnections m FL v) restL
         else restL)))"
 
 (*primrec INTO_SysML_toPDG_GL2:: "MorphTuple \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"

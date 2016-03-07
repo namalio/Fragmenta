@@ -1,5 +1,6 @@
 
-(*  Title:      Theory of the SysML/INTO-CPS MM, which is defined as fragments
+(*  File:      'INTO_SysML_3WTs' 
+    Description: The Three Water Tanks model of INTO-CPS deliverable D2.1a 
     Author:     Nuno Amálio
 *)
 
