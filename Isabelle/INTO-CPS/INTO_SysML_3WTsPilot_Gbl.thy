@@ -157,12 +157,9 @@ value "INTO_SysML_toPDG_Nodes (mdlL MdlTy_3WTsP) (toMorph (mtyL MdlTy_3WTsP))"
 
 value "INTO_SysML_toPDG MdlTy_3WTsP"
 
-fun portNodes :: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> V list"
-where
-   "portNodes ML m = 
-    (filter (\<lambda>v . (fV m) v = Some ''Port'' )((NsG o sg_ls) (consUMdlFs ML)))"
+value "nodesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP)) (toMorph (mtyL MdlTy_3WTsP)) ''Port''"
 
-value "portNodes (mdlL MdlTy_3WTsP) (toMorph (mtyL MdlTy_3WTsP))"
+value "nodesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP)) (toMorph (mtyL MdlTy_3WTsP)) ''Connector''"
 
 value "edgesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP)) (toMorph (mtyL MdlTy_3WTsP)) ''EPortType''"
 
@@ -170,24 +167,29 @@ value "edgesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP)) (toMorph (mtyL MdlTy_3WTsP)) 
 
 value "edgesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP)) (toMorph (mtyL MdlTy_3WTsP)) ''EBIports''"
 
-fun getRightDepends:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> E list"
+value "getSrcPortOfC (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''C_iout_t1in''"
+
+value "getTgtPortOfC (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''C_iout_t1in''"
+
+(*fun getRightDepends:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> E list"
 where
   "getRightDepends m FL v =  map fst ([p\<leftarrow>consSrcStF FL. 
       (fst p) \<in> set (edgesOfMMTy FL m ''EFlowPortDepends'')
       \<and> (snd p) = (getFlowPortTypeOfPort m FL v)])"
 
-value "getRightDepends (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''vi1''"
+value "getRightDepends (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''vo''"*)
 
 (*Get these functions right*)
-value "getBlockInstanceOfPort (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''t1in''"
-value "getOtherInternalPorts (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''t1in''"
-value "getFlowPortTypeOfPort (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''t1in''"
+value "getBlockInstanceOfPort (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''vo''"
+value "getOtherInternalPorts (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''vo''"
+value "getFlowPortTypeOfPort (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''vo''"
 
 fun internalConnectionsOf :: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
   "internalConnectionsOf ML m v = buildGrForInternalPortConnections m (consUMdlFs ML) v"
 
-value "buildGrForConnector (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''C_wout_win''"
-value "internalConnectionsOf (mdlL MdlTy_3WTsP) (toMorph (mtyL MdlTy_3WTsP)) ''vi1''"
+value "buildGrForConnector (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP)) ''C_vi1_vi2''"
+value "buildGrForInternalDependenciesOfPorts (toMorph (mtyL MdlTy_3WTsP)) (consUMdlFs (mdlL MdlTy_3WTsP))"
+value "internalConnectionsOf (mdlL MdlTy_3WTsP) (toMorph (mtyL MdlTy_3WTsP)) ''vo''"
 
 end

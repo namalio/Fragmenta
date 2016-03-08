@@ -39,17 +39,28 @@ where
   "removeDupNsGL GL = \<lparr>NsG = remdups (NsG GL),
     EsG = EsG GL, srcG = srcG GL, tgtG = tgtG GL \<rparr>"
 
-primrec getTgtPortOfC:: "Morph \<Rightarrow> Fr \<Rightarrow> V \<Rightarrow> E list \<Rightarrow> V option"
+(*Function that retrieves the nodes of a certain metamodel node type*)
+fun nodesOfMMTy :: "Fr_ls  \<Rightarrow> Morph \<Rightarrow> V \<Rightarrow> V list"
 where
-  "getTgtPortOfC m F v [] = None" |
-  "getTgtPortOfC m F v (e#es) = (if (src (sg F) e = Some v \<and> (fE m) e = Some ''EC_tgt'') 
-      then tgt (sg F) e else getTgtPortOfC m F v es)"
+   "nodesOfMMTy FL m vty = [v \<leftarrow>((NsG o sg_ls) FL). (fV m) v = Some vty]"
 
-primrec getSrcPortOfC:: "Morph \<Rightarrow> Fr \<Rightarrow> V \<Rightarrow> E list \<Rightarrow> V option"
+(*Function that retrieves the edges of a certain metamodel edge type*)
+fun edgesOfMMTy :: "Fr_ls \<Rightarrow> Morph \<Rightarrow> E \<Rightarrow>E list"
 where
-  "getSrcPortOfC m F v [] = None" |
+   "edgesOfMMTy FL m e = [e'\<leftarrow>((EsG o sg_ls) FL).  (fE m) e' = Some e]"
+
+fun getTgtPortOfC:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> V option"
+where
+  "getTgtPortOfC m FL v  = tgt (sg (toFr FL)) (the (find (\<lambda>e. src (sg (toFr FL)) e = Some v) 
+    (edgesOfMMTy FL m ''EC_tgt'')))" 
+
+fun getSrcPortOfC:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> V option"
+where
+  "getSrcPortOfC m FL v  = tgt (sg (toFr FL)) (the (find (\<lambda>e. src (sg (toFr FL)) e = Some v) 
+    (edgesOfMMTy FL m ''EC_src'')))" 
+(*
   "getSrcPortOfC m F v (e#es) = (if (src (sg F) e = Some v \<and> (fE m) e = Some ''EC_src'') 
-      then tgt (sg F) e else getSrcPortOfC m F v es)"
+      then tgt (sg F) e else getSrcPortOfC m F v es)"*)
 
 primrec INTO_SysML_toPDG_GL_Es:: "Morph \<Rightarrow> Fr \<Rightarrow> V \<Rightarrow> E list \<Rightarrow> V list"
 where
@@ -58,80 +69,104 @@ where
     (if (src (sg F) e) = Some v \<and> ((fE m) e = Some ''EC_src'' \<or> (fE m) e = Some ''EC_tgt'')
       then ((the (tgt (sg F) e))#INTO_SysML_toPDG_GL_Es m F v es) else INTO_SysML_toPDG_GL_Es m F v es)"
 
-fun buildGrForConnector:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
+(*fun buildGrForConnector:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
-  "buildGrForConnector m FL v = (if v \<in> Ns (sg (toFr FL))
-      then consGlFrNodePair (toFr FL) (the (getSrcPortOfC m (toFr FL) v (EsG (sg_ls FL))))
-        (the (getTgtPortOfC m (toFr FL) v (EsG (sg_ls FL))))
-      else emptyGL)"
+  "buildGrForConnector m FL v = (if v \<in> set (NodesOfMMTy FL m ''Connector'')
+      then consGlFrNodePair (toFr FL) (the (getSrcPortOfC m FL v))
+        (the (getTgtPortOfC m FL v))
+      else emptyGL)"*)
+
+primrec buildGrForConnectors:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
+where
+  "buildGrForConnectors m FL [] = emptyGL" |
+  "buildGrForConnectors m FL (v#vs) = 
+    consUG (consGlFrNodePair (toFr FL) (the (getSrcPortOfC m FL v))
+        (the (getTgtPortOfC m FL v))) (buildGrForConnectors m FL vs)"
+
+(* (if v \<in> set (NodesOfMMTy FL m ''Connector'')
+      then consGlFrNodePair (toFr FL) (the (getSrcPortOfC m FL v))
+        (the (getTgtPortOfC m FL v))
+      else emptyGL)"*)
 
 fun getBlockInstanceOfPort:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow>V"
 where
-  "getBlockInstanceOfPort m FL v = the (src (sg (toFr FL)) (hd (filter (\<lambda> e. tgt (sg (toFr FL)) e = Some v 
-      \<and> (fE m) e = Some ''EBIports'') ((EsG o sg_ls) FL))))"
+  "getBlockInstanceOfPort m FL v = the (src (sg (toFr FL)) 
+    (hd ([e\<leftarrow>((EsG o sg_ls) FL) . tgt (sg (toFr FL)) e = Some v 
+      \<and> (fE m) e = Some ''EBIports''])))"
 
 fun getFlowPortTypeOfPort :: "Morph \<Rightarrow>Fr_ls \<Rightarrow> V \<Rightarrow>V"
 where
-  "getFlowPortTypeOfPort m FL v = the (tgt (sg (toFr FL)) (hd (filter (\<lambda> e. src (sg (toFr FL)) e = Some v 
+  "getFlowPortTypeOfPort m FL v = the (tgt (sg (toFr FL)) 
+    (hd ([e\<leftarrow>((EsG o sg_ls) FL). src (sg (toFr FL)) e = Some v 
       \<and> (fE m) e = Some ''EPortType'' 
-      \<and> (fV m) (the(tgt (sg (toFr FL)) e)) = Some ''PrFlowPort2'') ((EsG o sg_ls) FL))))"
+      \<and> (fV m) (the(tgt (sg (toFr FL)) e)) = Some ''PrFlowPort2''] )))"
 
 fun getOtherInternalPorts :: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> V list"
 where
   "getOtherInternalPorts m FL v = 
     (let v_bi = getBlockInstanceOfPort m FL v in
       (map the (map (tgt ((sg (toFr FL))))  
-        (filter (\<lambda> e. (fE m) e = Some ''EBIports'' 
-          \<and> src (sg (toFr FL)) e = Some v_bi \<and> tgt (sg (toFr FL)) e \<noteq> Some v) ((EsG o sg_ls) FL)))))"
+        [e\<leftarrow> ((EsG o sg_ls) FL). (fE m) e = Some ''EBIports'' 
+          \<and> src (sg (toFr FL)) e = Some v_bi \<and> tgt (sg (toFr FL)) e \<noteq> Some v] )))"
 
 fun getDependentPortOfV:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> V set \<Rightarrow> V"
 where
   "getDependentPortOfV m FL v depFPs = 
-    the (tgt (sg (toFr FL)) (hd (filter (\<lambda> e. (fE m) e = Some ''EBIports'' 
+    the (tgt (sg (toFr FL)) (the (List.find (\<lambda> e. (fE m) e = Some ''EBIports'' 
       \<and> src (sg (toFr FL)) e = Some (getBlockInstanceOfPort m FL v)
       \<and> the (tgt (sg (toFr FL))e) \<in> set (getOtherInternalPorts m FL v)
       \<and> getFlowPortTypeOfPort m FL (the (tgt (sg (toFr FL))e)) \<in> depFPs) ((EsG o sg_ls) FL))))"
 
-primrec consGLFrDepends:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> E list \<Rightarrow> Gr_ls"
+primrec consGLFrDepends:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> E list \<Rightarrow> (E\<times>V) list \<Rightarrow> Gr_ls"
 where
-  "consGLFrDepends m FL v [] = emptyGL" |
-  "consGLFrDepends m FL v (e#es) = (let vdeps = set(map snd [p\<leftarrow>(consTgtStF FL). (fst p) = e ]) in
+  "consGLFrDepends m FL v [] evps = emptyGL" |
+  "consGLFrDepends m FL v (e#es) evps = (let vdeps = set(map snd [p\<leftarrow>evps. (fst p) = e ]) in
     consUG (consGlFrNodePair (toFr FL) 
-      (getDependentPortOfV m FL v vdeps) v) (consGLFrDepends m FL v es))"
-
-fun edgesOfMMTy :: "Fr_ls \<Rightarrow> Morph \<Rightarrow> E \<Rightarrow>E list"
-where
-   "edgesOfMMTy FL m e = 
-    (filter (\<lambda>v . (fE m) v = Some e )((EsG o sg_ls) FL))"
+      (getDependentPortOfV m FL v vdeps) v) (consGLFrDepends m FL v es evps))"
 
 fun buildGrForInternalPortConnections:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
   "buildGrForInternalPortConnections m FL v = 
       consGLFrDepends m FL v
           (map fst ([p\<leftarrow>consSrcStF FL. (fst p) \<in> set (edgesOfMMTy FL m ''EFlowPortDepends'')
-          \<and> (snd p) = (getFlowPortTypeOfPort m FL v)]))"
+          \<and> (snd p) = (getFlowPortTypeOfPort m FL v)])) (consTgtStF FL)"
 
-primrec INTO_SysML_toPDG_GL:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
+primrec buildGrForPort:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> (E\<times>V) list \<Rightarrow> (E\<times>V) list \<Rightarrow> Gr_ls" 
 where
-  "INTO_SysML_toPDG_GL m FL []  = emptyGL" |
-  "INTO_SysML_toPDG_GL m FL (v#vs)  = 
-    (let restL = (INTO_SysML_toPDG_GL m FL vs) in
+  "buildGrForPort m FL [] evpsSrc evpsTgt = emptyGL" |
+  "buildGrForPort m FL (v#vs) evpsSrc evpsTgt = 
+    consUG (consGLFrDepends m FL v 
+      (map fst ([p\<leftarrow>evpsSrc. (snd p) = (getFlowPortTypeOfPort m FL v)])) evpsTgt)
+      (buildGrForPort m FL vs evpsSrc evpsTgt)"
+
+fun buildGrForInternalDependenciesOfPorts:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> Gr_ls" 
+where
+  "buildGrForInternalDependenciesOfPorts m FL = 
+    buildGrForPort m FL (nodesOfMMTy FL m ''Port'') 
+      ([p\<leftarrow>consSrcStF FL. (fst p) \<in> set (edgesOfMMTy FL m ''EFlowPortDepends'')])
+      ([p\<leftarrow>consTgtStF FL. (fst p) \<in> set (edgesOfMMTy FL m ''EFlowPortDepends'')])"
+
+(*primrec INTO_SysML_toPDG_GL_old:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
+where
+  "INTO_SysML_toPDG_GL_old m FL []  = emptyGL" |
+  "INTO_SysML_toPDG_GL_old m FL (v#vs)  = 
     (if (fV m) v = Some ''Connector'' 
-      then consUG (buildGrForConnector m FL v) restL
+      then consUG (buildGrForConnector m FL v) (INTO_SysML_toPDG_GL m FL vs)
       else (if (fV m) v = Some ''Port'' 
-        then consUG (buildGrForInternalPortConnections m FL v) restL
-        else restL)))"
+        then consUG (buildGrForInternalPortConnections m FL v) (INTO_SysML_toPDG_GL m FL vs)
+        else INTO_SysML_toPDG_GL_old m FL vs))"*)
 
-(*primrec INTO_SysML_toPDG_GL2:: "MorphTuple \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
+fun INTO_SysML_toPDG_GL:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> Gr_ls"
 where
-  "INTO_SysML_toPDG_GL2 m FL []  = emptyGL" |
-  "INTO_SysML_toPDG_GL2 m FL (v#vs)  = 
-    (let restL = (INTO_SysML_toPDG_GL2 m FL vs) in
-    (if (fV m) v = Some ''Port'' 
-        then consUG (buildGrForInternalPortConnections m FL v 
-          (filter (\<lambda> e. src (sg (toFr FL)) e = Some v \<and> (fE m) e = Some ''EPortType'')
-            (EsG (sg_ls FL)))) restL
-        else restL))"*)
+  "INTO_SysML_toPDG_GL m FL = consUG 
+    (buildGrForConnectors m FL (nodesOfMMTy FL m ''Connector''))
+    (buildGrForInternalDependenciesOfPorts m FL)" 
+
+(*|
+  "INTO_SysML_toPDG_GL3 m FL (v#vs)  = 
+    (if (fV m) v = Some ''Connector'' 
+      then consUG (buildGrForConnector m FL v) (INTO_SysML_toPDG_GL m FL vs)
+        else INTO_SysML_toPDG_GL m FL vs)"*)
 
 fun INTO_SysML_toPDG_Edges:: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> E list"
 where
@@ -139,9 +174,8 @@ where
 
 fun INTO_SysML_toPDG:: "MdlTy_ls \<Rightarrow> PDGr"
 where
-  "INTO_SysML_toPDG MLT = 
-    removeDupNsGL(INTO_SysML_toPDG_GL 
-      (toMorph (mtyL MLT)) (consUMdlFs (mdlL MLT)) ((NsG o sg_ls) (consUMdlFs (mdlL MLT))))"
+  "INTO_SysML_toPDG MLT = INTO_SysML_toPDG_GL (toMorph (mtyL MLT)) 
+    (consUMdlFs (mdlL MLT))"
 
 
 end

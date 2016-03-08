@@ -15,7 +15,6 @@ structure CSP : sig
   type nibble
   datatype cSPSpec = Csp of decl list
   type 'a gr_ls_ext
-  type 'a sGr_ls_ext
   type 'a fr_ls_ext
   type 'a morph_ext
   type 'a mdl_ls_ext
@@ -543,6 +542,9 @@ fun zip (x :: xs) (y :: ys) = (x, y) :: zip xs ys
   | zip xs [] = []
   | zip [] ys = [];
 
+fun find uu [] = NONE
+  | find p (x :: xs) = (if p x then SOME x else find p xs);
+
 fun fold f (x :: xs) s = fold f xs (f x s)
   | fold f [] s = s;
 
@@ -672,17 +674,12 @@ fun str_int i =
 fun is_none (SOME x) = false
   | is_none NONE = true;
 
+fun gen_length n (x :: xs) = gen_length (Suc n) xs
+  | gen_length n [] = n;
+
 fun map_filter f [] = []
   | map_filter f (x :: xs) =
     (case f x of NONE => map_filter f xs | SOME y => y :: map_filter f xs);
-
-fun map_project f (Set xs) = Set (map_filter f xs);
-
-fun image A_ r s =
-  map_project (fn (x, y) => (if member A_ x s then SOME y else NONE)) r;
-
-fun gen_length n (x :: xs) = gen_length (Suc n) xs
-  | gen_length n [] = n;
 
 fun size_list x = gen_length Zero_nat x;
 
@@ -3849,34 +3846,46 @@ val mdlTy_3WTs : unit mdlTy_ls_ext =
   MdlTy_ls_ext
     (iNTO_SysML_MM_T, mdl_3WTs, consUGM t_F_ASD_3WTs t_F_CD_3WTs, ());
 
+fun edgesOfMMTy fl m e =
+  filtera (fn ea => equal_optiona (equal_list equal_char) (fE m ea) (SOME e))
+    ((esG o sg_ls) fl);
+
+fun nodesOfMMTy fl m vty =
+  filtera (fn v => equal_optiona (equal_list equal_char) (fV m v) (SOME vty))
+    ((nsG o sg_ls) fl);
+
+fun getSrcPortOfC m fl v =
+  tgt (sg (toFr fl))
+    (the (find (fn e =>
+                 equal_optiona (equal_list equal_char) (src (sg (toFr fl)) e)
+                   (SOME v))
+           (edgesOfMMTy fl m [#"E", #"C", #"_", #"s", #"r", #"c"])));
+
+fun getTgtPortOfC m fl v =
+  tgt (sg (toFr fl))
+    (the (find (fn e =>
+                 equal_optiona (equal_list equal_char) (src (sg (toFr fl)) e)
+                   (SOME v))
+           (edgesOfMMTy fl m [#"E", #"C", #"_", #"t", #"g", #"t"])));
+
 fun mdlL (MdlTy_ls_ext (tmdlL, mdlL, mtyL, more)) = mdlL;
 
 fun mtyL (MdlTy_ls_ext (tmdlL, mdlL, mtyL, more)) = mtyL;
 
-fun getSrcPortOfC m f v [] = NONE
-  | getSrcPortOfC m f v (e :: es) =
-    (if equal_optiona (equal_list equal_char) (src (sg f) e) (SOME v) andalso
-          equal_optiona (equal_list equal_char) (fE m e)
-            (SOME [#"E", #"C", #"_", #"s", #"r", #"c"])
-      then tgt (sg f) e else getSrcPortOfC m f v es);
-
-fun getTgtPortOfC m f v [] = NONE
-  | getTgtPortOfC m f v (e :: es) =
-    (if equal_optiona (equal_list equal_char) (src (sg f) e) (SOME v) andalso
-          equal_optiona (equal_list equal_char) (fE m e)
-            (SOME [#"E", #"C", #"_", #"t", #"g", #"t"])
-      then tgt (sg f) e else getTgtPortOfC m f v es);
-
-fun removeDupNsGL gl =
-  Gr_ls_ext
-    (remdups (equal_list equal_char) (nsG gl), esG gl, srcG gl, tgtG gl, ());
-
-val output_dir : char list =
-  [#"/", #"U", #"s", #"e", #"r", #"s", #"/", #"w", #"v", #"8", #"5", #"9", #"9",
-    #"/", #"W", #"o", #"r", #"k", #"/", #"F", #"r", #"a", #"g", #"m", #"e",
-    #"n", #"t", #"a", #"/", #"I", #"s", #"a", #"b", #"e", #"l", #"l", #"e",
-    #"/", #"I", #"N", #"T", #"O", #"-", #"C", #"P", #"S", #"/", #"C", #"S",
-    #"P", #"/"];
+fun getFlowPortTypeOfPort m fl v =
+  the (tgt (sg (toFr fl))
+        (hd (filtera
+              (fn e =>
+                equal_optiona (equal_list equal_char) (src (sg (toFr fl)) e)
+                  (SOME v) andalso
+                  (equal_optiona (equal_list equal_char) (fE m e)
+                     (SOME [#"E", #"P", #"o", #"r", #"t", #"T", #"y", #"p",
+                             #"e"]) andalso
+                    equal_optiona (equal_list equal_char)
+                      (fV m (the (tgt (sg (toFr fl)) e)))
+                      (SOME [#"P", #"r", #"F", #"l", #"o", #"w", #"P", #"o",
+                              #"r", #"t", #"2"])))
+              ((esG o sg_ls) fl))));
 
 fun getBlockInstanceOfPort m fl v =
   the (src (sg (toFr fl))
@@ -3905,38 +3914,23 @@ fun getOtherInternalPorts m fl v =
         ((esG o sg_ls) fl))
   end;
 
-fun getFlowPortTypeOfPort m fl v =
-  the (tgt (sg (toFr fl))
-        (hd (filtera
-              (fn e =>
-                equal_optiona (equal_list equal_char) (src (sg (toFr fl)) e)
-                  (SOME v) andalso
-                  (equal_optiona (equal_list equal_char) (fE m e)
-                     (SOME [#"E", #"P", #"o", #"r", #"t", #"T", #"y", #"p",
-                             #"e"]) andalso
-                    equal_optiona (equal_list equal_char)
-                      (fV m (the (tgt (sg (toFr fl)) e)))
-                      (SOME [#"P", #"r", #"F", #"l", #"o", #"w", #"P", #"o",
-                              #"r", #"t", #"2"])))
-              ((esG o sg_ls) fl))));
-
 fun getDependentPortOfV m fl v depFPs =
   the (tgt (sg (toFr fl))
-        (hd (filtera
-              (fn e =>
-                equal_optiona (equal_list equal_char) (fE m e)
-                  (SOME [#"E", #"B", #"I", #"p", #"o", #"r", #"t",
-                          #"s"]) andalso
-                  (equal_optiona (equal_list equal_char) (src (sg (toFr fl)) e)
-                     (SOME (getBlockInstanceOfPort m fl v)) andalso
-                    (membera (equal_list equal_char)
-                       (getOtherInternalPorts m fl v)
-                       (the (tgt (sg (toFr fl)) e)) andalso
-                      member (equal_list equal_char)
-                        (getFlowPortTypeOfPort m fl
-                          (the (tgt (sg (toFr fl)) e)))
-                        depFPs)))
-              ((esG o sg_ls) fl))));
+        (the (find (fn e =>
+                     equal_optiona (equal_list equal_char) (fE m e)
+                       (SOME [#"E", #"B", #"I", #"p", #"o", #"r", #"t",
+                               #"s"]) andalso
+                       (equal_optiona (equal_list equal_char)
+                          (src (sg (toFr fl)) e)
+                          (SOME (getBlockInstanceOfPort m fl v)) andalso
+                         (membera (equal_list equal_char)
+                            (getOtherInternalPorts m fl v)
+                            (the (tgt (sg (toFr fl)) e)) andalso
+                           member (equal_list equal_char)
+                             (getFlowPortTypeOfPort m fl
+                               (the (tgt (sg (toFr fl)) e)))
+                             depFPs)))
+               ((esG o sg_ls) fl))));
 
 fun consGlFrNodePair f v1 v2 =
   let
@@ -3945,16 +3939,65 @@ fun consGlFrNodePair f v1 v2 =
     Gr_ls_ext ([v1, v2], [e], [(e, v1)], [(e, v2)], ())
   end;
 
-fun consGLFrDepends m fl v [] = emptyGL
-  | consGLFrDepends m fl v (e :: es) =
+fun consGLFrDepends m fl v [] evps = emptyGL
+  | consGLFrDepends m fl v (e :: es) evps =
     let
       val vdeps =
-        image (equal_list equal_char) (Set (consTgtStF fl))
-          (insert (equal_list equal_char) e bot_set);
+        Set (map_filter
+              (fn x =>
+                (if equal_lista equal_char (fst x) e then SOME (snd x)
+                  else NONE))
+              evps);
     in
       consUG (consGlFrNodePair (toFr fl) (getDependentPortOfV m fl v vdeps) v)
-        (consGLFrDepends m fl v es)
+        (consGLFrDepends m fl v es evps)
     end;
+
+fun buildGrForPort m fl [] evps = emptyGL
+  | buildGrForPort m fl (v :: vs) evps =
+    consUG
+      (consGLFrDepends m fl v
+        (map_filter
+          (fn x =>
+            (if equal_lista equal_char (snd x) (getFlowPortTypeOfPort m fl v)
+              then SOME (fst x) else NONE))
+          evps)
+        (consTgtStF fl))
+      (buildGrForPort m fl vs evps);
+
+val output_dir : char list =
+  [#"/", #"U", #"s", #"e", #"r", #"s", #"/", #"w", #"v", #"8", #"5", #"9", #"9",
+    #"/", #"W", #"o", #"r", #"k", #"/", #"F", #"r", #"a", #"g", #"m", #"e",
+    #"n", #"t", #"a", #"/", #"I", #"s", #"a", #"b", #"e", #"l", #"l", #"e",
+    #"/", #"I", #"N", #"T", #"O", #"-", #"C", #"P", #"S", #"/", #"C", #"S",
+    #"P", #"/"];
+
+fun buildGrForInternalDependenciesOfPorts m fl =
+  buildGrForPort m fl (nodesOfMMTy fl m [#"P", #"o", #"r", #"t"])
+    (filtera
+      (fn p =>
+        membera (equal_list equal_char)
+          (edgesOfMMTy fl m
+            [#"E", #"F", #"l", #"o", #"w", #"P", #"o", #"r", #"t", #"D", #"e",
+              #"p", #"e", #"n", #"d", #"s"])
+          (fst p))
+      (consSrcStF fl));
+
+fun buildGrForConnectors m fl [] = emptyGL
+  | buildGrForConnectors m fl (v :: vs) =
+    consUG
+      (consGlFrNodePair (toFr fl) (the (getSrcPortOfC m fl v))
+        (the (getTgtPortOfC m fl v)))
+      (buildGrForConnectors m fl vs);
+
+fun iNTO_SysML_toPDG_GL m fl =
+  consUG
+    (buildGrForConnectors m fl
+      (nodesOfMMTy fl m [#"C", #"o", #"n", #"n", #"e", #"c", #"t", #"o", #"r"]))
+    (buildGrForInternalDependenciesOfPorts m fl);
+
+fun iNTO_SysML_toPDG mlt =
+  iNTO_SysML_toPDG_GL (toMorph (mtyL mlt)) (consUMdlFs (mdlL mlt));
 
 val gFG_3WTs_loop : unit gFGr_ls_ext gr_ls_ext =
   Gr_ls_ext
@@ -5195,47 +5238,6 @@ val mdl_3WTs_loop : unit mdl_ls_ext =
            #"o", #"o", #"p"],
           f_CD_3WTs_loop)],
       ());
-
-fun buildGrForInternalPortConnections m fl v p_ty =
-  consGLFrDepends m fl v
-    (filtera
-      (fn e =>
-        member (equal_list equal_char) p_ty
-          (image (equal_list equal_char) (Set (consSrcStF fl))
-            (insert (equal_list equal_char) e bot_set)))
-      (filtera
-        (fn e =>
-          equal_optiona (equal_list equal_char) (fE m e)
-            (SOME [#"E", #"F", #"l", #"o", #"w", #"P", #"o", #"r", #"t", #"D",
-                    #"e", #"p", #"e", #"n", #"d", #"s"]))
-        (esG (sg_ls fl))));
-
-fun buildGrForConnector m fl v =
-  consGlFrNodePair (toFr fl)
-    (the (getSrcPortOfC m (toFr fl) v (esG (sg_ls fl))))
-    (the (getTgtPortOfC m (toFr fl) v (esG (sg_ls fl))));
-
-fun iNTO_SysML_toPDG_GL m fl [] = emptyGL
-  | iNTO_SysML_toPDG_GL m fl (v :: vs) =
-    let
-      val restL = iNTO_SysML_toPDG_GL m fl vs;
-    in
-      (if equal_optiona (equal_list equal_char) (fV m v)
-            (SOME [#"C", #"o", #"n", #"n", #"e", #"c", #"t", #"o", #"r"])
-        then consUG (buildGrForConnector m fl v) restL
-        else (if equal_optiona (equal_list equal_char) (fV m v)
-                   (SOME [#"P", #"o", #"r", #"t"])
-               then consUG
-                      (buildGrForInternalPortConnections m fl v
-                        (getFlowPortTypeOfPort m fl v))
-                      restL
-               else restL))
-    end;
-
-fun iNTO_SysML_toPDG mlt =
-  removeDupNsGL
-    (iNTO_SysML_toPDG_GL (toMorph (mtyL mlt)) (consUMdlFs (mdlL mlt))
-      ((nsG o sg_ls) (consUMdlFs (mdlL mlt))));
 
 val t_F_ASD_3WTs_loop : unit morphL_ext =
   MorphL_ext
