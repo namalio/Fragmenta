@@ -37,6 +37,11 @@ where
     distinct (map fst (ntyG SGL)) \<and> distinct (map fst (etyG SGL)) \<and> 
     distinct (map fst (srcmG SGL)) \<and> distinct (map fst (tgtmG SGL)) \<and> 
     is_wf_sg (toSGr SGL)"
+    
+lemma ran_src_eq:
+  assumes "distinct (map fst (srcG GL))"
+  shows "ran (src (toSGr GL)) = snd ` set(srcG GL)"
+  using assms by (simp add: ran_distinct toSGr_def)
 
 definition consInhE:: "SGr \<Rightarrow> E \<Rightarrow> (V\<times>V) list"
 where
