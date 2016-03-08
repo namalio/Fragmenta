@@ -21,7 +21,7 @@ where
     ntyG = [], etyG = [], srcmG = [], tgtmG = []\<rparr>"
 
 (*A function that converts the list-based representation to the set-based one*)
-definition toSGr :: "SGr_ls \<Rightarrow> SGr"
+definition toSGr :: "'a SGr_ls_scheme \<Rightarrow> SGr"
 where
   "toSGr SGL \<equiv> \<lparr>Ns = set (NsG SGL), Es = set (EsG SGL), 
     src = map_of (srcG SGL), tgt = map_of (tgtG SGL),
@@ -30,6 +30,13 @@ where
 
 lemma in_set_EsG: "e \<in> set (EsG SGL) \<longleftrightarrow> e \<in> Es (toSGr SGL)"
   by (simp add: toSGr_def)
+  
+definition is_wf_sgL :: "'a SGr_ls_scheme \<Rightarrow> bool"
+where
+  "is_wf_sgL SGL \<equiv> is_wf_gL SGL \<and>
+    distinct (map fst (ntyG SGL)) \<and> distinct (map fst (etyG SGL)) \<and> 
+    distinct (map fst (srcmG SGL)) \<and> distinct (map fst (tgtmG SGL)) \<and> 
+    is_wf_sg (toSGr SGL)"
 
 definition consInhE:: "SGr \<Rightarrow> E \<Rightarrow> (V\<times>V) list"
 where

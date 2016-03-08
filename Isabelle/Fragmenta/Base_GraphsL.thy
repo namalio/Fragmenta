@@ -29,6 +29,16 @@ where
 
 lemma in_set_EsG: "e \<in> set (EsG GL) \<longleftrightarrow> e \<in> Es (toGr GL)"
   by (simp add: toGr_def)
+  
+definition is_wf_gL :: "'a Gr_ls_scheme \<Rightarrow> bool"
+where
+  "is_wf_gL GL \<equiv> distinct (NsG GL) \<and> distinct (EsG GL)\<and>
+    distinct (map fst (srcG GL)) \<and> distinct (map fst (tgtG GL)) \<and> is_wf_g (toGr GL)"
+    
+lemma ran_src_eq:
+  assumes "distinct (map fst (srcG GL))"
+  shows "ran (src (toGr GL)) = snd ` set(srcG GL)"
+  using assms by (simp add: ran_distinct toGr_def)
 
 (* The list version of the incident source edges of a node*)
 primrec incidentEsSrc_ls_0 :: "E list \<Rightarrow> Gr \<Rightarrow> V \<Rightarrow> E list"
