@@ -5,7 +5,7 @@
 ***********)
 
 theory CSP_ast
-imports Main "Extra/My_Str" PDGs "Fragmenta/Extra/List_Extra" "~~/src/HOL/Library/Code_Char"
+imports Main "My_Str" "../../Extra/List_Extra" "~~/src/HOL/Library/Code_Char"
 begin
 
 (* Type 'CSPId'*)

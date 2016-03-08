@@ -1,11 +1,12 @@
 
 (********  
-  Title:      Theory defining abstract syntax of CSP for the purpose of CSP generation
+  Theory: 'CSP_ast'
+  Description:  Defines abstract syntax of CSP
   Author:     Nuno Amálio
 ***********)
 
 theory CSP_ast
-imports Main "My_Str" "../../Extra/List_Extra" "~~/src/HOL/Library/Code_Char"
+imports Main "My_Str" "../Extra/List_Extra" "~~/src/HOL/Library/Code_Char"
 begin
 
 (* Type 'CSPId'*)
