@@ -42,6 +42,10 @@ lemma ran_src_eq:
   assumes "distinct (map fst (srcG GL))"
   shows "ran (src (toSGr GL)) = snd ` set(srcG GL)"
   using assms by (simp add: ran_distinct toSGr_def)
+  
+lemma dom_src_eq:
+  shows "dom (src (toSGr GL)) = fst ` set(srcG GL)"
+  by (simp add: dom_map_of_conv_image_fst toSGr_def)
 
 definition consInhE:: "SGr \<Rightarrow> E \<Rightarrow> (V\<times>V) list"
 where
