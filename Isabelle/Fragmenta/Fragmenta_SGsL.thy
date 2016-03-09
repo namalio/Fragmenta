@@ -42,7 +42,7 @@ where
     is_wf_sg (toSGr SGL)"
 
 lemma EsTy_eq_ls_exp: 
-  assumes "is_wf_sgL SGL" and "None \<notin> ets"
+  assumes "distinct (map fst (etyG SGL))" and "None \<notin> ets"
   shows "EsTy (toSGr SGL) ets = set(map fst [p\<leftarrow>(etyG SGL). snd p \<in> (the ` ets)])"
   proof
     apply_end (rule subsetI)
@@ -50,10 +50,10 @@ lemma EsTy_eq_ls_exp:
     assume h1: "x \<in> EsTy (toSGr SGL) ets"
     then have h2: "\<exists> y. ety (toSGr SGL) x = y \<and> y \<in> ets" by (simp add: EsTy_def)
     then obtain y where "ety (toSGr SGL) x = y \<and> y \<in> ets" by blast
-    then have "\<exists> y. ety (toSGr SGL) x = Some y" using assms by (cases y)auto
+    then have "\<exists> y. ety (toSGr SGL) x = Some y" using assms(2) by (cases y)auto
     then obtain y where "ety (toSGr SGL) x = Some y" by blast
     then show " x \<in> set (map fst [p\<leftarrow>etyG SGL . snd p \<in> (the ` ets)])"
-      using h1 assms by (simp add: toSGr_def EsTy_def image_def)
+      using h1 assms(2) by (simp add: toSGr_def EsTy_def image_def)
           (rule exI[where x="y"], simp add: map_of_SomeD, force)
   next
     apply_end (rule subsetI)
@@ -68,7 +68,7 @@ lemma EsTy_eq_ls_exp:
     then have "map_of (etyG SGL) x = Some y \<and> Some y \<in> ets"
       using assms by (simp add: is_wf_sgL_def image_def)
     then show "x \<in> EsTy (toSGr SGL) ets"
-      using assms by (simp add: EsTy_def toSGr_def image_def the_def)
+      using assms by (auto simp add: EsTy_def toSGr_def image_def)
   qed
      
 definition consInhE:: "SGr \<Rightarrow> E \<Rightarrow> (V\<times>V) list"
