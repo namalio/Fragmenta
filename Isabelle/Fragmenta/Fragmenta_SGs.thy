@@ -152,10 +152,6 @@ where
       \<and> (srcm SG `(EsTy SG {Some ecompbi})) \<subseteq> {Some (rm 0 (val 1)), Some (sm (val 1))}
       \<and> acyclicGr (inhG SG)"
 
-lemma "is_wf_g (toSGr SGL) \<Longrightarrow> is_wf_g (toGr SGL)"
-  by (simp add: toSGr_def)
-
-
 lemma NsP_sub_Ns: 
   assumes h1: "is_wf_sg SG"
   shows "NsP SG \<subseteq> Ns SG"

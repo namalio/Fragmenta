@@ -225,14 +225,32 @@ lemma EsId_eq_EsIdL:
 
 definition EsRPL:: "SGr_ls \<Rightarrow> E list"
 where
-  "EsRPL SGL \<equiv> [e\<leftarrow>(EsRL SGL). \<exists> v. src (toSGr SGL) e = Some v 
-    \<and> nty (toSGr SGL) v = Some nprxy]"
+  "EsRPL SGL \<equiv> [e\<leftarrow>(EsRL SGL). nty (toSGr SGL) (the (src (toSGr SGL) e)) = Some nprxy]"
 
 lemma EsRP_eq_EsRPL: 
   assumes "is_wf_sg(toSGr SGL)"
   shows "EsRP (toSGr SGL) = set(EsRPL SGL)"
-  using assms by (simp only: EsR_eq_EsRL EsRPL_def EsRP_def is_wf_sg_def)
+  proof 
+    apply_end(rule subsetI)
+    fix x
+    assume "x \<in> EsRP (toSGr SGL)"
+    then show "x \<in> set (EsRPL SGL)"
+    using assms by (simp only: EsR_eq_EsRL EsRPL_def EsRP_def is_wf_sg_def)
     (auto simp add: NsP_def NsTy_def)
+  next
+    apply_end(rule subsetI)
+    fix x
+    assume h1: "x \<in> set (EsRPL SGL)"
+    hence "x \<in> (EsR (toSGr SGL))" 
+      using assms by (simp add: EsRPL_def EsR_eq_EsRL is_wf_sg_def)
+    hence "x \<in> Es (toSGr SGL)"
+      using assms by (simp add: in_EsR_in_Es)
+    hence "\<exists> y. src (toSGr SGL) x = Some y"
+      using assms by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def domD)
+    then show "x \<in> EsRP (toSGr SGL)"
+      using assms h1 by (simp only: EsR_eq_EsRL EsRPL_def EsRP_def is_wf_sg_def)
+      (auto simp add: NsP_def NsTy_def)
+  qed
 
 definition consClan::"V \<Rightarrow> SGr_ls \<Rightarrow> V list"
 where

@@ -4,7 +4,7 @@
 ***********)
 
 theory PDG_To_CSP 
-imports "CSP/CSP_Print" PDGs
+imports CSP_Print PDGs
 
 begin
 
