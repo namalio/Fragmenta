@@ -101,7 +101,7 @@ where
 (*Reference edges attached to proxies*)
 definition EsRP ::"SGr \<Rightarrow> E set"
 where
-  "EsRP SG \<equiv> {e. e \<in> EsR SG \<and> the(src SG e) \<in> (NsP SG)}"
+  "EsRP SG \<equiv> {e. e \<in> EsR SG \<and> (\<exists> v. (src SG e) = Some v \<and> v \<in> (NsP SG))}"
 
 definition inhG ::"SGr \<Rightarrow> Gr"
 where
@@ -151,6 +151,10 @@ where
       \<and> EsR SG \<subseteq> EsId SG 
       \<and> (srcm SG `(EsTy SG {Some ecompbi})) \<subseteq> {Some (rm 0 (val 1)), Some (sm (val 1))}
       \<and> acyclicGr (inhG SG)"
+
+lemma "is_wf_g (toSGr SGL) \<Longrightarrow> is_wf_g (toGr SGL)"
+  by (simp add: toSGr_def)
+
 
 lemma NsP_sub_Ns: 
   assumes h1: "is_wf_sg SG"
@@ -605,10 +609,7 @@ lemma in_EsRP_in_Es:
 lemma in_EsRP_src_proxy:
   assumes h1: "e \<in> EsRP SG"
   shows "\<exists> v. (src SG) e = Some v \<and> v \<in> (NsP SG)"
-  proof -
-    from h1 show ?thesis
-      by (simp add: EsRP_def)
-  qed
+  using assms by (auto simp add: EsRP_def)
 
 (*lemma SG_in_EsA:
   assumes "(ety SG) e = Some erelbi"

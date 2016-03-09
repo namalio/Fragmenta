@@ -28,6 +28,9 @@ where
     nty = map_of (ntyG SGL), ety = map_of (etyG SGL), 
     srcm  = map_of (srcmG SGL), tgtm = map_of (tgtmG SGL)\<rparr>"
 
+lemma is_wf_g_toSGr_imp_toGr: "is_wf_g (toSGr SGL) \<Longrightarrow> is_wf_g (toGr SGL)"
+  by (simp add: toSGr_def toGr_def is_wf_g_def)
+
 lemma in_set_EsG: "e \<in> set (EsG SGL) \<longleftrightarrow> e \<in> Es (toSGr SGL)"
   by (simp add: toSGr_def)
   
@@ -37,15 +40,6 @@ where
     distinct (map fst (ntyG SGL)) \<and> distinct (map fst (etyG SGL)) \<and> 
     distinct (map fst (srcmG SGL)) \<and> distinct (map fst (tgtmG SGL)) \<and> 
     is_wf_sg (toSGr SGL)"
-    
-lemma ran_src_eq:
-  assumes "distinct (map fst (srcG GL))"
-  shows "ran (src (toSGr GL)) = snd ` set(srcG GL)"
-  using assms by (simp add: ran_distinct toSGr_def)
-  
-lemma dom_src_eq:
-  shows "dom (src (toSGr GL)) = fst ` set(srcG GL)"
-  by (simp add: dom_map_of_conv_image_fst toSGr_def)
 
 definition consInhE:: "SGr \<Rightarrow> E \<Rightarrow> (V\<times>V) list"
 where
@@ -231,12 +225,14 @@ lemma EsId_eq_EsIdL:
 
 definition EsRPL:: "SGr_ls \<Rightarrow> E list"
 where
-  "EsRPL SGL \<equiv> (filter (\<lambda> e. nty (toSGr SGL) (the(src (toSGr SGL) e)) = Some nprxy)(EsRL SGL))"
+  "EsRPL SGL \<equiv> [e\<leftarrow>(EsRL SGL). \<exists> v. src (toSGr SGL) e = Some v 
+    \<and> nty (toSGr SGL) v = Some nprxy]"
 
 lemma EsRP_eq_EsRPL: 
   assumes "is_wf_sg(toSGr SGL)"
   shows "EsRP (toSGr SGL) = set(EsRPL SGL)"
-  using assms by (simp only: EsR_eq_EsRL EsRPL_def EsRP_def is_wf_sg_def)(simp add: EsRL_def NsP_def NsTy_def)
+  using assms by (simp only: EsR_eq_EsRL EsRPL_def EsRP_def is_wf_sg_def)
+    (auto simp add: NsP_def NsTy_def)
 
 definition consClan::"V \<Rightarrow> SGr_ls \<Rightarrow> V list"
 where
