@@ -69,12 +69,10 @@ where
     (if (src (sg F) e) = Some v \<and> ((fE m) e = Some ''EC_src'' \<or> (fE m) e = Some ''EC_tgt'')
       then ((the (tgt (sg F) e))#INTO_SysML_toPDG_GL_Es m F v es) else INTO_SysML_toPDG_GL_Es m F v es)"
 
-(*fun buildGrForConnector:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
+fun buildGrForConnector:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V \<Rightarrow> Gr_ls"
 where
-  "buildGrForConnector m FL v = (if v \<in> set (NodesOfMMTy FL m ''Connector'')
-      then consGlFrNodePair (toFr FL) (the (getSrcPortOfC m FL v))
-        (the (getTgtPortOfC m FL v))
-      else emptyGL)"*)
+  "buildGrForConnector m FL v = consGlFrNodePair (toFr FL) (the (getSrcPortOfC m FL v))
+        (the (getTgtPortOfC m FL v))"
 
 primrec buildGrForConnectors:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> V list \<Rightarrow> Gr_ls"
 where

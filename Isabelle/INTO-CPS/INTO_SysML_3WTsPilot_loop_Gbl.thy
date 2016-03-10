@@ -156,8 +156,6 @@ value "consUMdlFs (mdlL MdlTy_3WTsP_loop)"
  
 value "INTO_SysML_toPDG_Nodes (mdlL MdlTy_3WTsP_loop) (toMorph (mtyL MdlTy_3WTsP_loop))"
 
-value "INTO_SysML_toPDG MdlTy_3WTsP_loop"
-
 value "nodesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP_loop)) (toMorph (mtyL MdlTy_3WTsP_loop)) ''Port''"
 
 value "nodesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP_loop)) (toMorph (mtyL MdlTy_3WTsP_loop)) ''Connector''"
@@ -189,8 +187,17 @@ fun internalConnectionsOf :: "Mdl_ls \<Rightarrow> Morph \<Rightarrow> V \<Right
 where
   "internalConnectionsOf ML m v = buildGrForInternalPortConnections m (consUMdlFs ML) v"
 
-value "buildGrForConnector (toMorph (mtyL MdlTy_3WTsP_loop)) (consUMdlFs (mdlL MdlTy_3WTsP_loop)) ''C_vi1_vi2''"
+value "buildGrForConnector (toMorph (mtyL MdlTy_3WTsP_loop)) (consUMdlFs (mdlL MdlTy_3WTsP_loop)) ''C_dout_win1''"
+value "getSrcPortOfC (toMorph (mtyL MdlTy_3WTsP_loop)) (consUMdlFs (mdlL MdlTy_3WTsP_loop)) ''C_dout_win1''"
 value "buildGrForInternalDependenciesOfPorts (toMorph (mtyL MdlTy_3WTsP_loop)) (consUMdlFs (mdlL MdlTy_3WTsP_loop))"
 value "internalConnectionsOf (mdlL MdlTy_3WTsP_loop) (toMorph (mtyL MdlTy_3WTsP_loop)) ''vo''"
+
+value "(buildGrForConnectors (toMorph (mtyL MdlTy_3WTsP_loop)) (consUMdlFs (mdlL MdlTy_3WTsP_loop)) 
+  (nodesOfMMTy (consUMdlFs (mdlL MdlTy_3WTsP_loop)) (toMorph (mtyL MdlTy_3WTsP_loop)) ''Connector''))"
+
+value "buildGrForInternalDependenciesOfPorts 
+  (toMorph (mtyL MdlTy_3WTsP_loop)) (consUMdlFs (mdlL MdlTy_3WTsP_loop))"
+
+value "INTO_SysML_toPDG MdlTy_3WTsP_loop"
 
 end

@@ -1223,7 +1223,7 @@ where
       (''E_C_wlout_wlin_src'', ''EC_src''), (''E_C_wlout_wlin_tgt'', ''EC_tgt''),
       (''E_C_vo_vi1_src'', ''EC_src''),  (''E_C_vo_vi1_tgt'', ''EC_tgt''),
       (''E_C_vi1_vi2_src'', ''EC_src''), (''E_C_vi1_vi2_tgt'', ''EC_tgt''),
-      (''E_C_dout_win1_src'', ''Connector''), (''E_C_dout_win1_tgt'', ''Connector''),
+      (''E_C_dout_win1_src'', ''EC_src''), (''E_C_dout_win1_tgt'', ''EC_tgt''),
       (''E_iout_ty'', ''EPortType''), (''E_t1in_ty'', ''EPortType''), 
       (''E_t1out_ty'', ''EPortType''), (''E_pin_ty'', ''EPortType''), 
       (''E_pout_ty'', ''EPortType''), (''E_t2in_ty'', ''EPortType''),

@@ -13,6 +13,9 @@ type_synonym AlloyId = "string"
 
 datatype sigTy = abstract | normal
 
+datatype decl = vdecl (AlloyId list) declExp
+  and declExp = declSetExp | declRelExp
+  and declSetExp = 
 datatype sigDecl = sig sigTy AlloyId sigBody
   and sigBody =  
 
