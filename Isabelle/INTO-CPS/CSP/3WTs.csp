@@ -14,22 +14,15 @@ Limited =
 
 PortDependancyGraph = 
    let
-      P(1) = E_w_win1 -> P(2)
-      P(2) = E_win1_wout1 -> P(3)
-      P(3) = E_wout1_win2 -> P(4)
-      P(4) = E_win2_wout2 -> P(5)
-      P(5) = E_wout2_win3 -> P(6)
-      P(6) = E_win3_wout3 -> SKIP
-      P(7) = E_v1_v2 -> P(8)
-      P(8) = E_v2_w -> P(1)
-      P(9) = E_v2_w -> P(1)
-      P(10) = E_w_win1 -> P(2)
-      P(11) = E_win1_wout1 -> P(3)
-      P(12) = E_wout1_win2 -> P(4)
-      P(13) = E_win2_wout2 -> P(5)
-      P(14) = E_wout2_win3 -> P(6)
-      P(15) = E_win3_wout3 -> SKIP
+      P(1) = E_v1_v2 -> P(2)
+      P(2) = E_v2_w -> P(3)
+      P(3) = E_w_win1 -> P(4)
+      P(4) = E_win1_wout1 -> P(5)
+      P(5) = E_wout1_win2 -> P(6)
+      P(6) = E_win2_wout2 -> P(7)
+      P(7) = E_wout2_win3 -> P(8)
+      P(8) = E_win3_wout3 -> SKIP
    within
-      [] i : {1..15} @ P(i)
+      [] i : {1..8} @ P(i)
 
 assert Limited [T= PortDependancyGraph

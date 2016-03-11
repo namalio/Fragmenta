@@ -156,9 +156,9 @@ where
 
 fun INTO_SysML_toPDG_GL:: "Morph \<Rightarrow> Fr_ls \<Rightarrow> Gr_ls"
 where
-  "INTO_SysML_toPDG_GL m FL = consUG 
+  "INTO_SysML_toPDG_GL m FL = removeDupNsGL(consUG 
     (buildGrForConnectors m FL (nodesOfMMTy FL m ''Connector''))
-    (buildGrForInternalDependenciesOfPorts m FL)" 
+    (buildGrForInternalDependenciesOfPorts m FL))" 
 
 (*|
   "INTO_SysML_toPDG_GL3 m FL (v#vs)  = 

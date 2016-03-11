@@ -1,7 +1,7 @@
 
 (********  
-  Theory: 'CSP_ast'
-  Description:  Defines abstract syntax of CSP
+  Theory:      'CSP_ast'
+  Description:  Defines the abstract syntax of CSP
   Author:     Nuno Amálio
 ***********)
 

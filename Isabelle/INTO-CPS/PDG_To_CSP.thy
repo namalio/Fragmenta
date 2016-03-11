@@ -1,5 +1,6 @@
 (********  
-  Title:      Converts PDGs to CSP
+  Theory: 'PDG_To_CSP '
+  Description:  Theory to converts PDGs to CSP
   Author:     Nuno Amálio
 ***********)
 
@@ -63,7 +64,7 @@ value "wrDecl ((expid ''edges'') \<triangleq> (ext [(expid ''e1''), (expid ''e2'
   (expid ''e3''), (expid ''e4''), (expid ''e5''), (expid ''e6'')]))"
 
 
-definition toCSP_of_PDG_edges :: "PDGr => Decl list"
+definition toCSP_of_PDG_edges :: "PDGr \<Rightarrow> Decl list"
 where
   "toCSP_of_PDG_edges PDG \<equiv> 
     (let es = EsG PDG in

@@ -1,0 +1,37 @@
+
+channel E_iout_t1in, E_t1out_pin, E_pout_t2in, E_t2out_wout, E_wout_win, E_win_t3in, E_t3wlout_wlout, E_t3out_din, E_wlout_wlin, E_vo_vi1, E_vi1_vi2, E_t1in_t1out, E_pin_pout, E_t2in_t2out, E_win_wlout, E_t3in_t3wlout, E_t3in_t3out, E_vi2_t3out, E_wlin_vo
+
+edges = {E_iout_t1in, E_t1out_pin, E_pout_t2in, E_t2out_wout, E_wout_win, E_win_t3in, E_t3wlout_wlout, E_t3out_din, E_wlout_wlin, E_vo_vi1, E_vi1_vi2, E_t1in_t1out, E_pin_pout, E_t2in_t2out, E_win_wlout, E_t3in_t3wlout, E_t3in_t3out, E_vi2_t3out, E_wlin_vo}
+
+Limited = 
+   let
+      Limited0(E, n) = 
+         if n > 0
+            then [] e : E @ e -> (Limited0(E, n-1) |~| SKIP)
+            else STOP
+   within
+      Limited0(edges, 19)
+
+PortDependancyGraph = 
+   let
+      P(1) = E_iout_t1in -> P(4)
+      P(2) = E_wout_win -> P(10)
+      P(3) = E_vi1_vi2 -> P(14)
+      P(4) = E_t1in_t1out -> P(5)
+      P(5) = E_t1out_pin -> P(6)
+      P(6) = E_pin_pout -> P(7)
+      P(7) = E_pout_t2in -> P(8)
+      P(8) = E_t2in_t2out -> P(9)
+      P(9) = E_t2out_wout -> P(2)
+      P(10) = E_win_t3in -> P(13) [] E_win_wlout -> P(11)
+      P(11) = E_wlout_wlin -> P(16)
+      P(12) = E_t3wlout_wlout -> P(11)
+      P(13) = E_t3in_t3wlout -> P(12) [] E_t3in_t3out -> P(15)
+      P(14) = E_vi2_t3out -> P(15)
+      P(15) = E_t3out_din -> SKIP
+      P(16) = E_wlin_vo -> P(17)
+      P(17) = E_vo_vi1 -> P(3)
+   within
+      [] i : {1..17} @ P(i)
+
+assert Limited [T= PortDependancyGraph

@@ -1,14 +1,18 @@
 
-open CSP;
+open CSP_Alloy;
+
 val ind_unit = "   ";
 fun maybe_nl ind = (if ind="" then "\n" else "")
+
 (*Code prints to enable the translation into CSPm*)
 fun wrStrsWithSep_ [] sep = ""
-| wrStrsWithSep_ (s::ss) sep = (if null ss then s else s^sep^" "^wrStrsWithSep_ ss sep)
+| wrStrsWithSep_ (s::ss) sep =
+  (if null ss then s else s^sep^" "^wrStrsWithSep_ ss sep)
 fun charsToStr [] = ""
   | charsToStr (c::cs) = str c^charsToStr cs
 fun charslsToStrs [] = []
   | charslsToStrs (cs::lcs) = (charsToStr cs)::(charslsToStrs lcs)
+
 fun wrDecls_ [] ind = ""
 | wrDecls_ (d :: ds) ind =
   (if null ds then wrDecl_ d ind
