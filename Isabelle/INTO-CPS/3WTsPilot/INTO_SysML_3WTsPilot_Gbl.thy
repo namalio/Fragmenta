@@ -1,11 +1,11 @@
 
 (*  File:      'INTO_SysML_3WTsPilot_Gbl' 
-    Description: Global enconding of the INTO-SysML model of pilot case study of 3 Water tanks 
+    Description: Enconding of global INTO-SysML model of pilot case study of 3 Water tanks 
     Author:     Nuno Amálio
 *)
 
 theory INTO_SysML_3WTsPilot_Gbl
-imports INTO_SysML_3WTsPilot_CD "../INTO_SysML_ToPDG"
+imports INTO_SysML_3WTsPilot_CD "../INTO-SysML_MM/INTO_SysML_ToPDG"
   
 begin
 

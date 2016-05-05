@@ -93,9 +93,9 @@ val pdg = genPDGOfWtsn (to_nat 1);
 
 (*val dir1 = OS.FileSys.getDir();*)
 (*wrPDG_CSP (to_nat 1) no_loop pdg;*)
-wrPDG (to_nat 200);
-(*wrPDGs (to_nat 200)*);
-(*wrPDG (to_nat 1)*)
+(*wrPDG (to_nat 199);*)
+wrPDGs (to_nat 200);
+(*wrPDG (to_nat 1);*)
 (*wrPDG (to_nat 1);*)
 (*wrPDG (to_nat 127);
 wrPDG (to_nat 128);

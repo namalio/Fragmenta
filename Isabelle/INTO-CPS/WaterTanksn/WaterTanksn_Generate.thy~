@@ -5,7 +5,7 @@
 ***********)
 
 theory WaterTanksn_Generate
-imports WaterTanksn "../Base/CSP_Print" "../Base/PDG_To_CSP" "../PDG_To_Alloy" Main
+imports WaterTanksn "../Base/CSP_Print" "../Base/PDG_To_CSP" "../Base/PDG_To_Alloy"
 begin
 
 definition output_dir:: "string"
@@ -13,7 +13,7 @@ where
   "output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/''"
 
 
-export_code toCSP toCSP_FD CSP_ast.expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.sig 
+export_code toCSP CSP_ast.expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.sig 
   Alloy_ast.fact Alloy_ast.assert Alloy_ast.check Alloy_ast.psig Alloy_ast.amodule Alloy_ast.snormal 
   Alloy_ast.mone toAlloy csp str_int str_nat Suc src tgt NsG EsG toGr
   output_dir genPDGOfWtsn genPDGOfWtsn_loop in SML 
@@ -21,11 +21,11 @@ export_code toCSP toCSP_FD CSP_ast.expid Alloy_ast.AExpid Alloy_ast.dset Alloy_a
 
 ML_file "csp-alloy.sml"
 
-ML_file "wr-csp.sml"
+ML_file "../Base/wr-csp.sml"
 
-ML_file "wr-alloy.sml"
+ML_file "../Base/wr-alloy.sml"
 
-ML_file "wr-graphml.sml"
+ML_file "../Base/wr-graphml.sml"
 
 value "genPDGOfWtsn 150"
 value "genPDGOfWtsn_loop 1"
@@ -55,14 +55,6 @@ fun wrPDG_CSP n pdg pdg_loop =
       wrTxtSpec file_csp_loop (wrCSP_ (toCSP pdg_loop))
     end
 
-fun wrPDG_CSP_FD n pdg pdg_loop = 
-    let val file_csp = TextIO.openOut(dir^"WTsn_FD_"^(charsToStr (str_nat n))^".csp")
-      and file_csp_loop = TextIO.openOut(dir^"WTsn_FD_"^(charsToStr (str_nat n))^"_loop.csp")
-    in 
-      wrTxtSpec file_csp (wrCSP_ (toCSP_FD pdg));
-      wrTxtSpec file_csp_loop (wrCSP_ (toCSP_FD pdg_loop))
-    end
-
 fun wrPDG_Alloy n pdg pdg_loop = 
   let val file_alloy = TextIO.openOut(dir^"WTsn_"^(charsToStr (str_nat n))^".als")
     and file_alloy_loop = TextIO.openOut(dir^"WTsn_"^(charsToStr (str_nat n))^"_loop.als")
@@ -85,7 +77,6 @@ fun wrPDG n =
       and pdg_loop = genPDGOfWtsn_loop n
     in 
       wrPDG_CSP n pdg pdg_loop;
-      wrPDG_CSP_FD n pdg pdg_loop;
       wrPDG_Alloy n pdg pdg_loop;
       wrPDG_GraphML n pdg pdg_loop
    end
@@ -102,8 +93,8 @@ val pdg = genPDGOfWtsn (to_nat 1);
 
 (*val dir1 = OS.FileSys.getDir();*)
 (*wrPDG_CSP (to_nat 1) no_loop pdg;*)
-(*wrPDG (to_nat 1);*)
-wrPDGs (to_nat 200);
+(*wrPDG (to_nat 199);*)
+(*wrPDGs (to_nat 200)*);
 (*wrPDG (to_nat 1)*)
 (*wrPDG (to_nat 1);*)
 (*wrPDG (to_nat 127);

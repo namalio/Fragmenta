@@ -5,7 +5,7 @@
 *)
 
 theory INTO_SysML_3WTsPilot_Gbl
-imports INTO_SysML_3WTsPilot_CD INTO_SysML_ToPDG
+imports INTO_SysML_3WTsPilot_CD "../INTO_SysML_ToPDG"
   
 begin
 

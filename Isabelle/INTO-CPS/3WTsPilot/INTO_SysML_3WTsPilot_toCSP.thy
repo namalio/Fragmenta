@@ -7,19 +7,19 @@
 *)
 
 theory INTO_SysML_3WTsPilot_toCSP
-imports INTO_SysML_3WTsPilot_Gbl INTO_SysML_3WTsPilot_loop_Gbl "../CSP_print" "../PDG_To_CSP" 
-  "../PDG_To_Alloy"
+imports INTO_SysML_3WTsPilot_Gbl INTO_SysML_3WTsPilot_loop_Gbl "../Base/CSP_print" "../Base/PDG_To_CSP" 
+  "../Base/PDG_To_Alloy"
   
 begin
 
 (*This needs configuring for each local machine.*)
 definition CSP_output_dir:: "string"
 where
-  "CSP_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated2/''"
+  "CSP_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/GeneratedWTs/''"
 
 definition Alloy_output_dir:: "string"
 where
-  "Alloy_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated2/''"
+  "Alloy_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/GeneratedWTs/''"
 
 export_code toCSP expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.sig 
   Alloy_ast.fact Alloy_ast.assert Alloy_ast.check Alloy_ast.psig Alloy_ast.amodule 
@@ -29,9 +29,9 @@ export_code toCSP expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.s
 
 ML_file "csp-alloy.sml"
 
-ML_file "../wr-csp.sml" 
+ML_file "../Base/wr-csp.sml" 
 
-ML_file "../wr-alloy.sml" 
+ML_file "../Base/wr-alloy.sml" 
 
 ML {*
 (*val dir1 = OS.FileSys.getDir();*)
