@@ -1,22 +1,24 @@
 
 (*  Theory:      'INTO_SysML_3WTs_toCSP'
     Description: Generates CSPm files for the 3 water tanks models that can be run in FDR3
+      and Alloy files to be run on Alloy 4.
     Author:      Nuno Amálio
 *)
 
 theory INTO_SysML_3WTs_toCSP
-imports INTO_SysML_3WTs INTO_SysML_3WTs_loop "../Base/CSP_print" "../Base/PDG_To_CSP" "../Base/PDG_To_Alloy"
+imports INTO_SysML_3WTs INTO_SysML_3WTs_loop "../Base/CSP_print" "../Base/PDG_To_CSP" 
+  "../Base/PDG_To_Alloy"
   
 begin
 
 (*This needs configuring for each local machine.*)
 definition CSP_output_dir:: "string"
 where
-  "CSP_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated2/''"
+  "CSP_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/GeneratedWTs/''"
 
 definition Alloy_output_dir:: "string"
 where
-  "Alloy_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated2/''"
+  "Alloy_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/GeneratedWTs/''"
 
 export_code toCSP expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.sig 
   Alloy_ast.fact Alloy_ast.assert Alloy_ast.check Alloy_ast.psig Alloy_ast.amodule 

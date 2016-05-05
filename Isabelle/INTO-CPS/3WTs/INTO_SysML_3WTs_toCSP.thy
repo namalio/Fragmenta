@@ -14,11 +14,11 @@ begin
 (*This needs configuring for each local machine.*)
 definition CSP_output_dir:: "string"
 where
-  "CSP_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/GeneratedWTs/''"
+  "CSP_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/''"
 
 definition Alloy_output_dir:: "string"
 where
-  "Alloy_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/GeneratedWTs/''"
+  "Alloy_output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/''"
 
 export_code toCSP expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.sig 
   Alloy_ast.fact Alloy_ast.assert Alloy_ast.check Alloy_ast.psig Alloy_ast.amodule 
