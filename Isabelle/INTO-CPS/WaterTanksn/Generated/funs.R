@@ -1,6 +1,6 @@
 
 load_data<-function () {
-  setwd("/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/")
+  setwd("/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/WaterTanksn/Generated/")
   return(read.table("simulation.csv",header=T,sep=",",dec="."))
 }
 
@@ -99,7 +99,7 @@ draw_johnson_curve<-function (dt) {
 }
 
 draw_csp_johnson<-function (dt) {
-  setwd("/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/")
+  setwd("/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/WaterTanksn/Generated/")
   dt_j<-read.table("simulation-johnson.csv",header=T,sep=",",dec=".")
 
   dt_csp<-read.table("simulation-csp.csv",header=T,sep=",",dec=".")
@@ -139,7 +139,7 @@ draw_csp_johnson<-function (dt) {
 }
 
 draw_plot_johnson<-function () {
-  setwd("/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/")
+  setwd("/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/WaterTanksn/Generated/")
   dt<-read.table("simulation-johnson.csv",header=T,sep=",",dec=".")
 
   draw_johnson_curve(dt)
