@@ -27,6 +27,7 @@ ML_file "../Base/wr-alloy.sml"
 
 ML_file "../Base/wr-graphml.sml"
 
+(*Some tests*)
 value "genPDGOfWtsn 150"
 value "genPDGOfWtsn_loop 1"
 value "toCSP(genPDGOfWtsn 1)"
@@ -91,31 +92,7 @@ fun to_nat0 0 = Zero_nat
 fun to_nat i = to_nat0 (Int.abs i);
 val pdg = genPDGOfWtsn (to_nat 1);
 
-(*val dir1 = OS.FileSys.getDir();*)
-(*wrPDG_CSP (to_nat 1) no_loop pdg;*)
-(*wrPDG (to_nat 199);*)
-(*wrPDGs (to_nat 200);*)
-(*wrPDG (to_nat 1);*)
-(*wrPDG (to_nat 1);*)
-(*wrPDG (to_nat 127);
-wrPDG (to_nat 128);
-wrPDG (to_nat 129);
-wrPDG (to_nat 130);*)
-
-(*val file_csp = TextIO.openOut(dir^"WTsn_1.csp");
-  TextIO.output (file_csp, wrCSP_ (toCSP (genPDGOfWtsn (Suc Zero_nat ))));
-  TextIO.closeOut(file_csp);
-
-val file_csp = TextIO.openOut(dir^"WTsn_1_loop.csp");
-  TextIO.output (file_csp, wrCSP_ (toCSP (genPDGOfWtsn_loop (Suc Zero_nat ))));
-  TextIO.closeOut(file_csp);
-
-val file_alloy = TextIO.openOut(dir^"WTsn_1.als");
-  TextIO.output (file_alloy, wrAlloyModule (toAlloy (consNConnectedTanksWithBase (Suc Zero_nat ))));
-  TextIO.closeOut(file_alloy);
-
-val file_alloy = TextIO.openOut(dir^"WTsn_1_loop.als");
-  TextIO.output (file_alloy, wrAlloyModule (toAlloy (consNConnectedTanksWithBase_loop (Suc Zero_nat ))));
-  TextIO.closeOut(file_alloy);*)
+(*The water tank systems to generate according to function 'WaterTanksn'*)
+(*wrPDGs (to_nat 50);*)
 *}
 end

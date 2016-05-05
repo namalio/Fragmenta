@@ -10,7 +10,7 @@ begin
 
 definition output_dir:: "string"
 where
-  "output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/Generated/''"
+  "output_dir = ''/Users/wv8599/Work/Fragmenta/Isabelle/INTO-CPS/WaterTanksn/Generated/''"
 
 
 export_code toCSP CSP_ast.expid Alloy_ast.AExpid Alloy_ast.dset Alloy_ast.dc Alloy_ast.sig 
@@ -94,7 +94,7 @@ val pdg = genPDGOfWtsn (to_nat 1);
 (*val dir1 = OS.FileSys.getDir();*)
 (*wrPDG_CSP (to_nat 1) no_loop pdg;*)
 (*wrPDG (to_nat 199);*)
-wrPDGs (to_nat 200);
+(*wrPDGs (to_nat 200);*)
 (*wrPDG (to_nat 1);*)
 (*wrPDG (to_nat 1);*)
 (*wrPDG (to_nat 127);
