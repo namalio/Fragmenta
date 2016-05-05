@@ -1,0 +1,401 @@
+Size,Environment,Kind,Result,Time
+8,CSP,no loop,no cycle,0.07146
+9,CSP,loop,cycle found,0.01573
+10,CSP,no loop,no cycle,0.0163
+11,CSP,loop,cycle found,0.01843
+12,CSP,no loop,no cycle,0.01769
+13,CSP,loop,cycle found,0.022
+14,CSP,no loop,no cycle,0.02176
+15,CSP,loop,cycle found,0.02318
+16,CSP,no loop,no cycle,0.02529
+17,CSP,loop,cycle found,0.02645
+18,CSP,no loop,no cycle,0.02912
+19,CSP,loop,cycle found,0.03545
+20,CSP,no loop,no cycle,0.03111
+21,CSP,loop,cycle found,0.04003
+22,CSP,no loop,no cycle,0.04096
+23,CSP,loop,cycle found,0.04334
+24,CSP,no loop,no cycle,0.0458
+25,CSP,loop,cycle found,0.05264
+26,CSP,no loop,no cycle,0.05788
+27,CSP,loop,cycle found,0.06657
+28,CSP,no loop,no cycle,0.06258
+29,CSP,loop,cycle found,0.07287
+30,CSP,no loop,no cycle,0.06392
+31,CSP,loop,cycle found,0.08363
+32,CSP,no loop,no cycle,0.07522
+33,CSP,loop,cycle found,0.08568
+34,CSP,no loop,no cycle,0.0896
+35,CSP,loop,cycle found,0.09598
+36,CSP,no loop,no cycle,0.10663
+37,CSP,loop,cycle found,0.11922
+38,CSP,no loop,no cycle,0.10927
+39,CSP,loop,cycle found,0.13174
+40,CSP,no loop,no cycle,0.12451
+41,CSP,loop,cycle found,0.1396
+42,CSP,no loop,no cycle,0.14609
+43,CSP,loop,cycle found,0.17023
+44,CSP,no loop,no cycle,0.16264
+45,CSP,loop,cycle found,0.18758
+46,CSP,no loop,no cycle,0.17569
+47,CSP,loop,cycle found,0.20991
+48,CSP,no loop,no cycle,0.1965
+49,CSP,loop,cycle found,0.23225
+50,CSP,no loop,no cycle,0.21719
+51,CSP,loop,cycle found,0.24824
+52,CSP,no loop,no cycle,0.22648
+53,CSP,loop,cycle found,0.27009
+54,CSP,no loop,no cycle,0.26335
+55,CSP,loop,cycle found,0.3065
+56,CSP,no loop,no cycle,0.28526
+57,CSP,loop,cycle found,0.32646
+58,CSP,no loop,no cycle,0.31853
+59,CSP,loop,cycle found,0.3687
+60,CSP,no loop,no cycle,0.34546
+61,CSP,loop,cycle found,0.40231
+62,CSP,no loop,no cycle,0.37877
+63,CSP,loop,cycle found,0.43098
+64,CSP,no loop,no cycle,0.44455
+65,CSP,loop,cycle found,0.46258
+66,CSP,no loop,no cycle,0.4661
+67,CSP,loop,cycle found,0.49105
+68,CSP,no loop,no cycle,0.48264
+69,CSP,loop,cycle found,0.5451
+70,CSP,no loop,no cycle,0.51385
+71,CSP,loop,cycle found,0.56857
+72,CSP,no loop,no cycle,0.56897
+73,CSP,loop,cycle found,0.59983
+74,CSP,no loop,no cycle,0.61656
+75,CSP,loop,cycle found,0.68016
+76,CSP,no loop,no cycle,0.72451
+77,CSP,loop,cycle found,0.73207
+78,CSP,no loop,no cycle,0.68702
+79,CSP,loop,cycle found,0.76037
+80,CSP,no loop,no cycle,0.82757
+81,CSP,loop,cycle found,0.85503
+82,CSP,no loop,no cycle,0.88133
+83,CSP,loop,cycle found,0.99052
+84,CSP,no loop,no cycle,0.94136
+85,CSP,loop,cycle found,1.01411
+86,CSP,no loop,no cycle,0.95329
+87,CSP,loop,cycle found,1.08858
+88,CSP,no loop,no cycle,0.98363
+89,CSP,loop,cycle found,1.05892
+90,CSP,no loop,no cycle,1.11259
+91,CSP,loop,cycle found,1.15222
+92,CSP,no loop,no cycle,1.1547
+93,CSP,loop,cycle found,1.21993
+94,CSP,no loop,no cycle,1.25445
+95,CSP,loop,cycle found,1.33961
+96,CSP,no loop,no cycle,1.31875
+97,CSP,loop,cycle found,1.36444
+98,CSP,no loop,no cycle,1.35111
+99,CSP,loop,cycle found,1.45924
+100,CSP,no loop,no cycle,1.3833
+101,CSP,loop,cycle found,1.54136
+102,CSP,no loop,no cycle,1.55939
+103,CSP,loop,cycle found,1.65247
+104,CSP,no loop,no cycle,1.61585
+105,CSP,loop,cycle found,1.73403
+106,CSP,no loop,no cycle,1.71073
+107,CSP,loop,cycle found,1.8509
+108,CSP,no loop,no cycle,1.84687
+109,CSP,loop,cycle found,1.9534
+110,CSP,no loop,no cycle,1.91861
+111,CSP,loop,cycle found,1.99125
+112,CSP,no loop,no cycle,2.10125
+113,CSP,loop,cycle found,2.13459
+114,CSP,no loop,no cycle,2.20426
+115,CSP,loop,cycle found,2.23765
+116,CSP,no loop,no cycle,2.30862
+117,CSP,loop,cycle found,2.38177
+118,CSP,no loop,no cycle,2.38089
+119,CSP,loop,cycle found,2.54287
+120,CSP,no loop,no cycle,2.59497
+121,CSP,loop,cycle found,2.85208
+122,CSP,no loop,no cycle,2.66834
+123,CSP,loop,cycle found,2.7604
+124,CSP,no loop,no cycle,2.80479
+125,CSP,loop,cycle found,3.01551
+126,CSP,no loop,no cycle,2.88256
+127,CSP,loop,cycle found,3.12697
+128,CSP,no loop,no cycle,3.09667
+129,CSP,loop,cycle found,3.30795
+130,CSP,no loop,no cycle,3.28891
+131,CSP,loop,cycle found,3.36964
+132,CSP,no loop,no cycle,3.27602
+133,CSP,loop,cycle found,3.54174
+134,CSP,no loop,no cycle,3.65222
+135,CSP,loop,cycle found,3.78348
+136,CSP,no loop,no cycle,3.96063
+137,CSP,loop,cycle found,3.89314
+138,CSP,no loop,no cycle,3.94729
+139,CSP,loop,cycle found,3.94588
+140,CSP,no loop,no cycle,4.02443
+141,CSP,loop,cycle found,4.13378
+142,CSP,no loop,no cycle,4.23777
+143,CSP,loop,cycle found,4.52509
+144,CSP,no loop,no cycle,4.30494
+145,CSP,loop,cycle found,4.53284
+146,CSP,no loop,no cycle,4.58249
+147,CSP,loop,cycle found,4.66824
+148,CSP,no loop,no cycle,4.7239
+149,CSP,loop,cycle found,5.0499
+150,CSP,no loop,no cycle,5.06493
+151,CSP,loop,cycle found,6.45113
+152,CSP,no loop,no cycle,5.28841
+153,CSP,loop,cycle found,6.08699
+154,CSP,no loop,no cycle,5.73795
+155,CSP,loop,cycle found,6.43905
+156,CSP,no loop,no cycle,6.54392
+157,CSP,loop,cycle found,6.12996
+158,CSP,no loop,no cycle,6.07501
+159,CSP,loop,cycle found,6.66224
+160,CSP,no loop,no cycle,7.12631
+161,CSP,loop,cycle found,6.79532
+162,CSP,no loop,no cycle,6.84488
+163,CSP,loop,cycle found,6.76645
+164,CSP,no loop,no cycle,6.81944
+165,CSP,loop,cycle found,6.91723
+166,CSP,no loop,no cycle,7.01288
+167,CSP,loop,cycle found,8.09446
+168,CSP,no loop,no cycle,8.01485
+169,CSP,loop,cycle found,8.05524
+170,CSP,no loop,no cycle,7.77487
+171,CSP,loop,cycle found,8.58419
+172,CSP,no loop,no cycle,8.32493
+173,CSP,loop,cycle found,8.27192
+174,CSP,no loop,no cycle,8.72627
+175,CSP,loop,cycle found,9.42786
+176,CSP,no loop,no cycle,8.97291
+177,CSP,loop,cycle found,8.88873
+178,CSP,no loop,no cycle,9.27921
+179,CSP,loop,cycle found,9.11885
+180,CSP,no loop,no cycle,9.09918
+181,CSP,loop,cycle found,9.34537
+182,CSP,no loop,no cycle,10.27004
+183,CSP,loop,cycle found,10.14236
+184,CSP,no loop,no cycle,10.43402
+185,CSP,loop,cycle found,9.99525
+186,CSP,no loop,no cycle,10.10367
+187,CSP,loop,cycle found,11.18247
+188,CSP,no loop,no cycle,10.5917
+189,CSP,loop,cycle found,10.61476
+190,CSP,no loop,no cycle,10.54894
+191,CSP,loop,cycle found,11.84394
+192,CSP,no loop,no cycle,11.07058
+193,CSP,loop,cycle found,11.36369
+194,CSP,no loop,no cycle,12.01046
+195,CSP,loop,cycle found,11.71744
+196,CSP,no loop,no cycle,12.30336
+197,CSP,loop,cycle found,12.27131
+198,CSP,no loop,no cycle,12.16842
+199,CSP,loop,cycle found,12.63193
+200,CSP,no loop,no cycle,12.63842
+201,CSP,loop,cycle found,13.15959
+202,CSP,no loop,no cycle,13.746
+203,CSP,loop,cycle found,15.26539
+204,CSP,no loop,no cycle,13.98356
+205,CSP,loop,cycle found,15.56119
+206,CSP,no loop,no cycle,14.84894
+207,CSP,loop,cycle found,16.34751
+208,CSP,no loop,no cycle,16.49486
+209,CSP,loop,cycle found,15.29675
+210,CSP,no loop,no cycle,15.66155
+211,CSP,loop,cycle found,16.75543
+212,CSP,no loop,no cycle,16.33959
+213,CSP,loop,cycle found,17.28427
+214,CSP,no loop,no cycle,17.04237
+215,CSP,loop,cycle found,16.46561
+216,CSP,no loop,no cycle,16.99301
+217,CSP,loop,cycle found,16.91402
+218,CSP,no loop,no cycle,16.99907
+219,CSP,loop,cycle found,17.80142
+220,CSP,no loop,no cycle,18.24115
+221,CSP,loop,cycle found,19.19593
+222,CSP,no loop,no cycle,17.99036
+223,CSP,loop,cycle found,20.73292
+224,CSP,no loop,no cycle,21.42045
+225,CSP,loop,cycle found,19.79889
+226,CSP,no loop,no cycle,22.57191
+227,CSP,loop,cycle found,21.74081
+228,CSP,no loop,no cycle,19.75778
+229,CSP,loop,cycle found,20.6613
+230,CSP,no loop,no cycle,20.89364
+231,CSP,loop,cycle found,22.20429
+232,CSP,no loop,no cycle,23.36266
+233,CSP,loop,cycle found,23.01294
+234,CSP,no loop,no cycle,22.90826
+235,CSP,loop,cycle found,25.21461
+236,CSP,no loop,no cycle,25.33932
+237,CSP,loop,cycle found,25.70322
+238,CSP,no loop,no cycle,23.17567
+239,CSP,loop,cycle found,23.17805
+240,CSP,no loop,no cycle,24.90259
+241,CSP,loop,cycle found,24.54008
+242,CSP,no loop,no cycle,26.24783
+243,CSP,loop,cycle found,28.54585
+244,CSP,no loop,no cycle,27.29901
+245,CSP,loop,cycle found,27.48702
+246,CSP,no loop,no cycle,28.37596
+247,CSP,loop,cycle found,27.97121
+248,CSP,no loop,no cycle,27.02623
+249,CSP,loop,cycle found,26.52145
+250,CSP,no loop,no cycle,26.67466
+251,CSP,loop,cycle found,28.32723
+252,CSP,no loop,no cycle,28.09274
+253,CSP,loop,cycle found,30.74507
+254,CSP,no loop,no cycle,31.25571
+255,CSP,loop,cycle found,32.09783
+256,CSP,no loop,no cycle,31.44067
+257,CSP,loop,cycle found,32.10039
+258,CSP,no loop,no cycle,32.60639
+259,CSP,loop,cycle found,33.61609
+260,CSP,no loop,no cycle,31.848
+261,CSP,loop,cycle found,33.09553
+262,CSP,no loop,no cycle,34.35124
+263,CSP,loop,cycle found,33.69378
+264,CSP,no loop,no cycle,35.56414
+265,CSP,loop,cycle found,36.45049
+266,CSP,no loop,no cycle,34.16773
+267,CSP,loop,cycle found,34.71121
+268,CSP,no loop,no cycle,34.01986
+269,CSP,loop,cycle found,34.60964
+270,CSP,no loop,no cycle,35.5307
+271,CSP,loop,cycle found,35.92212
+272,CSP,no loop,no cycle,35.11758
+273,CSP,loop,cycle found,36.71063
+274,CSP,no loop,no cycle,36.43423
+275,CSP,loop,cycle found,38.82788
+276,CSP,no loop,no cycle,39.8598
+277,CSP,loop,cycle found,42.30349
+278,CSP,no loop,no cycle,41.35483
+279,CSP,loop,cycle found,39.86362
+280,CSP,no loop,no cycle,40.46709
+281,CSP,loop,cycle found,41.41249
+282,CSP,no loop,no cycle,46.04335
+283,CSP,loop,cycle found,44.10378
+284,CSP,no loop,no cycle,42.67847
+285,CSP,loop,cycle found,47.16646
+286,CSP,no loop,no cycle,44.70451
+287,CSP,loop,cycle found,46.62789
+288,CSP,no loop,no cycle,44.40484
+289,CSP,loop,cycle found,47.72194
+290,CSP,no loop,no cycle,48.15135
+291,CSP,loop,cycle found,47.56569
+292,CSP,no loop,no cycle,50.83396
+293,CSP,loop,cycle found,52.10065
+294,CSP,no loop,no cycle,51.08238
+295,CSP,loop,cycle found,51.67244
+296,CSP,no loop,no cycle,50.54761
+297,CSP,loop,cycle found,53.41376
+298,CSP,no loop,no cycle,52.71645
+299,CSP,loop,cycle found,54.19581
+300,CSP,no loop,no cycle,53.67912
+301,CSP,loop,cycle found,52.89187
+302,CSP,no loop,no cycle,52.81034
+303,CSP,loop,cycle found,51.72992
+304,CSP,no loop,no cycle,53.2819
+305,CSP,loop,cycle found,53.80451
+306,CSP,no loop,no cycle,54.35462
+307,CSP,loop,cycle found,55.47057
+308,CSP,no loop,no cycle,56.04122
+309,CSP,loop,cycle found,61.57805
+310,CSP,no loop,no cycle,57.44151
+311,CSP,loop,cycle found,61.37807
+312,CSP,no loop,no cycle,63.07682
+313,CSP,loop,cycle found,60.88229
+314,CSP,no loop,no cycle,65.90064
+315,CSP,loop,cycle found,65.32499
+316,CSP,no loop,no cycle,62.85332
+317,CSP,loop,cycle found,67.61805
+318,CSP,no loop,no cycle,63.15352
+319,CSP,loop,cycle found,66.83318
+320,CSP,no loop,no cycle,67.80584
+321,CSP,loop,cycle found,67.09266
+322,CSP,no loop,no cycle,64.4744
+323,CSP,loop,cycle found,70.76991
+324,CSP,no loop,no cycle,69.06465
+325,CSP,loop,cycle found,69.4511
+326,CSP,no loop,no cycle,69.13037
+327,CSP,loop,cycle found,73.93538
+328,CSP,no loop,no cycle,70.94626
+329,CSP,loop,cycle found,76.30172
+330,CSP,no loop,no cycle,71.15216
+331,CSP,loop,cycle found,76.79513
+332,CSP,no loop,no cycle,72.36447
+333,CSP,loop,cycle found,72.17466
+334,CSP,no loop,no cycle,81.79891
+335,CSP,loop,cycle found,76.58386
+336,CSP,no loop,no cycle,77.25086
+337,CSP,loop,cycle found,77.25658
+338,CSP,no loop,no cycle,76.70245
+339,CSP,loop,cycle found,78.35736
+340,CSP,no loop,no cycle,87.85237
+341,CSP,loop,cycle found,84.78365
+342,CSP,no loop,no cycle,79.98232
+343,CSP,loop,cycle found,80.98756
+344,CSP,no loop,no cycle,80.88287
+345,CSP,loop,cycle found,82.26509
+346,CSP,no loop,no cycle,82.87943
+347,CSP,loop,cycle found,83.04639
+348,CSP,no loop,no cycle,87.65996
+349,CSP,loop,cycle found,93.16374
+350,CSP,no loop,no cycle,86.73646
+351,CSP,loop,cycle found,92.38554
+352,CSP,no loop,no cycle,99.96334
+353,CSP,loop,cycle found,101.39341
+354,CSP,no loop,no cycle,94.54137
+355,CSP,loop,cycle found,97.06446
+356,CSP,no loop,no cycle,102.71331
+357,CSP,loop,cycle found,98.1457
+358,CSP,no loop,no cycle,96.89022
+359,CSP,loop,cycle found,103.21157
+360,CSP,no loop,no cycle,99.45823
+361,CSP,loop,cycle found,108.78768
+362,CSP,no loop,no cycle,109.40096
+363,CSP,loop,cycle found,110.66604
+364,CSP,no loop,no cycle,111.0783
+365,CSP,loop,cycle found,105.63598
+366,CSP,no loop,no cycle,104.08169
+367,CSP,loop,cycle found,115.54889
+368,CSP,no loop,no cycle,113.60166
+369,CSP,loop,cycle found,112.9554
+370,CSP,no loop,no cycle,110.97197
+371,CSP,loop,cycle found,115.60925
+372,CSP,no loop,no cycle,116.79108
+373,CSP,loop,cycle found,124.45077
+374,CSP,no loop,no cycle,116.01852
+375,CSP,loop,cycle found,117.99427
+376,CSP,no loop,no cycle,117.59089
+377,CSP,loop,cycle found,114.44994
+378,CSP,no loop,no cycle,118.47967
+379,CSP,loop,cycle found,119.61234
+380,CSP,no loop,no cycle,115.99723
+381,CSP,loop,cycle found,124.88998
+382,CSP,no loop,no cycle,123.83905
+383,CSP,loop,cycle found,129.77588
+384,CSP,no loop,no cycle,129.12486
+385,CSP,loop,cycle found,134.95076
+386,CSP,no loop,no cycle,132.91191
+387,CSP,loop,cycle found,135.28541
+388,CSP,no loop,no cycle,128.2716
+389,CSP,loop,cycle found,140.14912
+390,CSP,no loop,no cycle,134.17711
+391,CSP,loop,cycle found,138.61919
+392,CSP,no loop,no cycle,137.62268
+393,CSP,loop,cycle found,133.04385
+394,CSP,no loop,no cycle,142.94837
+395,CSP,loop,cycle found,141.04186
+396,CSP,no loop,no cycle,148.10645
+397,CSP,loop,cycle found,146.20923
+398,CSP,no loop,no cycle,143.53692
+399,CSP,loop,cycle found,149.97534
+400,CSP,no loop,no cycle,150.75288
+401,CSP,loop,cycle found,151.0179
+402,CSP,no loop,no cycle,149.65522
+403,CSP,loop,cycle found,152.16552
+404,CSP,no loop,no cycle,152.55458
+405,CSP,loop,cycle found,150.43551
+406,CSP,no loop,no cycle,163.64447
+407,CSP,loop,cycle found,164.97785

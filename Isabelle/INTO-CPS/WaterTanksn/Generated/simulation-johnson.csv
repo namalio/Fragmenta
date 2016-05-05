@@ -1,0 +1,401 @@
+Size,Environment,Kind,Result,Time
+8,Johnson,no loop,no cycle,0.03632
+9,Johnson,loop,cycle found,0.00413
+10,Johnson,no loop,no cycle,0.00233
+11,Johnson,loop,cycle found,0.00503
+12,Johnson,no loop,no cycle,0.00247
+13,Johnson,loop,cycle found,0.00305
+14,Johnson,no loop,no cycle,0.00229
+15,Johnson,loop,cycle found,0.00321
+16,Johnson,no loop,no cycle,0.00225
+17,Johnson,loop,cycle found,0.00325
+18,Johnson,no loop,no cycle,0.00221
+19,Johnson,loop,cycle found,0.00273
+20,Johnson,no loop,no cycle,0.00269
+21,Johnson,loop,cycle found,0.00267
+22,Johnson,no loop,no cycle,0.00213
+23,Johnson,loop,cycle found,0.00382
+24,Johnson,no loop,no cycle,0.0021
+25,Johnson,loop,cycle found,0.0025
+26,Johnson,no loop,no cycle,0.00203
+27,Johnson,loop,cycle found,0.00307
+28,Johnson,no loop,no cycle,0.00242
+29,Johnson,loop,cycle found,0.00244
+30,Johnson,no loop,no cycle,0.00171
+31,Johnson,loop,cycle found,0.00226
+32,Johnson,no loop,no cycle,0.00183
+33,Johnson,loop,cycle found,0.00385
+34,Johnson,no loop,no cycle,0.00271
+35,Johnson,loop,cycle found,0.00401
+36,Johnson,no loop,no cycle,0.00268
+37,Johnson,loop,cycle found,0.00259
+38,Johnson,no loop,no cycle,0.00204
+39,Johnson,loop,cycle found,0.00261
+40,Johnson,no loop,no cycle,0.00136
+41,Johnson,loop,cycle found,0.00196
+42,Johnson,no loop,no cycle,0.00175
+43,Johnson,loop,cycle found,0.00267
+44,Johnson,no loop,no cycle,0.00176
+45,Johnson,loop,cycle found,0.00192
+46,Johnson,no loop,no cycle,0.00146
+47,Johnson,loop,cycle found,0.00266
+48,Johnson,no loop,no cycle,0.00133
+49,Johnson,loop,cycle found,0.00173
+50,Johnson,no loop,no cycle,0.00148
+51,Johnson,loop,cycle found,0.0022
+52,Johnson,no loop,no cycle,0.00138
+53,Johnson,loop,cycle found,0.00202
+54,Johnson,no loop,no cycle,0.00127
+55,Johnson,loop,cycle found,0.00175
+56,Johnson,no loop,no cycle,0.00185
+57,Johnson,loop,cycle found,0.00187
+58,Johnson,no loop,no cycle,0.00148
+59,Johnson,loop,cycle found,0.0019
+60,Johnson,no loop,no cycle,0.00166
+61,Johnson,loop,cycle found,0.00188
+62,Johnson,no loop,no cycle,0.00156
+63,Johnson,loop,cycle found,0.00218
+64,Johnson,no loop,no cycle,0.00167
+65,Johnson,loop,cycle found,0.00254
+66,Johnson,no loop,no cycle,0.00162
+67,Johnson,loop,cycle found,0.00232
+68,Johnson,no loop,no cycle,0.00139
+69,Johnson,loop,cycle found,0.00285
+70,Johnson,no loop,no cycle,0.00127
+71,Johnson,loop,cycle found,0.00236
+72,Johnson,no loop,no cycle,0.00223
+73,Johnson,loop,cycle found,0.00213
+74,Johnson,no loop,no cycle,0.00123
+75,Johnson,loop,cycle found,0.00213
+76,Johnson,no loop,no cycle,0.00168
+77,Johnson,loop,cycle found,0.00231
+78,Johnson,no loop,no cycle,0.00157
+79,Johnson,loop,cycle found,0.00195
+80,Johnson,no loop,no cycle,0.00125
+81,Johnson,loop,cycle found,0.0019
+82,Johnson,no loop,no cycle,0.00149
+83,Johnson,loop,cycle found,0.00264
+84,Johnson,no loop,no cycle,0.00128
+85,Johnson,loop,cycle found,0.00221
+86,Johnson,no loop,no cycle,0.00159
+87,Johnson,loop,cycle found,0.00281
+88,Johnson,no loop,no cycle,0.00209
+89,Johnson,loop,cycle found,0.00249
+90,Johnson,no loop,no cycle,0.00161
+91,Johnson,loop,cycle found,0.002
+92,Johnson,no loop,no cycle,0.00121
+93,Johnson,loop,cycle found,0.00242
+94,Johnson,no loop,no cycle,0.00153
+95,Johnson,loop,cycle found,0.00221
+96,Johnson,no loop,no cycle,0.00125
+97,Johnson,loop,cycle found,0.00218
+98,Johnson,no loop,no cycle,0.00175
+99,Johnson,loop,cycle found,0.00314
+100,Johnson,no loop,no cycle,0.00125
+101,Johnson,loop,cycle found,0.00228
+102,Johnson,no loop,no cycle,0.00179
+103,Johnson,loop,cycle found,0.00272
+104,Johnson,no loop,no cycle,0.00152
+105,Johnson,loop,cycle found,0.00314
+106,Johnson,no loop,no cycle,0.0016
+107,Johnson,loop,cycle found,0.00248
+108,Johnson,no loop,no cycle,0.00185
+109,Johnson,loop,cycle found,0.00367
+110,Johnson,no loop,no cycle,0.00157
+111,Johnson,loop,cycle found,0.00366
+112,Johnson,no loop,no cycle,0.00213
+113,Johnson,loop,cycle found,0.00325
+114,Johnson,no loop,no cycle,0.00136
+115,Johnson,loop,cycle found,0.00279
+116,Johnson,no loop,no cycle,0.00195
+117,Johnson,loop,cycle found,0.00264
+118,Johnson,no loop,no cycle,0.00146
+119,Johnson,loop,cycle found,0.00423
+120,Johnson,no loop,no cycle,0.00149
+121,Johnson,loop,cycle found,0.00316
+122,Johnson,no loop,no cycle,0.00199
+123,Johnson,loop,cycle found,0.00313
+124,Johnson,no loop,no cycle,0.00201
+125,Johnson,loop,cycle found,0.0039
+126,Johnson,no loop,no cycle,0.00136
+127,Johnson,loop,cycle found,0.00267
+128,Johnson,no loop,no cycle,0.00132
+129,Johnson,loop,cycle found,0.00302
+130,Johnson,no loop,no cycle,0.00192
+131,Johnson,loop,cycle found,0.00297
+132,Johnson,no loop,no cycle,0.00156
+133,Johnson,loop,cycle found,0.00288
+134,Johnson,no loop,no cycle,0.00166
+135,Johnson,loop,cycle found,0.00499
+136,Johnson,no loop,no cycle,0.00143
+137,Johnson,loop,cycle found,0.0029
+138,Johnson,no loop,no cycle,0.00137
+139,Johnson,loop,cycle found,0.00298
+140,Johnson,no loop,no cycle,0.00143
+141,Johnson,loop,cycle found,0.00309
+142,Johnson,no loop,no cycle,0.0018
+143,Johnson,loop,cycle found,0.00329
+144,Johnson,no loop,no cycle,0.00148
+145,Johnson,loop,cycle found,0.00334
+146,Johnson,no loop,no cycle,0.00141
+147,Johnson,loop,cycle found,0.00303
+148,Johnson,no loop,no cycle,0.00142
+149,Johnson,loop,cycle found,0.0035
+150,Johnson,no loop,no cycle,0.00146
+151,Johnson,loop,cycle found,0.00407
+152,Johnson,no loop,no cycle,0.00157
+153,Johnson,loop,cycle found,0.0051
+154,Johnson,no loop,no cycle,0.00166
+155,Johnson,loop,cycle found,0.00436
+156,Johnson,no loop,no cycle,0.00158
+157,Johnson,loop,cycle found,0.0035
+158,Johnson,no loop,no cycle,0.0016
+159,Johnson,loop,cycle found,0.00401
+160,Johnson,no loop,no cycle,0.00165
+161,Johnson,loop,cycle found,0.00389
+162,Johnson,no loop,no cycle,0.00152
+163,Johnson,loop,cycle found,0.0035
+164,Johnson,no loop,no cycle,0.00151
+165,Johnson,loop,cycle found,0.00353
+166,Johnson,no loop,no cycle,0.00157
+167,Johnson,loop,cycle found,0.00413
+168,Johnson,no loop,no cycle,0.00182
+169,Johnson,loop,cycle found,0.00408
+170,Johnson,no loop,no cycle,0.00226
+171,Johnson,loop,cycle found,0.00659
+172,Johnson,no loop,no cycle,0.00206
+173,Johnson,loop,cycle found,0.0054
+174,Johnson,no loop,no cycle,0.00168
+175,Johnson,loop,cycle found,0.00392
+176,Johnson,no loop,no cycle,0.00224
+177,Johnson,loop,cycle found,0.00434
+178,Johnson,no loop,no cycle,0.00188
+179,Johnson,loop,cycle found,0.00469
+180,Johnson,no loop,no cycle,0.0019
+181,Johnson,loop,cycle found,0.00443
+182,Johnson,no loop,no cycle,0.0018
+183,Johnson,loop,cycle found,0.00421
+184,Johnson,no loop,no cycle,0.00192
+185,Johnson,loop,cycle found,0.00431
+186,Johnson,no loop,no cycle,0.00238
+187,Johnson,loop,cycle found,0.00496
+188,Johnson,no loop,no cycle,0.00195
+189,Johnson,loop,cycle found,0.00457
+190,Johnson,no loop,no cycle,0.00186
+191,Johnson,loop,cycle found,0.005
+192,Johnson,no loop,no cycle,0.00214
+193,Johnson,loop,cycle found,0.00489
+194,Johnson,no loop,no cycle,0.00258
+195,Johnson,loop,cycle found,0.00493
+196,Johnson,no loop,no cycle,0.0024
+197,Johnson,loop,cycle found,0.00736
+198,Johnson,no loop,no cycle,0.00181
+199,Johnson,loop,cycle found,0.00727
+200,Johnson,no loop,no cycle,0.00206
+201,Johnson,loop,cycle found,0.0051
+202,Johnson,no loop,no cycle,0.00227
+203,Johnson,loop,cycle found,0.0053
+204,Johnson,no loop,no cycle,0.00274
+205,Johnson,loop,cycle found,0.0048
+206,Johnson,no loop,no cycle,0.00195
+207,Johnson,loop,cycle found,0.00487
+208,Johnson,no loop,no cycle,0.00205
+209,Johnson,loop,cycle found,0.00526
+210,Johnson,no loop,no cycle,0.00188
+211,Johnson,loop,cycle found,0.00512
+212,Johnson,no loop,no cycle,0.00193
+213,Johnson,loop,cycle found,0.0051
+214,Johnson,no loop,no cycle,0.00193
+215,Johnson,loop,cycle found,0.00496
+216,Johnson,no loop,no cycle,0.00261
+217,Johnson,loop,cycle found,0.00621
+218,Johnson,no loop,no cycle,0.00194
+219,Johnson,loop,cycle found,0.00524
+220,Johnson,no loop,no cycle,0.00212
+221,Johnson,loop,cycle found,0.00552
+222,Johnson,no loop,no cycle,0.00255
+223,Johnson,loop,cycle found,0.00519
+224,Johnson,no loop,no cycle,0.00204
+225,Johnson,loop,cycle found,0.00569
+226,Johnson,no loop,no cycle,0.00218
+227,Johnson,loop,cycle found,0.0054
+228,Johnson,no loop,no cycle,0.00294
+229,Johnson,loop,cycle found,0.00692
+230,Johnson,no loop,no cycle,0.00282
+231,Johnson,loop,cycle found,0.00562
+232,Johnson,no loop,no cycle,0.00203
+233,Johnson,loop,cycle found,0.0056
+234,Johnson,no loop,no cycle,0.00211
+235,Johnson,loop,cycle found,0.00577
+236,Johnson,no loop,no cycle,0.00208
+237,Johnson,loop,cycle found,0.00586
+238,Johnson,no loop,no cycle,0.00207
+239,Johnson,loop,cycle found,0.00599
+240,Johnson,no loop,no cycle,0.00219
+241,Johnson,loop,cycle found,0.00632
+242,Johnson,no loop,no cycle,0.00379
+243,Johnson,loop,cycle found,0.00742
+244,Johnson,no loop,no cycle,0.00217
+245,Johnson,loop,cycle found,0.00656
+246,Johnson,no loop,no cycle,0.0022
+247,Johnson,loop,cycle found,0.0062
+248,Johnson,no loop,no cycle,0.00213
+249,Johnson,loop,cycle found,0.0067
+250,Johnson,no loop,no cycle,0.00252
+251,Johnson,loop,cycle found,0.00654
+252,Johnson,no loop,no cycle,0.00218
+253,Johnson,loop,cycle found,0.00736
+254,Johnson,no loop,no cycle,0.00241
+255,Johnson,loop,cycle found,0.00626
+256,Johnson,no loop,no cycle,0.00239
+257,Johnson,loop,cycle found,0.00753
+258,Johnson,no loop,no cycle,0.00234
+259,Johnson,loop,cycle found,0.00669
+260,Johnson,no loop,no cycle,0.0023
+261,Johnson,loop,cycle found,0.0067
+262,Johnson,no loop,no cycle,0.00239
+263,Johnson,loop,cycle found,0.00733
+264,Johnson,no loop,no cycle,0.00256
+265,Johnson,loop,cycle found,0.00735
+266,Johnson,no loop,no cycle,0.00261
+267,Johnson,loop,cycle found,0.00764
+268,Johnson,no loop,no cycle,0.00276
+269,Johnson,loop,cycle found,0.00764
+270,Johnson,no loop,no cycle,0.00265
+271,Johnson,loop,cycle found,0.00724
+272,Johnson,no loop,no cycle,0.00236
+273,Johnson,loop,cycle found,0.008
+274,Johnson,no loop,no cycle,0.00256
+275,Johnson,loop,cycle found,0.00735
+276,Johnson,no loop,no cycle,0.00258
+277,Johnson,loop,cycle found,0.00716
+278,Johnson,no loop,no cycle,0.00233
+279,Johnson,loop,cycle found,0.0076
+280,Johnson,no loop,no cycle,0.00272
+281,Johnson,loop,cycle found,0.00784
+282,Johnson,no loop,no cycle,0.0026
+283,Johnson,loop,cycle found,0.00785
+284,Johnson,no loop,no cycle,0.00276
+285,Johnson,loop,cycle found,0.00769
+286,Johnson,no loop,no cycle,0.00264
+287,Johnson,loop,cycle found,0.00842
+288,Johnson,no loop,no cycle,0.00273
+289,Johnson,loop,cycle found,0.00893
+290,Johnson,no loop,no cycle,0.00267
+291,Johnson,loop,cycle found,0.00871
+292,Johnson,no loop,no cycle,0.00389
+293,Johnson,loop,cycle found,0.00848
+294,Johnson,no loop,no cycle,0.00261
+295,Johnson,loop,cycle found,0.00872
+296,Johnson,no loop,no cycle,0.00475
+297,Johnson,loop,cycle found,0.00901
+298,Johnson,no loop,no cycle,0.00278
+299,Johnson,loop,cycle found,0.00834
+300,Johnson,no loop,no cycle,0.00395
+301,Johnson,loop,cycle found,0.0088
+302,Johnson,no loop,no cycle,0.0028
+303,Johnson,loop,cycle found,0.00872
+304,Johnson,no loop,no cycle,0.00279
+305,Johnson,loop,cycle found,0.00899
+306,Johnson,no loop,no cycle,0.00288
+307,Johnson,loop,cycle found,0.00968
+308,Johnson,no loop,no cycle,0.00324
+309,Johnson,loop,cycle found,0.00904
+310,Johnson,no loop,no cycle,0.00287
+311,Johnson,loop,cycle found,0.00929
+312,Johnson,no loop,no cycle,0.00294
+313,Johnson,loop,cycle found,0.00915
+314,Johnson,no loop,no cycle,0.00314
+315,Johnson,loop,cycle found,0.0097
+316,Johnson,no loop,no cycle,0.00305
+317,Johnson,loop,cycle found,0.00969
+318,Johnson,no loop,no cycle,0.0028
+319,Johnson,loop,cycle found,0.01002
+320,Johnson,no loop,no cycle,0.00288
+321,Johnson,loop,cycle found,0.01001
+322,Johnson,no loop,no cycle,0.00297
+323,Johnson,loop,cycle found,0.01
+324,Johnson,no loop,no cycle,0.00303
+325,Johnson,loop,cycle found,0.00985
+326,Johnson,no loop,no cycle,0.00293
+327,Johnson,loop,cycle found,0.01015
+328,Johnson,no loop,no cycle,0.00307
+329,Johnson,loop,cycle found,0.01064
+330,Johnson,no loop,no cycle,0.00303
+331,Johnson,loop,cycle found,0.01121
+332,Johnson,no loop,no cycle,0.00311
+333,Johnson,loop,cycle found,0.01096
+334,Johnson,no loop,no cycle,0.00302
+335,Johnson,loop,cycle found,0.01064
+336,Johnson,no loop,no cycle,0.00421
+337,Johnson,loop,cycle found,0.01203
+338,Johnson,no loop,no cycle,0.00427
+339,Johnson,loop,cycle found,0.01039
+340,Johnson,no loop,no cycle,0.00324
+341,Johnson,loop,cycle found,0.01056
+342,Johnson,no loop,no cycle,0.00295
+343,Johnson,loop,cycle found,0.01093
+344,Johnson,no loop,no cycle,0.00328
+345,Johnson,loop,cycle found,0.01179
+346,Johnson,no loop,no cycle,0.00316
+347,Johnson,loop,cycle found,0.01156
+348,Johnson,no loop,no cycle,0.00316
+349,Johnson,loop,cycle found,0.01101
+350,Johnson,no loop,no cycle,0.00326
+351,Johnson,loop,cycle found,0.01097
+352,Johnson,no loop,no cycle,0.00344
+353,Johnson,loop,cycle found,0.01193
+354,Johnson,no loop,no cycle,0.0039
+355,Johnson,loop,cycle found,0.01195
+356,Johnson,no loop,no cycle,0.00372
+357,Johnson,loop,cycle found,0.0117
+358,Johnson,no loop,no cycle,0.00366
+359,Johnson,loop,cycle found,0.01445
+360,Johnson,no loop,no cycle,0.00338
+361,Johnson,loop,cycle found,0.01176
+362,Johnson,no loop,no cycle,0.00415
+363,Johnson,loop,cycle found,0.0119
+364,Johnson,no loop,no cycle,0.00373
+365,Johnson,loop,cycle found,0.01644
+366,Johnson,no loop,no cycle,0.00358
+367,Johnson,loop,cycle found,0.01224
+368,Johnson,no loop,no cycle,0.00483
+369,Johnson,loop,cycle found,0.012
+370,Johnson,no loop,no cycle,0.00343
+371,Johnson,loop,cycle found,0.01224
+372,Johnson,no loop,no cycle,0.00368
+373,Johnson,loop,cycle found,0.01495
+374,Johnson,no loop,no cycle,0.00365
+375,Johnson,loop,cycle found,0.01378
+376,Johnson,no loop,no cycle,0.0037
+377,Johnson,loop,cycle found,0.01265
+378,Johnson,no loop,no cycle,0.00353
+379,Johnson,loop,cycle found,0.01452
+380,Johnson,no loop,no cycle,0.00374
+381,Johnson,loop,cycle found,0.0141
+382,Johnson,no loop,no cycle,0.00374
+383,Johnson,loop,cycle found,0.01457
+384,Johnson,no loop,no cycle,0.00498
+385,Johnson,loop,cycle found,0.01329
+386,Johnson,no loop,no cycle,0.00385
+387,Johnson,loop,cycle found,0.01297
+388,Johnson,no loop,no cycle,0.0036
+389,Johnson,loop,cycle found,0.01306
+390,Johnson,no loop,no cycle,0.00355
+391,Johnson,loop,cycle found,0.01355
+392,Johnson,no loop,no cycle,0.00388
+393,Johnson,loop,cycle found,0.01397
+394,Johnson,no loop,no cycle,0.00384
+395,Johnson,loop,cycle found,0.01607
+396,Johnson,no loop,no cycle,0.00412
+397,Johnson,loop,cycle found,0.01444
+398,Johnson,no loop,no cycle,0.00416
+399,Johnson,loop,cycle found,0.01529
+400,Johnson,no loop,no cycle,0.00524
+401,Johnson,loop,cycle found,0.01628
+402,Johnson,no loop,no cycle,0.00397
+403,Johnson,loop,cycle found,0.01538
+404,Johnson,no loop,no cycle,0.00621
+405,Johnson,loop,cycle found,0.01561
+406,Johnson,no loop,no cycle,0.00503
+407,Johnson,loop,cycle found,0.01623

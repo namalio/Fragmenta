@@ -1,0 +1,61 @@
+
+channel e_t17wi_t17wo, e_t16wo_t17wi, e_t16wi_t16wo, e_t15wo_t16wi, e_t15wi_t15wo, e_t14wo_t15wi, e_t14wi_t14wo, e_t13wo_t14wi, e_t13wi_t13wo, e_t12wo_t13wi, e_t12wi_t12wo, e_t11wo_t12wi, e_t11wi_t11wo, e_t10wo_t11wi, e_t10wi_t10wo, e_t9wo_t10wi, e_t9wi_t9wo, e_t8wo_t9wi, e_t8wi_t8wo, e_t7wo_t8wi, e_t7wi_t7wo, e_t6wo_t7wi, e_t6wi_t6wo, e_t5wo_t6wi, e_t5wi_t5wo, e_t4wo_t5wi, e_t4wi_t4wo, e_t3wo_t4wi, e_t3wi_t3wo, e_t2wo_t3wi, e_t2wi_t2wo, e_t1wo_t2wi, e_t1wi_t1wo, e_cwli_cvo, e_sw_t17wi, e_t17wi_t17wlo, e_t17wo_dwi, e_t17wlo_cwli, e_cvo_t17vi, e_t17vi_t17wo, e_dwi_dwo, e_dwo_t1wi
+
+edges = {e_t17wi_t17wo, e_t16wo_t17wi, e_t16wi_t16wo, e_t15wo_t16wi, e_t15wi_t15wo, e_t14wo_t15wi, e_t14wi_t14wo, e_t13wo_t14wi, e_t13wi_t13wo, e_t12wo_t13wi, e_t12wi_t12wo, e_t11wo_t12wi, e_t11wi_t11wo, e_t10wo_t11wi, e_t10wi_t10wo, e_t9wo_t10wi, e_t9wi_t9wo, e_t8wo_t9wi, e_t8wi_t8wo, e_t7wo_t8wi, e_t7wi_t7wo, e_t6wo_t7wi, e_t6wi_t6wo, e_t5wo_t6wi, e_t5wi_t5wo, e_t4wo_t5wi, e_t4wi_t4wo, e_t3wo_t4wi, e_t3wi_t3wo, e_t2wo_t3wi, e_t2wi_t2wo, e_t1wo_t2wi, e_t1wi_t1wo, e_cwli_cvo, e_sw_t17wi, e_t17wi_t17wlo, e_t17wo_dwi, e_t17wlo_cwli, e_cvo_t17vi, e_t17vi_t17wo, e_dwi_dwo, e_dwo_t1wi}
+
+Limited = 
+   let
+      Limited0(E, n) = 
+         if n > 0
+            then [] e : E @ e -> (Limited0(E, n-1) |~| SKIP)
+            else STOP
+   within
+      Limited0(edges, 42)
+
+PortDependancyGraph = 
+   let
+      P(1) = e_t17wi_t17wo -> P(2) [] e_t17wi_t17wlo -> P(39)
+      P(2) = e_t17wo_dwi -> P(38)
+      P(3) = e_t16wi_t16wo -> P(4)
+      P(4) = e_t16wo_t17wi -> P(1)
+      P(5) = e_t15wi_t15wo -> P(6)
+      P(6) = e_t15wo_t16wi -> P(3)
+      P(7) = e_t14wi_t14wo -> P(8)
+      P(8) = e_t14wo_t15wi -> P(5)
+      P(9) = e_t13wi_t13wo -> P(10)
+      P(10) = e_t13wo_t14wi -> P(7)
+      P(11) = e_t12wi_t12wo -> P(12)
+      P(12) = e_t12wo_t13wi -> P(9)
+      P(13) = e_t11wi_t11wo -> P(14)
+      P(14) = e_t11wo_t12wi -> P(11)
+      P(15) = e_t10wi_t10wo -> P(16)
+      P(16) = e_t10wo_t11wi -> P(13)
+      P(17) = e_t9wi_t9wo -> P(18)
+      P(18) = e_t9wo_t10wi -> P(15)
+      P(19) = e_t8wi_t8wo -> P(20)
+      P(20) = e_t8wo_t9wi -> P(17)
+      P(21) = e_t7wi_t7wo -> P(22)
+      P(22) = e_t7wo_t8wi -> P(19)
+      P(23) = e_t6wi_t6wo -> P(24)
+      P(24) = e_t6wo_t7wi -> P(21)
+      P(25) = e_t5wi_t5wo -> P(26)
+      P(26) = e_t5wo_t6wi -> P(23)
+      P(27) = e_t4wi_t4wo -> P(28)
+      P(28) = e_t4wo_t5wi -> P(25)
+      P(29) = e_t3wi_t3wo -> P(30)
+      P(30) = e_t3wo_t4wi -> P(27)
+      P(31) = e_t2wi_t2wo -> P(32)
+      P(32) = e_t2wo_t3wi -> P(29)
+      P(33) = e_t1wi_t1wo -> P(34)
+      P(34) = e_t1wo_t2wi -> P(31)
+      P(35) = e_sw_t17wi -> P(1)
+      P(36) = e_cwli_cvo -> P(37)
+      P(37) = e_cvo_t17vi -> P(40)
+      P(38) = e_dwi_dwo -> P(41)
+      P(39) = e_t17wlo_cwli -> P(36)
+      P(40) = e_t17vi_t17wo -> P(2)
+      P(41) = e_dwo_t1wi -> P(33)
+   within
+      [] i : {1..41} @ P(i)
+
+assert Limited [T= PortDependancyGraph

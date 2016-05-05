@@ -1,0 +1,31 @@
+
+channel e_t3wi_t3wo, e_t2wo_t3wi, e_t2wi_t2wo, e_t1wo_t2wi, e_t1wi_t1wo, e_cwli_cvo, e_sw_t3wi, e_t3wi_t3wlo, e_t3wo_dwi, e_t3wlo_cwli, e_cvo_t3vi, e_t3vi_t3wo
+
+edges = {e_t3wi_t3wo, e_t2wo_t3wi, e_t2wi_t2wo, e_t1wo_t2wi, e_t1wi_t1wo, e_cwli_cvo, e_sw_t3wi, e_t3wi_t3wlo, e_t3wo_dwi, e_t3wlo_cwli, e_cvo_t3vi, e_t3vi_t3wo}
+
+Limited = 
+   let
+      Limited0(E, n) = 
+         if n > 0
+            then [] e : E @ e -> (Limited0(E, n-1) |~| SKIP)
+            else STOP
+   within
+      Limited0(edges, 12)
+
+PortDependancyGraph = 
+   let
+      P(1) = e_t3wi_t3wo -> P(2) [] e_t3wi_t3wlo -> P(10)
+      P(2) = e_t3wo_dwi -> SKIP
+      P(3) = e_t2wi_t2wo -> P(4)
+      P(4) = e_t2wo_t3wi -> P(1)
+      P(5) = e_t1wi_t1wo -> P(6)
+      P(6) = e_t1wo_t2wi -> P(3)
+      P(7) = e_sw_t3wi -> P(1)
+      P(8) = e_cwli_cvo -> P(9)
+      P(9) = e_cvo_t3vi -> P(11)
+      P(10) = e_t3wlo_cwli -> P(8)
+      P(11) = e_t3vi_t3wo -> P(2)
+   within
+      [] i : {1..11} @ P(i)
+
+assert Limited [T= PortDependancyGraph

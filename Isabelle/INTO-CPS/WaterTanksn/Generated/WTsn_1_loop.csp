@@ -1,0 +1,29 @@
+
+channel e_t1wi_t1wo, e_cwli_cvo, e_sw_t1wi, e_t1wi_t1wlo, e_t1wo_dwi, e_t1wlo_cwli, e_cvo_t1vi, e_t1vi_t1wo, e_dwi_dwo, e_dwo_t1wi
+
+edges = {e_t1wi_t1wo, e_cwli_cvo, e_sw_t1wi, e_t1wi_t1wlo, e_t1wo_dwi, e_t1wlo_cwli, e_cvo_t1vi, e_t1vi_t1wo, e_dwi_dwo, e_dwo_t1wi}
+
+Limited = 
+   let
+      Limited0(E, n) = 
+         if n > 0
+            then [] e : E @ e -> (Limited0(E, n-1) |~| SKIP)
+            else STOP
+   within
+      Limited0(edges, 10)
+
+PortDependancyGraph = 
+   let
+      P(1) = e_t1wi_t1wo -> P(2) [] e_t1wi_t1wlo -> P(7)
+      P(2) = e_t1wo_dwi -> P(6)
+      P(3) = e_sw_t1wi -> P(1)
+      P(4) = e_cwli_cvo -> P(5)
+      P(5) = e_cvo_t1vi -> P(8)
+      P(6) = e_dwi_dwo -> P(9)
+      P(7) = e_t1wlo_cwli -> P(4)
+      P(8) = e_t1vi_t1wo -> P(2)
+      P(9) = e_dwo_t1wi -> P(1)
+   within
+      [] i : {1..9} @ P(i)
+
+assert Limited [T= PortDependancyGraph

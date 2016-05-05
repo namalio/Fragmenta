@@ -1,0 +1,47 @@
+
+channel e_t11wi_t11wo, e_t10wo_t11wi, e_t10wi_t10wo, e_t9wo_t10wi, e_t9wi_t9wo, e_t8wo_t9wi, e_t8wi_t8wo, e_t7wo_t8wi, e_t7wi_t7wo, e_t6wo_t7wi, e_t6wi_t6wo, e_t5wo_t6wi, e_t5wi_t5wo, e_t4wo_t5wi, e_t4wi_t4wo, e_t3wo_t4wi, e_t3wi_t3wo, e_t2wo_t3wi, e_t2wi_t2wo, e_t1wo_t2wi, e_t1wi_t1wo, e_cwli_cvo, e_sw_t11wi, e_t11wi_t11wlo, e_t11wo_dwi, e_t11wlo_cwli, e_cvo_t11vi, e_t11vi_t11wo
+
+edges = {e_t11wi_t11wo, e_t10wo_t11wi, e_t10wi_t10wo, e_t9wo_t10wi, e_t9wi_t9wo, e_t8wo_t9wi, e_t8wi_t8wo, e_t7wo_t8wi, e_t7wi_t7wo, e_t6wo_t7wi, e_t6wi_t6wo, e_t5wo_t6wi, e_t5wi_t5wo, e_t4wo_t5wi, e_t4wi_t4wo, e_t3wo_t4wi, e_t3wi_t3wo, e_t2wo_t3wi, e_t2wi_t2wo, e_t1wo_t2wi, e_t1wi_t1wo, e_cwli_cvo, e_sw_t11wi, e_t11wi_t11wlo, e_t11wo_dwi, e_t11wlo_cwli, e_cvo_t11vi, e_t11vi_t11wo}
+
+Limited = 
+   let
+      Limited0(E, n) = 
+         if n > 0
+            then [] e : E @ e -> (Limited0(E, n-1) |~| SKIP)
+            else STOP
+   within
+      Limited0(edges, 28)
+
+PortDependancyGraph = 
+   let
+      P(1) = e_t11wi_t11wo -> P(2) [] e_t11wi_t11wlo -> P(26)
+      P(2) = e_t11wo_dwi -> SKIP
+      P(3) = e_t10wi_t10wo -> P(4)
+      P(4) = e_t10wo_t11wi -> P(1)
+      P(5) = e_t9wi_t9wo -> P(6)
+      P(6) = e_t9wo_t10wi -> P(3)
+      P(7) = e_t8wi_t8wo -> P(8)
+      P(8) = e_t8wo_t9wi -> P(5)
+      P(9) = e_t7wi_t7wo -> P(10)
+      P(10) = e_t7wo_t8wi -> P(7)
+      P(11) = e_t6wi_t6wo -> P(12)
+      P(12) = e_t6wo_t7wi -> P(9)
+      P(13) = e_t5wi_t5wo -> P(14)
+      P(14) = e_t5wo_t6wi -> P(11)
+      P(15) = e_t4wi_t4wo -> P(16)
+      P(16) = e_t4wo_t5wi -> P(13)
+      P(17) = e_t3wi_t3wo -> P(18)
+      P(18) = e_t3wo_t4wi -> P(15)
+      P(19) = e_t2wi_t2wo -> P(20)
+      P(20) = e_t2wo_t3wi -> P(17)
+      P(21) = e_t1wi_t1wo -> P(22)
+      P(22) = e_t1wo_t2wi -> P(19)
+      P(23) = e_sw_t11wi -> P(1)
+      P(24) = e_cwli_cvo -> P(25)
+      P(25) = e_cvo_t11vi -> P(27)
+      P(26) = e_t11wlo_cwli -> P(24)
+      P(27) = e_t11vi_t11wo -> P(2)
+   within
+      [] i : {1..27} @ P(i)
+
+assert Limited [T= PortDependancyGraph

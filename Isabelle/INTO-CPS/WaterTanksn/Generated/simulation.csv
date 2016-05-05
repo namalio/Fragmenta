@@ -1,0 +1,333 @@
+Size,Environment,Kind,Result,Time
+8,Alloy,no loop,passed,0.23727
+9,Alloy,loop,failed,0.04008
+8,CSP,no loop,passed,0.08596
+9,CSP,loop,failed,0.01646
+10,Alloy,no loop,passed,0.03159
+11,Alloy,loop,failed,0.03492
+10,CSP,no loop,passed,0.01938
+11,CSP,loop,failed,0.02382
+12,Alloy,no loop,passed,0.03177
+13,Alloy,loop,failed,0.03732
+12,CSP,no loop,passed,0.01857
+13,CSP,loop,failed,0.02471
+14,Alloy,no loop,passed,0.03487
+15,Alloy,loop,failed,0.04238
+14,CSP,no loop,passed,0.02512
+15,CSP,loop,failed,0.02619
+16,Alloy,no loop,passed,0.04436
+17,Alloy,loop,failed,0.06057
+16,CSP,no loop,passed,0.02693
+17,CSP,loop,failed,0.03138
+18,Alloy,no loop,passed,0.07225
+19,Alloy,loop,failed,0.08101
+18,CSP,no loop,passed,0.03183
+19,CSP,loop,failed,0.03563
+20,Alloy,no loop,passed,0.07854
+21,Alloy,loop,failed,0.09502
+20,CSP,no loop,passed,0.0365
+21,CSP,loop,failed,0.03701
+22,Alloy,no loop,passed,0.09812
+23,Alloy,loop,failed,0.12562
+22,CSP,no loop,passed,0.0427
+23,CSP,loop,failed,0.04448
+24,Alloy,no loop,passed,0.13742
+25,Alloy,loop,failed,0.14293
+24,CSP,no loop,passed,0.0474
+25,CSP,loop,failed,0.05961
+26,Alloy,no loop,passed,0.15647
+27,Alloy,loop,failed,0.17935
+26,CSP,no loop,passed,0.0514
+27,CSP,loop,failed,0.05993
+28,Alloy,no loop,passed,0.20366
+29,Alloy,loop,failed,0.2253
+28,CSP,no loop,passed,0.05903
+29,CSP,loop,failed,0.06968
+30,Alloy,no loop,passed,0.25958
+31,Alloy,loop,failed,0.27279
+30,CSP,no loop,passed,0.06613
+31,CSP,loop,failed,0.0839
+32,Alloy,no loop,passed,0.31467
+33,Alloy,loop,failed,0.45442
+32,CSP,no loop,passed,0.08745
+33,CSP,loop,failed,0.09794
+34,Alloy,no loop,passed,0.44314
+35,Alloy,loop,failed,0.48858
+34,CSP,no loop,passed,0.087
+35,CSP,loop,failed,0.10006
+36,Alloy,no loop,passed,0.52273
+37,Alloy,loop,failed,0.60384
+36,CSP,no loop,passed,0.10329
+37,CSP,loop,failed,0.11574
+38,Alloy,no loop,passed,0.64306
+39,Alloy,loop,failed,0.74105
+38,CSP,no loop,passed,0.11397
+39,CSP,loop,failed,0.138
+40,Alloy,no loop,passed,0.76629
+41,Alloy,loop,failed,0.88787
+40,CSP,no loop,passed,0.12977
+41,CSP,loop,failed,0.15014
+42,Alloy,no loop,passed,0.9638
+43,Alloy,loop,failed,0.97032
+42,CSP,no loop,passed,0.14376
+43,CSP,loop,failed,0.16635
+44,Alloy,no loop,passed,1.12575
+45,Alloy,loop,failed,1.19583
+44,CSP,no loop,passed,0.17202
+45,CSP,loop,failed,0.2032
+46,Alloy,no loop,passed,1.15727
+47,Alloy,loop,failed,1.35636
+46,CSP,no loop,passed,0.19405
+47,CSP,loop,failed,0.2017
+48,Alloy,no loop,passed,1.42063
+49,Alloy,loop,failed,1.49053
+48,CSP,no loop,passed,0.20219
+49,CSP,loop,failed,0.24171
+50,Alloy,no loop,passed,1.57972
+51,Alloy,loop,failed,1.78647
+50,CSP,no loop,passed,0.22559
+51,CSP,loop,failed,0.26296
+52,Alloy,no loop,passed,1.90885
+53,Alloy,loop,failed,2.15689
+52,CSP,no loop,passed,0.2516
+53,CSP,loop,failed,0.28919
+54,Alloy,no loop,passed,2.04093
+55,Alloy,loop,failed,2.22499
+54,CSP,no loop,passed,0.27875
+55,CSP,loop,failed,0.31473
+56,Alloy,no loop,passed,2.37198
+57,Alloy,loop,failed,2.49574
+56,CSP,no loop,passed,0.29704
+57,CSP,loop,failed,0.34382
+58,Alloy,no loop,passed,3.26245
+59,Alloy,loop,failed,2.71847
+58,CSP,no loop,passed,0.33361
+59,CSP,loop,failed,0.38125
+60,Alloy,no loop,passed,2.8333
+61,Alloy,loop,failed,3.01275
+60,CSP,no loop,passed,0.36555
+61,CSP,loop,failed,0.39159
+62,Alloy,no loop,passed,3.11259
+63,Alloy,loop,failed,3.3373
+62,CSP,no loop,passed,0.4067
+63,CSP,loop,failed,0.43298
+64,Alloy,no loop,passed,3.42764
+65,Alloy,loop,failed,4.59583
+64,CSP,no loop,passed,0.46927
+65,CSP,loop,failed,0.48268
+66,Alloy,no loop,passed,4.74068
+67,Alloy,loop,failed,5.01726
+66,CSP,no loop,passed,0.48232
+67,CSP,loop,failed,0.497
+68,Alloy,no loop,passed,5.83433
+69,Alloy,loop,failed,5.62623
+68,CSP,no loop,passed,0.52423
+69,CSP,loop,failed,0.5277
+70,Alloy,no loop,passed,5.76095
+71,Alloy,loop,failed,6.19128
+70,CSP,no loop,passed,0.56446
+71,CSP,loop,failed,0.59207
+72,Alloy,no loop,passed,6.75335
+73,Alloy,loop,failed,6.55364
+72,CSP,no loop,passed,0.62001
+73,CSP,loop,failed,0.60347
+74,Alloy,no loop,passed,6.92161
+75,Alloy,loop,failed,7.0251
+74,CSP,no loop,passed,0.63444
+75,CSP,loop,failed,0.67474
+76,Alloy,no loop,passed,7.38451
+77,Alloy,loop,failed,8.13728
+76,CSP,no loop,passed,0.6959
+77,CSP,loop,failed,0.72671
+78,Alloy,no loop,passed,8.42603
+79,Alloy,loop,failed,9.1526
+78,CSP,no loop,passed,0.74318
+79,CSP,loop,failed,0.73725
+80,Alloy,no loop,passed,9.43744
+81,Alloy,loop,failed,9.35997
+80,CSP,no loop,passed,0.79303
+81,CSP,loop,failed,0.84456
+82,Alloy,no loop,passed,9.52733
+83,Alloy,loop,failed,9.84493
+82,CSP,no loop,passed,0.84464
+83,CSP,loop,failed,0.93039
+84,Alloy,no loop,passed,10.20146
+85,Alloy,loop,failed,10.74933
+84,CSP,no loop,passed,0.91384
+85,CSP,loop,failed,0.90981
+86,Alloy,no loop,passed,11.15226
+87,Alloy,loop,failed,11.91646
+86,CSP,no loop,passed,0.97734
+87,CSP,loop,failed,1.00579
+88,Alloy,no loop,passed,13.02891
+89,Alloy,loop,failed,12.55131
+88,CSP,no loop,passed,1.05983
+89,CSP,loop,failed,1.04014
+90,Alloy,no loop,passed,13.67768
+91,Alloy,loop,failed,14.46956
+90,CSP,no loop,passed,1.07809
+91,CSP,loop,failed,1.13531
+92,Alloy,no loop,passed,13.45883
+93,Alloy,loop,failed,14.26417
+92,CSP,no loop,passed,1.17587
+93,CSP,loop,failed,1.24246
+94,Alloy,no loop,passed,15.21212
+95,Alloy,loop,failed,16.9307
+94,CSP,no loop,passed,1.25369
+95,CSP,loop,failed,1.31042
+96,Alloy,no loop,passed,16.0823
+97,Alloy,loop,failed,18.13487
+96,CSP,no loop,passed,1.30003
+97,CSP,loop,failed,1.40538
+98,Alloy,no loop,passed,21.04846
+99,Alloy,loop,failed,18.22161
+98,CSP,no loop,passed,1.40588
+99,CSP,loop,failed,1.48337
+100,Alloy,no loop,passed,21.28644
+101,Alloy,loop,failed,21.65066
+100,CSP,no loop,passed,1.45623
+101,CSP,loop,failed,1.57234
+102,Alloy,no loop,passed,19.80758
+103,Alloy,loop,failed,21.77903
+102,CSP,no loop,passed,1.66032
+103,CSP,loop,failed,1.73084
+104,Alloy,no loop,passed,26.65742
+105,Alloy,loop,failed,22.69828
+104,CSP,no loop,passed,1.66786
+105,CSP,loop,failed,1.73151
+106,Alloy,no loop,passed,25.83923
+107,Alloy,loop,failed,23.41865
+106,CSP,no loop,passed,1.7279
+107,CSP,loop,failed,1.81373
+108,Alloy,no loop,passed,26.03018
+109,Alloy,loop,failed,28.02957
+108,CSP,no loop,passed,1.84286
+109,CSP,loop,failed,1.94228
+110,Alloy,no loop,passed,24.89536
+111,Alloy,loop,failed,30.81555
+110,CSP,no loop,passed,1.90394
+111,CSP,loop,failed,2.03136
+112,Alloy,no loop,passed,26.87673
+113,Alloy,loop,failed,31.47182
+112,CSP,no loop,passed,2.08067
+113,CSP,loop,failed,2.17588
+114,Alloy,no loop,passed,27.6674
+115,Alloy,loop,failed,33.24696
+114,CSP,no loop,passed,2.06686
+115,CSP,loop,failed,2.22192
+116,Alloy,no loop,passed,29.17075
+117,Alloy,loop,failed,34.5078
+116,CSP,no loop,passed,2.2512
+117,CSP,loop,failed,2.37096
+118,Alloy,no loop,passed,31.30686
+119,Alloy,loop,failed,38.53039
+118,CSP,no loop,passed,2.41082
+119,CSP,loop,failed,2.53087
+120,Alloy,no loop,passed,34.6617
+121,Alloy,loop,failed,40.4349
+120,CSP,no loop,passed,2.77633
+121,CSP,loop,failed,2.75335
+122,Alloy,no loop,passed,38.12044
+123,Alloy,loop,failed,41.96274
+122,CSP,no loop,passed,2.60708
+123,CSP,loop,failed,2.65216
+124,Alloy,no loop,passed,38.28181
+125,Alloy,loop,failed,43.09552
+124,CSP,no loop,passed,2.75651
+125,CSP,loop,failed,2.9272
+126,Alloy,no loop,passed,46.63827
+127,Alloy,loop,failed,41.43527
+126,CSP,no loop,passed,2.72968
+127,CSP,loop,failed,3.01542
+128,Alloy,no loop,passed,46.66803
+129,Alloy,loop,failed,57.71809
+128,CSP,no loop,passed,3.06714
+129,CSP,loop,failed,3.44931
+130,Alloy,no loop,passed,59.50325
+131,Alloy,loop,failed,60.73909
+130,CSP,no loop,passed,3.20085
+131,CSP,loop,failed,3.30509
+132,Alloy,no loop,passed,61.93941
+133,Alloy,loop,failed,64.33881
+132,CSP,no loop,passed,3.33447
+133,CSP,loop,failed,3.44183
+134,Alloy,no loop,passed,65.93672
+135,Alloy,loop,failed,66.92823
+134,CSP,no loop,passed,3.50548
+135,CSP,loop,failed,3.97587
+136,Alloy,no loop,passed,69.70849
+137,Alloy,loop,failed,73.33208
+136,CSP,no loop,passed,3.66744
+137,CSP,loop,failed,3.78553
+138,Alloy,no loop,passed,71.32328
+139,Alloy,loop,failed,72.31525
+138,CSP,no loop,passed,3.79331
+139,CSP,loop,failed,4.08284
+140,Alloy,no loop,passed,72.2072
+141,Alloy,loop,failed,75.6979
+140,CSP,no loop,passed,4.12409
+141,CSP,loop,failed,4.08483
+142,Alloy,no loop,passed,76.37732
+143,Alloy,loop,failed,80.29729
+142,CSP,no loop,passed,4.45279
+143,CSP,loop,failed,4.51858
+144,Alloy,no loop,passed,77.27953
+145,Alloy,loop,failed,81.66188
+144,CSP,no loop,passed,4.70519
+145,CSP,loop,failed,4.64657
+146,Alloy,no loop,passed,83.14657
+147,Alloy,loop,failed,98.7779
+146,CSP,no loop,passed,4.7344
+147,CSP,loop,failed,5.04948
+148,Alloy,no loop,passed,100.43286
+149,Alloy,loop,failed,104.38643
+148,CSP,no loop,passed,4.72162
+149,CSP,loop,failed,5.26881
+150,Alloy,no loop,passed,106.12313
+151,Alloy,loop,failed,120.90819
+150,CSP,no loop,passed,4.92549
+151,CSP,loop,failed,4.9914
+152,Alloy,no loop,passed,117.53859
+153,Alloy,loop,failed,122.14996
+152,CSP,no loop,passed,5.06257
+153,CSP,loop,failed,5.14625
+154,Alloy,no loop,passed,132.34767
+155,Alloy,loop,failed,135.49524
+154,CSP,no loop,passed,5.14313
+155,CSP,loop,failed,5.43441
+156,Alloy,no loop,passed,138.58199
+157,Alloy,loop,failed,142.65444
+156,CSP,no loop,passed,5.37186
+157,CSP,loop,failed,5.62781
+158,Alloy,no loop,passed,141.476
+159,Alloy,loop,failed,144.25057
+158,CSP,no loop,passed,5.72563
+159,CSP,loop,failed,5.7896
+160,Alloy,no loop,passed,149.6315
+161,Alloy,loop,failed,159.97453
+160,CSP,no loop,passed,5.94915
+161,CSP,loop,failed,6.19794
+162,Alloy,no loop,passed,161.85041
+163,Alloy,loop,failed,161.69484
+162,CSP,no loop,passed,6.18819
+163,CSP,loop,failed,6.37576
+164,Alloy,no loop,passed,173.51827
+165,Alloy,loop,failed,187.38944
+164,CSP,no loop,passed,6.50089
+165,CSP,loop,failed,6.66058
+166,Alloy,no loop,passed,187.21335
+167,Alloy,loop,failed,204.87168
+166,CSP,no loop,passed,6.59005
+167,CSP,loop,failed,7.09438
+168,Alloy,no loop,passed,214.09973
+169,Alloy,loop,failed,237.17657
+168,CSP,no loop,passed,7.88201
+169,CSP,loop,failed,7.84155
+170,Alloy,no loop,passed,271.73412
+171,Alloy,loop,failed,308.42274
+170,CSP,no loop,passed,8.28807
+171,CSP,loop,failed,8.53588
+172,Alloy,no loop,passed,408.96389
+173,Alloy,loop,failed,652.59086
+172,CSP,no loop,passed,7.83235
+173,CSP,loop,failed,8.05514

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<graph id="PDG" edgedefault="directed">
+<node id="t3wi"/>
+<node id="t3wo"/>
+<node id="t2wi"/>
+<node id="t2wo"/>
+<node id="t1wi"/>
+<node id="t1wo"/>
+<node id="sw"/>
+<node id="cwli"/>
+<node id="cvo"/>
+<node id="dwi"/>
+<node id="t3wlo"/>
+<node id="t3vi"/>
+<node id="dwo"/>
+<edge id="e_t3wi_t3wo" source="t3wi" target="t3wo"/>
+<edge id="e_t2wo_t3wi" source="t2wo" target="t3wi"/>
+<edge id="e_t2wi_t2wo" source="t2wi" target="t2wo"/>
+<edge id="e_t1wo_t2wi" source="t1wo" target="t2wi"/>
+<edge id="e_t1wi_t1wo" source="t1wi" target="t1wo"/>
+<edge id="e_cwli_cvo" source="cwli" target="cvo"/>
+<edge id="e_sw_t3wi" source="sw" target="t3wi"/>
+<edge id="e_t3wi_t3wlo" source="t3wi" target="t3wlo"/>
+<edge id="e_t3wo_dwi" source="t3wo" target="dwi"/>
+<edge id="e_t3wlo_cwli" source="t3wlo" target="cwli"/>
+<edge id="e_cvo_t3vi" source="cvo" target="t3vi"/>
+<edge id="e_t3vi_t3wo" source="t3vi" target="t3wo"/>
+<edge id="e_dwi_dwo" source="dwi" target="dwo"/>
+<edge id="e_dwo_t1wi" source="dwo" target="t1wi"/>
+</graph>
+</graphml>
