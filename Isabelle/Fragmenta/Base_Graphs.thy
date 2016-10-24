@@ -20,7 +20,7 @@ where
 record Gr =
   Ns  :: "V set"
   Es  :: "E set"
-  src :: "E \<rightharpoonup> V" (*\<rightharpoonup> denotes a partial function; eq to: "E\<Rightarrow>V option"*)
+  src :: "E \<rightharpoonup> V" (*\<rightharpoonup> is partial function; eq to: "E\<Rightarrow>V option"*)
   tgt :: "E \<rightharpoonup> V"
 
 lemma Gr_eq: 
