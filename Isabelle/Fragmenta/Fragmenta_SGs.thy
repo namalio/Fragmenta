@@ -3,7 +3,8 @@
     Author:     Nuno Amálio
 *)
 theory Fragmenta_SGs
-imports Fragmenta_Graphs "../Extra/Trcl_Extra"
+imports Fragmenta_Graphs 
+  "../Extra/Trcl_Extra"
 
 begin
                          

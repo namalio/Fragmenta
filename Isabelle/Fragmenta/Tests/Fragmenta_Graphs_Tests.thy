@@ -1,5 +1,5 @@
 theory Fragmenta_Graphs_Tests
-imports Fragmenta_Graphs
+imports "../Fragmenta_Graphs"
 begin
 
 lemma "[1\<mapsto>1, 1\<mapsto> 3, 2\<mapsto>4, 3\<mapsto>6] |` {1::nat, 2} = [1\<mapsto>1, 1\<mapsto>3, 2\<mapsto>4] "

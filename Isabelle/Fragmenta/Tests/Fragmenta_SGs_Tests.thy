@@ -3,9 +3,9 @@
     Author:      Nuno Amálio
 *)
 theory Fragmenta_SGs_Tests
-imports Fragmenta_SGs 
-  "../Extra/Map_Extra" 
-  "../Extra/Finite_Transitive_Closure_Simprocs"
+imports "../Fragmenta_SGs" 
+  "../../Extra/Map_Extra" 
+  "../../Extra/Finite_Transitive_Closure_Simprocs"
 
 begin
 
@@ -28,7 +28,7 @@ where
   Es_SGI1_in_V_E: "Es SGI1 \<subseteq> E_A"
   and Ns_SGI1_in_V_V: "Ns SGI1 \<subseteq> V_A"
 
-(* This a mandatory well-formedness proof obligation!"*)
+(* Mandatory well-formedness proof obligation!"*)
 lemma wf_SGI1: "is_wf_sg SGI1"
   proof (simp add: is_wf_sg_def, rule conjI)
      show "is_wf_g SGI1"
@@ -42,13 +42,13 @@ lemma wf_SGI1: "is_wf_sg SGI1"
     apply_end(rule conjI)
     show "ftotal_on (ety SGI1) (Es SGI1) SGETy_set"
       by (auto simp add: SGI1_def ftotal_on_def SGETy_set_def)
-   next
-    apply_end(rule conjI)
-    show "dom (srcm SGI1) = dom (tgtm SGI1)"
-      by (simp add: SGI1_def)
+  next
+   apply_end(rule conjI)
+    show "dom (srcm SGI1) = EsTy SGI1 {Some erelbi, Some ecompbi}"
+      by (simp add: SGI1_def EsTy_def vimage_def)
   next
     apply_end(rule conjI)
-    show "dom (tgtm SGI1) = EsTy SGI1 {Some erel, Some ecomp}"
+    show "dom (tgtm SGI1) = EsTy SGI1 {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}"
       by (simp add: SGI1_def EsTy_def vimage_def)
   next
     apply_end(rule conjI)
@@ -56,11 +56,11 @@ lemma wf_SGI1: "is_wf_sg SGI1"
       by (simp add: SGI1_def EsR_def EsId_def EsTy_def vimage_def)
   next
     apply_end(rule conjI)
-    show "srcm SGI1 ` EsTy SGI1 {Some ecomp} \<subseteq> {Some (rm 0 (val (Suc 0))), Some (sm (val (Suc 0)))}"
+    show "srcm SGI1 ` EsTy SGI1 {Some ecompbi} \<subseteq> {Some (rm 0 (val (Suc 0))), Some (sm (val (Suc 0)))}"
       by (simp add: image_def EsTy_def SGI1_def vimage_def)
   next
-    show "acyclicI SGI1"
-      by (auto simp add: acyclicI_def inh_def relOfGr_def restrict_def adjacent_def
+    show "acyclicGr (inhG SGI1)"
+      by (auto simp add: acyclicGr_def inh_def relOfGr_def restrict_def adjacent_def
         rst_fun_def EsI_def EsTy_def vimage_def restrict_map_def SGI1_def EsId_def
         acyclic_def inhG_def elim: tranclE)
   qed
@@ -74,7 +74,7 @@ where
       tgt=[''IEmployeePerson''\<mapsto>''Person'', ''ICarVehicle''\<mapsto>''Vehicle'', ''Owns''\<mapsto>''Vehicle'',
         ''IEmployeeSelf''\<mapsto>''Employee'', ''ICarSelf''\<mapsto>''Car''],
       nty =[''Person''\<mapsto>nnrml, ''Vehicle''\<mapsto>nnrml, ''Employee''\<mapsto>nnrml, ''Car''\<mapsto>nnrml],
-      ety =[''IEmployeePerson''\<mapsto>einh, ''ICarVehicle''\<mapsto>einh, ''Owns''\<mapsto>erel, 
+      ety =[''IEmployeePerson''\<mapsto>einh, ''ICarVehicle''\<mapsto>einh, ''Owns''\<mapsto>erelbi, 
         ''IEmployeeSelf''\<mapsto>einh, ''ICarSelf''\<mapsto>einh],
       srcm = [''Owns''\<mapsto> sm (val 1)], tgtm = [''Owns''\<mapsto> sm *]\<rparr>"
 
@@ -99,23 +99,23 @@ lemma wf_SGI2: "is_wf_sg SGI2"
       by (auto simp add: SGI2_def is_wf_g_def ftotal_on_def SGETy_set_def)
   next
     apply_end (rule conjI)
-    show "dom (srcm SGI2) = dom (tgtm SGI2)"
-      by (auto simp add: SGI2_def EsR_def EsTy_def)
+    show "dom (srcm SGI2) = EsTy SGI2 {Some erelbi, Some ecompbi}"
+      by (auto simp add: SGI2_def EsTy_def vimage_def)
   next
     apply_end (rule conjI)
-    show "dom (tgtm SGI2) = EsTy SGI2 {Some erel, Some ecomp}"
-      by (auto simp add: SGI2_def EsTy_def split: if_splits)
+    show "dom (tgtm SGI2) = EsTy SGI2 {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}"
+      by (auto simp add: SGI2_def EsTy_def vimage_def)
   next
     apply_end (rule conjI)
     show "EsR SGI2 \<subseteq> EsId SGI2"
       by (auto simp add: SGI2_def EsTy_def EsR_def split: if_splits)
   next
     apply_end (rule conjI)
-    show "srcm SGI2 ` EsTy SGI2 {Some ecomp} \<subseteq> {Some (rm 0 (val (Suc 0))), Some (sm (val (Suc 0)))}"
+    show "srcm SGI2 ` EsTy SGI2 {Some ecompbi} \<subseteq> {Some (rm 0 (val (Suc 0))), Some (sm (val (Suc 0)))}"
       by (simp add: EsTy_def image_def vimage_def SGI2_def)
   next
-    show "acyclicI SGI2"
-      by (auto simp add: acyclicI_def restrict_def EsI_def EsR_def EsTy_def EsId_def
+    show "acyclicGr(inhG SGI2)"
+      by (auto simp add: acyclicGr_def restrict_def EsI_def EsR_def EsTy_def EsId_def
         acyclicGr_def relOfGr_def adjacent_def acyclic_def rst_fun_def vimage_def SGI2_def
         inh_def inhG_def elim: tranclE)
   qed
@@ -160,7 +160,7 @@ lemma "(''Owns'', ''Vehicle'') \<in> tgtst SGI2"
    unfolding tgtst_def EsA_def clan_def inhst_def 
    by (simp add: inh_SGI2 EsTy_def)(auto simp add: SGI2_def elim: rtranclE)
 
-definition SGMorph1 :: "MorphTuple"
+definition SGMorph1 :: "Morph"
 where
    "SGMorph1 \<equiv> \<lparr>fV=[''Employee''\<mapsto>''Employee'', ''Car''\<mapsto>''Car''],
               fE=[''Owns''\<mapsto>''Owns'', ''IEmployeeSelf''\<mapsto>''IEmployeeSelf'', 
@@ -238,7 +238,7 @@ lemma "SGMorph1 \<in> morphSGr SGI1 SGI2"
     qed
   qed
 
-definition SGMorph2 :: "MorphTuple"
+definition SGMorph2 :: "Morph"
 where
    "SGMorph2 \<equiv> \<lparr>fV=[''Employee''\<mapsto>''Employee'', 
                 ''Person''\<mapsto>''Employee'', 
