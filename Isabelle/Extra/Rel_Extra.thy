@@ -114,10 +114,6 @@ definition rel_total_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 
 where
   "rel_total_on r A B \<equiv> Domain r = A \<and> Range r \<subseteq> B"
 
-definition injective :: "('a\<times>'b) set \<Rightarrow> bool"
-where
-  "injective r \<equiv> \<forall> v1 v2 v3. (v1, v2) \<in> r \<and> (v1, v3) \<in> r \<longrightarrow> v2 = v3"
-
 lemma in_to_image: "((x, y) \<in> r) = (y \<in> r``{x})"
   proof
     assume "(x, y) \<in> r"
