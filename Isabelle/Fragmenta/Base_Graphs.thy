@@ -1,6 +1,6 @@
 
 (********  
-  Title:      Theory of Base Graphs that constitutes the base of Fragmenta's Graphs
+  Title:      Theory of Base Graphs constituting the base of Fragmenta's Graphs
   Author:     Nuno Amálio
 ***********)
 
@@ -11,6 +11,7 @@ begin
 type_synonym V = string
 type_synonym E = string
 
+(*Defines universe of nodes and eges; these sets are mutually disjoint*) 
 axiomatization
   V_A:: "V set"     (* set of vertice atoms*)
   and E_A:: "E set" (*set of edge atoms*)
@@ -28,6 +29,7 @@ lemma Gr_eq:
     \<and> Gr.more G1 = Gr.more G2"
     by (auto)
 
+(*Conditions for a graph to be well-formed*)
 definition is_wf_g :: "'a Gr_scheme \<Rightarrow> bool"
 where
   "is_wf_g G \<equiv> (Ns G) \<subseteq> V_A \<and> (Es G) \<subseteq> E_A \<and>ftotal_on (src G) (Es G) (Ns G) 
@@ -48,21 +50,21 @@ definition EsId ::"'a Gr_scheme \<Rightarrow> E set"
 where
   "EsId G \<equiv> {e. e \<in> Es G \<and> (src G e) = (tgt G e)}"
 
-definition adjacent :: "V => V => 'a Gr_scheme => bool"
+definition adjacent :: "V \<Rightarrow> V \<Rightarrow> 'a Gr_scheme => bool"
 where
     "adjacent v1 v2 G \<equiv>  \<exists>e. e \<in> (Es G) \<and> src G e = Some v1 \<and> tgt G e = Some v2"
 
-definition successors :: "V => Gr => V set"
+definition successors :: "V \<Rightarrow> Gr \<Rightarrow> V set"
 where
     "successors v G = {v1 \<in> (Ns G). (adjacent v v1 G)}"
 
 (* Obtains the incident source edges of a node*)
-definition incidentEsSrc :: "Gr \<Rightarrow> V => E set"
+definition incidentEsSrc :: "Gr \<Rightarrow> V \<Rightarrow> E set"
 where
   "incidentEsSrc G v \<equiv> {e \<in> (Es G). src G e = Some v}"
 
 (*The adjacency relation induced by a graph*)
-definition relOfGr :: "'a Gr_scheme => (V\<times>V) set"
+definition relOfGr :: "'a Gr_scheme \<Rightarrow> (V\<times>V) set"
 where
    "relOfGr G = {(v1, v2). (adjacent v1 v2 G)}"
 

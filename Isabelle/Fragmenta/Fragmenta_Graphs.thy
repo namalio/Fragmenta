@@ -1,5 +1,5 @@
 (*  Title:      Fragmenta Theory of Graphs
-    Description: 'Fragmenta' theory of Graphs presented in the Models 2015 paper.
+    Description: 'Fragmenta' theory of Graphs as per Models 2015 paper.
     Author:     Nuno Amálio
 *)
 
