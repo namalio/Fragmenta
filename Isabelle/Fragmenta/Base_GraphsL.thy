@@ -1,5 +1,5 @@
 (********  
-  Title:      Theory of Base Graphs that constitutes the base of Fragmenta's Graphs
+  Title:      Theory of listed base graphs that constitutes basis of Fragmenta's Graphs
   Author:     Nuno Amálio
 ***********)
 
@@ -233,5 +233,6 @@ lemma relOfGr_eq_consRel:
         using ha by (simp add: in_consRel in_set_EsG)
     qed
   qed
+
 
 end

@@ -7,11 +7,25 @@ definition pfunToRel:: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<times>'b) 
 where
   "pfunToRel f \<equiv> {(x, y). f x = Some y}"
 
-lemma pfunToRelEmpty[simp]: "pfunToRel empty = {}"
+lemma pfunToRelEmpty[simp]: "pfunToRel Map.empty = {}"
   by (simp add: pfunToRel_def)
 
 lemma pfunToRelSing: "pfunToRel [a\<mapsto>b] = {(a, b)}"
   by (auto simp add: pfunToRel_def split: if_splits)
+
+lemma pfunToRel_map_comp: "pfunToRel (f \<circ>\<^sub>m g) = pfunToRel g O pfunToRel f"
+proof
+  show "pfunToRel (f \<circ>\<^sub>m g) \<subseteq> pfunToRel g O pfunToRel f"
+    by (smt map_comp_Some_iff mem_Collect_eq pfunToRel_def prod.simps(2) relcomp.simps subrelI)
+next
+  show "pfunToRel g O pfunToRel f \<subseteq> pfunToRel (f \<circ>\<^sub>m g)"
+  by (smt map_comp_def mem_Collect_eq option.case(2) pfunToRel_def prod.simps(2) relcompE subrelI)
+qed
+
+(*primrec pfunToListPairs::"('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<times>'b) list"
+  where
+    "pfunToListPairs Map.empty = []" |
+    "pfunToListPairs (f(a\<mapsto>b)) = (a, b)#(pfunToListPairs f)"*)
 
 definition ftotal_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
 where

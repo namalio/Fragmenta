@@ -472,7 +472,7 @@ lemma rst_Ns_Un_neutral:
       using ha hb by (simp add: rst_Ns_def)
   qed
 
-(*Yields a graph that is built from another one, by restricting to a set of edges*)
+(*Builds a graph by restricting to a set of given edges*)
 definition restrict :: "'a Gr_scheme \<Rightarrow> E set \<Rightarrow> Gr"
 where
     "restrict G es \<equiv> \<lparr>Ns = rst_Ns G es, 
@@ -984,7 +984,8 @@ lemma Morph_eq:
 definition morphGr :: "'a Gr_scheme \<Rightarrow> 'a Gr_scheme \<Rightarrow> Morph set"
 where
   "morphGr G1 G2 \<equiv> {r. ftotal_on (fV r) (Ns G1) (Ns G2) 
-      \<and> ftotal_on (fE r) (Es G1) (Es G2) \<and> (fV r) \<circ>\<^sub>m (src G1) = (src G2) \<circ>\<^sub>m (fE r) 
+      \<and> ftotal_on (fE r) (Es G1) (Es G2) 
+      \<and> (fV r) \<circ>\<^sub>m (src G1) = (src G2) \<circ>\<^sub>m (fE r) 
       \<and> (fV r) \<circ>\<^sub>m (tgt G1) = (tgt G2) \<circ>\<^sub>m (fE r)}"
 
 definition morphGrComp :: "Morph \<Rightarrow> Morph \<Rightarrow> Morph"
@@ -994,7 +995,7 @@ where
 (*The empty graph morphism*)
 definition emptyGM :: "Morph"
 where
-  "emptyGM \<equiv> \<lparr>fV = empty, fE = empty \<rparr>"
+  "emptyGM \<equiv> \<lparr>fV = Map.empty, fE = Map.empty \<rparr>"
 
 definition UGrM :: "'a Morph_scheme  \<Rightarrow> 'a Morph_scheme \<Rightarrow> Morph" (infixl "UGM" 100)
 where

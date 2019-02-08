@@ -3,8 +3,8 @@
 *)
 
 theory INTO_SysML_MM_Frs
-imports "../Fragmenta/Fragmenta_TFrs" "../Extra/Rel_Extra" 
-  "../Extra/Trcl_Extra" 
+imports "../../Fragmenta/Fragmenta_TFrs" "../../Extra/Rel_Extra" 
+  "../../Extra/Trcl_Extra" 
   
 begin
 

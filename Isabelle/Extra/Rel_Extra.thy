@@ -1,5 +1,5 @@
 theory Rel_Extra
-imports Relation
+imports Main
 begin
 
 lemma single_valued_Un: "single_valued (r \<union> s) \<Longrightarrow> single_valued r \<and> single_valued s"

@@ -58,7 +58,6 @@ lemma trancl_list_impl:
   unfolding trancl_list_impl_def
   by (rule set_access_gen.trancl_impl, unfold_locales, force+)
 
-
 subsection \<open>Precomputing Closures for Single States\<close>
 
 text \<open>

@@ -42,7 +42,7 @@ definition pos :: "'a list => 'a \<Rightarrow> nat option"
 where
   "pos l e \<equiv> (if (pos0 l e)\<ge> length l then None else Some (pos0 l e))"
 
-primrec nth_opt:: "'a list => nat => 'a option"
+primrec nth_opt:: "'a list \<Rightarrow> nat \<Rightarrow> 'a option"
 where
   "nth_opt [] n = None" |
   "nth_opt (x#xs) n  = (case n of 0 => Some x | Suc k => nth_opt xs k)"
@@ -168,42 +168,162 @@ lemma the_nth_opt_in:
 lemma nth_pos_map_fst:
   assumes "x \<in> (set l)" and "distinct (map fst l)"
   shows "l!pos0(map fst l) (fst x) = x"
-  proof -
-    from assms show ?thesis
-    proof (induct l, simp)
-      fix a l
-      assume h1: "x \<in> set l \<Longrightarrow> distinct (map fst l) \<Longrightarrow> l ! pos0 (map fst l) (fst x) = x"
-      and h2: "x \<in> set (a # l)"
-      and h3: "distinct (map fst (a # l))"
+proof -
+  from assms show ?thesis
+  proof (induct l, simp)
+    fix a l
+    assume h1: "x \<in> set l \<Longrightarrow> distinct (map fst l) \<Longrightarrow> l ! pos0 (map fst l) (fst x) = x"
+    and h2: "x \<in> set (a # l)"
+    and h3: "distinct (map fst (a # l))"
+    then show "(a # l) ! pos0 (map fst (a # l)) (fst x) = x"
+    proof (case_tac "x=a")
+      assume "x=a"
       then show "(a # l) ! pos0 (map fst (a # l)) (fst x) = x"
-      proof (case_tac "x=a")
-        assume "x=a"
-        then show "(a # l) ! pos0 (map fst (a # l)) (fst x) = x"
-          by auto
+        by auto
+    next
+      assume "x \<noteq> a"
+      then show "(a # l) ! pos0 (map fst (a # l)) (fst x) = x"  
+        using h1 h2 h3 by (auto simp add: pos_map_fst)
+    qed
+  qed
+qed
+
+fun invert::"('a\<times>'b) list \<Rightarrow> ('b\<times>'a) list"
+where
+  "invert l = zip (map snd l)(map fst l)"
+
+
+
+lemma set_list_inv_eq: "(set l)\<inverse> = set (zip (map snd l) (map fst l))"
+  by (induct l) auto
+
+lemma in_invert: "(x, y) \<in> set l = ((y, x) \<in> set (invert l))"
+  using set_list_inv_eq by auto
+
+primrec comp_with_pair:: "('a\<times>'b) \<Rightarrow> ('b\<times>'a) list \<Rightarrow> ('a\<times>'a) list"
+  where
+    "comp_with_pair p [] = []" |
+    "comp_with_pair p (p'#l)  = (if snd p = fst p' then (fst p, snd p')#comp_with_pair p l else comp_with_pair p l)"
+
+primrec relcomp_ls:: "('a\<times>'b) list \<Rightarrow> ('b\<times>'a) list \<Rightarrow> ('a\<times>'a) list"
+  where
+    "relcomp_ls [] l' = []" |
+    "relcomp_ls (p#l) l' = (comp_with_pair p l')@(relcomp_ls l l')"
+
+lemma set_ls_cons_is_cup: "set (p # l) = {p} \<union> set l"
+  by (induct l) auto
+
+lemma comp_with_pair_eq:
+  "set (comp_with_pair p rl) = ({p} O set rl)"
+proof
+  show "set (comp_with_pair p rl) \<subseteq> {p} O set rl"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (comp_with_pair p rl)"
+    hence "\<exists> z. (x, z) \<in> {p} \<and> (z, y) \<in> set rl" 
+    proof (induct rl) 
+      case Nil
+      then show ?case by auto
+    next
+      fix p' rl'
+      assume h1: "(x, y) \<in> set (comp_with_pair p rl') \<Longrightarrow> \<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set rl'"
+        and h2: "(x, y) \<in> set (comp_with_pair p (p' # rl'))"
+      show "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set (p' # rl')"
+      proof (case_tac "snd p = fst p'")
+        assume h3: "snd p = fst p'"
+        hence "(x, y) \<in> {(fst p, snd p')} \<or> (x, y) \<in> set(comp_with_pair p rl')" using h2 by auto
+        then show "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set (p' # rl')"
+        proof
+          assume "(x, y) \<in> {(fst p, snd p')}"
+          hence "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> {p'}"
+            by (metis Pair_inject h3 insert_iff prod.collapse singletonD)
+          then show "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set (p' # rl')" by auto
+        next
+          assume "(x, y) \<in> set (comp_with_pair p rl')"
+          hence "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set rl'" using h1 by simp
+          then show "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set (p' # rl')" by auto
+        qed
       next
-        assume "x \<noteq> a"
-        then show "(a # l) ! pos0 (map fst (a # l)) (fst x) = x"  
-          using h1 h2 h3 by (auto simp add: pos_map_fst)
+        assume h4: " snd p \<noteq> fst p'"
+        hence "(x, y) \<in> set(comp_with_pair p rl')" using h2 by auto
+        hence "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set rl'" using h1 by simp
+        then show "\<exists>z. (x, z) \<in> {p} \<and> (z, y) \<in> set (p' # rl')" by auto
+      qed
+    qed
+    then show "(x, y) \<in> {p} O set rl" by auto
+  qed
+next
+  show "{p} O set rl \<subseteq> set (comp_with_pair p rl)"
+  proof (rule subrelI)
+    fix x y 
+    assume h1: "(x, y) \<in> {p} O set rl"
+    hence "x = fst p \<and> (snd p, y) \<in> set rl" by auto
+    then show "(x, y) \<in> set (comp_with_pair p rl)" by (induct rl) auto
+  qed
+qed
+
+lemma relcomp_ls_eq:
+  shows "(set rl) O (set rl') = set (relcomp_ls rl rl')"
+proof 
+  show "set rl O set rl' \<subseteq> set (relcomp_ls rl rl')"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set rl O set rl'"
+    hence "\<exists> z. (x, z) \<in> set rl \<and> (z, y) \<in> set rl'" by auto
+    then show "(x, y) \<in> set (relcomp_ls rl rl')"
+    proof
+      fix z 
+      assume "(x, z) \<in> set rl \<and> (z, y) \<in> set rl'"
+      then show "(x, y) \<in> set (relcomp_ls rl rl')"
+      proof (induct rl)
+        case Nil
+        then show ?case by auto
+      next
+        fix p rl2
+        assume h: "((x, z) \<in> set rl2 \<and> (z, y) \<in> set rl' \<Longrightarrow> (x, y) \<in> set (relcomp_ls rl2 rl'))"
+        assume "(x, z) \<in> set (p # rl2) \<and> (z, y) \<in> set rl'" 
+        hence "((x, z) \<in> {p} \<or> (x, z) \<in> set rl2) \<and> (z, y) \<in> set rl'" 
+          by (simp add: set_ls_cons_is_cup)
+        hence "(x, z) = p \<and> (z, y) \<in> set rl' \<or> (x, z) \<in> set rl2 \<and> (z, y) \<in> set rl'" by auto
+        then show "(x, y) \<in> set (relcomp_ls (p # rl2) rl')"
+        proof
+          assume h1: "(x, z) = p \<and> (z, y) \<in> set rl'"
+          hence "(x, y) \<in> set (comp_with_pair (x, z) rl')" by (induct rl') auto
+          then show "(x, y) \<in> set (relcomp_ls (p # rl2) rl')" using h1 by auto
+        next
+          assume "(x, z) \<in> set rl2 \<and> (z, y) \<in> set rl'"
+          hence "(x, y) \<in> set (relcomp_ls rl2 rl')" using h by simp
+          then show "(x, y) \<in> set (relcomp_ls (p # rl2) rl')" by auto 
+        qed
       qed
     qed
   qed
-
-(*List concatenation *)
-(*lemma setConcatEqUnion:"set(l1@l2) = set(l1) \<union> set(l2)"
-  
-lemma "(x, y) \<in> set(l1@l2) \<longleftrightarrow> (x, y) \<in> (set l1) \<or> (x, y) \<in> (set l2)"
-proof
-  assume "(x, y) \<in> set (l1 @ l2)"
-  then show "(x, y) \<in> set l1 \<or> (x, y) \<in> set l2"
-  by (simp)*)
-lemma set_list_inv_eq: "(set l)\<inverse> = set (zip (map snd l) (map fst l))"
-  by (induct l) auto  
-
-value "pos [] 2"
-value "pos [''1'', ''2'', ''3''] ''4''"
-value "enum [1, 2, 3]"
-value "nth [1,2,3] 0"
-value "nth_opt [1,2,3] 0"
-value "nth_opt [] 1"
+next
+  show "set (relcomp_ls rl rl') \<subseteq> set rl O set rl'"
+  proof(rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (relcomp_ls rl rl')"
+    then show "(x, y) \<in> set rl O set rl'"
+    proof (induct rl)
+      case Nil
+      then show ?case by auto
+    next
+      fix p rl2 
+      assume h: "((x, y) \<in> set (relcomp_ls rl2 rl') \<Longrightarrow> (x, y) \<in> set rl2 O set rl')"
+      assume "(x, y) \<in> set (relcomp_ls (p # rl2) rl')"
+      hence "(x, y) \<in> set(comp_with_pair p rl') \<or> (x, y) \<in> set(relcomp_ls rl2 rl')" by auto
+      then show "(x, y) \<in> set (p # rl2) O set rl'"
+      proof
+        assume "(x, y) \<in> set (comp_with_pair p rl')"
+        hence "(x, y) \<in> ({p} O set rl')" by (simp add: comp_with_pair_eq)
+        then show "(x, y) \<in> set (p # rl2) O set rl'" by auto
+      next
+        assume "(x, y) \<in> set (relcomp_ls rl2 rl')"
+        hence "(x, y) \<in> set rl2 O set rl'" using h by simp
+        then show "(x, y) \<in> set (p # rl2) O set rl'" by auto
+      qed
+    qed
+  qed
+qed
 
 end

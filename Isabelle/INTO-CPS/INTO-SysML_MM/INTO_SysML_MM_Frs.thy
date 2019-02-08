@@ -1,4 +1,4 @@
-(*  Title:      Theory of the SysML/INTO-CPS MM, which is defined as fragments
+(*  Title:      Theory of SysML/INTO-CPS MM, which is defined as fragments
     Author:     Nuno Amálio
 *)
 

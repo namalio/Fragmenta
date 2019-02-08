@@ -269,19 +269,7 @@ lemma pfunToRel_fE_SGMorph2:
                 (''IEmployeeSelf'', ''IEmployeeSelf''),
                 (''ICarVehicle'', ''ICarSelf''), 
                 (''ICarSelf'', ''ICarSelf'')}"
-  proof
-    show "pfunToRel (fE SGMorph2) \<subseteq> 
-      {(''Owns'', ''Owns''), (''IEmployeePerson'', ''IEmployeeSelf''), 
-                (''IEmployeeSelf'', ''IEmployeeSelf''),
-                (''ICarVehicle'', ''ICarSelf''), 
-                (''ICarSelf'', ''ICarSelf'')}"
       by (auto simp add: pfunToRel_def SGMorph2_def split : if_splits)
-  next
-    show "{(''Owns'', ''Owns''), (''IEmployeePerson'', ''IEmployeeSelf''),
-     (''IEmployeeSelf'', ''IEmployeeSelf''), (''ICarVehicle'', ''ICarSelf''),
-     (''ICarSelf'', ''ICarSelf'')} \<subseteq> pfunToRel (fE SGMorph2)"
-      by (auto simp add: pfunToRel_def SGMorph2_def split : if_splits)
-  qed
 
 lemma "SGMorph2 \<in> morphSGr SGI2 SGI1"
   proof -

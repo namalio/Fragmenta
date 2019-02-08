@@ -3,7 +3,7 @@
     Author:     Nuno Amálio
 *)
 theory Fragmenta_SGsL
-imports Fragmenta_SGs Fragmenta_GraphsL "../Extra/Finite_Transitive_Closure_Simprocs"
+imports Fragmenta_SGs Fragmenta_GraphsL "../Extra/Finite_Transitive_Closure_Simprocs" 
 
 begin
 
@@ -244,6 +244,17 @@ lemma EsR_eq_EsRL:
   using assms by (simp add: toSGr_def EsRL_def EsR_def EsTy_def vimage_def ftotal_on_def)
     (rule equalityI, rule subsetI, auto)
 
+definition EsAL:: "SGr_ls \<Rightarrow> E list"
+where
+  "EsAL SGL \<equiv> 
+    (filter (\<lambda> e. ety (toSGr SGL) e \<in> {Some ecompbi, Some ecompuni, Some erelbi, Some ereluni, Some elnk}) (EsG SGL))"
+
+lemma EsA_eq_EsAL: 
+  assumes "ftotal_on (ety (toSGr SGL)) (Es (toSGr SGL)) SGETy_set "
+  shows "EsA (toSGr SGL) = set(EsAL SGL)"
+  using assms by (simp add: toSGr_def EsAL_def EsA_def EsTy_def vimage_def ftotal_on_def)
+    (rule equalityI, rule subsetI, auto)
+
 definition EsIdL:: "'a Gr_ls_scheme \<Rightarrow> E list"
 where
   "EsIdL GL \<equiv> (filter (\<lambda> e. src (toGr GL) e = tgt (toGr GL) e ) (EsG GL))"
@@ -282,32 +293,239 @@ lemma EsRP_eq_EsRPL:
       (auto simp add: NsP_def NsTy_def)
   qed
 
-definition consClan::"V \<Rightarrow> SGr_ls \<Rightarrow> V list"
+definition consInhSt::"V \<Rightarrow> SGr_ls \<Rightarrow> V list"
 where
-  "consClan v SGL \<equiv> 
+  "consInhSt v SGL \<equiv> 
+    (let consInh = consInh SGL in
+      rtrancl_list_impl (consInh) [v])"
+
+lemma inhst_eq_consInhSt:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "(v1, v2) \<in> inhst (toSGr SGL) = (v2 \<in> set(consInhSt v1 SGL))"
+proof
+  assume "(v1, v2) \<in> inhst (toSGr SGL)"
+  hence "v2 \<in> (inh (toSGr SGL))\<^sup>* `` {v1}" 
+    by (auto simp only: inhst_def)
+  then show "v2 \<in> set (consInhSt v1 SGL)"
+    using assms consInhSt_def inh_eq_consInh rtrancl_Image_eq by fastforce
+next
+  assume "v2 \<in> set (consInhSt v1 SGL)"
+  then show "(v1, v2) \<in> inhst (toSGr SGL)" 
+    by (metis Image_singleton_iff assms consInhSt_def inh_eq_consInh inhst_def list.set(1) 
+        list.simps(15) rtrancl_Image_eq)
+      (*using assms by (simp only: consInhSt_def inhst_def Let_def)(simp add: inh_eq_consInh rtrancl_Image_eq)*)
+      (*by (simp add: h2 consInhSt_def Let_def, simp only: inhst_def inh_eq_consInh rtrancl_Image_eq)
+      by (simp add: consInhSt_def h1 Let_def)*)
+       (* (simp add: inh_eq_consInh rtrancl_Image_eq)*)
+  qed
+
+
+definition consInhStInv::"V \<Rightarrow> SGr_ls \<Rightarrow> V list"
+where
+  "consInhStInv v SGL \<equiv> 
     (let consInh = consInh SGL in
       rtrancl_list_impl (zip(map snd consInh)(map fst consInh)) [v])"
 
-lemma clan_eq_consClan:
+lemma inhstinv_eq_consInhSt:
   assumes "is_wf_g (toSGr SGL)" 
-  shows "clan v (toSGr SGL) = set(consClan v SGL)"
-  proof - 
-    have h1: "((inh (toSGr SGL))\<^sup>*)\<inverse> = ((inh (toSGr SGL))\<inverse>)\<^sup>*"
-      by (simp add: rtrancl_converse)
-    from assms show ?thesis
-      by (simp add: clan_def consClan_def inhst_def h1 Let_def)
-      (simp add: inh_eq_consInh set_list_inv_eq rtrancl_Image_eq)
-  qed
+  shows "(v1, v2) \<in> (inhst (toSGr SGL))\<inverse> = (v1 \<in> set(consInhSt v2 SGL))"
+proof
+  assume "(v1, v2) \<in> (inhst (toSGr SGL))\<inverse>"
+  hence "(v2, v1) \<in> (inhst (toSGr SGL))" by auto
+  then show "v1 \<in> set (consInhSt v2 SGL)" using assms by (simp only: inhst_eq_consInhSt) 
+next
+  assume "v1 \<in> set (consInhSt v2 SGL)"
+  then show "(v1, v2) \<in> (inhst (toSGr SGL))\<inverse>" using assms by (simp add: inhst_eq_consInhSt)
+qed
 
-(*primrec consSrcStVs::"SGr_ls \<Rightarrow> V list \<Rightarrow> V list" 
+lemma inhstinv_eq_consInhStInv:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "(v1, v2) \<in> (inhst (toSGr SGL))\<inverse> = (v2 \<in> set(consInhStInv v1 SGL))"
+proof 
+  assume "(v1, v2) \<in> (inhst (toSGr SGL))\<inverse>"
+  hence "v2 \<in> ((inh (toSGr SGL))\<^sup>*)\<inverse> `` {v1}" 
+    by (auto simp only: inhst_def)
+  then show "v2 \<in> set (consInhStInv v1 SGL)"
+    by (metis assms consInhStInv_def empty_set inh_eq_consInh inhst_def_simp list.simps(15) 
+      rtrancl_Image_eq set_list_inv_eq)
+next
+  assume "v2 \<in> set (consInhStInv v1 SGL)"
+  then show "(v1, v2) \<in> (inhst (toSGr SGL))\<inverse>"
+    by (metis Image_singleton_iff assms consInhStInv_def empty_set inh_eq_consInh inhst_def 
+       inhst_def_simp list.simps(15) rtrancl_Image_eq set_list_inv_eq)
+qed
+
+lemma inhst_im_eq_consInhSt:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "(inhst (toSGr SGL))``{v1} = set(consInhSt v1 SGL)"
+  using assms inhst_eq_consInhSt by auto
+
+(*definition consInhStV::"SGr_ls \<Rightarrow> V \<Rightarrow> (V\<times>V) list"
 where
-  "consSrcStVs SGL [] = []" |
-  "consSrcStVs SGL (v#vs) = (consClan v SGL)@(consSrcStVs SGL vs)"*)
+  "consInhStV SGL v \<equiv> 
+    (let consInh = consInh SGL in
+      map (Pair v) (rtrancl_list_impl (consInh) [v]))"
+
+lemma consInstV_eq_ConsInhSt:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "(v1, v2) \<in> set (consInhStV SGL v1) = (v2 \<in> set(consInhSt v1 SGL))"
+  using assms by (auto simp add: consInhStV_def inh_eq_consInh inhst_def consInhSt_def)
+
+lemma inhst_eq_consInhStV:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "(v1, v2) \<in> inhst (toSGr SGL) = ((v1, v2) \<in> set(consInhStV SGL v1))"
+proof
+  assume "(v1, v2) \<in> inhst (toSGr SGL)"
+  hence "v2 \<in> (inh (toSGr SGL))\<^sup>* `` {v1}" 
+    by (auto simp only: inhst_def)
+  then show "(v1, v2) \<in> set (consInhStV SGL v1)"
+    using assms consInhStV_def inh_eq_consInh rtrancl_Image_eq by fastforce
+next
+  assume "(v1, v2) \<in> set (consInhStV SGL v1)"
+  hence "v2 \<in> set(consInhSt v1 SGL)" using assms by (simp only: consInstV_eq_ConsInhSt)
+  then show "(v1, v2) \<in> inhst (toSGr SGL)"
+    using assms by (simp add: inhst_eq_consInhSt)
+qed*)
+
+(*primrec consInhStW0:: "V list \<Rightarrow> SGr_ls \<Rightarrow> (V\<times>V) list"
+where
+  "consInhStW0 [] SGL = []" |
+  "consInhStW0 (v#vs) SGL = (consInhStV SGL v)@(consInhStW0 vs SGL)"
+
+lemma in_consInhStW0_hd:
+  shows "(x, y) \<in> set(consInhStW0 (x # vs) SGL) = ((x, y) \<in> set(consInhStV SGL x))"
+  by (induct vs) (auto simp add: consInhStV_def)
+
+lemma in_consInhStW0_nothd: 
+  assumes "x \<noteq> v"
+  shows "(x, y) \<in> set(consInhStW0 (v # vs) SGL) = ((x, y) \<in> set(consInhStW0 vs SGL))"
+  using assms by (auto simp add: consInhStV_def) *)
+
+(*lemma in_consInhStW0:
+  assumes "x \<in> set(vs)"
+  shows "(x, y) \<in> set (consInhStW0 vs SGL) = ((x, y) \<in> set(consInhStV SGL x))"
+proof
+  assume "(x, y) \<in> set (consInhStW0 vs SGL)"
+  then show "(x, y) \<in> set (consInhStV SGL x)"
+  proof (induct vs)
+    assume "(x, y) \<in> set (consInhStW0 [] SGL)"
+    then show "(x, y) \<in> set (consInhStV SGL x)" by auto
+  next
+    fix v vs
+    assume h: "(x, y) \<in> set (consInhStW0 vs SGL) \<Longrightarrow> (x, y) \<in> set (consInhStV SGL x)"
+    assume "(x, y) \<in> set (consInhStW0 (v # vs) SGL)"
+    hence "(x, y) \<in> set (consInhStV SGL v) \<or> (x, y) \<in> set (consInhStW0 vs SGL)" by auto
+    then show "(x, y) \<in> set (consInhStV SGL x)" 
+    proof
+      assume "(x, y) \<in> set (consInhStV SGL v)"
+      then show "(x, y) \<in> set (consInhStV SGL x)" 
+        by (auto simp add: consInhStV_def)
+    next
+      assume "(x, y) \<in> set (consInhStW0 vs SGL)"
+      then show "(x, y) \<in> set (consInhStV SGL x)" 
+        using h by auto
+    qed
+  qed
+next
+  assume "(x, y) \<in> set (consInhStV SGL x)"
+  hence "(x, y) \<in> set (consInhStV SGL x) \<and> x \<in> set(vs)" using assms by auto
+  then show "(x, y) \<in> set (consInhStW0 vs SGL)"
+  proof (induct vs) 
+    case Nil
+    then show ?case by auto
+  next
+    fix v vs
+    assume h: "(x, y) \<in> set (consInhStV SGL x) \<and> x \<in> set vs \<Longrightarrow> (x, y) \<in> set (consInhStW0 vs SGL)"
+    assume "(x, y) \<in> set (consInhStV SGL x) \<and> x \<in> set (v # vs)"
+    then show "(x, y) \<in> set (consInhStW0 (v # vs) SGL)" 
+      using h by auto
+  qed
+qed*)
+    
+(*definition consInhStW::"SGr_ls \<Rightarrow> (V\<times>V) list"
+where
+  "consInhStW SGL \<equiv> 
+    (let consInh = consInh SGL in
+       remdups(consInhStW0 (map fst consInh) SGL))"
+
+lemma consInhStV_in_consInhStW:
+  assumes "(x, y) \<in> set (consInhStV SGL x)" and "is_wf_g (toSGr SGL)"  and "inh (toSGr SGL) \<noteq> {}"
+  shows "(x, y) \<in> set(consInhStW SGL)"
+proof (simp add: consInhStW_def, cases "map fst (consInh SGL)") 
+  assume "map fst (consInh SGL) = []"
+  hence "{} = set (consInh SGL)" by auto
+  hence "{} = inh (toSGr SGL)" using assms(2) by (simp add: inh_eq_consInh)
+  then show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)"
+    using assms(3) by auto
+next
+  fix v vs
+  assume h1: "map fst (consInh SGL) = v#vs"
+  show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)"
+  proof (case_tac "x = v")
+    assume "x = v"
+    then show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)"
+      using h1 assms(1) by (simp only: in_consInhStW0_hd)
+  next
+    assume "x \<noteq> v"
+    hence "(x, y) \<in> set (consInhStW0 (v#vs) SGL)"
+    proof (induct vs)
+      case Nil
+      then show ?case by simp
+      
+    then show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)"
+      using in_consInhStW0_nothd[where x="x" and y="y" and v="v" and vs="vs" and SGL="SGL"] 
+      using h2 h1 by (simp )
+  qed
+qed
+
+lemma inhst_eq_consInhStW:
+  assumes "is_wf_g (toSGr SGL)"  and "inh (toSGr SGL) \<noteq> {}"
+  shows "inhst (toSGr SGL) = set(consInhStW SGL)"
+proof
+  show "inhst (toSGr SGL) \<subseteq> set (consInhStW SGL)"
+  proof (rule subrelI)
+    fix x y
+    assume h: "(x, y) \<in> inhst (toSGr SGL)"
+    show "(x, y) \<in> set (consInhStW SGL)"
+    proof (simp add: consInhStW_def, induct "map fst (consInh SGL)")
+      assume "[] = map fst (consInh SGL)"
+      then show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)"
+        using h assms by (auto simp add: inhst_eq_consInhSt consInhSt_def rtrancl_list_impl inh_eq_consInh)
+    next
+      fix v vs
+      assume h1: "vs = map fst (consInh SGL) \<Longrightarrow> (x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)"
+      assume "v # vs  = map fst (consInh SGL)"
+      hence h2: "map fst (consInh SGL) = v # vs" by auto
+      from h have h3: "(x, y) \<in> set (consInhStV SGL x)" 
+        using assms(1) by (simp add: inhst_eq_consInhStV)
+      show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)" 
+      proof (case_tac "x=v")
+        assume "x=v"
+        then show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)" 
+          using assms(1) h h2 by (simp add: in_consInhStW0 inhst_eq_consInhStV)
+      next
+        assume "x\<noteq>v"
+        hence "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL) = ((x, y) \<in> set (consInhStW0 vs SGL))"
+          using h2 in_consInhStW0_nothd by auto
+        then show "(x, y) \<in> set (consInhStW0 (map fst (consInh SGL)) SGL)" 
+          using h3 by (simp add: h1 h2)
+    qed*)
+
+lemma inhstinv_im_eq_consInhStInv:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "(inhst (toSGr SGL))\<inverse> `` {v1} = set(consInhStInv v1 SGL)"
+  using assms inhstinv_eq_consInhStInv by auto
 
 fun consSrcStE::"SGr_ls \<Rightarrow> E \<Rightarrow> (E\<times>V) list" 
 where
-  "consSrcStE SGL e = (if e \<in> EsA (toSGr SGL) 
-      then map (Pair e) (consClan (the(src (toSGr SGL) e)) SGL)
+  "consSrcStE SGL e = (if e \<in> set (EsAL SGL)  
+      then map (Pair e) (consInhStInv (the(src (toSGr SGL) e)) SGL)
+      else [])"
+
+fun consTgtStE::"SGr_ls \<Rightarrow> E \<Rightarrow> (E\<times>V) list" 
+where
+  "consTgtStE SGL e = (if e \<in> set (EsAL SGL)  
+      then map (Pair e) (consInhStInv (the(tgt (toSGr SGL) e)) SGL)
       else [])"
 
 primrec consSrcSt0::"SGr_ls \<Rightarrow> E list \<Rightarrow> (E\<times>V) list" 
@@ -315,29 +533,27 @@ where
   "consSrcSt0 SGL [] = []" |
   "consSrcSt0 SGL (e#es) = (consSrcStE SGL e)@(consSrcSt0 SGL es)"
 
-(*lemma in_consSrcStVs: 
-  "v1 \<in> set(consSrcStVs SGL (v # vs)) \<longleftrightarrow> v1 \<in> set(consClan v SGL) \<union> set (consSrcStVs SGL vs)"
-  by (simp)*)
-
-(*lemma in_consSrcStE: 
-  shows "(e', v) \<in> set(consSrcStE SGL e) \<longleftrightarrow> e' = e"
-  proof
-    assume "(e', v) \<in> set (consSrcStE SGL e)"
-    then show "e' = e"
-      by (simp add: image_def)
-  next
-    assume "e' = e"
-    then show "(e', v) \<in> set (consSrcStE SGL e)"
-    by (rule ccontr)
-  by (simp add: image_def)*)
+primrec consTgtSt0::"SGr_ls \<Rightarrow> E list \<Rightarrow> (E\<times>V) list" 
+where
+  "consTgtSt0 SGL [] = []" |
+  "consTgtSt0 SGL (e#es) = (consTgtStE SGL e)@(consTgtSt0 SGL es)"
 
 lemma in_consSrcSt0: 
   "(e', v) \<in> set(consSrcSt0 SGL (e # es)) \<longleftrightarrow> 
     (e', v) \<in> set(consSrcStE SGL e) \<or> (e', v) \<in> set(consSrcSt0 SGL es)"
   by (simp)
 
+lemma in_consTgtSt0: 
+  "(e', v) \<in> set(consTgtSt0 SGL (e # es)) \<longleftrightarrow> 
+    (e', v) \<in> set(consTgtStE SGL e) \<or> (e', v) \<in> set(consTgtSt0 SGL es)"
+  by (simp)
+
 lemma in_consSrcSt0_hd: 
   "(e, v) \<in> set(consSrcSt0 SGL (e # es)) \<longleftrightarrow> (e, v) \<in> set(consSrcStE SGL e)"
+  by (induct es, auto)
+
+lemma in_consTgtSt0_hd: 
+  "(e, v) \<in> set(consTgtSt0 SGL (e # es)) \<longleftrightarrow> (e, v) \<in> set(consTgtStE SGL e)"
   by (induct es, auto)
 
 lemma in_consSrcSt0_nothd: 
@@ -345,77 +561,139 @@ lemma in_consSrcSt0_nothd:
   shows "(e', v) \<in> set(consSrcSt0 SGL (e # es)) \<longleftrightarrow> (e', v) \<in> set(consSrcSt0 SGL es)"
   using assms by (induct es, auto)
 
-(*lemma in_consSrcStVs_in_clan:
-  "v \<in> set (consSrcStVs SGL [v\<leftarrow>NsG SGL . src (toSGr SGL) a = Some v]) 
-  \<longleftrightarrow> v \<in> clan (the(src (toSGr SGL) a)) (toSGr SGL)"
-  proof
-    assume "v \<in> set (consSrcStVs SGL [v\<leftarrow>NsG SGL . src (toSGr SGL) a = Some v])"
-    then have "(let vs = [v\<leftarrow>NsG SGL . src (toSGr SGL) a = Some v] in
-      v \<in> set (consSrcStVs SGL vs))" by auto
-    then show "v \<in> clan (the (src (toSGr SGL) a)) (toSGr SGL)"
-    by (simp)*)
+lemma in_consTgtSt0_nothd: 
+  assumes "e' \<noteq> e"
+  shows "(e', v) \<in> set(consTgtSt0 SGL (e # es)) \<longleftrightarrow> (e', v) \<in> set(consTgtSt0 SGL es)"
+  using assms by (induct es, auto)
 
 lemma in_consSrcSt0_iff:
   fixes e v es 
   assumes ha: "set es \<subseteq> set(EsG SGL)" and hb: "is_wf_sg (toSGr SGL)" 
   shows "(e, v) \<in> set(consSrcSt0 SGL es) \<longleftrightarrow> 
-    (e \<in> set(es) \<and> e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2))"
+    e \<in> set(es) \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
   proof -
     from hb have hb1: "is_wf_g (toSGr SGL)"
       by (simp add: is_wf_sg_def)
     show ?thesis
     proof
       assume "(e, v) \<in> set (consSrcSt0 SGL es)"
-      then show "e \<in> set(es) \<and> e \<in> EsA (toSGr SGL) 
-        \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2)"
+      then show "e \<in> set(es) \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
       proof (induct es, simp)
         fix a es'
-        assume hd: "(e, v) \<in> set (consSrcSt0 SGL es') \<Longrightarrow> e \<in> set es' \<and>
-          e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2)"
+        assume hd: "(e, v) \<in> set (consSrcSt0 SGL es') \<Longrightarrow> 
+          e \<in> set(es') \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
         and he: "(e, v) \<in> set (consSrcSt0 SGL (a # es')) "
-        then show "e \<in> set (a # es') \<and> e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2)"
+        then show "e \<in> set (a # es') \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
         proof (case_tac "e=a")
           assume hf: "e=a"
-          then have "(a, v) \<in> set(consSrcStE SGL e)"
+          hence "(a, v) \<in> set(consSrcStE SGL e)"
             using he by (simp only: in_consSrcSt0_hd)
-          then show "e \<in> set (a # es') \<and>e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2)"
-            using hf hb1 hb in_EsA_in_ES[of "(toSGr SGL)" "a"] by (simp add: image_def )
-              (rule exI[where x="the(src (toSGr SGL) a)"], 
-                auto simp add: clan_eq_consClan is_wf_g_def ftotal_on_def domD)
+          then show "e \<in> set (a # es') \<and>(e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+            using hf hb1 hb in_EsA_in_ES[of "(toSGr SGL)" "a"] 
+            by (simp only: image_def relcomp_unfold inhstinv_eq_consInhStInv dres_def pfunToRel_def, simp)
+              (rule exI[where x="the(src (toSGr SGL) a)"], auto simp add: is_wf_g_def is_wf_sg_def ftotal_on_def domD EsA_eq_EsAL)
         next
           assume hf: "e\<noteq>a"
           then have "(e, v) \<in> set (consSrcSt0 SGL es')"
             using he in_consSrcSt0_nothd by (simp)
-          then show "e \<in> set (a # es') \<and> e \<in> EsA (toSGr SGL) 
-            \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2)"
+          then show "e \<in> set (a # es') \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
             using hd by simp
         qed
       qed
     next
-      assume "e \<in> set es \<and> e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2)"
+      assume "e \<in> set es \<and>(e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (src (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
       then show "(e, v) \<in> set (consSrcSt0 SGL es)"
       proof (clarify)
         fix v2
         assume h1: "e \<in> set es"
-        and h2: "e \<in> EsA (toSGr SGL)"
-        and h3: "v \<in> clan v2 (toSGr SGL)"
-        and h4: "src (toSGr SGL) e = Some v2"
+        and h2: "(e, v2) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (src (toSGr SGL))"
+        and h3: "(v, v2) \<in> inhst (toSGr SGL)"
+        from h2 have h4: "e \<in> EsA (toSGr SGL)" by (simp add: dres_def)
+        from h2 have h5: "src (toSGr SGL) e = Some v2" by (simp add: dres_def pfunToRel_def)  
+        from h3 have h3a: "(v2, v) \<in> (inhst (toSGr SGL))\<inverse>" by auto
         from h1 show "(e, v) \<in> set (consSrcSt0 SGL es)"
         proof (induct es, simp)
           fix a es
-          assume h5: "e \<in> set es \<Longrightarrow> (e, v) \<in> set (consSrcSt0 SGL es)"
-            and h6: "e \<in> set (a # es)"
+          assume h6: "e \<in> set es \<Longrightarrow> (e, v) \<in> set (consSrcSt0 SGL es)"
+            and h7: "e \<in> set (a # es)"
           then show "(e, v) \<in> set (consSrcSt0 SGL (a # es))"
           proof (case_tac "e=a")
             assume "e=a"
             then show "(e, v) \<in> set (consSrcSt0 SGL (a # es))"
-              using h2 h3 h4 hb1 by (simp only: in_consSrcSt0_hd)
-              (simp add: image_def clan_eq_consClan)
+              using h5 h2 h3a h4 hb 
+              by (simp only: in_consSrcSt0_hd inhstinv_eq_consInhStInv is_wf_sg_def EsA_eq_EsAL)(auto)
           next
             assume "e\<noteq>a"
             then show "(e, v) \<in> set (consSrcSt0 SGL (a # es))"
-              using in_consSrcSt0_nothd h5 h6
-              by (simp)
+              using in_consSrcSt0_nothd h5 h6 h7
+              by (auto)
+          qed
+        qed
+      qed
+    qed
+  qed   
+
+lemma in_consTgtSt0_iff:
+  fixes e v es 
+  assumes ha: "set es \<subseteq> set(EsG SGL)" and hb: "is_wf_sg (toSGr SGL)" 
+  shows "(e, v) \<in> set(consTgtSt0 SGL es) \<longleftrightarrow> 
+    e \<in> set(es) \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+  proof -
+    from hb have hb1: "is_wf_g (toSGr SGL)"
+      by (simp add: is_wf_sg_def)
+    show ?thesis
+    proof
+      assume "(e, v) \<in> set (consTgtSt0 SGL es)"
+      then show "e \<in> set(es) \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+      proof (induct es, simp)
+        fix a es'
+        assume hd: "(e, v) \<in> set (consTgtSt0 SGL es') \<Longrightarrow> 
+          e \<in> set(es') \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+        and he: "(e, v) \<in> set (consTgtSt0 SGL (a # es')) "
+        then show "e \<in> set (a # es') \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+        proof (case_tac "e=a")
+          assume hf: "e=a"
+          hence "(a, v) \<in> set(consTgtStE SGL e)"
+            using he by (simp only: in_consTgtSt0_hd)
+          then show "e \<in> set (a # es') \<and>(e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel(tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+            using hf hb1 hb in_EsA_in_ES[of "(toSGr SGL)" "a"] 
+            by (simp only: image_def relcomp_unfold inhstinv_eq_consInhStInv dres_def pfunToRel_def, simp)
+              (rule exI[where x="the(tgt (toSGr SGL) a)"], auto simp add: is_wf_g_def is_wf_sg_def ftotal_on_def domD EsA_eq_EsAL)
+        next
+          assume hf: "e\<noteq>a"
+          then have "(e, v) \<in> set (consTgtSt0 SGL es')"
+            using he in_consTgtSt0_nothd by (simp)
+          then show "e \<in> set (a # es') \<and> (e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+            using hd by simp
+        qed
+      qed
+    next
+      assume "e \<in> set es \<and>(e, v) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (tgt (toSGr SGL)) O (inhst (toSGr SGL))\<inverse>"
+      then show "(e, v) \<in> set (consTgtSt0 SGL es)"
+      proof (clarify)
+        fix v2
+        assume h1: "e \<in> set es"
+        and h2: "(e, v2) \<in> EsA (toSGr SGL) \<lhd> pfunToRel (tgt (toSGr SGL))"
+        and h3: "(v, v2) \<in> inhst (toSGr SGL)"
+        from h2 have h4: "e \<in> EsA (toSGr SGL)" by (simp add: dres_def)
+        from h2 have h5: "tgt (toSGr SGL) e = Some v2" by (simp add: dres_def pfunToRel_def)  
+        from h3 have h3a: "(v2, v) \<in> (inhst (toSGr SGL))\<inverse>" by auto
+        from h1 show "(e, v) \<in> set (consTgtSt0 SGL es)"
+        proof (induct es, simp)
+          fix a es
+          assume h6: "e \<in> set es \<Longrightarrow> (e, v) \<in> set (consTgtSt0 SGL es)"
+            and h7: "e \<in> set (a # es)"
+          then show "(e, v) \<in> set (consTgtSt0 SGL (a # es))"
+          proof (case_tac "e=a")
+            assume "e=a"
+            then show "(e, v) \<in> set (consTgtSt0 SGL (a # es))"
+              using h5 h2 h3a h4 hb 
+              by (simp only: in_consSrcSt0_hd inhstinv_eq_consInhStInv is_wf_sg_def EsA_eq_EsAL)(auto)
+          next
+            assume "e\<noteq>a"
+            then show "(e, v) \<in> set (consTgtSt0 SGL (a # es))"
+              using in_consTgtSt0_nothd h5 h6 h7
+              by (auto)
           qed
         qed
       qed
@@ -430,20 +708,245 @@ lemma in_consSrcSt:
   fixes e v
   assumes ha: "is_wf_sg (toSGr SGL)"
   shows "(e, v) \<in> set(consSrcSt SGL)  \<longleftrightarrow> 
-     (e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. v \<in> clan v2 (toSGr SGL) \<and> src (toSGr SGL) e = Some v2))"
+     (e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. (v, v2) \<in> inhst (toSGr SGL) \<and> src (toSGr SGL) e = Some v2))"
   proof -
       have hb: "set (EsG SGL) \<subseteq> Es (toSGr SGL)" 
         by (simp add: toSGr_def)
       have hc: "e \<in> EsA (toSGr SGL) \<Longrightarrow> e \<in> set (EsG SGL)"
         by (simp add: Fragmenta_SGsL.in_set_EsG ha in_EsA_in_ES)
       show ?thesis
-      using ha hb by (auto simp add: consSrcSt_def in_consSrcSt0_iff hc)
+      using ha hb by (auto simp add: consSrcSt_def in_consSrcSt0_iff hc dres_def pfunToRel_def)
   qed
 
 lemma srcst_eq_consSrcSt: 
-  assumes ha: "is_wf_sg (toSGr SGL)"
+  assumes "is_wf_sg (toSGr SGL)"
   shows "srcst (toSGr SGL) = set(consSrcSt SGL)"
-  using ha by (auto simp add: srcst_def in_consSrcSt)
+  using assms by (auto simp add: srcst_def in_consSrcSt dres_def pfunToRel_def inhst_def)
+
+definition consTgtSt:: "SGr_ls \<Rightarrow> (E\<times>V) list"
+where
+  "consTgtSt SGL \<equiv> consTgtSt0 SGL (EsG SGL)"
+
+lemma in_consTgtSt: 
+  fixes e v
+  assumes ha: "is_wf_sg (toSGr SGL)"
+  shows "(e, v) \<in> set(consTgtSt SGL)  \<longleftrightarrow> 
+     (e \<in> EsA (toSGr SGL) \<and> (\<exists>v2. (v, v2) \<in> inhst (toSGr SGL) \<and> tgt (toSGr SGL) e = Some v2))"
+  proof -
+      have hb: "set (EsG SGL) \<subseteq> Es (toSGr SGL)" 
+        by (simp add: toSGr_def)
+      have hc: "e \<in> EsA (toSGr SGL) \<Longrightarrow> e \<in> set (EsG SGL)"
+        by (simp add: Fragmenta_SGsL.in_set_EsG ha in_EsA_in_ES)
+      show ?thesis
+      using ha hb by (auto simp add: consTgtSt_def in_consTgtSt0_iff hc dres_def pfunToRel_def)
+  qed
+
+lemma tgtst_eq_consTgtSt: 
+  assumes "is_wf_sg (toSGr SGL)"
+  shows "tgtst (toSGr SGL) = set(consTgtSt SGL)"
+  using assms by (auto simp add: tgtst_def in_consTgtSt dres_def pfunToRel_def inhst_def)
+
+definition consInhStCompMorphPair::"SGr_ls \<Rightarrow> (V\<times>V) \<Rightarrow> (V\<times>V) list"
+where
+  "consInhStCompMorphPair SGL p = (map (Pair (snd p)) (consInhStInv (fst p)  SGL))"
+
+lemma consInhStCompMorphPair_eq:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "set(consInhStCompMorphPair SGL p) = {(snd p, fst p)} O (inhst (toSGr SGL))\<inverse>"
+  using assms consInhStCompMorphPair_def inhstinv_eq_consInhStInv by auto
+
+primrec consInhStCompMorph0::"SGr_ls \<Rightarrow> (V\<times>V) list \<Rightarrow> (V\<times>V) list"
+where
+  "consInhStCompMorph0 SGL [] = []" | 
+  "consInhStCompMorph0 SGL (p#ps) = 
+    (consInhStCompMorphPair SGL p)@(consInhStCompMorph0 SGL ps)"
+
+definition consInhStCompMorph::"SGr_ls \<Rightarrow> (V\<times>V) list \<Rightarrow> (V\<times>V) list"
+where
+  "consInhStCompMorph SGL rl = invert (consInhStCompMorph0 SGL rl)"
+
+lemma in_consInhStCompMorph_insert_eq:
+  "set (consInhStCompMorph SGL (p # rl)) = set(invert (consInhStCompMorphPair SGL p)) \<union> set (consInhStCompMorph SGL rl)"
+proof
+  show "set (consInhStCompMorph SGL (p # rl)) \<subseteq> set (invert (consInhStCompMorphPair SGL p)) \<union> set (consInhStCompMorph SGL rl)"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (consInhStCompMorph SGL (p # rl))"
+    hence "(y, x) \<in> set (consInhStCompMorph0 SGL (p # rl))" 
+      using consInhStCompMorph_def in_invert by fastforce
+    hence "(y, x) \<in> set (consInhStCompMorphPair SGL p) \<or> (y, x) \<in> set (consInhStCompMorph0 SGL rl)" 
+      by simp
+    then show "(x, y) \<in> set (invert (consInhStCompMorphPair SGL p)) \<union> set (consInhStCompMorph SGL rl)"
+      using consInhStCompMorph_def in_invert by fastforce
+  qed
+next
+  show "set (invert (consInhStCompMorphPair SGL p)) \<union> set (consInhStCompMorph SGL rl) \<subseteq> set (consInhStCompMorph SGL (p # rl))"
+  using consInhStCompMorph_def by auto
+qed
+
+lemma consInhStCompMorph_is_eq:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "set(consInhStCompMorph SGL rl) = inhst (toSGr SGL) O set(rl)"
+proof
+  show "set (consInhStCompMorph SGL rl) \<subseteq> inhst (toSGr SGL) O set rl"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (consInhStCompMorph SGL rl)"
+    hence "(y, x) \<in> set (consInhStCompMorph0 SGL rl)" 
+      using in_invert consInhStCompMorph_def by force
+    then show "(x, y) \<in> inhst (toSGr SGL) O set rl"
+    proof (induct rl)
+      case Nil
+      then show ?case by auto
+    next
+      fix p rl 
+      assume h1: "(y, x) \<in> set (consInhStCompMorph0 SGL rl) \<Longrightarrow> (x, y) \<in> inhst (toSGr SGL) O set rl"
+      assume "(y, x) \<in> set (consInhStCompMorph0 SGL (p # rl))"
+      hence h2: "(y, x) \<in> set(consInhStCompMorphPair SGL p)\<union>set(consInhStCompMorph0 SGL rl)"
+        by simp
+      hence "(y, x) \<in> {(snd p, fst p)} O (inhst (toSGr SGL))\<inverse> \<or> (y, x) \<in> set(consInhStCompMorph0 SGL rl)"
+        by (simp add: assms consInhStCompMorphPair_eq)
+      then show "(x, y) \<in> inhst (toSGr SGL) O set (p # rl)"
+      proof
+        assume "(y, x) \<in> {(snd p, fst p)} O (inhst (toSGr SGL))\<inverse>"
+        then show "(x, y) \<in> inhst (toSGr SGL) O set (p # rl)"
+          using relcomp.relcompI by auto
+      next
+        assume "(y, x) \<in> set (consInhStCompMorph0 SGL rl)"
+        then show "(x, y) \<in> inhst (toSGr SGL) O set (p # rl)"
+          using h1 by auto
+      qed
+    qed
+  qed
+next
+  show "inhst (toSGr SGL) O set rl \<subseteq> set (consInhStCompMorph SGL rl)"
+  proof (rule subrelI)
+    fix x y 
+    assume "(x, y) \<in> inhst (toSGr SGL) O set rl"
+    then show "(x, y) \<in> set (consInhStCompMorph SGL rl)"
+    proof (induct rl)
+      case Nil
+      then show ?case by auto
+    next
+      fix p rl
+      assume h1: "(x, y) \<in> inhst (toSGr SGL) O set rl \<Longrightarrow> (x, y) \<in> set (consInhStCompMorph SGL rl)"
+      assume "(x, y) \<in> inhst (toSGr SGL) O set (p # rl)"
+      hence "(x, y) \<in> inhst (toSGr SGL) O {p} \<or> (x, y) \<in> inhst (toSGr SGL) O set (rl)"
+        by auto
+      then show "(x, y) \<in> set (consInhStCompMorph SGL (p # rl))"
+      proof
+        assume "(x, y) \<in> inhst (toSGr SGL)O {p}"
+        hence "(y, x) \<in> {(snd p, fst p)} O (inhst (toSGr SGL))\<inverse>" by auto
+        hence "(y, x) \<in> set(consInhStCompMorphPair SGL p)" 
+          by (simp add: assms consInhStCompMorphPair_eq)
+        hence "(y, x) \<in> set(consInhStCompMorph0 SGL (p # rl))" by simp
+        then show "(x, y) \<in> set (consInhStCompMorph SGL (p # rl))"
+          using in_invert consInhStCompMorph_def by force
+      next
+        assume "(x, y) \<in> inhst (toSGr SGL) O set rl"
+        then show "(x, y) \<in> set (consInhStCompMorph SGL (p # rl))"
+          using h1 by (auto simp only: in_consInhStCompMorph_insert_eq)
+      qed
+    qed
+  qed
+qed
+
+definition consMorphCompInhStPair::"SGr_ls \<Rightarrow> (V\<times>V) \<Rightarrow> (V\<times>V) list"
+where
+  "consMorphCompInhStPair SGL p = (map (Pair (fst p)) (consInhSt (snd p)  SGL))"
+
+lemma consMorphCompInhStPair_eq:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "set(consMorphCompInhStPair SGL p) = {p} O inhst (toSGr SGL)"
+proof
+  show "set (consMorphCompInhStPair SGL p) \<subseteq> {p} O inhst (toSGr SGL)"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (consMorphCompInhStPair SGL p)"
+    hence "x = fst p \<and> y \<in> set(consInhSt (snd p) SGL)"
+      by (auto simp add: consMorphCompInhStPair_def) 
+    hence "x = fst p \<and> (snd p, y) \<in> inhst (toSGr SGL)"
+      using assms by (simp add: inhst_eq_consInhSt)
+    then show "(x, y) \<in> {p} O inhst (toSGr SGL)"
+      by force
+  qed
+next
+  show "{p} O inhst (toSGr SGL) \<subseteq> set (consMorphCompInhStPair SGL p)"
+    using assms by (auto simp add: consMorphCompInhStPair_def inhst_eq_consInhSt)
+qed
+
+primrec consMorphCompInhSt0::"SGr_ls \<Rightarrow> (V\<times>V) list \<Rightarrow> (V\<times>V) list"
+where
+  "consMorphCompInhSt0 SGL [] = []" | 
+  "consMorphCompInhSt0 SGL (p#ps) = 
+    (consMorphCompInhStPair SGL p)@(consMorphCompInhSt0 SGL ps)"
+
+definition consMorphCompInhSt::"SGr_ls \<Rightarrow> (V\<times>V) list \<Rightarrow> (V\<times>V) list"
+where
+  "consMorphCompInhSt SGL rl = consMorphCompInhSt0 SGL rl"
+
+lemma consMorphCompInhSt_is_eq:
+  assumes "is_wf_g (toSGr SGL)" 
+  shows "set(consMorphCompInhSt SGL rl) = set(rl) O inhst (toSGr SGL)"
+proof
+  show "set (consMorphCompInhSt SGL rl) \<subseteq> set rl O inhst (toSGr SGL)"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (consMorphCompInhSt SGL rl)"
+    hence "(x, y) \<in> set (consMorphCompInhSt0 SGL rl)" 
+      by (simp add: consMorphCompInhSt_def)
+    then show "(x, y) \<in> set rl O inhst (toSGr SGL)"
+    proof (induct rl)
+      case Nil
+      then show ?case by auto
+    next
+      fix p rl
+      assume h1: "(x, y) \<in> set (consMorphCompInhSt0 SGL rl) \<Longrightarrow> (x, y) \<in> set rl O inhst (toSGr SGL)"
+      assume "(x, y) \<in> set (consMorphCompInhSt0 SGL (p # rl))"
+      hence "(x, y) \<in> set(consMorphCompInhStPair SGL p)\<or> (x, y) \<in> set(consMorphCompInhSt0 SGL (rl))" 
+        by auto
+      then show "(x, y) \<in> set (p # rl) O inhst (toSGr SGL)"
+      proof
+        assume "(x, y) \<in> set(consMorphCompInhStPair SGL p)"
+        hence "(x, y) \<in> {p} O inhst (toSGr SGL)"
+          using assms by (simp only: consMorphCompInhStPair_eq)
+        then show "(x, y) \<in> set (p # rl) O inhst (toSGr SGL)" by auto
+      next
+        assume "(x, y) \<in> set (consMorphCompInhSt0 SGL rl)"
+        then show "(x, y) \<in> set (p # rl) O inhst (toSGr SGL)"
+          using h1 by auto
+      qed
+    qed
+  qed
+next
+  show "set rl O inhst (toSGr SGL) \<subseteq> set (consMorphCompInhSt SGL rl)"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set rl O inhst (toSGr SGL)"
+    then show "(x, y) \<in> set (consMorphCompInhSt SGL rl)"
+    proof (induct rl)
+      case Nil
+      then show ?case by auto
+    next
+      fix p rl
+      assume h: "(x, y) \<in> set rl O inhst (toSGr SGL) \<Longrightarrow> (x, y) \<in> set (consMorphCompInhSt SGL rl)"
+      assume "(x, y) \<in> set (p # rl) O inhst (toSGr SGL)"
+      hence "(x, y) \<in> {p} O inhst (toSGr SGL) \<or> (x, y) \<in> set (rl) O inhst (toSGr SGL)" by auto
+      then show "(x, y) \<in> set (consMorphCompInhSt SGL (p # rl))"
+      proof
+        assume "(x, y) \<in> {p} O inhst (toSGr SGL)"
+        hence "(x, y) \<in> set(consMorphCompInhStPair SGL p)"
+          using assms by (simp only: consMorphCompInhStPair_eq)
+        then show "(x, y) \<in> set (consMorphCompInhSt SGL (p # rl))"
+          by (simp add: consMorphCompInhSt_def)
+      next
+        assume "(x, y) \<in> set rl O inhst (toSGr SGL)"
+        then show "(x, y) \<in> set (consMorphCompInhSt SGL (p # rl))"
+          using h by (simp add: consMorphCompInhSt_def)
+      qed
+    qed
+  qed
+qed
 
 definition consUSG:: "SGr_ls \<Rightarrow> SGr_ls \<Rightarrow> SGr_ls"
 where
@@ -484,6 +987,58 @@ lemma USGEqconsUSG: "(toSGr SGL1) USG (toSGr SGL2) = toSGr (consUSG SGL1 SGL2)"
   next
     show "tgtm (toSGr SGL1 USG toSGr SGL2) = tgtm (toSGr (consUSG SGL1 SGL2))"
      by (simp add: toSGr_def cupSG_def consUSG_def) 
+ qed
+
+lemma pfunToRel_eq_set_fV:
+  assumes "distinct(map fst (fVL SGL))" 
+  shows "pfunToRel (fV (toMorph SGL)) = set(fVL SGL)"
+proof
+  show "pfunToRel (fV (toMorph SGL)) \<subseteq> set (fVL SGL)" 
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> pfunToRel (fV (toMorph SGL))"
+    then show "(x, y) \<in> set (fVL SGL)" 
+      by (simp add: pfunToRel_def toMorph_def map_of_SomeD)
   qed
-  
+next
+  show "set (fVL SGL) \<subseteq> pfunToRel (fV (toMorph SGL))"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (fVL SGL)"
+    then show "(x, y) \<in> pfunToRel (fV (toMorph SGL))"
+      using assms by (simp add: pfunToRel_def toMorph_def)
+  qed
+qed
+
+lemma pfunToRel_eq_set_fE:
+  assumes "distinct(map fst (fEL SGL))" 
+  shows "pfunToRel (fE (toMorph SGL)) = set(fEL SGL)"
+proof
+  show "pfunToRel (fE (toMorph SGL)) \<subseteq> set (fEL SGL)" 
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> pfunToRel (fE (toMorph SGL))"
+    then show "(x, y) \<in> set (fEL SGL)" 
+      by (simp add: pfunToRel_def toMorph_def map_of_SomeD)
+  qed
+next
+  show "set (fEL SGL) \<subseteq> pfunToRel (fE (toMorph SGL))"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> set (fEL SGL)"
+    then show "(x, y) \<in> pfunToRel (fE (toMorph SGL))"
+      using assms by (simp add: pfunToRel_def toMorph_def)
+  qed
+qed
+
+lemma pfunToRel_eq_set_srcG:
+  assumes "distinct(map fst (srcG GL))" 
+  shows "pfunToRel (src (toGr GL)) = set(srcG GL)"
+  by (simp add: assms pfunTorel_is_eq toGr_def)
+
+lemma pfunToRel_eq_set_tgtG:
+  assumes "distinct(map fst (tgtG GL))" 
+  shows "pfunToRel (tgt (toGr GL)) = set(tgtG GL)"
+  by (simp add: assms pfunTorel_is_eq toGr_def)
+
 end

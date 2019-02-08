@@ -120,6 +120,6 @@ lemma acyclicIffForAll:
 (* Defines the empty graph*)
 definition emptyG :: "Gr"
 where
-  "emptyG \<equiv> \<lparr>Ns = {}, Es = {}, src = empty, tgt = empty\<rparr>"
+  "emptyG \<equiv> \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt = Map.empty\<rparr>"
 
 end

@@ -16,16 +16,11 @@ lemma rtrancl_Image_eq:
   shows "r\<^sup>* `` x = set (rtrancl_list_impl r' x')"
   using assms by (auto simp: rtrancl_list_impl)
 
-lemma rtrancl_in:"(x, y) \<in> r\<^sup>* \<longleftrightarrow> y \<in> r\<^sup>* `` {x}"
-  by (auto simp: rtrancl_list_impl)
-
 lemma trancl_Image_eq:
   assumes "r = set r'" and "x = set x'"
   shows "r\<^sup>+ `` x = set (trancl_list_impl r' x')"
   using assms by (auto simp: trancl_list_impl)
 
-lemma trancl_in:"(x, y) \<in> r\<^sup>+ \<longleftrightarrow> y \<in> r\<^sup>+ `` {x}"
-  by (auto)
 
 subsection \<open>A Simproc for Computing the Images of Finite Transitive Closures\<close>
 
@@ -77,7 +72,7 @@ fun gen_simproc dest mk_const eq_thm ctxt ct =
           val r' = HOLogic.mk_list prodT xs;
           val x' = HOLogic.mk_list eltT ys;
           val t' = set $ (const $ r' $ x')
-          val u = Value.value ctxt t';
+          val u = Value_Command.value ctxt t';
           val eval = (t', u) |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
 
           val maybe_rule =
@@ -118,14 +113,6 @@ lemma
   apply simp_all
   apply auto
 done
-
-lemma
-  "(1, 5) \<in> {(1::nat, 2), (2, 3), (3, 4), (4, 5)}\<^sup>*"
-  by (simp add: rtrancl_in)
-
-lemma
-  "(1, 5) \<in> {(1::nat, 2), (2, 3), (3, 4), (4, 5)}\<^sup>+"
-  by (simp add: trancl_in)
 
 text \<open>
   Evaluation does not allow for free variables and thus fails in their presence.

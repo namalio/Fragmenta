@@ -48,7 +48,7 @@ record MorphL =
   fVL :: "(V\<times>V) list"
   fEL :: "(E\<times>E) list"
 
-(*The empty graph morphism*)
+(*The empty graph morphism in the listed representation*)
 definition emptyGML :: "MorphL"
 where
   "emptyGML \<equiv> \<lparr>fVL = [], fEL = [] \<rparr>"
@@ -60,6 +60,22 @@ where
 definition is_wf_MorphL:: "MorphL \<Rightarrow> bool"
 where
   "is_wf_MorphL ML \<equiv> distinct (map fst (fVL ML)) \<and> distinct (map fst (fEL ML))"
+
+lemma pfunTorel_is_eq: 
+  assumes "distinct(map fst LP)"
+  shows "pfunToRel (map_of LP) = set LP"
+proof
+  show "pfunToRel (map_of LP) \<subseteq> set LP"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> pfunToRel (map_of LP)"
+    then show "(x, y) \<in> set LP" 
+      by (simp add: map_of_SomeD pfunToRel_def)
+  qed
+next
+  show "set LP \<subseteq> pfunToRel (map_of LP)"
+    using assms by (simp add: pfunToRel_def)
+qed
 
 definition consUGM:: "'a MorphL_scheme \<Rightarrow> 'a MorphL_scheme \<Rightarrow> MorphL"
 where
@@ -79,5 +95,6 @@ lemma UGM_eq_ConsUGM: "(toMorph ML1) UGM (toMorph ML2) = toMorph(consUGM ML1 ML2
     show "fE (toMorph ML1) ++ fE (toMorph ML2) = fE (toMorph (consUGM ML1 ML2))"
       by (simp add: toMorph_def)
   qed
+
 
 end

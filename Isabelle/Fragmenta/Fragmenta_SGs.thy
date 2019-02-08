@@ -3,13 +3,14 @@
     Author:     Nuno Amálio
 *)
 theory Fragmenta_SGs
-imports Fragmenta_Graphs 
-  "../Extra/Trcl_Extra"
+imports Fragmenta_Graphs "../Extra/Trcl_Extra"
 
 begin
-                         
+
+(*Multiplicity values: a natural number or 0*)
 datatype MultUVal = val nat | many ("*")
 
+(*Multiplicities: either a range multiplicity or a single multiplicity value*)
 datatype MultVal = rm nat MultUVal | sm MultUVal
 
 definition ok_multVal :: "MultVal \<Rightarrow> bool"
@@ -54,10 +55,9 @@ record SGr = Gr +
 (* Defines the empty SG*)
 definition emptySG :: "SGr"
 where
-  "emptySG \<equiv> \<lparr>Ns = {}, Es = {}, 
-    src = empty, tgt = empty, 
-    nty = empty, ety = empty,
-    srcm = empty, tgtm = empty\<rparr>"
+  "emptySG \<equiv> \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt = Map.empty, 
+    nty = Map.empty, ety = Map.empty,
+    srcm = Map.empty, tgtm = Map.empty\<rparr>"
 
 lemma SGr_eq: 
   shows "(SG1 = SG2) \<longleftrightarrow> Ns SG1 = Ns SG2 \<and> Es SG1 = Es SG2 \<and> src SG1 = src SG2 
@@ -643,6 +643,15 @@ qed
 lemma inhst_of_inh: "(v1, v2) \<in> inh SG \<Longrightarrow> (v1, v2) \<in> inhst SG"
   by (simp add: inhst_def)
 
+lemma inhst_is_id:
+  assumes ha: "Es SG = EsA SG" and hb: "is_wf_sg SG"
+  shows "inhst SG = Id"
+proof -
+  have hc: "EsI SG = {}"  by (simp add: SG_EsA_no_inh ha hb)
+  show "inhst SG = Id"
+    using hc by (simp add: inh_noedgesI inhst_def)
+qed
+
 definition clan ::"V \<Rightarrow> SGr \<Rightarrow> V set"
 where
   "clan v SG \<equiv> (inhst SG)\<inverse>``{v}"
@@ -658,41 +667,48 @@ lemma clan_of_inh: "(v1, v2) \<in> inh SG \<Longrightarrow> v1 \<in> clan v2 SG"
 
 definition srcst ::"SGr \<Rightarrow> (E\<times>V) set"
 where
-  "srcst SG \<equiv> {(e, v). e \<in> EsA (SG) \<and> (\<exists>v2. v \<in> (clan v2 SG) \<and> (src SG) e = Some v2)}"
+  "srcst SG \<equiv> (EsA (SG) \<lhd> pfunToRel(src SG)) O (inhst SG)\<inverse>"
+
+(*{(e, v). e \<in> EsA (SG) \<and> (\<exists>v2. v \<in> (clan v2 SG) \<and> (src SG) e = Some v2)}"*)
+
+lemma in_srcst_subeq_src:
+  assumes ha: "Es SG = EsA SG" and hb: "is_wf_sg SG"
+  shows "srcst SG \<subseteq> pfunToRel (src SG)"
+proof (rule subrelI)
+  fix x y 
+  assume "(x, y) \<in> srcst SG"
+  hence h2: "(src SG) x = Some y"
+    using ha hb 
+    by (simp add: srcst_def inhst_is_id)(simp add: EsA_def EsTy_def dres_def pfunToRel_def)
+  thus "(x, y) \<in> pfunToRel (src SG)" by (auto simp: pfunToRel_def)
+qed
 
 lemma srcst_eq_src_EsA:
-  assumes h1: "Es SG = EsA SG" and h2: "is_wf_sg SG"
+  assumes ha: "Es SG = EsA SG" and hb: "is_wf_sg SG"
   shows "srcst SG = pfunToRel (src SG)"
   proof
     show "srcst SG \<subseteq> pfunToRel (src SG)"
-    proof (rule subrelI)
-    fix x y 
-    assume a1: "(x, y) \<in> srcst SG"
-    have a2: "(src SG) x = Some y"
-       using a1 assms by (auto simp: srcst_def pfunToRel_def EsI_def clan_def EsA_def EsTy_def
-         inhst_def inh_def relOfGr_def restrict_def adjacent_def inhG_def elim: rtranclE)
-    thus "(x, y) \<in> pfunToRel (src SG)"
-    using a2 by (auto simp: pfunToRel_def)
-    qed
-    next
+      using ha hb by (simp add: in_srcst_subeq_src)
+  next
     show "pfunToRel (src SG) \<subseteq> srcst SG"
     proof (rule subrelI)
       fix x y 
       assume b1: "(x, y) \<in> pfunToRel (src SG)"
-      have b2: "(src SG) x = Some y"
-        using b1 by (auto simp: pfunToRel_def)
+      hence b2: "(src SG) x = Some y"
+        by (auto simp: pfunToRel_def)
       have b3: "ftotal_on (src SG) (Es SG) (Ns SG)" 
-        using h2 by (simp add: is_wf_sg_def is_wf_g_def)
+        using hb by (simp add: is_wf_sg_def is_wf_g_def)
       have b4: "x \<in> Es SG" using b2 b3 by (auto simp add: ftotal_on_def dom_def)
-      have b5: "x : EsA SG" using b4 h1 by (auto)
-      have b6: "EsI SG = {}" using h1 h2 by (rule SG_EsA_no_inh)
+      have b5: "x : EsA SG" using b4 ha by (auto)
+      have b6: "EsI SG = {}" using ha hb by (rule SG_EsA_no_inh)
       thus "(x, y) \<in> srcst SG"
-      using b2 b3 b5 b6 by (auto simp: srcst_def EsA_def clan_def inhst_def inh_noedgesI)
+        by (simp add: b1 b5 dres_def ha hb inhst_is_id srcst_def)
+
    qed
 qed
 
-lemma src_in_srcst: "e \<in> EsA SG \<Longrightarrow> src SG e = Some v \<Longrightarrow> (e, v) \<in> srcst SG"
-  by (simp add: srcst_def)
+lemma e_v_src_in_srcst: "e \<in> EsA SG \<Longrightarrow> src SG e = Some v \<Longrightarrow> (e, v) \<in> srcst SG"
+  by (auto simp add: srcst_def dres_def pfunToRel_def inhst_def)
 
 lemma the_src_in_srcst: 
   assumes "is_wf_sg SG" and "e \<in> EsA SG"
@@ -700,25 +716,24 @@ lemma the_src_in_srcst:
   proof -
     from assms have h1: "is_wf_g SG" by (simp add: is_wf_sg_def)
     show ?thesis
-      using assms in_EsA_in_ES[of "SG" "e"] h1
-      by (simp add: srcst_def)(simp add: is_wf_g_def ftotal_on_def domD,
-        rule exI[where x="the (src SG e)"], auto simp add: domD)
+      by (simp add: assms(1) assms(2) e_v_src_in_srcst src_aedge_sg)
   qed
 
 lemma srcpar_in_srcst: "e \<in> EsA SG \<Longrightarrow> src SG e = Some v1 \<Longrightarrow> v2 \<in> clan v1 SG  
   \<Longrightarrow> (e, v2) \<in> srcst SG"
-  by (simp add: srcst_def)
+  by (auto simp add: srcst_def dres_def pfunToRel_def inhst_def EsA_def clan_def)
 
 definition tgtst ::"SGr \<Rightarrow> (E\<times>V) set"
 where
-  "tgtst SG \<equiv> {(e, v). e \<in> EsA (SG) \<and> (\<exists>v2. v \<in> (clan v2 SG) \<and> (tgt SG) e = Some v2)}"
+  "tgtst SG \<equiv> (EsA (SG) \<lhd> pfunToRel(tgt SG)) O (inhst SG)\<inverse>"  
+  (*"tgtst SG \<equiv> {(e, v). e \<in> EsA (SG) \<and> (\<exists>v2. v \<in> (clan v2 SG) \<and> (tgt SG) e = Some v2)}"*)
 
 lemma tgt_in_tgtst: "\<lbrakk>e \<in> EsA SG; tgt SG e = Some v\<rbrakk> \<Longrightarrow> (e, v) \<in> tgtst SG"
-  by (simp add: tgtst_def)
+  by (auto simp add: tgtst_def dres_def inhst_def pfunToRel_def)
 
 lemma tgtpar_in_tgtst: "\<lbrakk>e \<in> EsA SG; tgt SG e = Some v1; v2 \<in> clan v1 SG\<rbrakk>  
   \<Longrightarrow> (e, v2) \<in> tgtst SG"
-  by (simp add: tgtst_def)
+  by (auto simp add: tgtst_def dres_def inhst_def clan_def pfunToRel_def)
 
 lemma the_tgt_in_tgtst: 
   assumes "is_wf_sg SG" and "e \<in> EsA SG"
@@ -726,9 +741,7 @@ lemma the_tgt_in_tgtst:
   proof -
     from assms have h1: "is_wf_g SG" by (simp add: is_wf_sg_def)
     show ?thesis
-      using assms in_EsA_in_ES[of "SG" "e"] h1
-      by (simp add: tgtst_def)(simp add: is_wf_g_def ftotal_on_def domD,
-        rule exI[where x="the (tgt SG e)"], auto simp add: domD)
+    by (simp add: assms(1) assms(2) tgt_aedge_sg tgt_in_tgtst)
   qed
 
 (*The following lemmas shows that the source or target of an edge is also in the extended set if the edge is of type 
@@ -740,7 +753,7 @@ lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(src SG |` (EsA SG)) \<subseteq> s
     fix x y
     assume "(x, y) \<in> pfunToRel (src SG |` EsA SG) "
     then show "(x, y) \<in> srcst SG"
-      by (auto simp add: srcst_def restrict_map_def pfunToRel_def split: if_splits)
+      by (auto simp add: srcst_def restrict_map_def pfunToRel_def inhst_def dres_def split: if_splits)
   qed
 
 lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(tgt SG |` (EsA SG)) \<subseteq> tgtst SG"
@@ -748,7 +761,7 @@ lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(tgt SG |` (EsA SG)) \<subseteq> t
     fix x y
     assume "(x, y) \<in> pfunToRel (tgt SG |` EsA SG) "
     then show "(x, y) \<in> tgtst SG"
-      by (auto simp add: tgtst_def restrict_map_def pfunToRel_def split: if_splits)
+      by (auto simp add: tgtst_def dres_def restrict_map_def pfunToRel_def inhst_def split: if_splits)
   qed
  
 (*lemma "\<lbrakk>is_wf_sg SG; e \<in> EsA(SG)\<rbrakk> \<Longrightarrow> \<exists> v. tgt SG e = Some v \<and> (e, v) \<in> tgtst SG"
@@ -759,8 +772,7 @@ lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(tgt SG |` (EsA SG)) \<subseteq> t
 
 lemma "\<lbrakk>is_wf_sg SG; v1 \<in> Ns SG; v2 \<in> Ns SG; (v1, v2) \<in> inhst SG; e \<in> EsA(SG); src SG e = Some v2\<rbrakk> 
   \<Longrightarrow> (e, v1) \<in> srcst SG"  
-   apply (simp add: srcst_def)  
-   by (rule clan_of_inhst)
+    by (auto simp add: srcst_def inhst_def dres_def pfunToRel_def)  
 
 definition cupSG :: "SGr \<Rightarrow> SGr \<Rightarrow> SGr" (infixl "USG" 100)
 where
@@ -1567,5 +1579,13 @@ where
       \<and> srcst SG1 O pfunToRel(fV r)  \<subseteq> pfunToRel(fE r) O srcst SG2  
       \<and> tgtst SG1 O pfunToRel(fV r) \<subseteq> pfunToRel(fE r) O tgtst SG2  
       \<and> inhst SG1 O pfunToRel (fV r) \<subseteq> pfunToRel (fV r) O inhst SG2}"
+
+definition morphGr2SGr :: "Gr \<Rightarrow> SGr \<Rightarrow> Morph set"
+where
+  "morphGr2SGr G1 SG2 \<equiv> {r. is_wf_g G1 \<and> is_wf_sg SG2
+      \<and> ftotal_on (fV r) (Ns G1) (Ns SG2) 
+      \<and> ftotal_on (fE r) (Es G1) (Es SG2)  
+      \<and> pfunToRel((fV r) \<circ>\<^sub>m (src G1)) \<subseteq> pfunToRel(fE r) O srcst SG2  
+      \<and> pfunToRel((fV r) \<circ>\<^sub>m (tgt G1)) \<subseteq> pfunToRel(fE r) O tgtst SG2}"
 
 end
