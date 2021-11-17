@@ -1,0 +1,8 @@
+GrwT G_8 {
+  node B1 : B
+  node C1 : C
+  node C2 : C
+  node C3 : C
+  edge B1->C1 : Assoc
+  edge B1->C2 : Assoc
+}

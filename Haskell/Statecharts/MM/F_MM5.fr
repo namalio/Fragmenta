@@ -1,0 +1,19 @@
+fragment F_MM5 {
+  SG SG_MM5 {
+    proxy PTransition
+    proxy PStartState2
+    proxy PEndState2
+    proxy PHistoryState2
+    derived PTransition->PEndState2[Transition_end_src:Transition_src]:0,0
+    derived PTransition->PEndState2[Transition_end_tgt:Transition_tgt]:1..*,0..1
+    derived PTransition->PStartState2[Transition_start_src:Transition_src]:1..*,0..1
+    derived PTransition->PStartState2[Transition_start_tgt:Transition_tgt]:0,0
+    derived PTransition->PHistoryState2[Transition_hs_src:Transition_src]:1,0..1
+    derived PTransition->PHistoryState2[Transition_hs_tgt:Transition_tgt]:1..*,0..1
+
+  }
+  ref PTransition->Transition
+  ref PEndState2->EndState
+  ref PStartState2->StartState
+  ref PHistoryState2->HistoryState
+}

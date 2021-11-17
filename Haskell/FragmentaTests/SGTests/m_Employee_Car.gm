@@ -1,0 +1,9 @@
+Morphism M_Employee_Car {
+	nodes {
+	   Employee->Employee
+	   Car->Car
+	}
+	edges {
+	   Owns->Owns
+	}
+}

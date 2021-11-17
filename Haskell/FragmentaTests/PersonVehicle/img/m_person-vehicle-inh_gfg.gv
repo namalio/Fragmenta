@@ -1,0 +1,8 @@
+digraph {graph[label=m_person-vehicle-inh_gfg,labelloc=tl,labelfontsize=12];
+"F_PVI"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_PVI"];
+"F_PC"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_PC"];
+"F_V"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_V"];
+
+"F_PVI"->"F_PC"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+"F_V"->"F_PVI"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+}

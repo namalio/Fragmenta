@@ -1,0 +1,8 @@
+fragment F_V {
+    SG F_V {
+       proxy PVehicle
+       node PlateNo
+       relu PVehicle->PlateNo[Vehicle_plateNo]
+    }
+    ref PVehicle->Vehicle
+}

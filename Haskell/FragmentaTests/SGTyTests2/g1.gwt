@@ -1,0 +1,5 @@
+GrwT G_1 {
+  node Carlos : Employee
+  node Corsa : Car
+  edge Carlos->Corsa : Owns
+}

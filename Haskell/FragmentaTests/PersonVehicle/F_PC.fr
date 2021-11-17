@@ -1,0 +1,7 @@
+fragment F_PC {
+    SG F_PC {
+       node Person
+       node City
+       relu Person->City[Person_lives]
+    }
+}

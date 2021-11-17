@@ -1,0 +1,27 @@
+digraph {graph[label=F_MM1_Ns_Cs_Test,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM1_Ns_Cs_Test{style=dashed;label=F_MM1_Ns_Cs_Test;
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I>}>];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I>}>];
+"NA1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA1"];
+"NA2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA2"];
+"NB1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB1"];
+"NB2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB2"];
+"NC1"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NC1</I><br/>(virtual)}>];
+"NC2"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NC2</I><br/>(virtual)}>];
+
+"NA1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA1"->"NC2"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"NC1"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"NC1"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"NC2"[arrowhead=onormal,arrowsize=2.0];
+"Def"->"Connector"[label="ContainsCs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Def"->"Node"[label="ContainsNs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Node"->"Name"[label="HasName▼",dir=none,taillabel="0..1",headlabel=""];
+
+}
+}

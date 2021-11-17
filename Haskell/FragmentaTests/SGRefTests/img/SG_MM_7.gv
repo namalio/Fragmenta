@@ -1,0 +1,7 @@
+digraph {graph[label=SG_MM_7,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B1"[shape=record,fillcolor=lightskyblue1,style = filled,label="B1"];
+"B2"[shape=record,fillcolor=lightskyblue1,style = filled,label="B2"];
+
+"A"->"B1"[label="HasBs1▼",dir=none,taillabel="*",headlabel=""];
+}

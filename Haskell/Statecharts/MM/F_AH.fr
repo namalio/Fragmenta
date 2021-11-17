@@ -1,0 +1,22 @@
+fragment F_AH {
+  SG SG_AH {
+    node Model
+    node Description
+    node Element
+    node DepthElement
+    node Attribute
+    virtual Manner
+    virtual Definition
+    compu Description->Element[Contains]:*
+    inh Description->Manner
+    inh Element->Manner
+    rel Manner->Attribute[Has]:*,*
+    rel Element->Element[RelatedTo]:*,*
+    rel Attribute->Attribute[AssociatedWith]:*,*
+    compu Definition->Description[HasDesc]:*
+    inh Model->Definition
+    inh Model->Manner
+    inh DepthElement->Element
+    inh DepthElement->Definition
+  }
+}

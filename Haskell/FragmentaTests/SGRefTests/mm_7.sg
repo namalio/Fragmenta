@@ -1,0 +1,6 @@
+SG SG_MM_7 {
+   node A
+   node B1
+   node B2
+   rel A->B1[HasBs1]:*,1
+}

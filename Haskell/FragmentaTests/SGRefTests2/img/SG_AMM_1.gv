@@ -1,0 +1,14 @@
+digraph {graph[label=SG_AMM_1,labelloc=tl,labelfontsize=12];
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"Elem"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Elem</I><br/>(A)}>];
+"Attr"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attr"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label="Node"];
+
+"Connector"->"Elem"[arrowhead=onormal,arrowsize=2.0];
+"Node"->"Elem"[arrowhead=onormal,arrowsize=2.0];
+"Connector"->"Node"[label="Src▼",dir=none,taillabel="*",headlabel=""];
+"Connector"->"Node"[label="Tgt▼",dir=none,taillabel="*",headlabel=""];
+"Elem"->"Attr"[label="HasAttrs▼",dir=none,taillabel="*",headlabel=""];
+"Def"->"Elem"[label="Contains▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+}

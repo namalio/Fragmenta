@@ -1,0 +1,5 @@
+GrwT G_3 {
+  node B1 : B
+  node C1 : C
+  edge B1->C1 : Assoc
+}

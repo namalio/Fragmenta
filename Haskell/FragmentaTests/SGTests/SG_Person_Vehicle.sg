@@ -1,0 +1,5 @@
+SG SG_Person_Vehicle {
+   node Person
+   node Vehicle
+   rel Person->Vehicle[Owns]:1,*
+}

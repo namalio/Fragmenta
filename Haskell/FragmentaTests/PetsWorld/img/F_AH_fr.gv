@@ -1,0 +1,18 @@
+digraph {graph[label=F_AH_fr,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_AH_fr{style=dashed;label=F_AH_fr;
+"Guest"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guest"];
+"POther"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Other<br/>(P)>];
+"Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
+"Room"[shape=record,fillcolor=lightskyblue1,style = filled,label="Room"];
+"Hotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Hotel"];
+
+"Guest"->"POther"[label="AnyGuestRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Room"->"Guest"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
+"Hotel"->"Room"[label="Hotel_rooms▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Hotel"->"Other"[label="AnyHotelRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Room"->"Other"[label="AnyRoomRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Other"->"Other"[label="AnyOtherRel▼",dir=none,taillabel="*",headlabel="*"];
+
+}
+"POther"->"Other"[arrowhead=normalnormal];
+}

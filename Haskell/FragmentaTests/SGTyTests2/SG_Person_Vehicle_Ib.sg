@@ -1,0 +1,9 @@
+SG SG_Person_Vehicle_Ib {
+   node Person
+   nodea Vehicle
+   node Car
+   node Employee
+   rel Person->Vehicle[Owns]:1,*
+   inh Employee->Person
+   inh Car->Vehicle
+}

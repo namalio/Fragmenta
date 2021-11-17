@@ -1,0 +1,8 @@
+digraph {graph[label=SG_MM_8,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+"C"[shape=record,fillcolor=lightskyblue1,style = filled,label="C"];
+
+"A"->"B"[label="HasBs▼",dir=none,taillabel="",headlabel="*"];
+"A"->"B"[label="HasCs▼",dir=none,taillabel="",headlabel="*"];
+}

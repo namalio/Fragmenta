@@ -1,0 +1,8 @@
+digraph {graph[label=SG_HBP,labelloc=tl,labelfontsize=12];
+"House"[shape=record,fillcolor=lightskyblue1,style = filled,label="House"];
+"Bridge"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bridge"];
+"Pillar"[shape=record,fillcolor=lightskyblue1,style = filled,label="Pillar"];
+
+"House"->"Pillar"[label="HMadeUp▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="1..*"];
+"Bridge"->"Pillar"[label="BMadeUp▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="1..*"];
+}

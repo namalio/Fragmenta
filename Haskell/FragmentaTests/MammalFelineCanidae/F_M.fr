@@ -1,0 +1,9 @@
+fragment F_M {
+  SG F_Mammal {
+    node Feline
+    node Canidae
+    node Mammal
+    inh Feline->Mammal
+    inh Canidae->Mammal
+  }
+}

@@ -1,0 +1,8 @@
+digraph {graph[label=Simple_Exmp,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+
+"A"->"B"[label="SomeRel▼",dir=none,taillabel="*",headlabel="*"];
+"A"->"A"[arrowhead=onormal,arrowsize=2.0];
+"B"->"B"[arrowhead=onormal,arrowsize=2.0];
+}

@@ -1,0 +1,11 @@
+digraph {graph[label=F_ECC,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_ECC{style=dashed;label=F_ECC;
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+
+"Employee"->"Car"[label="Owns▼",arrowhead=vee,headlabel="*",arrowsize=.5];
+"Employee"->"City"[label="Employee_lives▼",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

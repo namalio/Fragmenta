@@ -1,0 +1,18 @@
+digraph {graph[label=F_EmployeeCarCity2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_EmployeeCarCity2{style=dashed;label=F_EmployeeCarCity2;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"PPerson"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="Person\l(proxy)"];
+
+"Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Person"->"Vehicle"[label="Owns▼",arrowhead=vee,headlabel="*",arrowsize=.5];
+"City"->"City"[arrowhead=onormal,arrowsize=2.0];
+"PPerson"->"City"[label="lives▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+
+}
+"PPerson"->"Person"[arrowhead=normalnormal];
+}

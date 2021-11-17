@@ -1,0 +1,22 @@
+fragment F_PW2 {
+  SG SG_PW2 {
+    proxy PPet
+    node Dog
+    node Cat
+    node Chamaeleon
+    node Gecko
+    virtual Mammal
+    virtual Reptile
+    enum HungryStatus: starving, hungry, fed, full
+    relu PPet->HungryStatus[Pet_hstatus]
+    inh Dog->PPet
+    inh Cat->PPet
+    inh Chamaeleon->PPet
+    inh Gecko->PPet
+    inh Dog->Mammal
+    inh Cat->Mammal
+    inh Chamaeleon->Reptile
+    inh Gecko->Reptile
+  }
+  ref PPet->Pet
+}

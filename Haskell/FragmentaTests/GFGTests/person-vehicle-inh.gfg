@@ -1,0 +1,7 @@
+GFG Person_Vehicle_Inh {
+  fragment F_PVI
+  fragment F_PC
+  fragment F_V
+  F_PVI references F_PC
+  F_V references F_PVI
+}

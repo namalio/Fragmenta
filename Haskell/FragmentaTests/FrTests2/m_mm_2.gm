@@ -1,0 +1,22 @@
+Morphism M_MM_2 {
+	nodes {
+     PConnector->Connector
+     PNA1->Node
+     PNA2->Node
+     PNB1->Node
+     PNB2->Node
+		 PNC1->Node
+     PNC2->Node
+     CA->Connector
+     CB->Connector
+		 CC->Connector
+	}
+	edges {
+    CASrc->Src
+    CATgt->Tgt
+    CBSrc->Src
+    CBTgt->Tgt
+		CCSrc->Src
+		CCTgt->Tgt
+	}
+}

@@ -1,0 +1,6 @@
+digraph {graph[label=m_feline_canidae_gfg,labelloc=tl,labelfontsize=12];
+"F_FC"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_FC"];
+"F_M"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_M"];
+
+"F_FC"->"F_M"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+}

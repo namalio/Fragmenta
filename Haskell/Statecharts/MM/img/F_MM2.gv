@@ -1,0 +1,24 @@
+digraph {graph[label=F_MM2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM2{style=dashed;label=F_MM2;
+"PElement"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Element<br/>(P)>];
+"EndState"[shape=record,fillcolor=lightskyblue1,style = filled,label="EndState"];
+"StartState"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartState"];
+"HistoryState"[shape=record,fillcolor=lightskyblue1,style = filled,label="HistoryState"];
+"State"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>State</I><br/>(A)}>];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"MutableState"[shape=record,fillcolor=lightskyblue1,style = filled,label="MutableState"];
+"PStCDef"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StCDef<br/>(P)>];
+
+"State"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"EndState"->"State"[arrowhead=onormal,arrowsize=2.0];
+"StartState"->"State"[arrowhead=onormal,arrowsize=2.0];
+"HistoryState"->"State"[arrowhead=onormal,arrowsize=2.0];
+"MutableState"->"State"[arrowhead=onormal,arrowsize=2.0];
+"MutableState"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"MutableState"->"PStCDef"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+
+
+}

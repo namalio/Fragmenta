@@ -1,0 +1,17 @@
+digraph {graph[label=SG_MM_3,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"A1"[shape=record,fillcolor=lightskyblue1,style = filled,label="A1"];
+"A2"[shape=record,fillcolor=lightskyblue1,style = filled,label="A2"];
+"A3"[shape=record,fillcolor=lightskyblue1,style = filled,label="A3"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+"B1"[shape=record,fillcolor=lightskyblue1,style = filled,label="B1"];
+"B2"[shape=record,fillcolor=lightskyblue1,style = filled,label="B2"];
+
+"A1"->"A"[arrowhead=onormal,arrowsize=2.0];
+"A2"->"A"[arrowhead=onormal,arrowsize=2.0];
+"A3"->"A1"[arrowhead=onormal,arrowsize=2.0];
+"B1"->"B"[arrowhead=onormal,arrowsize=2.0];
+"B2"->"B"[arrowhead=onormal,arrowsize=2.0];
+"A2"->"B1"[label="HasBs1▼",dir=none,taillabel="*",headlabel=""];
+"A1"->"B2"[label="HasBs2▼",dir=none,taillabel="*",headlabel=""];
+}

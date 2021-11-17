@@ -1,0 +1,11 @@
+Morphism F_PW4 {
+	nodes {
+     PPHCard2->Other
+     Nat->Other
+     PHCardId->Other
+  }
+  edges {
+    PHCard_points->AnyRel
+    PHCard_id->AnyRel
+  }
+}

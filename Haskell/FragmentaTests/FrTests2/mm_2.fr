@@ -1,0 +1,30 @@
+fragment F_MM_2 {
+  SG SG_MM_2 {
+    proxy PConnector
+    proxy PNA1
+    proxy PNA2
+    proxy PNB1
+    proxy PNB2
+    proxy PNC1
+    proxy PNC2
+    node CA
+    node CB
+    node CC
+    inh CA->PConnector
+    inh CB->PConnector
+    inh CC->PConnector
+    rel CA->PNA1[CASrc]:*,1
+    rel CA->PNA2[CATgt]:*,1
+    rel CB->PNB1[CBSrc]:*,1
+    rel CB->PNB2[CBTgt]:*,1
+    rel CC->PNC1[CCSrc]:*,1
+    rel CC->PNC2[CCTgt]:*,1
+  }
+  ref PConnector->Connector
+  ref PNA1->NA1
+  ref PNA2->NA2
+  ref PNB1->NB1
+  ref PNB2->NB2
+  ref PNC1->NC1
+  ref PNC2->NC2
+}

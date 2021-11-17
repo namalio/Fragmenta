@@ -1,0 +1,15 @@
+fragment F_PVI {
+    SG F_PVI {
+       node Person
+       proxy PPerson
+       node Employee
+       node Car
+       node City
+       node Vehicle
+       inh Employee->Person
+       inh Car->Vehicle
+       relu Person->Vehicle[Owns]:*
+       relu PPerson->City[Person_lives]
+    }
+    ref PPerson->Person
+}

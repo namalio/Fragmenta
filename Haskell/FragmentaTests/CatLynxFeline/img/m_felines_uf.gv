@@ -1,0 +1,16 @@
+digraph {graph[label=m_felines_uf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_felines_uf{style=dashed;label=m_felines_uf;
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Lynx"[shape=record,fillcolor=lightskyblue1,style = filled,label="Lynx"];
+"PFeline"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feline<br/>(P)>];
+"PLynx"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Lynx<br/>(P)>];
+"Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+
+"Lynx"->"Cat"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"PFeline"[arrowhead=onormal,arrowsize=2.0];
+"Feline"->"PLynx"[arrowhead=onormal,arrowsize=2.0];
+
+}
+"PFeline"->"Feline"[arrowhead=normalnormal];
+"PLynx"->"Lynx"[arrowhead=normalnormal];
+}

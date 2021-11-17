@@ -1,0 +1,9 @@
+Morphism M_Person_Vehicle_2_I {
+	nodes {
+	   Person->Person
+	   Vehicle->Vehicle
+	}
+	edges {
+	   Owns->Owns
+	}
+}

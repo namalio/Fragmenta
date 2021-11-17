@@ -1,0 +1,11 @@
+digraph {graph[label=F_PVA,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PVA{style=dashed;label=F_PVA;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"Any"[shape=record,fillcolor="#CCFFFF",style ="filled,dotted",label=<Any<br/>(O)>];
+
+"Person"->"Any"[label="AnyPersonRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Vehicle"->"Any"[label="AnyVehicleRel▼▲",dir=none,taillabel="*",headlabel="*"];
+
+}
+}

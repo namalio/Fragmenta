@@ -1,0 +1,23 @@
+fragment F_MM_1 {
+  SG SG_MM_1 {
+    node Def
+    node Name
+    nodea Connector
+    nodea Node
+    node NA1
+    node NA2
+    node NB1
+    node NB2
+    node NC1
+    node NC2
+    inh NA1->Node
+    inh NA2->Node
+    inh NB1->Node
+    inh NB2->Node
+    inh NC1->Node
+    inh NC2->Node
+    rel Node->Name[HasName]:0..1,1
+    comp Def->Connector[ContainsCs]:1,*
+    comp Def->Node[ContainsNs]:1,*
+  }
+}

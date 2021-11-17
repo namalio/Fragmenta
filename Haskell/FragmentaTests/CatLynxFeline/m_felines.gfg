@@ -1,0 +1,7 @@
+
+GFG Felines {
+  fragment F_CLF
+  fragment F_FL
+  F_CLF references F_FL
+  F_FL references F_CLF
+}

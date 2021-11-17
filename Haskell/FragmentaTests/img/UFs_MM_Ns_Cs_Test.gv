@@ -1,0 +1,53 @@
+digraph {graph[label=UFs_MM_Ns_Cs_Test,labelloc=tl,labelfontsize=12];
+subgraph cluster_UFs_MM_Ns_Cs_Test{style=dashed;label=UFs_MM_Ns_Cs_Test;
+"NC2"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NC2</I><br/>(virtual)}>];
+"NC1"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NC1</I><br/>(virtual)}>];
+"NB2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB2"];
+"NB1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB1"];
+"NA2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA2"];
+"NA1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA1"];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I>}>];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I>}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"PNC2"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NC2\l(proxy)"];
+"PNC1"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NC1\l(proxy)"];
+"CC"[shape=record,fillcolor=lightskyblue1,style = filled,label="CC"];
+"CB"[shape=record,fillcolor=lightskyblue1,style = filled,label="CB"];
+"CA"[shape=record,fillcolor=lightskyblue1,style = filled,label="CA"];
+"PNB2"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NB2\l(proxy)"];
+"PNB1"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NB1\l(proxy)"];
+"PNA2"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NA2\l(proxy)"];
+"PNA1"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NA1\l(proxy)"];
+"PConnector"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="Connector\l(proxy)"];
+
+"Node"->"Name"[label="HasName▼",dir=none,taillabel="0..1",headlabel=""];
+"Def"->"Node"[label="ContainsNs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Def"->"Connector"[label="ContainsCs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"NB2"->"NC2"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"NC1"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"NC1"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA1"->"NC2"[arrowhead=onormal,arrowsize=2.0];
+"NA1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"CC"->"PNC2"[label="CCTgt▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PNC1"[label="CCSrc▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB2"[label="CBTgt▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB1"[label="CBSrc▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"PNA2"[label="CATgt▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"PNA1"[label="CASrc▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CB"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CA"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+
+}
+"PNC2"->"NC2"[arrowhead=normalnormal];
+"PNC1"->"NC1"[arrowhead=normalnormal];
+"PNB2"->"NB2"[arrowhead=normalnormal];
+"PNB1"->"NB1"[arrowhead=normalnormal];
+"PNA2"->"NA2"[arrowhead=normalnormal];
+"PNA1"->"NA1"[arrowhead=normalnormal];
+"PConnector"->"Connector"[arrowhead=normalnormal];
+}

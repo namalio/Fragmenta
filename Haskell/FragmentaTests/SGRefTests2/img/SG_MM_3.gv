@@ -1,0 +1,34 @@
+digraph {graph[label=SG_MM_3,labelloc=tl,labelfontsize=12];
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I><br/>(A)}>];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I><br/>(A)}>];
+"NA1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA1"];
+"NA2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA2"];
+"NB1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB1"];
+"NB2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB2"];
+"CA"[shape=record,fillcolor=lightskyblue1,style = filled,label="CA"];
+"CB"[shape=record,fillcolor=lightskyblue1,style = filled,label="CB"];
+"CC"[shape=record,fillcolor=lightskyblue1,style = filled,label="CC"];
+"NC1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NC1"];
+"NC2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NC2"];
+
+"CA"->"Connector"[arrowhead=onormal,arrowsize=2.0];
+"CB"->"Connector"[arrowhead=onormal,arrowsize=2.0];
+"CC"->"Connector"[arrowhead=onormal,arrowsize=2.0];
+"NA1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NC1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NC2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"Node"->"Name"[label="HasName▼",dir=none,taillabel="0..1",headlabel=""];
+"Def"->"Connector"[label="ContainsCs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Def"->"Node"[label="ContainsNs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"CA"->"NA1"[label="CASrc▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"NA2"[label="CATgt▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"NB1"[label="CBSrc▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"NB2"[label="CBTgt▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"NC1"[label="CCSrc▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"NC2"[label="CCTgt▼",dir=none,taillabel="*",headlabel=""];
+}

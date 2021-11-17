@@ -1,0 +1,32 @@
+digraph {graph[label=F_MM2_Ns_Cs_Test,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM2_Ns_Cs_Test{style=dashed;label=F_MM2_Ns_Cs_Test;
+"PConnector"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="Connector\l(proxy)"];
+"PNA1"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NA1\l(proxy)"];
+"PNA2"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NA2\l(proxy)"];
+"PNB1"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NB1\l(proxy)"];
+"PNB2"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NB2\l(proxy)"];
+"CA"[shape=record,fillcolor=lightskyblue1,style = filled,label="CA"];
+"CB"[shape=record,fillcolor=lightskyblue1,style = filled,label="CB"];
+"CC"[shape=record,fillcolor=lightskyblue1,style = filled,label="CC"];
+"PNC1"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NC1\l(proxy)"];
+"PNC2"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="NC2\l(proxy)"];
+
+"CA"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CB"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CA"->"PNA1"[label="CASrc▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"PNA2"[label="CATgt▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB1"[label="CBSrc▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB2"[label="CBTgt▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PNC1"[label="CCSrc▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PNC2"[label="CCTgt▼",dir=none,taillabel="*",headlabel=""];
+
+}
+
+
+
+
+
+
+
+}

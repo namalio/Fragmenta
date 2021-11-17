@@ -1,0 +1,12 @@
+fragment F_SPH1 {
+  SG SG_SPH1 {
+    node Pet
+    node Name
+    node PetOwner
+    node PetRoom
+    relu Pet->Name[Pet_name]
+    relu PetOwner->Name[PetOwner_name]
+    rel PetOwner->Pet[Owns]:*,1
+    rel PetRoom->Pet[Hosts]:0..1,*
+  }
+}

@@ -1,0 +1,13 @@
+SG SG_AMM_1 {
+   node Def
+   nodea Elem
+   node Attr
+   node Connector
+   node Node
+   inh Connector->Elem
+   inh Node->Elem
+   rel Connector->Node[Src]:*,1
+   rel Connector->Node[Tgt]:*,1
+   rel Elem->Attr[HasAttrs]:*,1
+   comp Def->Elem[Contains]:1,*
+}

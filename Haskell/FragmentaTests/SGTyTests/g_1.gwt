@@ -1,0 +1,8 @@
+GrwT G_1 {
+  node A1 : A
+  node A2 : A
+  node B1 : B
+  node B2 : B
+  edge A1->B1 : Assoc
+  edge A2->B1 : Assoc
+}

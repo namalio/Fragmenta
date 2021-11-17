@@ -1,0 +1,10 @@
+fragment F_CLF {
+  SG SG_CLF {
+    node Cat
+    node Lynx
+    proxy PFeline
+    inh Lynx->Cat
+    inh Cat->PFeline
+  }
+  ref PFeline->Feline
+}

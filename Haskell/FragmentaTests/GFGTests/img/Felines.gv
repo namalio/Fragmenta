@@ -1,0 +1,7 @@
+digraph {graph[label=Felines,labelloc=tl,labelfontsize=12];
+"F1"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F1"];
+"F2"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F2"];
+
+"F1"->"F2"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+"F2"->"F1"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+}

@@ -1,0 +1,7 @@
+SG SG_PGC {
+   node Person
+   enum Gender: Male, Female
+   node City
+   relu Person->City[Person_lives]
+   relu Person->Gender[Person_gender]
+}

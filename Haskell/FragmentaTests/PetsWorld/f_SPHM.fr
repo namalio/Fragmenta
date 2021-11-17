@@ -1,0 +1,21 @@
+fragment F_SPHM {
+  SG SG_SPHM {
+     node Pet
+     node Name
+     proxy PName
+     node PetOwner
+     node PetRoom
+     node RoomNumber
+     node PetHotel
+     node Group
+     relu Pet->PName[Pet_name]
+     relu PetOwner->Name[PetOwner_name]
+     rel PetOwner->Pet[Owns]:*,1
+     rel PetRoom->Pet[Hosts]:0..1,*
+     relu PetRoom->RoomNumber[PetRoom_number]
+     relu PetHotel->Name[PetHotel_name]
+     compu PetHotel->PetRoom[PetHotel_rooms]:*
+     rel Group->PetHotel[PartOf]:0..1,*
+  }
+  ref PName->Name
+}

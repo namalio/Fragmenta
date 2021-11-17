@@ -1,0 +1,9 @@
+SG SG_AMM_5 {
+   node A
+   node B
+   node C
+   node BOrC
+   inh B->BOrC
+   inh C->BOrC
+   rel A->BOrC[HasBsOrCs]:1,*
+}

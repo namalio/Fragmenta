@@ -1,0 +1,25 @@
+SG SG_MM_1 {
+  node Def
+  node Name
+  nodea Connector
+  nodea Node
+  node NA1
+  node NA2
+  node NB1
+  node NB2
+  node CA
+  node CB
+  inh CA->Connector
+  inh CB->Connector
+  inh NA1->Node
+  inh NA2->Node
+  inh NB1->Node
+  inh NB2->Node
+  rel Node->Name[HasName]:0..1,1
+  comp Def->Connector[ContainsCs]:1,*
+  comp Def->Node[ContainsNs]:1,*
+  rel CA->NA1[CASrc]:*,1
+  rel CA->NA2[CATgt]:*,1
+  rel CB->NB1[CBSrc]:*,1
+  rel CB->NB2[CBTgt]:*,1
+}

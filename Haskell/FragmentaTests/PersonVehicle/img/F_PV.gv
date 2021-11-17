@@ -1,0 +1,11 @@
+digraph {graph[label=F_PV,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PV{style=dashed;label=F_PV;
+"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
+"PVehicle"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Vehicle<br/>(P)>];
+
+"PPerson"->"PVehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+
+}
+
+
+}

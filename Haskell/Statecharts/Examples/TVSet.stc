@@ -1,0 +1,34 @@
+StCModel StC_TVSet:
+StC TVSet {
+   start init
+   state OffStandBy
+   transition TInit init->OffStandBy
+   transition TOn OffStandBy->TVOn:anyButton
+   state TVOn {
+      StC Volume {
+            start initVolume
+            transition InitVolume initVolume->Sounding
+            state Sounding
+            state Muted
+            transition TMute Sounding->Muted:muteButton
+            transition TSound Muted->Sounding:muteButton
+            transition TKeepSpound Sounding->Sounding:volumeUp
+            transition TKeepSpound Sounding->Sounding:volumeDown
+      }
+      StC Source {
+         start initSource
+         history historySource
+         transition InitSource initSource->historySource
+         state HDMI
+         state VGA
+         state Aerial
+         transition FrHistory historySource->HDMI
+         transition FrHDMI HDMI->VGA:sourceButton
+         transition FrVGA VGA->Aerial:sourceButton
+         transition FrAerial Aerial->HDMI:sourceButton
+      }
+   }
+   transition TSwitchChannelUp TVOn->TVOn:channelUp
+   transition TSwitchChannelDown TVOn->TVOn:channelDown
+   transition TPowerOff TVOn->OffStandBy:powerButton
+}

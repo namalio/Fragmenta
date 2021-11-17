@@ -1,0 +1,16 @@
+Morphism M_MM_5 {
+	nodes {
+	   A->A
+     A1->A
+     A2->A
+		 A3->A
+     B1->B
+     B2->B
+		 B1OrB2->B
+	}
+	edges {
+	   HasBs1->HasBs
+	   HasBs2->HasBs
+		 HasBs3->HasBs
+	}
+}

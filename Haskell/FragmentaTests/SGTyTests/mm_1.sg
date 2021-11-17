@@ -1,0 +1,8 @@
+SG SG_MM1 {
+   node A
+   node B
+   node C
+   inh B->A
+   inh A->C
+   inh C->B
+}

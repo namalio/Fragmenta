@@ -1,0 +1,15 @@
+Morphism M_PVI_To_PVA {
+	nodes {
+		 PPerson->Person
+	   Vehicle->Vehicle
+		 Motor->Vehicle
+		 Bicycle->Vehicle
+		 Car->Vehicle
+		 Motorcycle->Vehicle
+		 PlateNo->Any
+	}
+	edges {
+		Owns->Owns
+	  Motor_plateNo->VehicleRel
+	}
+}

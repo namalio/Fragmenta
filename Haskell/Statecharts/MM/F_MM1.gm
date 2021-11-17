@@ -1,0 +1,15 @@
+Morphism F_MM1 {
+	nodes {
+	   StCModel->Model
+     StCDesc->Description
+		 StCDef->Definition
+	   Element->Element
+	   Named->Manner
+	   Name->Attribute
+	}
+	edges {
+	   HasDesc->HasDesc
+	   Contains->Contains
+	   Named_name->Has
+	}
+}

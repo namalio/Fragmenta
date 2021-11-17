@@ -1,0 +1,51 @@
+digraph {graph[label=UFs_MMs_1_2,labelloc=tl,labelfontsize=12];
+subgraph cluster_UFs_MMs_1_2{style=dashed;label=UFs_MMs_1_2;
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I><br/>(A)}>];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I><br/>(A)}>];
+"NA1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA1"];
+"NA2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA2"];
+"NB1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB1"];
+"NB2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB2"];
+"NC1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NC1"];
+"NC2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NC2"];
+"CC"[shape=record,fillcolor=lightskyblue1,style = filled,label="CC"];
+"CB"[shape=record,fillcolor=lightskyblue1,style = filled,label="CB"];
+"CA"[shape=record,fillcolor=lightskyblue1,style = filled,label="CA"];
+"PNC2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NC2<br/>(P)>];
+"PNC1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NC1<br/>(P)>];
+"PNB2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NB2<br/>(P)>];
+"PNB1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NB1<br/>(P)>];
+"PNA2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NA2<br/>(P)>];
+"PNA1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NA1<br/>(P)>];
+"PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
+
+"NA1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NC1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NC2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"Node"->"Name"[label="HasName▼",dir=none,taillabel="0..1",headlabel=""];
+"Def"->"Connector"[label="ContainsCs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Def"->"Node"[label="ContainsNs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"CC"->"PNC2"[label="CCTgt▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PNC1"[label="CCSrc▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB2"[label="CBTgt▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB1"[label="CBSrc▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"PNA2"[label="CATgt▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"PNA1"[label="CASrc▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CB"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CA"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+
+}
+"PNA1"->"NA1"[arrowhead=normalnormal];
+"PNB1"->"NB1"[arrowhead=normalnormal];
+"PNC1"->"NC1"[arrowhead=normalnormal];
+"PNC2"->"NC2"[arrowhead=normalnormal];
+"PNB2"->"NB2"[arrowhead=normalnormal];
+"PNA2"->"NA2"[arrowhead=normalnormal];
+"PConnector"->"Connector"[arrowhead=normalnormal];
+}

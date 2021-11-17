@@ -1,0 +1,10 @@
+digraph {graph[label=SG_AMM_1,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+"B1"[shape=record,fillcolor=lightskyblue1,style = filled,label="B1"];
+"B2"[shape=record,fillcolor=lightskyblue1,style = filled,label="B2"];
+
+"B1"->"B"[arrowhead=onormal,arrowsize=2.0];
+"B2"->"B"[arrowhead=onormal,arrowsize=2.0];
+"A"->"B"[label="HasBs▼",dir=none,taillabel="*",headlabel=""];
+}

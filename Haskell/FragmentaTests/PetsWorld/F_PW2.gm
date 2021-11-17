@@ -1,0 +1,19 @@
+Morphism F_PW2 {
+	nodes {
+    PPet->Guest
+    Dog->Guest
+    Cat->Guest
+    Chamaeleon->Guest
+    Gecko->Guest
+    Mammal->Guest
+    Reptile->Guest
+    HungryStatus->Other
+    starving->Other
+    hungry->Other
+    fed->Other
+    full->Other
+  }
+  edges {
+    Pet_hstatus->AnyRel
+  }
+}

@@ -1,0 +1,16 @@
+digraph {graph[label=m_JEB_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_JEB_rf{style=dashed;label=m_JEB_rf;
+"Job"[shape=record,fillcolor=lightskyblue1,style = filled,label="Job"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Building"[shape=record,fillcolor=lightskyblue1,style = filled,label="Building"];
+"String"[shape=record,fillcolor=lightskyblue1,style = filled,label="String"];
+
+"Employee"->"Job"[label="WorksAs▼",dir=none,taillabel="1..*",headlabel="1..2"];
+"Job"->"String"[label="Job_title▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Employee"->"Nat"[label="Employee_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Employee"->"Building"[label="WorksAt▼",dir=none,taillabel="*",headlabel=""];
+"Building"->"String"[label="Building_address▼",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

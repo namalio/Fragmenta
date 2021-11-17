@@ -1,0 +1,16 @@
+GrwT G_4 {
+  node Carlos : Person
+  node Antonio : Person
+  node Corsa : Car
+  node RoadBike : Bicycle
+  node Vespa : Motorcycle
+  edge Carlos->Corsa : Owns
+  edge Antonio->RoadBike : Owns
+  edge Antonio->Vespa : Owns
+  node CorsaI : MotorInsurance
+  edge CorsaI->Corsa : Insures
+  node RoadBikeI : MotorInsurance
+  edge RoadBikeI->RoadBike : Insures
+  node VespaI : MotorInsurance
+  edge VespaI->Vespa : Insures
+}

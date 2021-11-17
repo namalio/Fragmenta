@@ -1,0 +1,9 @@
+
+GFG PetsWorld {
+  fragment F_PW1
+  fragment F_PW2
+  fragment F_PW3
+  F_PW1 references F_PW1
+  F_PW1 references F_PW2
+  F_PW2 references F_PW3
+}

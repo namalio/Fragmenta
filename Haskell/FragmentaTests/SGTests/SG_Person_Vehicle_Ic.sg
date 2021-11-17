@@ -1,0 +1,13 @@
+SG SG_Person_Vehicle_Ic {
+   nodea Person
+   nodea Vehicle
+   node Car
+   node Motorcycle
+   node Employee
+   node Customer
+   rel Person->Vehicle[Owns]:1,*
+   inh Employee->Person
+   inh Customer->Person
+   inh Car->Vehicle
+   inh Motorcycle->Vehicle
+}

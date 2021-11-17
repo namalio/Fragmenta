@@ -1,0 +1,30 @@
+digraph {graph[label=F_PW3,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PW3{style=dashed;label=F_PW3;
+"PCity"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<City<br/>(proxy)>];
+"PCountry"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<Country<br/>(proxy)>];
+"PName2"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<Name2<br/>(proxy)>];
+"PMammal"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<Mammal<br/>(proxy)>];
+"MammalHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="MammalHotel"];
+"PHCard"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCard"];
+"PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
+"PetRoomId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoomId"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
+
+"MammalHotel"->"PCity"[label="MammalHotel_city▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"MammalHotel"->"PCountry"[label="MammalHotel_country▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"MammalHotel"->"PName2"[label="MammalHotel_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"MammalHotel"->"PHCard"[label="MammalHotel_lcards▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"MammalHotel"->"PetRoom"[label="MammalHotel_rooms▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetRoom"->"PetRoomId"[label="PetRoom_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetRoom"->"Nat"[label="PetRoom_capacity▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PHCard"->"Nat"[label="PHCard_points▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PHCard"->"PHCardId"[label="PHCard_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetRoom"->"PMammal"[label="Hosts▼",dir=none,taillabel="",headlabel="*"];
+
+}
+
+
+
+
+}

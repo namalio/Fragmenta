@@ -1,0 +1,5 @@
+GFG Feline_Canidae {
+  fragment F3
+  fragment F4
+  F4 references F3
+}

@@ -1,0 +1,12 @@
+fragment F_PVI {
+    SG F_PVI {
+       proxy PPerson
+       node Employee
+       node Car
+       node Vehicle
+       inh Employee->PPerson
+       inh Car->Vehicle
+       rel PPerson->Vehicle[Owns]:1,*
+    }
+    ref PPerson->Person
+}

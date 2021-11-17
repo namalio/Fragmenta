@@ -1,0 +1,18 @@
+digraph {graph[label=F_SPH2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_SPH2{style=dashed;label=F_SPH2;
+"PName"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="Name\l(proxy)"];
+"PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
+"RoomNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomNumber"];
+"Group"[shape=record,fillcolor=lightskyblue1,style = filled,label="Group"];
+"PPetRoom"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="PetRoom\l(proxy)"];
+
+"PPetRoom"->"RoomNumber"[label="PetRoom_number▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetHotel"->"PName"[label="PetHotel_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetHotel"->"PPetRoom"[label="PetHotel_rooms▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Group"->"PName"[label="Group_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Group"->"PetHotel"[label="PartOf▼",dir=none,taillabel="0..1",headlabel="*"];
+
+}
+
+
+}

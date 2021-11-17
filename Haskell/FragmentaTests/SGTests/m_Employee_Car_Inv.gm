@@ -1,0 +1,11 @@
+Morphism M_Employee_Car_Inv {
+	nodes {
+	   Employee->Employee
+	   Person->Employee
+	   Car->Car
+	   Vehicle->Car
+	}
+	edges {
+	   Owns->Owns
+	}
+}

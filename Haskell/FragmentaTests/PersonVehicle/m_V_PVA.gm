@@ -1,0 +1,9 @@
+Morphism M_V_PVA {
+	nodes {
+	   PVehicle->Vehicle
+		 PlateNo->Any
+	}
+	edges {
+	   Vehicle_plateNo->AnyVehicleRel
+	}
+}

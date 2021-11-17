@@ -1,0 +1,8 @@
+GrwT G_3 {
+  node A1 : A
+  node B1 : B
+  node B2 : B
+  node B3 : B
+  edge A1->B1 : Comp
+  edge A1->B2 : Comp
+}

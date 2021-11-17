@@ -1,0 +1,5 @@
+SG Wander_Exmp {
+   node A
+   node B
+   wander A->B[SomeRel]
+}

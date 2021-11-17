@@ -1,0 +1,16 @@
+Morphism F_MM5 {
+	nodes {
+	   PTransition->Element
+	   PEndState2->Element
+		 PStartState2->Element
+		 PHistoryState2->Element
+	}
+	edges {
+	   Transition_end_src->RelatedTo
+	   Transition_end_tgt->RelatedTo
+		 Transition_start_src->RelatedTo
+	   Transition_start_tgt->RelatedTo
+		 Transition_hs_src->RelatedTo
+	   Transition_hs_tgt->RelatedTo
+	}
+}

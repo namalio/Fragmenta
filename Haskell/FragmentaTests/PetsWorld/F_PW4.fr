@@ -1,0 +1,10 @@
+fragment F_PW4 {
+  SG SG_PW4 {
+    proxy PPHCard2
+    node Nat
+    node PHCardId
+    relu PPHCard2->Nat[PHCard_points]
+    relu PPHCard2->PHCardId[PHCard_id]
+  }
+  ref PPHCard2->PHCard
+}

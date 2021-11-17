@@ -1,0 +1,19 @@
+digraph {graph[label=m_feline_canidae_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_feline_canidae_rf{style=dashed;label=m_feline_canidae_rf;
+"Lynx"[shape=record,fillcolor=lightskyblue1,style = filled,label="Lynx"];
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Wolf"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wolf"];
+"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Mammal"];
+"Canidae"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canidae"];
+"Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+
+"Lynx"->"Feline"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"Feline"[arrowhead=onormal,arrowsize=2.0];
+"Wolf"->"Canidae"[arrowhead=onormal,arrowsize=2.0];
+"Dog"->"Canidae"[arrowhead=onormal,arrowsize=2.0];
+"Canidae"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Feline"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

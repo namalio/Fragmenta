@@ -1,0 +1,10 @@
+Morphism M_MM_7 {
+	nodes {
+	   A->A
+     B1->B
+     B2->B
+	}
+	edges {
+	   HasBs1->HasBs
+	}
+}

@@ -1,0 +1,16 @@
+SG SG_MM_3 {
+   node A
+   node A1
+   node A2
+   node A3
+   node B
+   node B1
+   node B2
+   inh A1->A
+   inh A2->A
+   inh A3->A1
+   inh B1->B
+   inh B2->B
+   rel A2->B1[HasBs1]:*,1
+   rel A1->B2[HasBs2]:*,1
+}

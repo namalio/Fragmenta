@@ -1,0 +1,5 @@
+GFG JEB {
+  fragment F_BE
+  fragment F_EL
+  F_BE references F_EL
+}

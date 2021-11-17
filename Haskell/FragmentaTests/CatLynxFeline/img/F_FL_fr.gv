@@ -1,0 +1,10 @@
+digraph {graph[label=F_FL_fr,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_FL_fr{style=dashed;label=F_FL_fr;
+"Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+"PLynx"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Lynx<br/>(P)>];
+
+"Feline"->"PLynx"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+}

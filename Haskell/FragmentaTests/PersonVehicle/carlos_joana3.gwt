@@ -1,0 +1,16 @@
+GrwT Carlos_Joana3 {
+   node Carlos : Employee
+   node Joana : Employee
+   node Corsa : Car
+   node Panda : Car
+   node Lisboa : City
+   node Birmingham : City
+   node plnoC : PlateNo
+   node plnoP : PlateNo
+   edge Joana->Panda : Owns
+   edge Joana->Lisboa : Person_lives
+   edge Carlos->Corsa : Owns
+   edge Carlos->Birmingham : Person_lives
+   edge Panda->plnoP : Vehicle_plateNo
+   edge Corsa->plnoC : Vehicle_plateNo
+}

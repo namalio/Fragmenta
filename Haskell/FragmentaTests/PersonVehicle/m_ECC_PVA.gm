@@ -1,0 +1,11 @@
+Morphism M_ECC_PVA {
+	nodes {
+		 Employee->Person
+		 Car->Vehicle
+		 City->Any
+	}
+	edges {
+	   Owns->Owns
+		 Employee_lives->AnyPersonRel
+	}
+}

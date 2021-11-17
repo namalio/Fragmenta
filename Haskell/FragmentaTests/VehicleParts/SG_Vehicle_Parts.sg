@@ -1,0 +1,5 @@
+SG SG_Vehicle_Parts {
+   node Vehicle
+   node Part
+   compu Vehicle->Part[HasParts]:*
+}

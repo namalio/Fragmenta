@@ -1,0 +1,9 @@
+fragment F_PVA {
+    SG F_PVA {
+       node Person
+       node Vehicle
+       opt Any
+       wander Person->Any[AnyPersonRel]
+       wander Vehicle->Any[AnyVehicleRel]
+    }
+}

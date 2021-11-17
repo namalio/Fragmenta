@@ -1,0 +1,13 @@
+Morphism M_PGC_To_PVA {
+	nodes {
+		 Person->Person
+	   Gender->Any
+		 Male->Any
+		 Female->Any
+		 City->Any
+	}
+	edges {
+	   Person_lives->PersonRel
+		 Person_gender->PersonRel
+	}
+}

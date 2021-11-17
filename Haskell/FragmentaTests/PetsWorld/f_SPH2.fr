@@ -1,0 +1,16 @@
+fragment F_SPH2 {
+  SG SG_SPH2 {
+    proxy PName
+    proxy PPetRoom
+    node PetHotel
+    node Group
+    node RoomNumber
+    rel Group->PetHotel[PartOf]:0..1,*
+    relu PPetRoom->RoomNumber[PetRoom_number]
+    relu Group->PName[Group_name]
+    relu PetHotel->PName[PetHotel_name]
+    compu PetHotel->PPetRoom[PetHotel_rooms]:*
+  }
+  ref PName->Name
+  ref PPetRoom->PetRoom
+}

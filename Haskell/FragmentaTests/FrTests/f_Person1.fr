@@ -1,0 +1,14 @@
+fragment F_Person1 {
+  SG SG_Person1 {
+    node Person
+    node Hotel
+    node City
+    node Vehicle
+    node Name
+    rel Hotel->Person[Hosts]: 1,*
+    relu Person->City[Person_lives]
+    rel Person->Vehicle[Owns]:1,*
+    relu Hotel->Name[Hotel_name]
+    relu Person->Name[Person_name]
+  }
+}

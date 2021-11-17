@@ -1,0 +1,16 @@
+fragment F_FC {
+  SG F_Feline_Canidae {
+    proxy PFeline
+    proxy PCanidae
+    node Lynx
+    node Cat
+    node Wolf
+    node Dog
+    inh Lynx->PFeline
+    inh Cat->PFeline
+    inh Wolf->PCanidae
+    inh Dog->PCanidae
+  }
+  ref PFeline->Feline
+  ref PCanidae->Canidae
+}

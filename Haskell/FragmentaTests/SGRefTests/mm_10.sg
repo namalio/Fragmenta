@@ -1,0 +1,9 @@
+SG SG_MM_10 {
+   node A
+   node B
+   node C
+   nodea BOrC
+   inh B->BOrC
+   inh C->BOrC
+   rel A->BOrC[HasBsOrCs]:1,0..1
+}

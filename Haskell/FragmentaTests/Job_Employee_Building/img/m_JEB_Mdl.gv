@@ -1,0 +1,24 @@
+digraph {graph[label=m_JEB,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_BE{style=dashed;label=F_BE;
+"Job"[shape=record,fillcolor=lightskyblue1,style = filled,label="Job"];
+"PString"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<String<br/>(P)>];
+"PEmployee"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Employee<br/>(P)>];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+
+"PEmployee"->"Job"[label="WorksAs▼",dir=none,taillabel="1..*",headlabel="1..2"];
+"Job"->"PString"[label="Job_title▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PEmployee"->"Nat"[label="Employee_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+
+subgraph cluster_F_EL{style=dashed;label=F_EL;
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Building"[shape=record,fillcolor=lightskyblue1,style = filled,label="Building"];
+"String"[shape=record,fillcolor=lightskyblue1,style = filled,label="String"];
+
+"Employee"->"Building"[label="WorksAt▼",dir=none,taillabel="*",headlabel=""];
+"Building"->"String"[label="Building_address▼",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

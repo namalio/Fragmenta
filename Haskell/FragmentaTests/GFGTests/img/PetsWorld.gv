@@ -1,0 +1,9 @@
+digraph {graph[label=PetsWorld,labelloc=tl,labelfontsize=12];
+"F_PW1"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_PW1"];
+"F_PW2"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_PW2"];
+"F_PW3"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_PW3"];
+
+"F_PW1"->"F_PW1"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+"F_PW1"->"F_PW2"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+"F_PW2"->"F_PW3"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+}

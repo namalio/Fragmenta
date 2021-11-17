@@ -1,0 +1,15 @@
+SG SG_PVI {
+   proxy PPerson
+   nodea Vehicle
+   nodea Motor
+   node Bicycle
+   node Motorcycle
+   node Car
+   inh Bicycle->Vehicle
+   inh Motor->Vehicle
+   inh Motorcycle->Motor
+   inh Car->Motor
+   node PlateNo
+   relu Motor->PlateNo[Motor_plateNo]
+   rel PPerson->Vehicle[Owns]:1,*
+}

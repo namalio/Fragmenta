@@ -1,0 +1,9 @@
+digraph {graph[label=SG_MM1,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+"C"[shape=record,fillcolor=lightskyblue1,style = filled,label="C"];
+
+"B"->"A"[arrowhead=onormal,arrowsize=2.0];
+"A"->"C"[arrowhead=onormal,arrowsize=2.0];
+"C"->"B"[arrowhead=onormal,arrowsize=2.0];
+}

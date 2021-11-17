@@ -1,0 +1,21 @@
+digraph {graph[label=m_person-vehicle-inh_uf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_person-vehicle-inh_uf{style=dashed;label=m_person-vehicle-inh_uf;
+"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"PVehicle"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Vehicle<br/>(P)>];
+"PlateNo"[shape=record,fillcolor=lightskyblue1,style = filled,label="PlateNo"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+
+"Employee"->"PPerson"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"PPerson"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"PVehicle"->"PlateNo"[label="Vehicle_plateNo▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Person"->"City"[label="Person_lives▼",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+"PPerson"->"Person"[arrowhead=normalnormal];
+"PVehicle"->"Vehicle"[arrowhead=normalnormal];
+}

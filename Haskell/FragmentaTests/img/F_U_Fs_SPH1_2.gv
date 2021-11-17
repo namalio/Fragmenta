@@ -1,0 +1,26 @@
+digraph {graph[label=F_U_Fs_SPH1_2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_U_Fs_SPH1_2{style=dashed;label=F_U_Fs_SPH1_2;
+"PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
+"PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Pet"];
+"RoomNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomNumber"];
+"Group"[shape=record,fillcolor=lightskyblue1,style = filled,label="Group"];
+"PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
+"PPetRoom"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<PetRoom<br/>(proxy)>];
+"PName"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<Name<br/>(proxy)>];
+
+"PetRoom"->"Pet"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
+"PetOwner"->"Pet"[label="Owns▼",dir=none,taillabel="*",headlabel=""];
+"PetOwner"->"Name"[label="PetOwner_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Pet"->"Name"[label="Pet_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetHotel"->"PPetRoom"[label="PetHotel_rooms▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetHotel"->"PName"[label="PetHotel_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Group"->"PName"[label="Group_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPetRoom"->"RoomNumber"[label="PetRoom_number▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Group"->"PetHotel"[label="PartOf▼",dir=none,taillabel="0..1",headlabel="*"];
+
+}
+"PPetRoom"->"PetRoom"[arrowhead=normalnormal];
+"PName"->"Name"[arrowhead=normalnormal];
+}

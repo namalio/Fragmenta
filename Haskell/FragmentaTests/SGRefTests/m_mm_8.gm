@@ -1,0 +1,11 @@
+Morphism M_MM_8 {
+	nodes {
+	   A->A
+		 B->B
+     C->C
+	}
+	edges {
+	   HasBs->HasBsOrCs
+	   HasCs->HasBsOrCs
+	}
+}

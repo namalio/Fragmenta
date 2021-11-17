@@ -1,0 +1,4 @@
+include "PC_CMBarredP.csp"
+include "PC_CM_InvalidWithdraw.csp"
+
+assert CMBarred [T= CMInvalidWithdraw

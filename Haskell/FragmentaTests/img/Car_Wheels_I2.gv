@@ -1,0 +1,17 @@
+digraph {graph[label=Car_Wheels_I2,labelloc=tl,labelfontsize=12];
+"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1"];
+"C2"[shape=box,fillcolor=lightskyblue1,style = filled,label="C2"];
+"W1a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1a"];
+"W1b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1b"];
+"W1c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1c"];
+"W2a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2a"];
+"W2b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2b"];
+"W2c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2c"];
+
+"C1"->"W1a"[label="C1_W1a▼",arrowhead=vee];
+"C1"->"W1b"[label="C1_W1b▼",arrowhead=vee];
+"C1"->"W1c"[label="C1_W1c▼",arrowhead=vee];
+"C2"->"W2a"[label="C2_W2a▼",arrowhead=vee];
+"C2"->"W2b"[label="C2_W2b▼",arrowhead=vee];
+"C2"->"W2c"[label="C2_W2c▼",arrowhead=vee];
+}

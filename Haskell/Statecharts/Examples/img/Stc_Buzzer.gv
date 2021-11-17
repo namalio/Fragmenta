@@ -1,0 +1,19 @@
+digraph {
+compound=true;
+rankdir=LR;
+label="Stc_Buzzer";
+labelloc=t;
+subgraph cluster_Buzzer {
+style="filled,rounded";
+label ="Buzzer";
+fillcolor = lightgray;
+init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
+
+Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
+Buzzing [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Buzzing];
+
+init_St->Muted[label="",  ];
+Muted->Buzzing[label="buzz",  ];
+Buzzing->Muted[label="after(3sec)/mute",  ];
+}
+}

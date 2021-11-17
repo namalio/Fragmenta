@@ -1,0 +1,9 @@
+Morphism M_Wander_Exmp1 {
+	nodes {
+	   Employee->A
+	   Car->B
+	}
+	edges {
+	   Owns->SomeRel
+	}
+}

@@ -1,0 +1,5 @@
+SG SG_AMM_3 {
+   node A
+   node B
+   rel A->B[HasBs]:*,0..1
+}

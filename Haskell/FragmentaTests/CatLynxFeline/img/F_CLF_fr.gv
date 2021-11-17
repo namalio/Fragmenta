@@ -1,0 +1,12 @@
+digraph {graph[label=F_CLF_fr,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_CLF_fr{style=dashed;label=F_CLF_fr;
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Lynx"[shape=record,fillcolor=lightskyblue1,style = filled,label="Lynx"];
+"PFeline"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feline<br/>(P)>];
+
+"Lynx"->"Cat"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"PFeline"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+}

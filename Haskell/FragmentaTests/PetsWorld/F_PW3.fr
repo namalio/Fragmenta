@@ -1,0 +1,26 @@
+fragment F_PW3 {
+  SG SG_PW3 {
+    proxy PNamed
+    proxy PLocatable
+    node MammalHotel
+    proxy PMammal
+    node PetRoom
+    node RoomId
+    virtual WRoomId
+    nodea Facility
+    proxy PPHCard
+    compu MammalHotel->PetRoom[MammalHotel_rooms]:*
+    compu MammalHotel->Facility[MammalHotel_facilities]:*
+    compu MammalHotel->PPHCard[MammalHotel_lcards]:*
+    rel PetRoom->PMammal[Hosts]:0..1,*
+    relu WRoomId->RoomId[Room_id]
+    inh MammalHotel->PNamed
+    inh MammalHotel->PLocatable
+    inh PetRoom->WRoomId
+    inh Facility->WRoomId
+  }
+  ref PMammal->Mammal
+  ref PNamed->Named
+  ref PPHCard->PHCard
+  ref PLocatable->Locatable
+}

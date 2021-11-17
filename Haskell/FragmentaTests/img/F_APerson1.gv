@@ -1,0 +1,11 @@
+digraph {graph[label=F_APerson1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_APerson1{style=dashed;label=F_APerson1;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
+
+"Person"->"Other"[label="AnyPersonRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Person"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Other"->"Other"[label="AnyOther▼",dir=none,taillabel="*",headlabel="*"];
+
+}
+}

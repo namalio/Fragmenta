@@ -1,0 +1,8 @@
+GrwT G_11 {
+  node A1 : A
+  node B1 : B
+  node C1 : C
+  node C2 : C
+  edge A1->C1 : Comp1
+  edge B1->C2 : Comp2
+}

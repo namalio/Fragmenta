@@ -1,0 +1,18 @@
+digraph {graph[label=F_MM1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM1{style=dashed;label=F_MM1;
+"Element"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Element</I><br/>(A)}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"StCDesc"[shape=record,fillcolor=lightskyblue1,style = filled,label="StCDesc"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"StCModel"[shape=record,fillcolor=lightskyblue1,style = filled,label="StCModel"];
+"StCDef"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>StCDef</I><br/>(V)}>];
+
+"StCDef"->"StCDesc"[label="HasDesc▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"StCDesc"->"Element"[label="Contains▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Named"->"Name"[label="Named_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"StCDesc"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"StCModel"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"StCModel"->"StCDef"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

@@ -1,0 +1,39 @@
+digraph {graph[label=CFs_MM_Ns_Cs_Test,labelloc=tl,labelfontsize=12];
+subgraph cluster_CFs_MM_Ns_Cs_Test{style=dashed;label=CFs_MM_Ns_Cs_Test;
+"NC2"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NC2</I><br/>(virtual)}>];
+"NC1"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NC1</I><br/>(virtual)}>];
+"NB2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB2"];
+"NB1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB1"];
+"NA2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA2"];
+"NA1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA1"];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I>}>];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I>}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"CC"[shape=record,fillcolor=lightskyblue1,style = filled,label="CC"];
+"CB"[shape=record,fillcolor=lightskyblue1,style = filled,label="CB"];
+"CA"[shape=record,fillcolor=lightskyblue1,style = filled,label="CA"];
+
+"Node"->"Name"[label="HasName▼",dir=none,taillabel="0..1",headlabel=""];
+"Def"->"Node"[label="ContainsNs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Def"->"Connector"[label="ContainsCs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"NB2"->"NC2"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"NC1"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"NC1"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA1"->"NC2"[arrowhead=onormal,arrowsize=2.0];
+"NA1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"CC"->"NC2"[label="CCTgt▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"NC1"[label="CCSrc▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"NB2"[label="CBTgt▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"NB1"[label="CBSrc▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"NA2"[label="CATgt▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"NA1"[label="CASrc▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"Connector"[arrowhead=onormal,arrowsize=2.0];
+"CB"->"Connector"[arrowhead=onormal,arrowsize=2.0];
+"CA"->"Connector"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

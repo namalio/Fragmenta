@@ -1,0 +1,22 @@
+fragment F_MM2 {
+  SG SG_MM2 {
+    proxy PStCDef
+    proxy PNamed
+    proxy PElement
+    nodea State
+    node EndState
+    node StartState
+    node HistoryState
+    node MutableState
+    inh State->PElement
+    inh EndState->State
+    inh StartState->State
+    inh HistoryState->State
+    inh MutableState->State
+    inh MutableState->PNamed
+    inh MutableState->PStCDef
+  }
+  ref PStCDef->StCDef
+  ref PElement->Element
+  ref PNamed->Named
+}

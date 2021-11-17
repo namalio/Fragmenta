@@ -1,0 +1,5 @@
+
+GFG GFG_M_AHW {
+  fragment F_AH
+  F_AH references F_AH
+}

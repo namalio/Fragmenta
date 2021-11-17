@@ -1,0 +1,9 @@
+SG SG_AMM_1 {
+   node A
+   node B
+   node B1
+   node B2
+   inh B1->B
+   inh B2->B
+   rel A->B[HasBs]:*,1
+}

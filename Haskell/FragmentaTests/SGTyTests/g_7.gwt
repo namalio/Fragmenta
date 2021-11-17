@@ -1,0 +1,6 @@
+GrwT G_7 {
+  node A1 : A
+  node B1 : B
+  node C1 : C
+  edge B1->C1 : Assoc
+}

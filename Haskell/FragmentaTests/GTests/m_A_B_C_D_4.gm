@@ -1,0 +1,12 @@
+Morphism M_A_B_C_D_4 {
+	nodes {
+	   A->A
+	   B->B
+     C->A
+     D->D
+	}
+	edges {
+	   A_B->A_B
+	   C_D->C_D
+	}
+}

@@ -1,0 +1,13 @@
+StCModel StC_BoolSetter:
+  StC BoolSetter {
+    start init
+    state VFalse
+    state VTrue
+    transition BoolSetterInit init->VFalse
+    transition FalseToTrue VFalse->VTrue:assignT
+    transition TrueToFalse VTrue->VFalse:assignF
+    transition KeepsTrue1   VTrue->VTrue:assignT
+    transition KeepsTrue2   VTrue->VTrue:getT
+    transition KeepsFalse1  VFalse->VFalse:assignF
+    transition KeepsFalse2  VFalse->VFalse:getF
+  }

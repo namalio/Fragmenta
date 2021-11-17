@@ -1,0 +1,9 @@
+fragment F_APerson1 {
+  SG SG_APerson1 {
+    node Person
+    node Other
+    relw Person->Other[AnyPersonRel]: *,*
+    rel Other->Other[AnyOther]: *,*
+    inh Person->Person
+  }
+}

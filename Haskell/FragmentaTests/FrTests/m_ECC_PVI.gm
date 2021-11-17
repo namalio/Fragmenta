@@ -1,0 +1,11 @@
+Morphism M_ECC_PVI {
+	nodes {
+	   Employee->Employee
+	   Car->Car
+		 City->City
+	}
+	edges {
+	   Owns->Owns
+		 Employee_lives->Person_lives
+	}
+}

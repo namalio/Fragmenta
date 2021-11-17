@@ -1,0 +1,7 @@
+digraph {graph[label=G_7,labelloc=tl,labelfontsize=12];
+"A1"[shape=box,fillcolor=lightskyblue1,style = filled,label="A1 : A"];
+"B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : B"];
+"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : C"];
+
+"B1"->"C1"[label="B1_C1 :EAssoc▼",arrowhead=vee];
+}

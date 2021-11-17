@@ -1,0 +1,23 @@
+Morphism M_MM_2 {
+	nodes {
+	   Def->Def
+		 Name->Attr
+		 Elem->Elem
+     Connector->Connector
+     Node->Node
+     NA1->Node
+     NA2->Node
+     NB1->Node
+     NB2->Node
+     CA->Connector
+     CB->Connector
+	}
+	edges {
+    Contains->Contains
+    HasName->HasAttrs
+    CASrc->Src
+    CATgt->Tgt
+    CBSrc->Src
+    CBTgt->Tgt
+	}
+}

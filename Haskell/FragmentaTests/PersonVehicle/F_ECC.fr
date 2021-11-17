@@ -1,0 +1,9 @@
+fragment F_ECC {
+    SG F_ECC {
+       node Employee
+       node Car
+       node City
+       rel Employee->Car[Owns]:1,*
+       relu Employee->City[Employee_lives]
+    }
+}

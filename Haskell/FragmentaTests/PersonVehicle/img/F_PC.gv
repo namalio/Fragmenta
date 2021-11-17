@@ -1,0 +1,9 @@
+digraph {graph[label=F_PC,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PC{style=dashed;label=F_PC;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+
+"Person"->"City"[label="Person_lives▼",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

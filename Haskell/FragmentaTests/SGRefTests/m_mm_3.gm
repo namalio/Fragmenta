@@ -1,0 +1,15 @@
+Morphism M_MM_3 {
+	nodes {
+	   A->A
+     A1->A
+     A2->A
+		 A3->A
+	   B->B
+     B1->B1
+     B2->B2
+	}
+	edges {
+	   HasBs1->HasBs
+	   HasBs2->HasBs
+	}
+}

@@ -1,0 +1,9 @@
+digraph {graph[label=SG_Person_Vehicle_Any,labelloc=tl,labelfontsize=12];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"Any"[shape=record,fillcolor="#CCFFFF",style ="filled,dotted",label=<Any<br/>(O)>];
+
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"Person"->"Any"[label="PersonRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Vehicle"->"Any"[label="VehicleRel▼▲",dir=none,taillabel="*",headlabel="*"];
+}

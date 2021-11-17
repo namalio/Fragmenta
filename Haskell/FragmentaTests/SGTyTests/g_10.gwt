@@ -1,0 +1,7 @@
+GrwT G_10 {
+  node A1 : B
+  node B1 : B
+  node C1 : C
+  edge A1->C1 : Comp1
+  edge B1->C1 : Comp2
+}

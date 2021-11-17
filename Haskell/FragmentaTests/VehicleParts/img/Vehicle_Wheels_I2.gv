@@ -1,0 +1,17 @@
+digraph {graph[label=Vehicle_Wheels_I2,labelloc=tl,labelfontsize=12];
+"W1a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1a : Wheel"];
+"W1b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1b : Wheel"];
+"V1"[shape=box,fillcolor=lightskyblue1,style = filled,label="V1 : Car"];
+"W1c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1c : Wheel"];
+"W2a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2a : Wheel"];
+"W2b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2b : Wheel"];
+"V2"[shape=box,fillcolor=lightskyblue1,style = filled,label="V2 : ThreeWheeler"];
+"W2c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2c : Wheel"];
+
+"V1"->"W1a"[label="V1_W1a :EHasWheels▼",arrowhead=vee];
+"V1"->"W1b"[label="V1_W1b :EHasWheels▼",arrowhead=vee];
+"V1"->"W1c"[label="V1_W1c :EHasWheels▼",arrowhead=vee];
+"V2"->"W2a"[label="V2_W2a :EHasWheels▼",arrowhead=vee];
+"V2"->"W2b"[label="V2_W2b :EHasWheels▼",arrowhead=vee];
+"V2"->"W2c"[label="V2_W2c :EHasWheels▼",arrowhead=vee];
+}

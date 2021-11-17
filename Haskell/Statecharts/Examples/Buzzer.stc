@@ -1,0 +1,9 @@
+StCModel StC_Buzzer:
+  StC Buzzer {
+    start init
+    state Muted
+    state Buzzing
+    transition BuzzerInit init->Muted
+    transition MutedToBuzzing Muted->Buzzing:buzz
+    transition BuzzingToMuted Buzzing->Muted:after(3sec)/mute
+  }

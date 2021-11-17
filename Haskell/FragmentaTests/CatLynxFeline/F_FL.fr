@@ -1,0 +1,8 @@
+fragment F_FL {
+  SG SG_FL {
+    node Feline
+    proxy PLynx
+    inh Feline->PLynx
+  }
+  ref PLynx->Lynx
+}

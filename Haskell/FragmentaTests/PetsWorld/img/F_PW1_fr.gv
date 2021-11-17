@@ -1,0 +1,25 @@
+digraph {graph[label=F_PW1_fr,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PW1_fr{style=dashed;label=F_PW1_fr;
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
+"PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
+"Date"[shape=record,fillcolor=lightskyblue1,style = filled,label="Date"];
+"PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
+"PCity"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<City<br/>(P)>];
+"PCountry"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Country<br/>(P)>];
+"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
+
+"PPet"->"PName"[label="Pet_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetOwner"->"PName"[label="PetOwner_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPet"->"Date"[label="Pet_dob▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetOwner"->"PPet"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"PetOwner"->"PCity"[label="PetOwner_city▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetOwner"->"PCountry"[label="PetOwner_country▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetOwner"->"PPHCard"[label="Holds▼",dir=none,taillabel="",headlabel="*"];
+
+}
+
+
+
+
+
+}

@@ -1,0 +1,17 @@
+digraph {graph[label=G_4,labelloc=tl,labelfontsize=12];
+"Carlos"[shape=box,fillcolor=lightskyblue1,style = filled,label="Carlos : Person"];
+"Antonio"[shape=box,fillcolor=lightskyblue1,style = filled,label="Antonio : Person"];
+"Corsa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Corsa : Car"];
+"RoadBike"[shape=box,fillcolor=lightskyblue1,style = filled,label="RoadBike : Bicycle"];
+"Vespa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Vespa : Motorcycle"];
+"CorsaI"[shape=box,fillcolor=lightskyblue1,style = filled,label="CorsaI : MotorInsurance"];
+"RoadBikeI"[shape=box,fillcolor=lightskyblue1,style = filled,label="RoadBikeI : MotorInsurance"];
+"VespaI"[shape=box,fillcolor=lightskyblue1,style = filled,label="VespaI : MotorInsurance"];
+
+"Carlos"->"Corsa"[label="Carlos_Corsa :EOwns▼",arrowhead=vee];
+"Antonio"->"RoadBike"[label="Antonio_RoadBike :EOwns▼",arrowhead=vee];
+"Antonio"->"Vespa"[label="Antonio_Vespa :EOwns▼",arrowhead=vee];
+"CorsaI"->"Corsa"[label="CorsaI_Corsa :EInsures▼",arrowhead=vee];
+"RoadBikeI"->"RoadBike"[label="RoadBikeI_RoadBike :EInsures▼",arrowhead=vee];
+"VespaI"->"Vespa"[label="VespaI_Vespa :EInsures▼",arrowhead=vee];
+}

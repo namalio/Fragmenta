@@ -1,0 +1,21 @@
+StCModel StC_Lasbscs:
+StC Lasbscs {
+    start init
+    end final
+    transition TInit init->Processing
+    state Processing {
+      StC Processing {
+        start initProcessing
+        state DoingAs
+        state DoingBs
+        state DoingCs
+        transition InitProcessing initProcessing->DoingAs
+        transition AsToBs DoingAs->DoingBs:b
+        transition KeepAs DoingAs->DoingAs:a
+        transition KeepBs DoingBs->DoingBs:b
+        transition BsToCs DoingBs->DoingCs:c
+        transition KeepCs DoingCs->DoingCs:c
+      }
+    }
+    transition TFinal Processing->final:nil
+}

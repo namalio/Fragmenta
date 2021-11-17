@@ -1,0 +1,5 @@
+SG Simple_Exmp {
+   node A
+   node B
+   rel A->B[SomeRel]:*,*
+}

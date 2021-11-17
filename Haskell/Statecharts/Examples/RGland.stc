@@ -1,0 +1,12 @@
+StCModel StC_RGland:
+StC RGland {
+   start init
+   state Idle
+   state Secreting
+   end final
+   transition GlandInit init->Idle
+   transition IdleToSecreting Idle->Secreting:secrete
+   transition SecretingToIdle Secreting->Idle:after(1sec)
+   transition DieFrIdle Idle->final:apostosis
+   transition TResuscitate final->Idle:resuscitate
+}

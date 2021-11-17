@@ -1,0 +1,6 @@
+
+A simple watch has a crown and one standard button:
+* Initially, the watch shows the time. When the button is pressed, the watch shows the date; once released, the watch shows the time again.
+* When the crown is pressed the light is turned on; once released, the light is turned off.
+* Pressing twice the crown button calls the "set alarm" function allowing the alarm to be set.
+* When the alarm is on a bell is shown.

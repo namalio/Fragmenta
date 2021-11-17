@@ -1,0 +1,20 @@
+digraph {
+compound=true;
+rankdir=LR;
+subgraph cluster_RGland {
+style="filled,rounded";
+label ="RGland";
+fillcolor = lightgray;
+init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
+
+Idle [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Idle];
+Secreting [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Secreting];
+final_St [shape=doublecircle,height=.3,width=.3,fixedsize=true,fillcolor=black,style=filled,label=""];
+
+init_St->Idle[label="",  ];
+Idle->Secreting[label="secrete",  ];
+Secreting->Idle[label="after(1sec)",  ];
+Idle->final_St[label="apostosis",  ];
+final_St->Idle[label="resuscitate",  ];
+}
+}

@@ -1,0 +1,8 @@
+SG SG_Person_Vehicle_Any {
+   node Person
+   node Vehicle
+   rel Person->Vehicle[Owns]:1,*
+   opt Any
+   wander Person->Any[PersonRel]
+   wander Vehicle->Any[VehicleRel]
+}

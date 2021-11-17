@@ -1,0 +1,12 @@
+digraph {graph[label=m_felines_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_felines_rf{style=dashed;label=m_felines_rf;
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Lynx"[shape=record,fillcolor=lightskyblue1,style = filled,label="Lynx"];
+"Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+
+"Lynx"->"Cat"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"Feline"[arrowhead=onormal,arrowsize=2.0];
+"Feline"->"Lynx"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

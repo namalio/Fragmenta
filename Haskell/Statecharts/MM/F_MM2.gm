@@ -1,0 +1,13 @@
+Morphism F_MM2 {
+	nodes {
+     PStCDef->Definition
+	   PElement->Element
+		 PNamed->Manner
+	   State->Element
+	   EndState->Element
+		 StartState->Element
+		 HistoryState->Element
+	   MutableState->DepthElement
+	}
+	edges {}
+}

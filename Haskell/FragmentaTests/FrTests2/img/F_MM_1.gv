@@ -1,0 +1,25 @@
+digraph {graph[label=F_MM_1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM_1{style=dashed;label=F_MM_1;
+"Def"[shape=record,fillcolor=lightskyblue1,style = filled,label="Def"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I><br/>(A)}>];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I><br/>(A)}>];
+"NA1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA1"];
+"NA2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NA2"];
+"NB1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB1"];
+"NB2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NB2"];
+"NC1"[shape=record,fillcolor=lightskyblue1,style = filled,label="NC1"];
+"NC2"[shape=record,fillcolor=lightskyblue1,style = filled,label="NC2"];
+
+"NA1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NA2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NB2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NC1"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NC2"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"Node"->"Name"[label="HasName▼",dir=none,taillabel="0..1",headlabel=""];
+"Def"->"Connector"[label="ContainsCs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+"Def"->"Node"[label="ContainsNs▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="*"];
+
+}
+}

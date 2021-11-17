@@ -1,0 +1,4 @@
+include "PC_CMBarredP.csp"
+include "PC_CashMachine.csp"
+
+assert CMBarred [T= CashMachine

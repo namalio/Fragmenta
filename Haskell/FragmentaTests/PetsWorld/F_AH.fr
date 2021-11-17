@@ -1,0 +1,18 @@
+fragment F_AH {
+  SG SG_AH {
+    node Guest
+    node Other
+    node Room
+    node Hotel
+    virtual Manner
+    proxy PManner
+    rel Room->Guest[Hosts]:0..1,*
+    compu Hotel->Room[Hotel_rooms]:*
+    wander Manner->Other[AnyRel]
+    inh Room->Manner
+    inh Hotel->Manner
+    inh Guest->PManner
+    inh Other->Manner
+  }
+  ref PManner->Manner
+}

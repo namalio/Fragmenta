@@ -1,0 +1,7 @@
+SG SG_MM4 {
+   nodea A
+   node B
+   node C
+   inh B->A
+   rel A->C[Assoc]:0..1,1..*
+}

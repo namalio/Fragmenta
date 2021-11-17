@@ -1,0 +1,10 @@
+GrwT G_7 {
+  node H : House
+  node B : Bridge
+  node P1 : Pillar
+  node P2 : Pillar
+  node P3 : Pillar
+  edge H->P1 : HMadeUp
+  edge B->P2 : BMadeUp
+  edge B->P3 : BMadeUp
+}

@@ -1,0 +1,28 @@
+digraph {graph[label=F_PW3,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PW3{style=dashed;label=F_PW3;
+"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
+"PMammal"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Mammal<br/>(P)>];
+"RoomId"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomId"];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"MammalHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="MammalHotel"];
+"PLocatable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Locatable<br/>(P)>];
+"PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
+"Facility"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Facility</I><br/>(A)}>];
+"WRoomId"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>WRoomId</I><br/>(V)}>];
+
+"MammalHotel"->"PetRoom"[label="MammalHotel_rooms▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"MammalHotel"->"Facility"[label="MammalHotel_facilities▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"MammalHotel"->"PPHCard"[label="MammalHotel_lcards▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetRoom"->"PMammal"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
+"WRoomId"->"RoomId"[label="Room_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"MammalHotel"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"MammalHotel"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
+"PetRoom"->"WRoomId"[arrowhead=onormal,arrowsize=2.0];
+"Facility"->"WRoomId"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+
+
+
+}

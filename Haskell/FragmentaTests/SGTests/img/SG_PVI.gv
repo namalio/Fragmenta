@@ -1,0 +1,16 @@
+digraph {graph[label=SG_PVI,labelloc=tl,labelfontsize=12];
+"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
+"Motor"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Motor</I><br/>(A)}>];
+"Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
+"Motorcycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorcycle"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"PlateNo"[shape=record,fillcolor=lightskyblue1,style = filled,label="PlateNo"];
+
+"Bicycle"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Motor"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Motorcycle"->"Motor"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Motor"[arrowhead=onormal,arrowsize=2.0];
+"Motor"->"PlateNo"[label="Motor_plateNo▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPerson"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+}

@@ -1,0 +1,16 @@
+fragment F_MM1 {
+  SG SG_MM1 {
+    node StCModel
+    virtual StCDef
+    node StCDesc
+    nodea Element
+    node Name
+    virtual Named
+    compu StCDef->StCDesc[HasDesc]:*
+    compu StCDesc->Element[Contains]:*
+    relu Named->Name[Named_name]
+    inh StCDesc->Named
+    inh StCModel->Named
+    inh StCModel->StCDef
+  }
+}

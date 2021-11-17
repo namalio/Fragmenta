@@ -1,0 +1,9 @@
+Morphism M_EC_To_PV {
+	nodes {
+	   Employee->Person
+	   Car->Vehicle
+	}
+	edges {
+	   Owns->Owns
+	}
+}

@@ -1,0 +1,13 @@
+fragment F_BE {
+  SG SG_BE {
+    node Job
+    node Nat
+    proxy PEmployee
+    proxy PString
+    rel PEmployee->Job[WorksAs]:1..*,1..2
+    relu Job->PString[Job_title]
+    relu PEmployee->Nat[Employee_id]
+  }
+  ref PEmployee->Employee
+  ref PString->String
+}

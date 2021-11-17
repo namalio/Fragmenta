@@ -1,0 +1,6 @@
+digraph {graph[label=Feline_Canidae,labelloc=tl,labelfontsize=12];
+"F3"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F3"];
+"F4"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F4"];
+
+"F4"->"F3"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+}

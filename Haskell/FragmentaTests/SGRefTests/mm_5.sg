@@ -1,0 +1,17 @@
+SG SG_MM_5 {
+   node A
+   node A1
+   node A2
+   node A3
+   node B1
+   node B2
+   virtual B1OrB2
+   inh A1->A
+   inh A2->A
+   inh A3->A
+   inh B1->B1OrB2
+   inh B2->B1OrB2
+   rel A2->B1[HasBs1]:*,1
+   rel A1->B2[HasBs2]:*,1
+   rel A3->B1OrB2[HasBs3]:*,1
+}

@@ -1,0 +1,9 @@
+Morphism M_Employee_Carb {
+	nodes {
+	   Employee->Person
+	   Car->Vehicle
+	}
+	edges {
+	   Owns->Owns
+	}
+}

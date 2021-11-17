@@ -1,0 +1,32 @@
+digraph {graph[label=F_PW2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PW2{style=dashed;label=F_PW2;
+"PPet"[shape=box,fillcolor=lightgray,penwidth=3.0,style =filled,label=<Pet<br/>(proxy)>];
+"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
+"Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
+"Mammal"[shape=record,fillcolor="#FFCCFF",style ="filled,dotted",label=<{<I>Mammal</I><br/>(virtual)}>];
+"Reptile"[shape=record,fillcolor="#FFCCFF",style ="filled,dotted",label=<{<I>Reptile</I><br/>(virtual)}>];
+"full"[shape=cds,fillcolor=yellow,style = filled,label="full"];
+"fed"[shape=cds,fillcolor=yellow,style = filled,label="fed"];
+"hungry"[shape=cds,fillcolor=yellow,style = filled,label="hungry"];
+"starving"[shape=cds,fillcolor=yellow,style = filled,label="starving"];
+"HungryStatus"[shape=record,fillcolor="#9999FF",style = filled,label="HungryStatus\l(enum)"];
+
+"full"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
+"fed"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
+"hungry"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
+"starving"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
+"PPet"->"HungryStatus"[label="Pet_hstatus▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Dog"->"PPet"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"PPet"[arrowhead=onormal,arrowsize=2.0];
+"Chamaeleon"->"PPet"[arrowhead=onormal,arrowsize=2.0];
+"Gecko"->"PPet"[arrowhead=onormal,arrowsize=2.0];
+"Dog"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+}

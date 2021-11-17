@@ -1,0 +1,18 @@
+digraph {graph[label=F_APH,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_APH{style=dashed;label=F_APH;
+"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Pet"];
+"Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
+"PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
+"PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
+"POther"[shape=box,fillcolor=lightgray,style = "filled,dashed",label="Other\l(proxy)"];
+
+"PetRoom"->"Pet"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
+"PetHotel"->"Other"[label="AnyPetHotelRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Other"->"Other"[label="AnyOtherRel▼",dir=none,taillabel="*",headlabel="*"];
+"PetRoom"->"Other"[label="AnyPetRoomRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"PetHotel"->"PetRoom"[label="PetHotel_rooms▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Pet"->"POther"[label="AnyPetRel▼▲",dir=none,taillabel="*",headlabel="*"];
+
+}
+"POther"->"Other"[arrowhead=normalnormal];
+}

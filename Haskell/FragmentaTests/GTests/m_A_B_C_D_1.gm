@@ -1,0 +1,8 @@
+Morphism M_A_B_C_D_1 {
+	nodes {
+	   A->C
+	}
+	edges {
+	   A_B->C_D
+	}
+}

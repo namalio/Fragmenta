@@ -1,0 +1,20 @@
+Morphism F_MM4 {
+	nodes {
+	   Transition->Element
+	   Event->Attribute
+	   Guard->Attribute
+	   Action->Attribute
+	   PState->Element
+	   PElement2->Element
+	   Exp->Attribute
+	   WExp->Attribute
+	}
+	edges {
+	   Transition_event->Has
+	   Transition_guard->Has
+	   Transition_action->Has
+	   Transition_src->RelatedTo
+	   Transition_tgt->RelatedTo
+	   WExp_exp->AssociatedWith
+	}
+}

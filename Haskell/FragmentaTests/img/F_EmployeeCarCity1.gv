@@ -1,0 +1,14 @@
+digraph {graph[label=F_EmployeeCarCity1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_EmployeeCarCity1{style=dashed;label=F_EmployeeCarCity1;
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+
+"Employee"->"City"[label="Lives▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Employee"->"Employee"[arrowhead=onormal,arrowsize=2.0];
+"City"->"City"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Car"[arrowhead=onormal,arrowsize=2.0];
+"Employee"->"Car"[label="Owns▼",arrowhead=vee,headlabel="*",arrowsize=.5];
+
+}
+}

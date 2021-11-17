@@ -1,0 +1,5 @@
+SG SG_MM2 {
+   node A
+   node B
+   rel A->B[Assoc]:*,1
+}

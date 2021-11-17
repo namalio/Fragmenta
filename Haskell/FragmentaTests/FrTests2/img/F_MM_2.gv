@@ -1,0 +1,32 @@
+digraph {graph[label=F_MM_2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
+"PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
+"PNA1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NA1<br/>(P)>];
+"PNA2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NA2<br/>(P)>];
+"PNB1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NB1<br/>(P)>];
+"PNB2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NB2<br/>(P)>];
+"PNC1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NC1<br/>(P)>];
+"PNC2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NC2<br/>(P)>];
+"CA"[shape=record,fillcolor=lightskyblue1,style = filled,label="CA"];
+"CB"[shape=record,fillcolor=lightskyblue1,style = filled,label="CB"];
+"CC"[shape=record,fillcolor=lightskyblue1,style = filled,label="CC"];
+
+"CA"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CB"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"CA"->"PNA1"[label="CASrc▼",dir=none,taillabel="*",headlabel=""];
+"CA"->"PNA2"[label="CATgt▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB1"[label="CBSrc▼",dir=none,taillabel="*",headlabel=""];
+"CB"->"PNB2"[label="CBTgt▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PNC1"[label="CCSrc▼",dir=none,taillabel="*",headlabel=""];
+"CC"->"PNC2"[label="CCTgt▼",dir=none,taillabel="*",headlabel=""];
+
+}
+
+
+
+
+
+
+
+}

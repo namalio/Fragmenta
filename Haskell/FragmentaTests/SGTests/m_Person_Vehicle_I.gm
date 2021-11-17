@@ -1,0 +1,13 @@
+Morphism M_Person_Vehicle_I {
+	nodes {
+	   Employee->Person
+	   Person->Person
+		 Customer->Person
+	   Car->Vehicle
+	   Vehicle->Vehicle
+		 Motorcycle->Vehicle
+	}
+	edges {
+	   Owns->Owns
+	}
+}

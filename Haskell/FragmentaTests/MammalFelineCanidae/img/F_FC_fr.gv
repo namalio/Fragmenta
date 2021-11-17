@@ -1,0 +1,18 @@
+digraph {graph[label=F_FC_fr,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_FC_fr{style=dashed;label=F_FC_fr;
+"PFeline"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feline<br/>(P)>];
+"PCanidae"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canidae<br/>(P)>];
+"Lynx"[shape=record,fillcolor=lightskyblue1,style = filled,label="Lynx"];
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Wolf"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wolf"];
+"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
+
+"Lynx"->"PFeline"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"PFeline"[arrowhead=onormal,arrowsize=2.0];
+"Wolf"->"PCanidae"[arrowhead=onormal,arrowsize=2.0];
+"Dog"->"PCanidae"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+
+}

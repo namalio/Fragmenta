@@ -1,0 +1,11 @@
+digraph {graph[label=F_M_fr,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_M_fr{style=dashed;label=F_M_fr;
+"Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+"Canidae"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canidae"];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Mammal"];
+
+"Feline"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Canidae"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

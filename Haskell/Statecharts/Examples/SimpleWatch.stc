@@ -1,0 +1,69 @@
+StCModel StC_SimpleWatch:
+   StC Time {
+      start initTime
+      transition InitTime initTime->ShowTime
+      state ShowTime
+      state ShowDate
+      transition FrTimeToDate ShowTime->ShowDate:showDatePress
+      transition FrDateToTime ShowDate->ShowTime:showDateRelease
+   }
+   StC Lights {
+      start initLights
+      transition InitLights initLights->LightOff
+      state LightOff
+      state LightOn
+      transition FrOffToOn LightOff->LightOn:lightOnPress
+      transition FrOnToOff LightOn->LightOff:lightOnRelease
+   }
+   StC AlarmSetting {
+        start initAlarmSetting
+        transition InitAlarmSetting initAlarmSetting->NotSetting
+        state NotSetting
+        transition FrNotSettingToSettingAlarm NotSetting->SettingAlarm:setAlarm
+        state SettingAlarm {
+           StC SettingAlarm {
+              start initSettingAlarm
+              transition InitSettingAlarm initSettingAlarm->AlarmOnOff
+              state AlarmOnOff {
+                 StC AlarmOnOff {
+                    start initAlarmOnOff
+                    history HistorySt1
+                    state AlarmOff
+                    state AlarmOn
+                    transition InitAlarmOnOff initAlarmOnOff->HistorySt1
+                    transition FrHistory HistorySt1->AlarmOff
+                    transition FrOffToOn1 AlarmOff->AlarmOn:rotateUp
+                    transition FrOffToOn2 AlarmOff->AlarmOn:rotateDown
+                    transition FrOnToOff1 AlarmOn->AlarmOff:rotateUp
+                    transition FrOnToOff2 AlarmOn->AlarmOff:rotateDown
+                    transition FrOutOn AlarmOn->SetAlarmTime:ok
+                    transition FrOutOff AlarmOff->NotSetting:ok/alarmOff
+                 }
+              }
+              state SetAlarmTime {
+                 StC SetAlarmTime {
+                    start initSetAlarmTime
+                    state Hours
+                    state Minutes
+                    transition InitSetAlarmTime initSetAlarmTime->Hours
+                    transition KeepHours1 Hours->Hours:rotateUp
+                    transition KeepHours2 Hours->Hours:rotateDown
+                    transition FrHoursToMinutes Hours->Minutes:ok
+                    transition KeepMinutes1 Minutes->Minutes:rotateUp
+                    transition KeepMinutes2 Minutes->Minutes:rotateDown
+                    transition FrOutMinutes Minutes->NotSetting:ok/alarmOn
+                 }
+              }
+           }
+        }
+      }
+   StC AlarmStatus {
+        start initAlarmStatus
+        history historyAlarmStatus
+        state OffAlarm
+        state OnAlarm
+        transition InitAlarmStatus initAlarmStatus->historyAlarmStatus
+        transition FrHistAlarmStatus historyAlarmStatus->OffAlarm
+        transition FrOffAToOnA OffAlarm->OnAlarm:alarmOn
+        transition FrOnAToOffA OnAlarm->OffAlarm:alarmOff
+    }

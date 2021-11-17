@@ -1,0 +1,11 @@
+GFG Stcs_MM {
+  fragment F_MM1
+  fragment F_MM2
+  fragment F_MM3
+  fragment F_MM4
+  fragment F_MM5
+  F_MM2 references F_MM1
+  F_MM3 references F_MM2
+  F_MM4 references F_MM2
+  F_MM5 references F_MM4
+}
