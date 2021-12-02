@@ -44,64 +44,59 @@ definition EsId ::"'a Gr_scheme \<Rightarrow> E set"
 where
   "EsId G \<equiv> {e. e \<in> Es G \<and> (src G e) = (tgt G e)}"
 
-definition adjacent :: "V \<Rightarrow> V \<Rightarrow> 'a Gr_scheme => bool"
+definition adjacent :: "'a Gr_scheme => V \<Rightarrow> V \<Rightarrow> bool"
 where
-    "adjacent v1 v2 G \<equiv>  \<exists>e. e \<in> (Es G) \<and> src G e = Some v1 \<and> tgt G e = Some v2"
+    "adjacent G v1 v2  \<equiv>  \<exists>e. e \<in> (Es G) \<and> src G e = Some v1 \<and> tgt G e = Some v2"
 
 definition successors :: "V \<Rightarrow> Gr \<Rightarrow> V set"
 where
-    "successors v G = {v1 \<in> (Ns G). (adjacent v v1 G)}"
+    "successors v G = {v' \<in> (Ns G). (adjacent G v v')}"
 
-(* Obtains the incident source edges of a node*)
-definition incidentEsSrc :: "Gr \<Rightarrow> V \<Rightarrow> E set"
+(*Adjacency relation induced by a graph*)
+definition relG :: "'a Gr_scheme \<Rightarrow> V rel" ("(_\<^sup>\<Leftrightarrow>)" [1000] 999)
 where
-  "incidentEsSrc G v \<equiv> {e \<in> (Es G). src G e = Some v}"
+   "G\<^sup>\<Leftrightarrow> = {(v1, v2). adjacent G v1 v2}"
 
-(*The adjacency relation induced by a graph*)
-definition relOfGr :: "'a Gr_scheme \<Rightarrow> (V\<times>V) set"
-where
-   "relOfGr G = {(v1, v2). (adjacent v1 v2 G)}"
+lemma Domain_relG: "Domain (G\<^sup>\<Leftrightarrow>) \<subseteq> ran (src G)"
+  by (auto simp add: relG_def adjacent_def ran_def)
 
-lemma Domain_relOfGr: "Domain (relOfGr G) \<subseteq> ran (src G)"
-  by (auto simp add: relOfGr_def adjacent_def ran_def)
-
-lemma Range_relOfGr: "Range (relOfGr G) \<subseteq> ran (tgt G)"
-  by (auto simp add: relOfGr_def adjacent_def ran_def)
+lemma Range_relG: "Range (G\<^sup>\<Leftrightarrow>) \<subseteq> ran (tgt G)"
+  by (auto simp add: relG_def adjacent_def ran_def)
 
 definition acyclicGr :: "'a Gr_scheme \<Rightarrow> bool"
 where
-   "acyclicGr G \<equiv> acyclic (relOfGr G)"
+   "acyclicGr G \<equiv> acyclic (G\<^sup>\<Leftrightarrow>)"
 
 lemma Domain_RelGr_Sub_NsG: 
   assumes "wf_g G"
-  shows "Domain (relOfGr G) \<subseteq> Ns G"
-  using assms by (auto simp add: relOfGr_def 
+  shows "Domain (G\<^sup>\<Leftrightarrow>) \<subseteq> Ns G"
+  using assms by (auto simp add: relG_def 
       adjacent_def wf_g_def ftotal_on_def intro: ranI)
 
 lemma acyclicIffForAll: 
   assumes h1: "wf_g G"
-  shows "acyclicGr G \<longleftrightarrow> (\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (relOfGr G)\<^sup>+)"
+  shows "acyclicGr G \<longleftrightarrow> (\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+)"
   proof
     assume h2: "acyclicGr G"
-    show "\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (relOfGr G)\<^sup>+"
+    show "\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+"
     proof (rule allI, rule impI)
       fix x
       assume h3: "x \<in> Ns G"
-      then show "(x, x) \<notin> (relOfGr G)\<^sup>+"
+      then show "(x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+"
         using h2 by (auto simp add: acyclicGr_def acyclic_def)
     qed
   next
-    assume "\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (relOfGr G)\<^sup>+"
-      then have "\<forall>x. (x, x) \<notin> (relOfGr G)\<^sup>+" 
+    assume "\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+"
+      then have "\<forall>x. (x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+" 
       proof (clarify)
         fix x
-        assume "\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (relOfGr G)\<^sup>+"
-        then have h2: "x \<in> Ns G \<longrightarrow> (x, x) \<notin> (relOfGr G)\<^sup>+"
+        assume "\<forall>x. x \<in> Ns G \<longrightarrow> (x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+"
+        then have h2: "x \<in> Ns G \<longrightarrow> (x, x) \<notin> (G\<^sup>\<Leftrightarrow>)\<^sup>+"
           by (drule_tac x = "x" in spec)
-        assume h3: "(x, x) \<in> (relOfGr G)\<^sup>+"
-        then have "x \<in> Domain ((relOfGr G)\<^sup>+)"
+        assume h3: "(x, x) \<in> (G\<^sup>\<Leftrightarrow> )\<^sup>+"
+        then have "x \<in> Domain ((G\<^sup>\<Leftrightarrow>)\<^sup>+)"
           by (auto simp add: Domain_def)
-        then have "x \<in> Domain (relOfGr G)"
+        then have "x \<in> Domain (G\<^sup>\<Leftrightarrow>)"
           by (simp)
         then have h4: "x \<in> Ns G"  
           using h1 Domain_RelGr_Sub_NsG by auto
@@ -109,9 +104,28 @@ lemma acyclicIffForAll:
           using h2 h3 h4 by auto
       qed
     then show "acyclicGr G"
-      by (simp add: acyclicGr_def acyclic_def relOfGr_def 
-          adjacent_def)
+      by (simp add: acyclicGr_def acyclic_def relG_def adjacent_def)
   qed
+
+(*
+definition incidentEsSrc :: "Gr \<Rightarrow> V \<Rightarrow> E set"
+where
+  "incidentEsSrc G v \<equiv> {e \<in> (Es G). src G e = Some v}"*)
+
+(* Inverts a graph*)
+definition invertG::"Gr \<Rightarrow> Gr" ("(_\<^sup>\<rightleftharpoons>)" [1000] 999)
+  where
+  "G\<^sup>\<rightleftharpoons> = \<lparr>Ns = Ns G, Es = Es G, src = tgt G, tgt = src G\<rparr>"
+
+(* Obtains the incident edges of a set of nodes*)
+definition esIncident::"'a Gr_scheme \<Rightarrow> V set \<Rightarrow> E set" (infixl "\<circ>\<rightarrow>\<circ>" 100)
+  where
+  "G \<circ>\<rightarrow>\<circ> vs \<equiv>  (src G) -` (Some ` vs) \<union> (tgt G) -` (Some ` vs)"
+
+(* Obtains edges connecting a set of nodes*)
+definition esConnect::"'a Gr_scheme \<Rightarrow> V set \<Rightarrow> E set" (infixl "\<bullet>\<leftrightarrow>\<bullet>" 100)
+  where
+  "G \<bullet>\<leftrightarrow>\<bullet> vs \<equiv>  (src G) -` (Some ` vs) \<inter> (tgt G) -` (Some ` vs)"
 
 (* Empty graph*)
 definition emptyG :: "Gr"

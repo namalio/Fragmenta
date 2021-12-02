@@ -1,68 +1,34 @@
-(*  Title:      Fragmenta theory of structural graphs (SGs)
-    Description: 'Fragmenta' theory of SGs presented in the Models 2015 paper.
+(*  Title:      Structural graphs (SGs)
+    Description: 'Fragmenta' theory of SGs
     Author:     Nuno Amálio
 *)
 theory Fragmenta_SGs
-imports Fragmenta_Graphs "../Extra/Trcl_Extra"
+  imports Fragmenta_Graphs Fragmenta_SGElemTys 
+    Fragmenta_Mult  "../Extra/Trcl_Extra" 
+    "../Extra/Map_Extra"
 
 begin
 
-(*Multiplicity values: a natural number or 0*)
-datatype MultUVal = val nat | many ("*")
-
-(*Multiplicities: either a range multiplicity or a single multiplicity value*)
-datatype MultVal = rm nat MultUVal | sm MultUVal
-
-definition ok_multVal :: "MultVal \<Rightarrow> bool"
-where
-  "ok_multVal mv \<equiv> (case mv of (rm n *) \<Rightarrow> True
-      | (rm lb (val ub)) \<Rightarrow> lb \<le> ub 
-      | (sm mv) \<Rightarrow> True)"
-
-lemma ok_multVal_sm_many[simp]: "ok_multVal (sm *)"
-  by (simp add: ok_multVal_def)
-
-lemma ok_multVal_sm_one[simp]: "ok_multVal (sm (val (Suc 0)))"
-  by (simp add: ok_multVal_def)
-
-definition multOk :: "V set \<Rightarrow> MultVal \<Rightarrow> bool"
-where
-  "multOk vs mv \<equiv> ok_multVal mv 
-      \<and> (case mv of (rm lb *) \<Rightarrow> card vs \<ge> lb 
-        | (rm lb (val ub)) \<Rightarrow>card vs \<ge> lb \<and> card vs \<le> ub  
-        | (sm *) \<Rightarrow> True 
-        | (sm (val b)) \<Rightarrow> card vs = b)"
-
-(* The node types of a SG: normal, abstract, proxy and enumeration*)
-datatype SGNTy = nnrml | nabst | nprxy | nenum
-datatype SGETy = einh | ecompbi | ecompuni | erelbi | ereluni | elnk | eref
-
-definition SGNTy_set :: "SGNTy set"
-where 
-   "SGNTy_set = {nnrml, nabst, nprxy, nenum}"
-
-definition SGETy_set :: "SGETy set"
-where 
-   "SGETy_set = {einh, ecompbi, ecompuni, erelbi, ereluni, elnk, eref}"
-
 (*Type of SGs*)
 record SGr = Gr +
-   nty :: "V \<rightharpoonup> SGNTy"
-   ety :: "E \<rightharpoonup> SGETy" 
-   srcm  :: "E \<rightharpoonup> MultVal"
-   tgtm  :: "E \<rightharpoonup> MultVal"
+   nty :: "V \<rightharpoonup> SGNT"
+   ety :: "E \<rightharpoonup> SGET" 
+   srcm  :: "E \<rightharpoonup> MultC"
+   tgtm  :: "E \<rightharpoonup> MultC"
+   db :: "E \<rightharpoonup> E"
 
 (* Defines the empty SG*)
 definition emptySG :: "SGr"
 where
   "emptySG \<equiv> \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt = Map.empty, 
     nty = Map.empty, ety = Map.empty,
-    srcm = Map.empty, tgtm = Map.empty\<rparr>"
+    srcm = Map.empty, tgtm = Map.empty, db = Map.empty\<rparr>"
 
 lemma SGr_eq: 
   shows "(SG1 = SG2) \<longleftrightarrow> Ns SG1 = Ns SG2 \<and> Es SG1 = Es SG2 \<and> src SG1 = src SG2 
     \<and> tgt SG1 = tgt SG2 \<and> nty SG1 = nty SG2 \<and> ety SG1 = ety SG2 
-    \<and> srcm SG1 = srcm SG2 \<and> tgtm SG1 = tgtm SG2 \<and> SGr.more SG1 = SGr.more SG2"
+    \<and> srcm SG1 = srcm SG2 \<and> tgtm SG1 = tgtm SG2 \<and> db SG1 = db SG2 
+    \<and> SGr.more SG1 = SGr.more SG2"
     by (auto)
 
 definition gr_sg :: "SGr \<Rightarrow> Gr"
@@ -70,241 +36,312 @@ where
   "gr_sg SG = \<lparr>Ns = Ns SG, Es = Es SG, src = src SG, tgt = tgt SG\<rparr>"
 
 (*Nodes of some type*)
-definition NsTy ::"SGr \<Rightarrow> SGNTy option set \<Rightarrow> E set"
+definition NsTy ::"SGr \<Rightarrow> SGNT set \<Rightarrow> E set"
 where
-  "NsTy SG nts = (nty SG)-` nts"
+  "NsTy SG nts = (nty SG)-` (Some ` nts)"
 
 (*Edges of some type*)
-definition EsTy ::"SGr \<Rightarrow> SGETy option set \<Rightarrow> E set"
+definition EsTy ::"SGr \<Rightarrow> SGET set \<Rightarrow> E set"
 where
-  "EsTy SG ets = (ety SG)-` ets"
+  "EsTy SG ets = (ety SG)-` (Some ` ets)"
+
+lemma EsTy_emptySG[simp]:
+  "EsTy emptySG ets = {}"
+  by (simp add: EsTy_def emptySG_def)
 
 (*Association edges*)
 definition EsA ::"SGr \<Rightarrow> E set"
 where
-  "EsA SG \<equiv> EsTy SG {Some ecompbi, Some ecompuni, Some erelbi, Some ereluni, Some elnk}"
+  "EsA SG \<equiv> EsTy SG (ecomps \<union> erels)"
+
+lemma EsA_emptySG[simp]:
+  "EsA emptySG = {}"
+  by (simp add: EsA_def)
+
+(*Wander edges*)
+definition EsW ::"SGr \<Rightarrow> E set"
+where
+  "EsW SG \<equiv> EsTy SG {ewander}"
+
+lemma EsW_emptySG[simp]:
+  "EsW emptySG = {}"
+  by (simp add: EsW_def)
 
 (*Inheritance edges*)
 definition EsI ::"SGr \<Rightarrow> E set"
 where
-  "EsI SG \<equiv> EsTy SG {Some einh}"
+  "EsI SG \<equiv> EsTy SG {einh}"
+
+(*Derived edges*)
+definition EsD ::"SGr \<Rightarrow> E set"
+where
+  "EsD SG \<equiv> EsTy SG {eder}"
+
+lemma EsD_emptySG[simp]:
+  "EsD emptySG = {}"
+  by (simp add: EsD_def)
 
 (*Reference edges*)
-definition EsR ::"SGr \<Rightarrow> E set"
+definition EsC ::"SGr \<Rightarrow> E set"
 where
-  "EsR SG \<equiv> EsTy SG {Some eref}"
+  "EsC SG \<equiv> EsA SG \<union> EsW SG \<union> EsD SG"
+
+lemma EsC_emptySG[simp]:
+  "EsC emptySG = {}"
+  by (simp add: EsC_def)
 
 (*Proxy nodes*)
 definition NsP ::"SGr \<Rightarrow> V set"
 where
-  "NsP SG \<equiv> NsTy SG {Some nprxy}"
+  "NsP SG \<equiv> NsTy SG {nprxy}"
+
+(*Ethereal nodes*)
+definition NsEther ::"SGr \<Rightarrow> V set"
+where
+  "NsEther SG \<equiv> NsTy SG {nabst, nvirt, nenum}"
+
+(*Optional nodes*)
+definition NsO ::"SGr \<Rightarrow> V set"
+where
+  "NsO SG \<equiv> NsTy SG {nopt}"
+
+(*Virtual nodes*)
+definition NsV ::"SGr \<Rightarrow> V set"
+where
+  "NsV SG \<equiv> NsTy SG {nvirt}"
 
 (*Reference edges attached to proxies*)
-definition EsRP ::"SGr \<Rightarrow> E set"
+(*definition EsRP ::"SGr \<Rightarrow> E set"
 where
   "EsRP SG \<equiv> {e. e \<in> EsR SG \<and> (\<exists> v. (src SG e) = Some v \<and> v \<in> (NsP SG))}"
+*)
 
 definition inhG ::"SGr \<Rightarrow> Gr"
 where
-  "inhG SG \<equiv> restrict SG ((EsI SG) - (EsId SG))"
+  "inhG SG \<equiv> restrict SG (EsI SG)"
 
-lemma Ns_inhG[simp]: "Ns (inhG SG) = rst_Ns SG ((EsI SG) - (EsId SG))"
+lemma Ns_inhG[simp]: "Ns (inhG SG) = rst_Ns SG (EsI SG)"
   by (simp add: inhG_def)
 
-lemma Es_inhG[simp]: "Es (inhG SG) = Es SG \<inter> ((EsI SG) - (EsId SG))"
+lemma Es_inhG[simp]: "Es (inhG SG) = Es SG \<inter> (EsI SG)"
   by (simp add: inhG_def)
 
-lemma src_inhG[simp]: "src (inhG SG) = rst_fun ((EsI SG) - (EsId SG)) (src SG)"
+lemma src_inhG[simp]: "src (inhG SG) = rst_fun (EsI SG) (src SG)"
   by (simp add: inhG_def)
 
-lemma tgt_inhG[simp]: "tgt (inhG SG) = rst_fun ((EsI SG) - (EsId SG)) (tgt SG)"
+lemma tgt_inhG[simp]: "tgt (inhG SG) = rst_fun (EsI SG) (tgt SG)"
   by (simp add: inhG_def)
 
-definition inh ::"SGr \<Rightarrow> (V\<times>V) set"
+definition inh ::"SGr \<Rightarrow> V rel"
 where
-  "inh SG \<equiv> relOfGr (inhG SG)"
+  "inh SG \<equiv> (inhG SG)\<^sup>\<Leftrightarrow>"
 
-(*Above, Inheritance relation is inheritance edges minus dummy self inheritance edges*)
 lemma inh_noedgesI: "EsI SG = {} \<Longrightarrow> inh SG = {}"
-  by (simp add: EsI_def inh_def relOfGr_def adjacent_def restrict_def inhG_def)
-
-lemma inh_eq: "relOfGr (inhG SG) = inh SG"
-  by (simp add: inh_def)
+  by (simp add: EsI_def inh_def relG_def adjacent_def restrict_def inhG_def)
 
 lemma acyclic_sg_noEI:"EsI SG = {} \<Longrightarrow> acyclicGr (inhG SG)"
-  by (simp add: acyclicGr_def inh_eq inh_noedgesI wf_acyclic)
+  by (simp add: acyclicGr_def inh_noedgesI wf_acyclic inh_def 
+      inhG_def emptyG_def relG_def adjacent_def)
 
-      
-(*definition acyclicI :: "SGr \<Rightarrow> bool"
+definition srcma_ecomp_uni:: "SGr \<Rightarrow> E \<rightharpoonup> MultC"
+  where
+  "srcma_ecomp_uni SG \<equiv> (\<lambda> x. if x \<in> EsTy SG {ecomp duni} then Some (sm (val 1)) else None)"
+
+definition srcma_erel_uni:: "SGr \<Rightarrow> E \<rightharpoonup> MultC"
+  where
+  "srcma_erel_uni SG \<equiv> (\<lambda> x. if x \<in> EsTy SG {erel duni} then Some (sm many) else None)"
+
+definition srcma ::"SGr \<Rightarrow> E \<rightharpoonup> MultC"
 where
-  "acyclicI SG \<equiv> acyclic (inh SG)"
+  "srcma SG \<equiv> (srcm SG) ++ srcma_ecomp_uni SG ++ srcma_erel_uni SG"
 
-lemma acyclic_sg_noEI:"EsI SG = {} \<Longrightarrow> acyclicI SG"
-  by (auto simp add: acyclicI inh_noedgesI acyclicI_def)*)
+definition multsOk::"SGr \<Rightarrow>bool"
+  where
+  "multsOk SG \<equiv> \<forall> e \<in> EsC SG. the (ety SG e) \<propto> (the (srcma SG e), the (tgtm SG e))"
 
-definition is_wf_sg :: "SGr \<Rightarrow> bool"
+definition inhst ::"SGr \<Rightarrow> (V\<times>V) set"
 where
-  "is_wf_sg SG \<equiv> wf_g SG 
-      \<and> ftotal_on (nty SG) (Ns SG) SGNTy_set 
-      \<and> ftotal_on (ety SG) (Es SG) SGETy_set 
-      \<and> dom (srcm SG) = EsTy SG {Some erelbi, Some ecompbi} 
-      \<and> dom (tgtm SG) = EsTy SG {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}
-      \<and> EsR SG \<subseteq> EsId SG 
-      \<and> (srcm SG `(EsTy SG {Some ecompbi})) \<subseteq> {Some (rm 0 (val 1)), Some (sm (val 1))}
-      \<and> acyclicGr (inhG SG)"
+  "inhst SG \<equiv> (inh SG)\<^sup>*"
+
+lemma inhst_noinh: "inh SG = {} \<Longrightarrow> inhst SG = Id"
+  by (simp add: inhst_def)
+
+definition srcr::"SGr \<Rightarrow> (E\<times>V) set"
+  where
+  "srcr SG \<equiv> pfunToRel (src SG) \<union> (EsW SG) \<lhd> pfunToRel(tgt SG)"
+
+definition srcst ::"SGr \<Rightarrow> (E\<times>V) set"
+where
+  "srcst SG \<equiv> (EsC (SG) \<lhd> srcr SG) O (inhst SG)\<inverse>"
+
+lemma srcst_emptySG[simp]:
+  "srcst emptySG = {}"
+  by (simp add: srcst_def)
+
+definition tgtr::"SGr \<Rightarrow> (E\<times>V) set"
+  where
+  "tgtr SG \<equiv> pfunToRel (tgt SG) \<union> (EsW SG) \<lhd> pfunToRel(src SG)"
+
+definition tgtst ::"SGr \<Rightarrow> (E\<times>V) set"
+where
+  "tgtst SG \<equiv> (EsC (SG) \<lhd> tgtr SG) O (inhst SG)\<inverse>"
+
+lemma tgtst_emptySG[simp]:
+  "tgtst emptySG = {}"
+  by (simp add: tgtst_def)
+
+definition esIncidentst::"SGr \<Rightarrow>V set \<Rightarrow> E set" (infixl "\<circ>\<rightarrow>\<circ>\<^sup>*" 100)
+  where
+    "SG \<circ>\<rightarrow>\<circ>\<^sup>* vs = ((srcst SG)\<inverse> `` vs) \<union> ((tgtst SG)\<inverse> `` vs)"
+
+lemma esIncidentst_emptySG:
+  "emptySG \<circ>\<rightarrow>\<circ>\<^sup>* vs = {}"
+  by (simp add: esIncidentst_def )
+
+lemma esIncidentst_empty_vs:
+  "SG \<circ>\<rightarrow>\<circ>\<^sup>* {} = {}"
+  by (simp add: esIncidentst_def )
+
+definition optsVoluntary::"SGr \<Rightarrow>bool"
+  where
+  "optsVoluntary SG \<equiv> pfunToRel (ety SG) ``((SG \<circ>\<rightarrow>\<circ>\<^sup>* (NsO SG)) - (EsI SG)) \<subseteq> {ewander}"
+
+definition inhOk::"SGr \<Rightarrow>bool"
+  where
+  "inhOk SG \<equiv> (\<forall> v v'. (v, v') \<in> inh SG \<longrightarrow> the (nty SG v) <\<^sub>N\<^sub>T the (nty SG v'))
+    \<and> acyclicGr (inhG SG) \<and> tree (((inhG SG) \<ominus>\<^sub>N\<^sub>S (NsV SG))\<^sup>\<Leftrightarrow>)"
+
+definition wf_sg :: "SGr \<Rightarrow> bool"
+where
+  "wf_sg SG \<equiv> wf_g SG 
+      \<and> ftotal_on (nty SG) (Ns SG) SGNT_set 
+      \<and> ftotal_on (ety SG) (Es SG) SGET_set 
+      \<and> ftotal_on (srcma SG) (EsC SG) MultC_set
+      \<and> ftotal_on (tgtm SG) (EsC SG) MultC_set
+      \<and> dom (db SG) = EsD SG
+      \<and> multsOk SG"
+
+lemma wf_sg_wf_g:
+  assumes "wf_sg SG"
+  shows "wf_g SG"
+  using assms by (simp add: wf_sg_def)
+
+lemma wf_sg_ftotal_on_srcG:
+  assumes "wf_sg SG"
+  shows "ftotal_on (src SG) (Es SG) (Ns SG)"
+  using assms by (simp add: wf_sg_def wf_g_def)
+
+lemma wf_sg_ftotal_on_tgtG:
+  assumes "wf_sg SG"
+  shows "ftotal_on (tgt SG) (Es SG) (Ns SG)"
+  using assms by (simp add: wf_sg_def wf_g_def)
+
+lemma wf_sg_ftotal_on_nty:
+  assumes "wf_sg SG"
+  shows "ftotal_on (nty SG) (Ns SG) SGNT_set"
+  using assms by (simp add: wf_sg_def)
+
+lemma wf_sg_ftotal_on_ety:
+  assumes "wf_sg SG"
+  shows "ftotal_on (ety SG) (Es SG) SGET_set"
+  using assms by (simp add: wf_sg_def)
+
+lemma wf_sg_ftotal_on_srcma:
+  assumes "wf_sg SG"
+  shows "ftotal_on (srcma SG) (EsC SG) MultC_set"
+  using assms by (simp add: wf_sg_def)
+
+lemma srcm_sub_srcma:
+  shows "dom (srcm SG) \<subseteq> dom (srcma SG)"
+  by (simp add: subsetI srcma_def)
+
+lemma wf_sg_ftotal_on_tgtm:
+  assumes "wf_sg SG"
+  shows "ftotal_on (tgtm SG) (EsC SG) MultC_set"
+  using assms by (simp add: wf_sg_def)
+
+lemma wf_sg_dom_db:
+  assumes "wf_sg SG"
+  shows "dom (db SG) = EsD SG"
+  using assms by (simp add: wf_sg_def)
 
 lemma NsP_sub_Ns: 
-  assumes h1: "is_wf_sg SG"
+  assumes "wf_sg SG"
   shows "NsP SG \<subseteq> Ns SG"
-  proof -
-    from h1 have h1a: "ftotal_on (nty SG) (Ns SG) SGNTy_set"
-      by (simp add: is_wf_sg_def) 
-    show ?thesis
-    proof
-      fix x
-      assume "x \<in> NsP SG "
-      then show "x \<in> Ns SG" 
-        using h1a by (auto simp add: NsP_def NsTy_def ftotal_on_def)
-    qed
-  qed
+  using assms wf_sg_ftotal_on_nty [of SG]
+  by (auto simp add: NsP_def NsTy_def ftotal_on_def)
 
-lemma is_wf_g_inhG:
-  assumes h1: "is_wf_g SG"
-  shows "is_wf_g (inhG SG)"
-proof -
-  from h1 show ?thesis
-    by (simp add: inhG_def is_wf_restrict)
-qed
+lemma wf_g_inhG:
+  assumes "wf_g SG"
+  shows "wf_g (inhG SG)"
+  using assms by (simp add: inhG_def wf_restrict)
 
-lemma in_NsP_Ns: 
-  assumes h1: "is_wf_sg SG" and h2: "n \<in> NsP SG"
-  shows "n \<in> Ns SG"
-  proof -
-    from assms show ?thesis
-      using NsP_sub_Ns[where SG="SG"]
-      by (auto)
-  qed
-
+lemma EsTy_sub_Es: 
+  assumes "wf_sg SG"
+  shows "EsTy SG ets \<subseteq> Es SG"
+  using assms wf_sg_ftotal_on_ety[of SG]
+  by (auto simp add: EsTy_def ftotal_on_def)
+  
 lemma EsI_sub_Es: 
-  assumes h1: "is_wf_sg SG"
+  assumes "wf_sg SG"
   shows "EsI SG \<subseteq> Es SG"
-  proof -
-    from h1 have h1a: "ftotal_on (ety SG) (Es SG) SGETy_set"
-      by (simp add: is_wf_sg_def)
-    from h1a show ?thesis
-      by (auto simp add: EsI_def EsTy_def ftotal_on_def)
-  qed
+using assms wf_sg_ftotal_on_ety[of SG]
+  by (auto simp add: EsI_def EsTy_sub_Es)
 
-lemma in_EsI_in_Es:
-  assumes h1: "is_wf_sg SG" and h2: "x \<in> EsI SG"
-  shows "x \<in> (Es SG)"
-  proof -
-    from assms show ?thesis
-    using EsI_sub_Es [of "SG"]
-    by (auto) 
-  qed
+lemma EsC_sub_ES: 
+  assumes "wf_sg SG"
+  shows "EsC SG \<subseteq> Es SG"
+  using assms wf_sg_ftotal_on_ety[of SG]
+  by (auto simp add: EsC_def EsTy_def ftotal_on_def 
+      EsA_def EsW_def EsD_def)
 
-(*All edges that are attached to proxies*)
-definition EsP:: "SGr \<Rightarrow> E set"
-where
-  "EsP SG \<equiv> {e. e \<in> Es SG \<and> (src SG e \<in> Some ` NsP SG \<or> tgt SG e \<in> Some ` NsP SG)}"
+lemma EsD_sub_ES: 
+  assumes "wf_sg SG"
+  shows "EsD SG \<subseteq> Es SG"
+  using assms wf_sg_ftotal_on_ety[of SG]
+  by (auto simp add: EsD_def EsTy_def ftotal_on_def)
 
-definition inhGWithoutNsP:: "SGr\<Rightarrow>Gr"
-where
-  "inhGWithoutNsP SG \<equiv> restrict (inhG SG) (Es (inhG SG) - EsP (SG))" 
+lemma EsA_sub_ES: 
+  assumes "wf_sg SG"
+  shows "EsA SG \<subseteq> Es SG"
+  using assms wf_sg_ftotal_on_ety[of SG]
+  by (auto simp add: EsA_def EsTy_def ftotal_on_def)
 
-lemma No_NsP_in_inhGWithoutNsP: "Ns(inhGWithoutNsP SG) \<inter> NsP SG = {}"
-  by (auto simp add: inhGWithoutNsP_def rst_Ns_def rst_fun_def restrict_map_def
-    ran_def EsP_def)
+lemma Domain_inh:
+  assumes "wf_sg SG"
+  shows "Domain (inh SG) \<subseteq> Ns SG"
+  using assms wf_sg_ftotal_on_srcG[of SG]
+  by (auto simp add: inh_def relG_def adjacent_def ftotal_on_def 
+      rst_fun_def EsI_def EsTy_def
+      restrict_map_def inhG_def intro!: ranI)
 
-definition inhGRestrictedToNsP:: "SGr\<Rightarrow>Gr"
-where
-  "inhGRestrictedToNsP SG \<equiv> restrict (inhG SG) (EsP SG)" 
+lemma Range_inh:
+  assumes h1: "wf_sg SG"
+  shows "Range (inh SG) \<subseteq> Ns SG"
+  using assms wf_sg_ftotal_on_tgtG[of SG]
+  by (auto simp add: inh_def relG_def adjacent_def ftotal_on_def 
+      rst_fun_def EsI_def EsTy_def
+      restrict_map_def inhG_def intro!: ranI)
 
-lemma inhG_partition_NsP:
-  assumes h:"is_wf_sg SG"
-  shows "inhG SG = inhGWithoutNsP SG UG inhGRestrictedToNsP SG"
-  proof -
-    from h have h1a: "dom (src SG) = Es SG"
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h have h1b: "dom (tgt SG) = Es SG"
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    show ?thesis
-    proof (simp add: inhGWithoutNsP_def inhGRestrictedToNsP_def Gr_eq, rule conjI)
-      show "rst_Ns SG (EsI SG - EsId SG) =
-        rst_Ns (inhG SG) (Es SG \<inter> (EsI SG - EsId SG) - EsP SG) \<union> rst_Ns (inhG SG) (EsP SG)"
-        using h h1a h1b 
-        by (auto simp add: rst_Ns_def rst_fun_def ran_def restrict_map_def intro!: in_EsI_in_Es)
-    next
-      apply_end(rule conjI)
-      show "Es SG \<inter> (EsI SG - EsId SG) =
-        Es SG \<inter> (EsI SG - EsId SG) \<inter> (Es SG \<inter> (EsI SG - EsId SG) - EsP SG) \<union>
-          Es SG \<inter> (EsI SG - EsId SG) \<inter> EsP SG"
-        by (auto)
-    next
-      apply_end(rule conjI)
-      show "rst_fun (EsI SG - EsId SG) (src SG) =
-          rst_fun (Es SG \<inter> (EsI SG - EsId SG) - EsP SG) (rst_fun (EsI SG - EsId SG) (src SG)) ++
-          rst_fun (EsP SG) (rst_fun (EsI SG - EsId SG) (src SG))"
-        using h1a by (auto simp add: fun_eq_iff rst_fun_def restrict_map_def map_add_def 
-          split: option.splits)
-    next
-      show "rst_fun (EsI SG - EsId SG) (tgt SG) =
-        rst_fun (Es SG \<inter> (EsI SG - EsId SG) - EsP SG) (rst_fun (EsI SG - EsId SG) (tgt SG)) ++
-        rst_fun (EsP SG) (rst_fun (EsI SG - EsId SG) (tgt SG))"
-        using h1b by (auto simp add: fun_eq_iff rst_fun_def restrict_map_def  
-          map_add_def split: option.splits)
-    qed
-  qed
+lemma inh_sub_inhst: "inh SG \<subseteq>  inhst SG"
+  by (auto simp add: inhst_def)
 
-(*lemma in_Es_removeNsP_inhG:
-  assumes h1: "is_wf_sg SG" and h2: "e \<in> Es (removeNs (inhG SG) (NsP SG))" and h3: "p \<in> NsP SG"
-  shows "src SG e \<noteq> Some p \<and> tgt SG e \<noteq> Some p"
-  proof -
-    from h1 have h1a: "dom (src SG) = Es SG" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1b: "dom (tgt SG) = Es SG" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from assms h1a h1b show ?thesis
-      by (auto simp add: rst_fun_def restrict_map_def)
-  qed
+lemma src_restrict_EsA_sub_srcst:
+  shows "pfunToRel(src SG |` (EsA SG)) \<subseteq> srcst SG"
+  by (auto simp add: srcst_def restrict_map_def 
+          pfunToRel_def inhst_def dres_def EsC_def 
+          srcr_def
+          split: if_splits)
 
-lemma All_Prxys_in_removeNsNotAdjP_inhG:
-  assumes h1: "is_wf_sg SG" 
-  shows "\<forall> p. p \<in> NsP SG \<longrightarrow> p \<in> Ns (removeNs (inhG SG) (NsNotAdjP SG))"
-  using h1 by (simp add: NsNotAdjP_def NsAdjP_def in_NsP_Ns)
+lemma tgt_restrict_EsA_sub_tgtst: 
+  shows "pfunToRel(tgt SG |` (EsA SG)) \<subseteq> tgtst SG"
+  by (auto simp add: tgtst_def restrict_map_def 
+          pfunToRel_def inhst_def dres_def EsC_def 
+          tgtr_def
+          split: if_splits)
 
-lemma in_Es_implies_hasP_inhG:
-  assumes h1: "is_wf_sg SG" and h2: "e \<in> Es (removeNs (inhG SG) (NsNotAdjP SG))" 
-  shows "\<exists> p. p \<in> NsP SG"
-  proof -
-    from h1 have h1a: "dom (src SG) = Es SG" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1b: "dom (tgt SG) = Es SG" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1c: "ran (src SG) \<subseteq> Ns SG" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1d: "ran (tgt SG) \<subseteq> Ns SG" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1a h1b h2 show ?thesis
-    proof (simp add: rst_fun_def restrict_map_def split: if_splits)
-      apply_end(erule conjE, erule conjE, erule conjE, erule conjE)
-      assume h3a: "e \<in> Es SG"
-      assume h3b: "e \<in> EsI SG"
-      assume h3c: "e \<notin> EsId SG" 
-      assume h3d: "src SG e \<notin> Some ` NsNotAdjP SG"
-      assume h3e: "tgt SG e \<notin> Some ` NsNotAdjP SG"
-      from h3a h1a have h3f: "e \<in> dom (src SG)" by simp
-      from h3a h1b have h3g: "e \<in> dom (tgt SG)" by simp
-      from h3d h3f h1c have h3h: "src SG e \<in> Some ` NsAdjP SG"
-        by (simp add: image_def dom_def NsNotAdjP_def)(erule exE, auto intro: ranI)
-      from h3e h3g h1d have h3i: "tgt SG e \<in> Some ` NsAdjP SG"
-        by (simp add: image_def dom_def NsNotAdjP_def)(erule exE, auto intro: ranI)
-      from h3h h3i show ?thesis by (auto simp add: NsAdjP_def)
-     next
-    qed
-  qed
 
+(*
 lemma in_Es_removeNsNotAdjP_inhG:
   assumes h1: "is_wf_sg SG" and h2: "e \<in> Es (removeNs (inhG SG) (NsNotAdjP SG))" 
   shows "\<exists> p. p \<in> NsP SG \<and> (src SG e = Some p \<or> tgt SG e = Some p)"
@@ -502,46 +539,7 @@ lemma in_Es_removeNsNotAdjP_inhG:
   shows "disjEsGs (restrict (inhG SG) (Es (inhG SG) - EsP SG)) (restrict (inhG SG) (EsP SG))"
     by (auto simp add: disjEsGs_def)*)
 
-lemma in_EsA_in_ES: "\<lbrakk>is_wf_sg SG; e \<in> EsA SG\<rbrakk> \<Longrightarrow> e \<in> Es SG"
-  by (auto simp add: is_wf_sg_def EsA_def EsTy_def ftotal_on_def)
-
-lemma src_aedge_sg: "\<lbrakk>is_wf_sg SG; e \<in> EsA SG\<rbrakk> \<Longrightarrow> \<exists> v. src SG e = Some v"
-  by (frule in_EsA_in_ES, auto simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-
-lemma tgt_aedge_sg: "\<lbrakk>is_wf_sg SG; e \<in> EsA SG\<rbrakk> \<Longrightarrow> \<exists> v. tgt SG e = Some v"
-  by (frule in_EsA_in_ES, auto simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-
-lemma Domain_inh:
-  assumes h1: "is_wf_sg SG"
-  shows "Domain (inh SG) \<subseteq> Ns SG"
-  proof -
-    from h1 have h1c: "ran (src SG) \<subseteq> Ns SG"
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    show ?thesis
-      using h1c
-      by (auto simp add: inh_def relOfGr_def adjacent_def rst_fun_def EsI_def EsId_def EsTy_def
-        restrict_map_def inhG_def intro!: ranI)
-  qed
-
-lemma Range_inh:
-  assumes h1: "is_wf_sg SG"
-  shows "Range (inh SG) \<subseteq> Ns SG"
-  proof -
-    from h1 have h1a: "ran (tgt SG) \<subseteq> Ns SG"
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1a show ?thesis
-    by (auto simp add: inh_def relOfGr_def adjacent_def rst_fun_def EsI_def EsId_def EsTy_def
-      restrict_map_def inhG_def intro!: ranI)
-  qed
-
-lemma EsId_in_EsG:
-  assumes h1: "is_wf_sg SG" and h2: "x \<in> EsId SG"
-  shows "x \<in> Es SG"
-  proof -
-    from h1 have h1a: "ftotal_on (ety SG) (Es SG) SGETy_set " by (simp add: is_wf_sg_def)
-    from h1a have h1b: "dom (ety SG) = Es SG" by (simp add:ftotal_on_def)
-    from h1b h2 show ?thesis by (auto simp add: EsId_def EsTy_def vimage_def dom_def)
-  qed
+(*
 
 lemma SG_EsA_no_inh: 
   assumes h1: "Es SG = EsA SG" and h2: "is_wf_sg SG"
@@ -615,19 +613,6 @@ proof -
   from assms show ?thesis by (simp add: EsA_def EsTy_def)
 qed*)
 
-definition inhst ::"SGr \<Rightarrow> (V\<times>V) set"
-where
-  "inhst SG \<equiv> (inh SG)^*"
-
-lemma inhst_inhid: "inh SG \<subseteq> Id \<Longrightarrow> inhst SG = Id"
-  apply (simp add: inhst_def)
-  by (simp add: rtrancl_subsetid)
-
-lemma inhst_noinh: "inh SG = {} \<Longrightarrow> inhst SG = Id"
-  by (simp add: inhst_def)
-
-lemma inhst_rel: "inh SG = r \<Longrightarrow> inhst SG = r^*"
-  by (simp add: inhst_def)
 
 lemma inhst_inh_subsetid: "r \<subseteq> Id \<Longrightarrow> inhst SG = (inh SG-r)^*"
   unfolding inhst_def
@@ -635,42 +620,10 @@ lemma inhst_inh_subsetid: "r \<subseteq> Id \<Longrightarrow> inhst SG = (inh SG
   apply (rule sym)
   by (simp)
 
-lemma inhst_def_simp: "((inh SGI2)\<^sup>*)\<inverse> = ((inh SGI2)\<inverse>)\<^sup>*"
-proof -
-  show "((inh SGI2)\<^sup>*)\<inverse> = ((inh SGI2)\<inverse>)\<^sup>*" by (simp add: rtrancl_converse)
-qed
+*)
 
-lemma inhst_of_inh: "(v1, v2) \<in> inh SG \<Longrightarrow> (v1, v2) \<in> inhst SG"
-  by (simp add: inhst_def)
 
-lemma inhst_is_id:
-  assumes ha: "Es SG = EsA SG" and hb: "is_wf_sg SG"
-  shows "inhst SG = Id"
-proof -
-  have hc: "EsI SG = {}"  by (simp add: SG_EsA_no_inh ha hb)
-  show "inhst SG = Id"
-    using hc by (simp add: inh_noedgesI inhst_def)
-qed
-
-definition clan ::"V \<Rightarrow> SGr \<Rightarrow> V set"
-where
-  "clan v SG \<equiv> (inhst SG)\<inverse>``{v}"
-
-lemma clan_reflex[simp]: "v \<in> clan v SG"
-  by (simp add: clan_def inhst_def)
-
-lemma clan_of_inhst: "(v1, v2) \<in> inhst SG \<Longrightarrow> v1 \<in> clan v2 SG"
-  by (simp add: clan_def)
-
-lemma clan_of_inh: "(v1, v2) \<in> inh SG \<Longrightarrow> v1 \<in> clan v2 SG"
-  by (simp add: clan_def inhst_def)
-
-definition srcst ::"SGr \<Rightarrow> (E\<times>V) set"
-where
-  "srcst SG \<equiv> (EsA (SG) \<lhd> pfunToRel(src SG)) O (inhst SG)\<inverse>"
-
-(*{(e, v). e \<in> EsA (SG) \<and> (\<exists>v2. v \<in> (clan v2 SG) \<and> (src SG) e = Some v2)}"*)
-
+(*
 lemma in_srcst_subeq_src:
   assumes ha: "Es SG = EsA SG" and hb: "is_wf_sg SG"
   shows "srcst SG \<subseteq> pfunToRel (src SG)"
@@ -681,8 +634,9 @@ proof (rule subrelI)
     using ha hb 
     by (simp add: srcst_def inhst_is_id)(simp add: EsA_def EsTy_def dres_def pfunToRel_def)
   thus "(x, y) \<in> pfunToRel (src SG)" by (auto simp: pfunToRel_def)
-qed
+qed*)
 
+(*
 lemma srcst_eq_src_EsA:
   assumes ha: "Es SG = EsA SG" and hb: "is_wf_sg SG"
   shows "srcst SG = pfunToRel (src SG)"
@@ -707,8 +661,7 @@ lemma srcst_eq_src_EsA:
    qed
 qed
 
-lemma e_v_src_in_srcst: "e \<in> EsA SG \<Longrightarrow> src SG e = Some v \<Longrightarrow> (e, v) \<in> srcst SG"
-  by (auto simp add: srcst_def dres_def pfunToRel_def inhst_def)
+
 
 lemma the_src_in_srcst: 
   assumes "is_wf_sg SG" and "e \<in> EsA SG"
@@ -743,26 +696,13 @@ lemma the_tgt_in_tgtst:
     show ?thesis
     by (simp add: assms(1) assms(2) tgt_aedge_sg tgt_in_tgtst)
   qed
+*)
 
 (*The following lemmas shows that the source or target of an edge is also in the extended set if the edge is of type 
 association. In short: 
 + If it is in src, it is in src*
 + If it is in tgt, it is in tgt*)
-lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(src SG |` (EsA SG)) \<subseteq> srcst SG"
-  proof (rule subrelI)
-    fix x y
-    assume "(x, y) \<in> pfunToRel (src SG |` EsA SG) "
-    then show "(x, y) \<in> srcst SG"
-      by (auto simp add: srcst_def restrict_map_def pfunToRel_def inhst_def dres_def split: if_splits)
-  qed
 
-lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(tgt SG |` (EsA SG)) \<subseteq> tgtst SG"
-  proof (rule subrelI)
-    fix x y
-    assume "(x, y) \<in> pfunToRel (tgt SG |` EsA SG) "
-    then show "(x, y) \<in> tgtst SG"
-      by (auto simp add: tgtst_def dres_def restrict_map_def pfunToRel_def inhst_def split: if_splits)
-  qed
  
 (*lemma "\<lbrakk>is_wf_sg SG; e \<in> EsA(SG)\<rbrakk> \<Longrightarrow> \<exists> v. tgt SG e = Some v \<and> (e, v) \<in> tgtst SG"
   apply (frule tgt_aedge_sg, simp)
@@ -770,83 +710,91 @@ lemma "is_wf_sg SG \<Longrightarrow> pfunToRel(tgt SG |` (EsA SG)) \<subseteq> t
   apply (rule_tac x="v" in exI)
   by (simp add: tgtst_def)*)
 
-lemma "\<lbrakk>is_wf_sg SG; v1 \<in> Ns SG; v2 \<in> Ns SG; (v1, v2) \<in> inhst SG; e \<in> EsA(SG); src SG e = Some v2\<rbrakk> 
+(*lemma "\<lbrakk>is_wf_sg SG; v1 \<in> Ns SG; v2 \<in> Ns SG; (v1, v2) \<in> inhst SG; e \<in> EsA(SG); src SG e = Some v2\<rbrakk> 
   \<Longrightarrow> (e, v1) \<in> srcst SG"  
     by (auto simp add: srcst_def inhst_def dres_def pfunToRel_def)  
+*)
 
 definition cupSG :: "SGr \<Rightarrow> SGr \<Rightarrow> SGr" (infixl "USG" 100)
 where
-  "SG1 USG SG2 \<equiv> \<lparr>Ns = Ns SG1 \<union> Ns SG2, Es = Es SG1 \<union> Es SG2, src = src SG1 ++ src SG2, 
-    tgt = tgt SG1 ++ tgt SG2, nty= nty SG1 ++ nty SG2, ety= ety SG1 ++ ety SG2, 
-    srcm = srcm SG1 ++ srcm SG2, tgtm = tgtm SG1 ++ tgtm SG2\<rparr>"
+  "SG1 USG SG2 \<equiv> \<lparr>Ns = Ns SG1 \<union> Ns SG2, 
+    Es = Es SG1 \<union> Es SG2, 
+    src = src SG1 ++ src SG2, 
+    tgt = tgt SG1 ++ tgt SG2, 
+    nty= nty SG1 ++ nty SG2, 
+    ety= ety SG1 ++ ety SG2, 
+    srcm = srcm SG1 ++ srcm SG2, 
+    tgtm = tgtm SG1 ++ tgtm SG2,
+    db = db SG1 ++ db SG2\<rparr>"
 
 
 lemma USG_sym: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
   shows "SG1 USG SG2 = SG2 USG SG1"
-  proof -
-    from h1 have h1a: "dom (src SG1) = Es SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1b: "dom (tgt SG1) = Es SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1c: "dom (nty SG1) = Ns SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1d: "dom (ety SG1) = Es SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1e: "dom (srcm SG1) = EsTy SG1 {Some erelbi, Some ecompbi}" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1f: "dom (tgtm SG1) = EsTy SG1 {Some erelbi, Some ereluni, Some ecompuni, 
-      Some ecompbi}" 
-      by (auto simp add: is_wf_sg_def is_wf_g_def ftotal_on_def EsTy_def vimage_def)
-    from h2 have h2a: "dom (src SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2b: "dom (tgt SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2c: "dom (nty SG2) = Ns SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2d: "dom (ety SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2e: "dom (srcm SG2) = EsTy SG2 {Some erelbi, Some ecompbi}" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2f: "dom (tgtm SG2) = 
-      EsTy SG2 {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h3 have h3a: "Es SG1 \<inter> Es SG2 = {}" by (simp add:  disjGs_def disjEsGs_def)
-    from h3 have h3b: "Ns SG1 \<inter> Ns SG2 = {}" by (simp add:  disjGs_def)
-    from h3a h1a h2a have h3c: "dom (src SG1) \<inter> dom (src SG2) = {}"
-      by auto
-    from h3a h1b h2b have h3d: "dom (tgt SG1) \<inter> dom (tgt SG2) = {}"
-      by auto
-    from h3b h1c h2c have h3e: "dom (nty SG1) \<inter> dom (nty SG2) = {}"
-      by auto
-    from h3a h1d h2d have h3f: "dom (ety SG1) \<inter> dom (ety SG2) = {}"
-      by auto
-    from h3a h1d h2d h1e h2e have h3g: "dom (srcm SG1) \<inter> dom (srcm SG2) = {}"
-      by (auto simp add: EsTy_def)
-    from h3a h1d h2d h1f h2f have h3h: "dom (tgtm SG1) \<inter> dom (tgtm SG2) = {}"
-      by (auto simp add: EsTy_def)
-    show "SG1 USG SG2 = SG2 USG SG1"
-    proof (auto simp add: cupSG_def)
-      show "(src SG1) ++ (src SG2) = (src SG2) ++ (src SG1)"
-        using h3c map_add_comm[of "src SG1" "src SG2"] by (simp)
-    next
-      show "tgt SG1 ++ tgt SG2 = tgt SG2 ++ tgt SG1"
-        using h3d map_add_comm[of "tgt SG1" "tgt SG2"] by (simp)  
-    next
-      show "nty SG1 ++ nty SG2 = nty SG2 ++ nty SG1"
-        using h3e map_add_comm[of "nty SG1" "nty SG2"] by (simp) 
-    next
-      show "ety SG1 ++ ety SG2 = ety SG2 ++ ety SG1"
-        using h3f map_add_comm[of "ety SG1" "ety SG2"] by (simp)
-    next
-      show "srcm SG1 ++ srcm SG2 = srcm SG2 ++ srcm SG1"
-      using h3g map_add_comm[of "srcm SG1" "srcm SG2"] by (simp)
-    next
-      show "tgtm SG1 ++ tgtm SG2 = tgtm SG2 ++ tgtm SG1"
-      using h3h map_add_comm[of "tgtm SG1" "tgtm SG2"] by (simp)
+proof (auto simp add: cupSG_def)
+  show "(src SG1) ++ (src SG2) = (src SG2) ++ (src SG1)"
+    using assms wf_sg_wf_g[of SG1] dom_src_G[of SG1]
+      wf_sg_wf_g[of SG2] dom_src_G[of SG2]
+      map_add_comm[of "src SG1" "src SG2"] 
+    by (simp add: disjGs_def)
+next
+  show "tgt SG1 ++ tgt SG2 = tgt SG2 ++ tgt SG1"
+    using assms wf_sg_wf_g[of SG1] dom_tgt_G[of SG1]
+      wf_sg_wf_g[of SG2] dom_tgt_G[of SG2]
+      map_add_comm[of "tgt SG1" "tgt SG2"] 
+    by (simp add: disjGs_def)
+next
+  show "nty SG1 ++ nty SG2 = nty SG2 ++ nty SG1"
+    using assms wf_sg_ftotal_on_nty[of SG1]
+      wf_sg_ftotal_on_nty[of SG2]
+      map_add_comm[of "nty SG1" "nty SG2"] 
+    by (simp add: disjGs_def ftotal_on_def)
+next
+  show "ety SG1 ++ ety SG2 = ety SG2 ++ ety SG1"
+    using assms wf_sg_ftotal_on_ety[of SG1]
+      wf_sg_ftotal_on_ety[of SG2]
+      map_add_comm[of "ety SG1" "ety SG2"] 
+    by (simp add: disjGs_def ftotal_on_def)
+next
+  have "dom (srcm SG1) \<inter> dom (srcm SG2) = {}"
+  proof (rule ccontr)
+    assume "dom (srcm SG1) \<inter> dom (srcm SG2) \<noteq> {}"
+    hence "\<exists> x. x \<in> dom (srcm SG1) \<inter> dom (srcm SG2)" by auto
+    then show "False"
+    proof
+      fix x
+      assume "x \<in> dom (srcm SG1) \<inter> dom (srcm SG2)"
+      hence h: "x \<in> Es SG1 \<and> x \<in> Es SG2" 
+        using assms wf_sg_ftotal_on_srcma[of SG1] 
+        wf_sg_ftotal_on_srcma[of SG2] 
+         EsC_sub_ES[of SG1] EsC_sub_ES[of SG2] 
+         srcm_sub_srcma[of SG1] srcm_sub_srcma[of SG2]
+         disjGs_imp_disjEsGs[of SG1 SG2]
+        by (auto simp add: disjEsGs_def ftotal_on_def)
+      from h show "False"
+      using assms(3) by (auto simp add: disjGs_def )
     qed
   qed
-
+  then show "srcm SG1 ++ srcm SG2 = srcm SG2 ++ srcm SG1"
+    using map_add_comm[of "srcm SG1" "srcm SG2"]
+    by simp
+next
+  show "tgtm SG1 ++ tgtm SG2 = tgtm SG2 ++ tgtm SG1"  
+    using assms wf_sg_ftotal_on_tgtm[of SG1]
+      wf_sg_ftotal_on_tgtm[of SG2]
+      map_add_comm[of "tgtm SG1" "tgtm SG2"] 
+      EsC_sub_ES[of SG1] EsC_sub_ES[of SG2]
+      disjGs_imp_disjEsGs[of SG1 SG2]
+    by (auto simp add: disjEsGs_def ftotal_on_def)
+next
+  show "db SG1 ++ db SG2 = db SG2 ++ db SG1"
+    using assms wf_sg_dom_db[of SG1] wf_sg_dom_db[of SG2]
+      EsD_sub_ES[of SG1] EsD_sub_ES[of SG2]
+      map_add_comm[of "db SG1" "db SG2"] 
+      disjGs_imp_disjEsGs[of SG1 SG2]
+    by (auto simp add: disjEsGs_def)(force)
+qed
+    
 lemma src_cupSG[simp]: "src (SG1 USG SG2) = src SG1 ++ src SG2"
   by (simp add: cupSG_def)
 
@@ -856,109 +804,110 @@ lemma tgt_cupSG[simp]: "tgt (SG1 USG SG2) = tgt SG1 ++ tgt SG2"
 lemma srcm_cupSG[simp]: "srcm (SG1 USG SG2) = srcm SG1 ++ srcm SG2"
   by (simp add: cupSG_def)
 
-lemma restrict_dist_sgcup: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjEsGs SG1 SG2"
-  shows "restrict (SG1 USG SG2) es = restrict SG1 es UG restrict SG2 es"
+lemma tgtm_cupSG[simp]: "tgtm (SG1 USG SG2) = tgtm SG1 ++ tgtm SG2"
+  by (simp add: cupSG_def)
+
+lemma db_cupSG[simp]: "db (SG1 USG SG2) = db SG1 ++ db SG2"
+  by (simp add: cupSG_def)
+
+lemma restrict_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjEsGs SG1 SG2"
+  shows "(SG1 USG SG2) \<bowtie>\<^sub>E\<^sub>S es = (SG1 \<bowtie>\<^sub>E\<^sub>S es) UG (SG2 \<bowtie>\<^sub>E\<^sub>S es)"
   proof -
-    from h1 have h1a: "is_wf_g SG1" by (simp add: is_wf_sg_def)
-    from h2 have h2a: "is_wf_g SG2" by (simp add: is_wf_sg_def)
-    from h1a h2a h3 have h4: "restrict (SG1 USG SG2) es = restrict (SG1 UG SG2) es"
+    have h4: "(SG1 USG SG2)\<bowtie>\<^sub>E\<^sub>S es = (SG1 UG SG2)\<bowtie>\<^sub>E\<^sub>S es"
+      using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
       by (simp add: cupSG_def restrict_def rst_Ns_dist_UG rst_Ns_def)
-    from h1a h2a h3 show ?thesis by (simp add: h4 restrict_dist_cup)
-  qed
-  
-lemma is_wf_g_Un2: "\<lbrakk>is_wf_g G1; is_wf_g G2; disjGs G1 G2\<rbrakk>\<Longrightarrow> is_wf_g (G1 USG G2)"
-  proof -
-    assume h1: "is_wf_g G1"
-    have h1a: "ftotal_on (src G1) (Es G1) (Ns G1)"
-      using h1 by (simp add: is_wf_g_def)
-    have h1b: "ftotal_on (tgt G1) (Es G1) (Ns G1)"
-      using h1 by (simp add: is_wf_g_def)
-    have h1c: "dom (src G1) = Es G1"
-      using h1a by (simp add: ftotal_on_def)
-    have h1d: "dom (tgt G1) = Es G1"
-      using h1b by (simp add: ftotal_on_def)
-    assume h2: "is_wf_g G2"
-    have h2a: "ftotal_on (src G2) (Es G2) (Ns G2)"
-      using h2 by (simp add: is_wf_g_def)
-    have h2b: "ftotal_on (tgt G2) (Es G2) (Ns G2)"
-      using h2 by (simp add: is_wf_g_def)
-    have h2c: "dom (src G2) = Es G2"
-      using h2a by (simp add: ftotal_on_def)
-    have h2d: "dom (tgt G2) = Es G2"
-      using h2b by (simp add: ftotal_on_def)
-    assume h3: "disjGs G1 G2"
-    have h3a: "Es G1 \<inter> Es G2 = {}"
-      using h3 by (simp add: disjGs_def disjEsGs_def)
-    show "is_wf_g (G1 USG G2)"
-    proof (simp add: is_wf_g_def cupSG_def, rule conjI)
-      from h1 show "Ns G1 \<subseteq> V_A" 
-        by (simp add: is_wf_g_def)
-    next
-      apply_end (rule conjI)
-      from h2 show "Ns G2 \<subseteq> V_A"
-        by (simp add: is_wf_g_def)
-    next
-      apply_end (rule conjI)
-      from h1 show "Es G1 \<subseteq> E_A" by (simp add: is_wf_g_def)
-    next
-      apply_end (rule conjI)
-      from h2 show "Es G2 \<subseteq> E_A" by (simp add: is_wf_g_def)
-    next
-      apply_end (rule conjI)
-      show "ftotal_on (src G1 ++ src G2) (Es G1 \<union> Es G2) (Ns G1 \<union> Ns G2)"
-      using h1a h2a h1c h2c h3a
-        by (auto simp add: ftotal_on_def)
-    next
-      show "ftotal_on (tgt G1 ++ tgt G2) (Es G1 \<union> Es G2) (Ns G1 \<union> Ns G2)"
-      using h1b h2b h1d h2d h3a
-      by (auto simp add: ftotal_on_def)
-   qed
- qed
-
-lemma EsTy_USG: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-    and h4: "None \<notin> ets"
-  shows "EsTy (SG1 USG SG2) ets = EsTy SG1 ets \<union> EsTy SG2 ets"
-  proof -
-    from h3 have h3a: "Es SG1 \<inter> Es SG2 = {}"
-      by (simp add: disjGs_def disjEsGs_def)
-    have h5: "dom (ety SG1) \<inter> dom (ety SG2) = {}" 
-      using h1 h2 h3a by (simp add: is_wf_sg_def ftotal_on_def)
-    show ?thesis
-      using h4 h5 by (simp add: EsTy_def cupSG_def map_add_dists_vimage)
+    show ?thesis 
+      using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
+      by (simp add: h4 restrict_dist_UG)
   qed
 
-lemma EsA_USG: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "EsA (SG1 USG SG2) = (EsA SG1 \<union> EsA SG2)"
-  using h1 h2 h3 by (simp add: EsA_def EsTy_USG)    
 
-lemma EsR_disj_dist: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "EsR (SG1 USG SG2) = (EsR SG1 \<union> EsR SG2)"
-  using h1 h2 h3 by (simp add: EsR_def EsTy_USG) 
-
-lemma NsP_disj_dist: "\<lbrakk>is_wf_sg SG1; is_wf_sg SG2; disjGs SG1 SG2\<rbrakk>
-  \<Longrightarrow>NsP (SG1 USG SG2) = NsP SG1 \<union> NsP SG2"
-  proof -
-    assume h1: "disjGs SG1 SG2"
-    have h1a: "Ns SG1 \<inter> Ns SG2 = {}"
-      using h1 by (simp add: disjGs_def)
-    assume h2: "is_wf_sg SG1"
-    have h2a: "ftotal_on (nty SG1) (Ns SG1) SGNTy_set"
-      using h2 by (simp add: is_wf_sg_def)
-    assume h3: "is_wf_sg SG2"
-    have h3a: "ftotal_on (nty SG2) (Ns SG2) SGNTy_set"
-      using h3 by (simp add: is_wf_sg_def)
-    have h4: "dom (nty SG1) \<inter> dom (nty SG2) = {}" 
-        using h1a h2a h3a by (simp add: ftotal_on_def)
-    have h5: "None \<notin>  {Some nprxy}" by simp
-    show "NsP (SG1 USG SG2) = NsP SG1 \<union> NsP SG2"
-      using h4 h5 by (simp add: NsP_def NsTy_def cupSG_def map_add_dists_vimage)
+lemma is_wf_g_Un2:
+  assumes "wf_g G1" and "wf_g G2" and "disjGs G1 G2"
+  shows "wf_g (G1 USG G2)"
+proof (simp add: wf_g_def cupSG_def)
+  apply_end (rule conjI)
+  show "Ns G1 \<subseteq> V_A" 
+    using assms(1) by (simp add: wf_g_def)
+next
+  apply_end (rule conjI)
+  show "Ns G2 \<subseteq> V_A" 
+    using assms(2) by (simp add: wf_g_def)
+next
+  apply_end (rule conjI)
+  show "Es G1 \<subseteq> E_A" 
+    using assms(1) by (simp add: wf_g_def)
+next
+  apply_end (rule conjI)
+  show "Es G2 \<subseteq> E_A" 
+    using assms(2) by (simp add: wf_g_def)
+next
+  apply_end (rule conjI)
+  show "ftotal_on (src G1 ++ src G2) (Es G1 \<union> Es G2) (Ns G1 \<union> Ns G2)"
+    using assms ftotal_on_src_G[of G1] ftotal_on_src_G[of G2]
+    disjGs_imp_disjEsGs[of G1 G2] 
+    by (simp add: disjEsGs_def ftotal_on_map_add)
+next
+  show "ftotal_on (tgt G1 ++ tgt G2) (Es G1 \<union> Es G2) (Ns G1 \<union> Ns G2)"
+  using assms ftotal_on_tgt_G[of G1] ftotal_on_tgt_G[of G2]
+    disjGs_imp_disjEsGs[of G1 G2] 
+  by (simp add: disjEsGs_def ftotal_on_map_add)
 qed
 
-lemma EsRP_Un_EsR_1: "\<lbrakk>disjGs SG1 SG2; is_wf_sg SG1; is_wf_sg SG2; 
+lemma EsTy_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "EsTy (SG1 USG SG2) ets = EsTy SG1 ets \<union> EsTy SG2 ets"
+  using assms disjGs_imp_disjEsGs[of SG1 SG2] 
+      wf_sg_ftotal_on_ety[of SG1] wf_sg_ftotal_on_ety[of SG2]
+      by (simp add: EsTy_def cupSG_def map_add_dists_vimage
+          disjEsGs_def ftotal_on_def)
+
+lemma NsTy_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "NsTy (SG1 USG SG2) ets = NsTy SG1 ets \<union> NsTy SG2 ets"
+  using assms  
+      wf_sg_ftotal_on_nty[of SG1] wf_sg_ftotal_on_nty[of SG2]
+      by (simp add: NsTy_def cupSG_def map_add_dists_vimage
+          disjGs_def ftotal_on_def)
+
+lemma EsA_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "EsA (SG1 USG SG2) = (EsA SG1 \<union> EsA SG2)"
+  using assms by (simp add: EsA_def EsTy_USG)    
+
+lemma EsI_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "EsI (SG1 USG SG2) = (EsI SG1 \<union> EsI SG2)"
+  using assms by (simp add: EsI_def EsTy_USG)
+
+lemma EsD_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "EsD (SG1 USG SG2) = (EsD SG1 \<union> EsD SG2)"
+  using assms by (simp add: EsD_def EsTy_USG)
+
+lemma EsW_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "EsW (SG1 USG SG2) = (EsW SG1 \<union> EsW SG2)"
+  using assms by (simp add: EsW_def EsTy_USG)
+
+lemma EsC_USG: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "EsC (SG1 USG SG2) = (EsC SG1 \<union> EsC SG2)"
+  using assms 
+  by (auto simp add: EsC_def EsA_USG EsW_USG EsD_USG)
+
+(*lemma EsR_disj_dist: 
+  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
+  shows "EsR (SG1 USG SG2) = (EsR SG1 \<union> EsR SG2)"
+  using h1 h2 h3 by (simp add: EsR_def EsTy_USG) *)
+
+lemma NsP_disj_dist: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "NsP (SG1 USG SG2) = NsP SG1 \<union> NsP SG2"
+  using assms by (simp add: NsP_def NsTy_USG)
+ 
+(*lemma EsRP_Un_EsR_1: "\<lbrakk>disjGs SG1 SG2; is_wf_sg SG1; is_wf_sg SG2; 
   x \<in> EsR SG1; x \<in> EsRP SG1 \<or> x \<in> EsRP SG2\<rbrakk>
   \<Longrightarrow>x \<in> EsRP SG1"
   proof -
@@ -1088,9 +1037,9 @@ proof -
           qed
         qed
    qed
-qed 
+qed *)
 
-lemma EsI_disj_dist: "\<lbrakk>is_wf_sg SG1; is_wf_sg SG2; disjGs SG1 SG2\<rbrakk>
+(*lemma EsI_disj_dist: "\<lbrakk>is_wf_sg SG1; is_wf_sg SG2; disjGs SG1 SG2\<rbrakk>
   \<Longrightarrow>EsI (SG1 USG SG2) = EsI SG1 \<union> EsI SG2"
 proof -
   assume h1: "disjGs SG1 SG2"
@@ -1108,9 +1057,9 @@ proof -
         using h1a h2a h3a by (simp add: ftotal_on_dom)
   show "EsI (SG1 USG SG2) = EsI SG1 \<union> EsI SG2"
   using h4 h5 by (simp add: EsI_def EsTy_def cupSG_def map_add_dists_vimage)
-qed
+qed*)
 
-lemma EsId_disj_dist: "\<lbrakk>is_wf_sg SG1; is_wf_sg SG2; disjGs SG1 SG2\<rbrakk>
+(*lemma EsId_disj_dist: "\<lbrakk>is_wf_sg SG1; is_wf_sg SG2; disjGs SG1 SG2\<rbrakk>
   \<Longrightarrow>EsId (SG1 USG SG2) = EsId SG1 \<union> EsId SG2"
   proof -
     assume h1: "disjGs SG1 SG2"
@@ -1210,366 +1159,347 @@ lemma EsId_disj_dist: "\<lbrakk>is_wf_sg SG1; is_wf_sg SG2; disjGs SG1 SG2\<rbra
       qed
     qed
   qed
-qed
+qed*)
 
 lemma restrict_cup_wf_1: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "restrict SG1 (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = restrict SG1 (EsI SG1 - EsId SG1)"
-  proof -
-    from h1 have h1a : "dom (src SG1) = Es SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1b : "dom (tgt SG1) = Es SG1"
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2a : "dom (src SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2b : "dom (tgt SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h3 have h3a: "Es SG1 \<inter> Es SG2 = {}" by (simp add: disjGs_def disjEsGs_def)
-    have h4: "src SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) 
-      = src SG1 |` (EsI SG1 - EsId SG1)"
-    proof
-      fix x
-      show "(src SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-        (src SG1 |` (EsI SG1 - EsId SG1)) x"
-      proof (case_tac "x \<in> Es SG1")
-        assume "x \<in> Es SG1"
-        then show "(src SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-          (src SG1 |` (EsI SG1 - EsId SG1)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-          by (auto simp add: restrict_map_def EsId_def split: if_splits 
-            intro: in_EsI_in_Es domI)
-      next
-        assume "x \<notin> Es SG1"
-        then show "(src SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-          (src SG1 |` (EsI SG1 - EsId SG1)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-          by (auto simp add: restrict_map_def EsId_def split: if_splits intro: in_EsI_in_Es domI)
-      qed
-    qed
-    have h5: "tgt SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = tgt SG1 |` (EsI SG1 - EsId SG1)"
-    proof
-      fix x
-      show "(tgt SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x = (tgt SG1 |` (EsI SG1 - EsId SG1)) x"
-      proof (case_tac "x \<in> Es SG1")
-        assume "x \<in> Es SG1"
-        then show "(tgt SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-          (tgt SG1 |` (EsI SG1 - EsId SG1)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-          by (auto simp add: restrict_map_def EsId_def split: if_splits 
-            intro: in_EsI_in_Es domI)
-        next
-          assume "x \<notin> Es SG1"
-          then show "(tgt SG1 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-            (tgt SG1 |` (EsI SG1 - EsId SG1)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-            by (auto simp add: restrict_map_def EsId_def split: if_splits 
-              intro: in_EsI_in_Es domI)
-        qed
-      qed
-    show ?thesis
-    proof (simp add: restrict_def, rule conjI)
-      show "rst_Ns SG1 (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = rst_Ns SG1 (EsI SG1 - EsId SG1)"
-      using h4 h5 by (simp add: rst_Ns_def)
-    next
-      apply_end(rule conjI)
-      show "Es SG1 \<inter> (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = Es SG1 \<inter> (EsI SG1 - EsId SG1)"
-      proof (rule ccontr)
-        assume h5: "\<not>(Es SG1 \<inter> (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = Es SG1 \<inter> (EsI SG1 - EsId SG1))"
-        from h1a h5 show "False"
-          using h2 h3a by (auto simp add: in_EsI_in_Es EsId_in_EsG)
-      qed
-      next
-      apply_end (rule conjI)
-       from h1a h2b h2 h3a 
-       show "rst_fun (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) (src SG1) = rst_fun (EsI SG1 - EsId SG1) (src SG1)"
-        by (auto simp add: rst_fun_eq in_EsI_in_Es EsId_in_EsG)
-      next
-      from h1a h1b h2 h3a 
-      show "rst_fun (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) (tgt SG1) = rst_fun (EsI SG1 - EsId SG1) (tgt SG1)"
-        by (auto simp add: rst_fun_eq in_EsI_in_Es EsId_in_EsG)
-    qed
-  qed
-
-lemma restrict_cup_wf_2: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "restrict SG2 (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = restrict SG2 (EsI SG2 - EsId SG2)"
-  proof -
-    from h1 have h1a: "dom (src SG1) = Es SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h1 have h1b: "dom (tgt SG1) = Es SG1" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2a: "dom (src SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h2 have h2b: "dom (tgt SG2) = Es SG2" 
-      by (simp add: is_wf_sg_def is_wf_g_def ftotal_on_def)
-    from h3 have h3a: "Es SG1 \<inter> Es SG2 = {}" 
-      by (simp add: disjGs_def disjEsGs_def)
-    have h4: "src SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) 
-      = src SG2 |` (EsI SG2 - EsId SG2)"
-    proof
-      fix x
-      show "(src SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-        (src SG2 |` (EsI SG2 - EsId SG2)) x"
-      proof (case_tac "x \<in> Es SG2")
-        assume "x \<in> Es SG2"
-        then show "(src SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-          (src SG2 |` (EsI SG2 - EsId SG2)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-          by (auto simp add: restrict_map_def split: if_splits 
-            intro: in_EsI_in_Es domI EsId_in_EsG)
-      next
-        assume "x \<notin> Es SG2"
-        then show "(src SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-          (src SG2 |` (EsI SG2 - EsId SG2)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-          by (auto simp add: restrict_map_def split: if_splits intro: in_EsI_in_Es domI)
-      qed
-    qed
-    have h5: "tgt SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = tgt SG2 |` (EsI SG2 - EsId SG2)"
-    proof
-      fix x
-      show "(tgt SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x = (tgt SG2 |` (EsI SG2 - EsId SG2)) x"
-      proof (case_tac "x \<in> Es SG2")
-        assume "x \<in> Es SG2"
-        then show "(tgt SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-          (tgt SG2 |` (EsI SG2 - EsId SG2)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-          by (auto simp add: restrict_map_def EsId_def split: if_splits 
-            intro: in_EsI_in_Es domI)
-        next
-          assume "x \<notin> Es SG2"
-          then show "(tgt SG2 |` (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2))) x =
-            (tgt SG2 |` (EsI SG2 - EsId SG2)) x"
-          using h1a h1b h2a h2b h3a h1 h2 
-            by (auto simp add: restrict_map_def EsId_def split: if_splits 
-              intro: in_EsI_in_Es domI)
-        qed
-      qed
-    show ?thesis
-    proof (simp add: restrict_def, rule conjI)
-      show "rst_Ns SG2 (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = rst_Ns SG2 (EsI SG2 - EsId SG2)"
-        using h4 h5 by (simp add: rst_Ns_def)
-    next
-      apply_end(rule conjI)
-      show "Es SG2 \<inter> (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = Es SG2 \<inter> (EsI SG2 - EsId SG2)"
-      proof (rule ccontr)
-        assume h6: "\<not>Es SG2 \<inter> (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) = Es SG2 \<inter> (EsI SG2 - EsId SG2)"
-        from h2a h6 show "False"
-          using h1 h2 h3a by (auto intro: in_EsI_in_Es EsId_in_EsG)
-      qed
-    next
-    apply_end (rule conjI)
-    from h3a h2a h1 h2
-    show "rst_fun (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) (src SG2) = rst_fun (EsI SG2 - EsId SG2) (src SG2)"
-      by (auto simp add: rst_fun_eq intro: in_EsI_in_Es EsId_in_EsG)    
-    next
-      from h3a h2b h1 h2
-      show "rst_fun (EsI SG1 \<union> EsI SG2 - (EsId SG1 \<union> EsId SG2)) (tgt SG2) = rst_fun (EsI SG2 - EsId SG2) (tgt SG2)"
-        by (auto simp add: rst_fun_eq intro: in_EsI_in_Es EsId_in_EsG)      
-    qed
-  qed
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "SG1 \<bowtie>\<^sub>E\<^sub>S (EsI SG1 \<union> EsI SG2) = SG1 \<bowtie>\<^sub>E\<^sub>S EsI SG1"
+proof -
+  have "EsI SG2 \<inter> Es SG1 = {}"
+    using assms(2) assms(3) EsI_sub_Es[of SG2]
+    by (auto simp add: disjGs_def disjEsGs_def)
+  then show ?thesis
+    using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
+    by (simp add: restrict_dist_cup_es)
+qed
 
 lemma disjGs_inhG:
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
   shows "disjGs (inhG SG1) (inhG SG2)"
-  proof -
-    from h1 have h1a: "is_wf_g SG1" 
-      by (simp add: is_wf_sg_def)
-    from h2 have h2a: "is_wf_g SG2" 
-      by (simp add: is_wf_sg_def)
-    from h3 have h3b: "Es SG1 \<inter> Es SG2 = {}"
-      by (simp add: disjGs_def)
-    show ?thesis
-    proof (simp add: disjGs_def, rule conjI)
-      show "rst_Ns SG1 (EsI SG1 - EsId SG1) \<inter> rst_Ns SG2 (EsI SG2 - EsId SG2) = {}"
-        using h1a h2a h3 by (simp add: rst_Ns_disj)
-    next
-      apply_end(rule conjI)
-      have h: "Ns SG1 \<inter> (Es SG1 \<inter> (EsI SG1 - EsId SG1)) = {}"
-        using disj_V_E h1a
-        by (auto simp add: is_wf_g_def)
-      show "rst_Ns SG1 (EsI SG1 - EsId SG1) \<inter> (Es SG1 \<inter> (EsI SG1 - EsId SG1)) = {}"
-        using h h1a rst_Ns_sub[of SG1 "(EsI SG1 - EsId SG1)"] 
-        by (auto)
-    next
-      apply_end(rule conjI)
-      have h: "Ns SG1 \<inter> (EsI SG1 - EsId SG1) \<inter> (Es SG2 \<inter> (EsI SG2 - EsId SG2)) = {}"
-        using disj_V_E h1a h2a h3b
-        by (auto simp add: is_wf_g_def intro: in_EsI_in_Es)
-      show "rst_Ns SG1 (EsI SG1 - EsId SG1) \<inter> (Es SG2 \<inter> (EsI SG2 - EsId SG2)) = {}"
-        using h h1a h3 rst_Ns_sub[of SG1 "(EsI SG1 - EsId SG1)"] 
-        by (auto simp add: disjGs_def)
-    next
-      apply_end(rule conjI)
-      have h: "Ns SG2 \<inter> (EsI SG2 - EsId SG2) \<inter> (Es SG1 \<inter> (EsI SG1 - EsId SG1)) = {}"
-        using disj_V_E h1a h2a h3b
-        by (auto simp add: is_wf_g_def intro: in_EsI_in_Es)
-      show "rst_Ns SG2 (EsI SG2 - EsId SG2) \<inter> (Es SG1 \<inter> (EsI SG1 - EsId SG1)) = {}"
-        using h h2a h3 rst_Ns_sub[of SG2 "(EsI SG2 - EsId SG2)"] 
-        by (auto simp add: disjGs_def)
-    next
-      apply_end(rule conjI)
-      have h: "Ns SG2 \<inter> (Es SG2 \<inter> (EsI SG2 - EsId SG2)) = {}"
-        using disj_V_E h1a h2a h3b
-        by (auto simp add: is_wf_g_def intro: in_EsI_in_Es)
-      show "rst_Ns SG2 (EsI SG2 - EsId SG2) \<inter> (Es SG2 \<inter> (EsI SG2 - EsId SG2)) = {}"
-        using h h2a h3 rst_Ns_sub[of SG2 "(EsI SG2 - EsId SG2)"] 
-        by (auto simp add: disjGs_def)
-    next
-      from h3b show "Es SG1 \<inter> (EsI SG1 - EsId SG1) \<inter> (Es SG2 \<inter> (EsI SG2 - EsId SG2)) = {}"
-        by auto
-    qed
-  qed
+proof (simp add: disjGs_def)
+  apply_end(rule conjI)
+  show "rst_Ns SG1 (EsI SG1) \<inter> rst_Ns SG2 (EsI SG2) = {}"
+    using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
+      ran_src_G[of SG1] ran_src_G[of SG2] 
+      ran_tgt_G[of SG1] ran_tgt_G[of SG2] 
+      ran_restrict_sub[of "src SG1" "EsI SG1"]
+      ran_restrict_sub[of "src SG2" "EsI SG2"]
+      ran_restrict_sub[of "tgt SG1" "EsI SG1"]
+      ran_restrict_sub[of "tgt SG2" "EsI SG2"]
+    unfolding rst_Ns_def disjGs_def by force
+next
+  apply_end(rule conjI)
+  show "rst_Ns SG1 (EsI SG1) \<inter> (Es SG1 \<inter> EsI SG1) = {}"
+    using assms(1) assms(3) disj_V_E wf_sg_wf_g[of SG1]
+      ran_restrict_sub[of "src SG1" "EsI SG1"]
+      ran_restrict_sub[of "tgt SG1" "EsI SG1"]
+    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+        ftotal_on_def)
+next
+  apply_end(rule conjI)
+  show "rst_Ns SG1 (EsI SG1) \<inter> (Es SG2 \<inter> EsI SG2) = {}"
+    using assms(1) assms(3) disj_V_E wf_sg_wf_g[of SG1]
+      ran_restrict_sub[of "src SG1" "EsI SG1"]
+      ran_restrict_sub[of "tgt SG1" "EsI SG1"]
+    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+        ftotal_on_def)
+next
+  apply_end(rule conjI)
+  show "rst_Ns SG2 (EsI SG2) \<inter> (Es SG1 \<inter> EsI SG1) = {}"
+    using assms(2) assms(3) disj_V_E wf_sg_wf_g[of SG2]
+      ran_restrict_sub[of "src SG2" "EsI SG2"]
+      ran_restrict_sub[of "tgt SG2" "EsI SG2"]
+    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+        ftotal_on_def)
+next
+  apply_end(rule conjI)
+  show "rst_Ns SG2 (EsI SG2) \<inter> (Es SG2 \<inter> EsI SG2) = {}"
+    using assms(2) assms(3) disj_V_E wf_sg_wf_g[of SG2]
+      ran_restrict_sub[of "src SG2" "EsI SG2"]
+      ran_restrict_sub[of "tgt SG2" "EsI SG2"]
+    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+        ftotal_on_def)
+next
+  show "Es SG1 \<inter> EsI SG1 \<inter> (Es SG2 \<inter> EsI SG2) = {}"
+    using assms EsI_sub_Es[of SG1] EsI_sub_Es[of SG2]
+    disjGs_imp_disjEsGs[of SG1 SG2]
+    by (auto simp add:  disjEsGs_def)
+qed
 
 lemma inh_disj_SGs_disj_fields: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
+  assumes "wf_sg SG1" and "wf_sg SG2" and h3: "disjGs SG1 SG2"
   shows "Field (inh SG1) \<inter> Field (inh SG2) = {}"
-  proof -
-    from h1 have h1a: "is_wf_g SG1" 
-      by (simp add: is_wf_sg_def)
-    from h1a have h1b: "is_wf_g (inhG SG1)" 
-      by (simp add: is_wf_g_inhG)
-    from h2 have h2a: "is_wf_g SG2" 
-      by (simp add: is_wf_sg_def)
-    from h2a have h2b: "is_wf_g (inhG SG2)" 
-      by (simp add: is_wf_g_inhG)
-      from h1 h2 h3 h1b h2b show ?thesis
-        using disjGs_inhG[of SG1 SG2]
-        by (simp add: inh_def relOfGr_disj_Gs)
-  qed
+  using assms disjGs_inhG[of SG1 SG2] wf_sg_wf_g[of SG1]
+        wf_sg_wf_g[of SG2] wf_g_inhG[of SG1] wf_g_inhG[of SG2] 
+        by (simp add: inh_def relG_disj_Gs)
+      thm restrict_cup_wf_1
 
-lemma inhG_Un_dist:
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
+lemma inhG_USG:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
   shows "inhG (SG1 USG SG2) = inhG (SG1) UG  inhG (SG2)"
-  proof -
-    from h3 have h3a: "disjEsGs SG1 SG2"
-      by (simp add: disjGs_def disjEsGs_def)
-    have h4: "restrict SG1 (EsI SG1 - EsId SG1) = inhG SG1"
-      by (auto simp add: inhG_def)
-    have h5: "restrict SG2 (EsI SG2 - EsId SG2) = inhG SG2"
-      by (auto simp add: inhG_def)
-    from assms h3a show ?thesis 
-      by (simp add: inhG_def restrict_dist_sgcup EsI_disj_dist EsId_disj_dist
-        restrict_cup_wf_1 restrict_cup_wf_2)
-  qed
+proof -
+  have h: "EsI SG1 \<union> EsI SG2 = EsI SG2 \<union> EsI SG1" by auto
+  show ?thesis
+  using assms disjGs_imp_disjEsGs[of SG1 SG2]
+    restrict_cup_wf_1[of SG2 SG1] restrict_cup_wf_1[of SG1 SG2]
+  by (simp add: inhG_def restrict_USG EsI_USG 
+      disjGs_sym h)
+qed
 
-lemma inhsg_Un_dist:
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
+lemma inh_USG:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
   shows "inh (SG1 USG SG2) = inh (SG1) \<union>  inh (SG2)"
-  proof -
-    from h1 have h1a: "is_wf_g (inhG SG1)" 
-      by (simp add: is_wf_g_inhG is_wf_sg_def)
-    from h2 have h2a: "is_wf_g (inhG SG2)" 
-      by (simp add: is_wf_g_inhG is_wf_sg_def)
-    from h3 have h3a: "disjEsGs SG1 SG2" by (simp add: disjGs_def disjEsGs_def)
-    have h4: "restrict SG1 (EsI SG1 - EsId SG1) = inhG SG1"
-      by (auto simp add: inhG_def)
-    have h5: "restrict SG2 (EsI SG2 - EsId SG2) = inhG SG2"
-      by (auto simp add: inhG_def)
-    have h6: "disjEsGs (inhG SG1)(inhG SG2)"
-      using assms disjGs_inhG[of SG1 SG2] by (simp add: disjGs_def disjEsGs_def)
-    from assms h3a h1a h2a h6 show ?thesis
-      by (simp add: inh_def restrict_dist_sgcup inhG_def EsI_disj_dist EsId_disj_dist 
-        restrict_cup_wf_1 restrict_cup_wf_2, (subst h4)+, (subst h5)+)
-        (simp add: relOfGr_UG)
-  qed
+proof -
+  have h1: "EsI SG1 \<union> EsI SG2 = EsI SG2 \<union> EsI SG1" by auto
+  have h2: "SG1 \<bowtie>\<^sub>E\<^sub>S EsI SG1 = inhG SG1" 
+    by (simp add: inhG_def)
+  have h3: "SG2 \<bowtie>\<^sub>E\<^sub>S EsI SG2 = inhG SG2" 
+    by (simp add: inhG_def)
+  show ?thesis
+  using assms disjGs_imp_disjEsGs[of SG1 SG2]
+      wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
+      disjGs_inhG[of SG1 SG2] wf_g_inhG[of SG1] wf_g_inhG[of SG2]
+      disjGs_imp_disjEsGs[of "inhG SG1" "inhG SG2"]
+      restrict_cup_wf_1[of SG2 SG1] restrict_cup_wf_1[of SG1 SG2]
+  by (simp add: inh_def inhG_def restrict_USG EsI_USG 
+      disjGs_sym h1, (subst h2)+, (subst h3)+)
+      (simp add: relG_UG)
+qed
 
-lemma acyclic_SGr_Un_dist: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "acyclicGr (inhG (SG1 USG SG2)) = (acyclicGr (inhG SG1) \<and> acyclicGr (inhG SG2))"
-  proof -
-    from h1 have h1a: "is_wf_g (inhG SG1)" 
-      by (simp add: is_wf_g_inhG is_wf_sg_def)
-    from h2 have h2a: "is_wf_g (inhG SG2)" 
-      by (simp add: is_wf_g_inhG is_wf_sg_def)
-    from h3 have h3a: "disjEsGs SG1 SG2" by (simp add: disjGs_def disjEsGs_def)
-    have h4: "disjGs (inhG SG1)(inhG SG2)"
-      using assms disjGs_inhG[of SG1 SG2] by (simp add: disjGs_def)
-    from assms h1a h2a h3a h4 show ?thesis
-      by (simp add: inhG_Un_dist acyclic_Gr_dist_disj)
-  qed
+lemma srcma_disj_SGs:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "dom(srcma SG1) \<inter> dom(srcma SG2) = {}"
+  using assms wf_sg_ftotal_on_srcma[of SG1]
+        wf_sg_ftotal_on_srcma[of SG2] 
+        disjGs_imp_disjEsGs[of SG1 SG2] EsC_sub_ES[of SG1]
+        EsC_sub_ES[of SG2]
+      by (simp add: ftotal_on_def disjEsGs_def, force)
+
+lemma dom_srcma_ecomp_uni_sub_dom_srcma:
+  shows "dom(srcma_ecomp_uni SG) \<subseteq> dom(srcma SG)"
+  by (simp add: srcma_def subsetI)
+
+lemma dom_srcma_erel_uni_sub_dom_srcma:
+  shows "dom(srcma_erel_uni SG) \<subseteq> dom(srcma SG)"
+  by (simp add: srcma_def subsetI)
+
+lemma srcma_ecomp_uni_USG_in_SG1:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+    and "e \<in> Es SG1"
+  shows "srcma_ecomp_uni (SG1 USG SG2) e = srcma_ecomp_uni SG1 e"
+  using assms EsTy_sub_Es[of SG1 "{ecomp duni}"]
+    EsTy_sub_Es[of SG2 "{ecomp duni}"]
+    disjGs_imp_disjEsGs[of "SG1" "SG2"]
+  by (auto simp add: srcma_ecomp_uni_def EsTy_USG disjEsGs_def)
+
+lemma srcma_ecomp_uni_USG_nin_SG1:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+    and "e \<notin> Es SG1"
+  shows "srcma_ecomp_uni (SG1 USG SG2) e = srcma_ecomp_uni SG2 e"
+  using assms EsTy_sub_Es[of SG1 "{ecomp duni}"]
+          EsTy_sub_Es[of SG2 "{ecomp duni}"]
+          disjGs_imp_disjEsGs[of "SG1" "SG2"]
+  by (auto simp add: srcma_ecomp_uni_def EsTy_USG disjEsGs_def)
   
-(*lemma acyclic_sg_dist:
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "acyclicGr (SG1 USG SG2) \<longleftrightarrow> acyclicGr SG1 \<and> acyclicGr SG2"
-  proof -
-    from h1 h2 h3 have h3a: "Field (inh SG1) \<inter> Field (inh SG2) = {}"
-      by (simp add: inh_disj_SGs_disj_fields)
-    from assms h3a show ?thesis
-      by (simp add: acyclic_Gr_dist_disj inhsg_Un_dist acyclic_disj_dist)
-  qed*)
-
-lemma is_wf_sg_Un: 
-  assumes h1: "is_wf_sg SG1" and h2: "is_wf_sg SG2" and h3: "disjGs SG1 SG2"
-  shows "is_wf_sg (SG1 USG SG2)"
-  proof -
-    from h1 have h1a: "is_wf_g SG1" by (simp add: is_wf_sg_def)
-    have h1d: "dom (srcm SG1) = EsTy SG1 {Some erelbi, Some ecompbi}"
-      using h1 by (simp add: is_wf_sg_def)
-    have h1e: "dom (tgtm SG1) = EsTy (SG1) {Some erelbi, Some ereluni, Some ecompbi, 
-    Some ecompuni}"
-      using h1 by (simp add: is_wf_sg_def)
-    from h1 have h1f: "EsR (SG1) \<subseteq> EsId (SG1)" by (simp add: is_wf_sg_def)
-    from h1 have h1g: "acyclicGr (inhG SG1)" by (simp add: is_wf_sg_def)
-    from h2 have h2a: "is_wf_g SG2" by (simp add: is_wf_sg_def)
-    from h2 have h2d: "dom (srcm SG2) = EsTy SG2 {Some erelbi, Some ecompbi}" 
-      by (simp add: is_wf_sg_def)
-    from h2 have h2e: "dom (tgtm SG2) = 
-      EsTy (SG2) {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}" 
-      by (simp add: is_wf_sg_def)
-    from h2 have h2f: "EsR (SG2) \<subseteq> EsId (SG2)" by (simp add: is_wf_sg_def)
-    from h2 have h2g: "acyclicGr (inhG SG2)" by (simp add: is_wf_sg_def)
-    from h3 have h3a: "Es SG1 \<inter> Es SG2 = {}" by (simp add: disjGs_def disjEsGs_def)
-    from h3 have h3b: "Ns SG1 \<inter> Ns SG2 = {}" by (simp add: disjGs_def)
-    have h4: "dom (ety SG1) \<inter> dom (ety SG2) = {}" 
-        using h1 h2 h3a by (simp add: is_wf_sg_def ftotal_on_def)
-    show ?thesis
-    proof (simp add: is_wf_sg_def, rule conjI)
-      show "is_wf_g (SG1 USG SG2)"
-        using h1a h2a h3 by (simp add: is_wf_g_Un2)
+lemma srcma_ecomp_uni_USG:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "srcma_ecomp_uni (SG1 USG SG2) = (srcma_ecomp_uni SG1) ++ (srcma_ecomp_uni SG2)"
+proof -
+  have h: "dom(srcma_ecomp_uni SG1) \<inter> dom(srcma_ecomp_uni SG2) = {}"
+    using assms dom_srcma_ecomp_uni_sub_dom_srcma[of SG1]
+      dom_srcma_ecomp_uni_sub_dom_srcma[of SG2]
+      srcma_disj_SGs[of SG1 SG2]
+    by (auto)
+  show ?thesis
+  proof
+    fix e
+    show "srcma_ecomp_uni (SG1 USG SG2) e =
+         (srcma_ecomp_uni SG1 ++ srcma_ecomp_uni SG2) e"
+    proof (case_tac "e \<in> Es SG1")
+      assume h1: "e \<in> Es SG1"
+      hence h2: "srcma_ecomp_uni (SG1 USG SG2) e = srcma_ecomp_uni SG1 e"
+        using assms by (simp add: srcma_ecomp_uni_USG_in_SG1)
+      have "e \<notin> dom(srcma_ecomp_uni SG2)"
+      proof (rule ccontr, simp)
+        assume "e \<in> dom (srcma_ecomp_uni SG2)"
+        then show "False" 
+          using EsC_sub_ES assms(2) assms(3) disjGs_imp_disjEsGs 
+              es_disj_Ga_Gb ftotal_on_dom h1 srcma_def 
+              wf_sg_ftotal_on_srcma by fastforce
+      qed
+      hence "(srcma_ecomp_uni SG1 ++ srcma_ecomp_uni SG2) e = srcma_ecomp_uni SG1 e"
+        using h map_add_disj_dom2f[where f = "srcma_ecomp_uni SG1"]
+        by simp
+      then show "srcma_ecomp_uni (SG1 USG SG2) e =
+        (srcma_ecomp_uni SG1 ++ srcma_ecomp_uni SG2) e"
+        using h2 by auto
     next
-      apply_end(rule conjI)
-      show "ftotal_on (nty (SG1 USG SG2)) (Ns (SG1 USG SG2)) SGNTy_set"
-        using h1 h2 h3b by (auto simp add: cupSG_def is_wf_sg_def ftotal_on_def)
-    next
-      apply_end(rule conjI)
-      show "ftotal_on (ety (SG1 USG SG2)) (Es (SG1 USG SG2)) SGETy_set"
-        using h1 h2 h3a by (auto simp add: cupSG_def ftotal_on_def is_wf_sg_def)
-    next
-      apply_end(rule conjI)
-      have ha: "None \<notin> {Some erelbi, Some ecompbi}" by (simp)
-      show "dom (srcm SG2) \<union> dom (srcm SG1) = EsTy (SG1 USG SG2) {Some erelbi, Some ecompbi}"
-        using h1d h2d h3a ha h4 by (auto simp add: cupSG_def EsTy_def map_add_dists_vimage)
-    next
-      apply_end(rule conjI)
-      have ha: "None \<notin> {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}" by (simp)
-      from h1e h2e h3a ha h4
-      show "dom (tgtm (SG1 USG SG2)) = 
-        EsTy (SG1 USG SG2) {Some erelbi, Some ereluni, Some ecompbi, Some ecompuni}"
-        by (auto simp add: cupSG_def EsTy_def map_add_dists_vimage)
-    next
-      apply_end(rule conjI)
-       have h6: "None \<notin> {Some eref}" by (simp)
-       show "EsR (SG1 USG SG2) \<subseteq> EsId (SG1 USG SG2)"
-        using h1 h2 h3 h1f h2f by (auto simp add: EsR_disj_dist EsId_disj_dist)
-    next 
-      apply_end(rule conjI)
-      from h3a have ha: "dom (srcm SG1) \<inter> dom (srcm SG2) = {}"
-        using h1 h2 by (auto simp add: is_wf_sg_def EsTy_def vimage_def 
-          ftotal_on_def intro!: domI)
-      have hb: "EsTy SG1 {Some ecompbi} \<subseteq> dom (srcm SG1)"
-        using h1 by (auto simp add: EsTy_def vimage_def is_wf_sg_def)
-      have hc: "EsTy SG2 {Some ecompbi} \<subseteq> dom (srcm SG2)"
-        using h2 by (auto simp add: EsTy_def vimage_def is_wf_sg_def)
-      show "srcm SG1 ++ srcm SG2 ` EsTy (SG1 USG SG2) {Some ecompbi}
-          \<subseteq> {Some (rm 0 (val (Suc 0))), Some (sm (val (Suc 0)))}"
-          using h1 h2 h3 ha hb hc 
-          by (simp add: EsTy_USG image_Un map_add_image_dist map_add_image_dist2 is_wf_sg_def)
-    next
-        from h1 h2 h3 h1g h2g show "acyclicGr (inhG (SG1 USG SG2))"
-          by (simp add: acyclic_SGr_Un_dist)
+      assume h1: "e \<notin> Es SG1"
+      hence h2: "srcma_ecomp_uni (SG1 USG SG2) e = srcma_ecomp_uni SG2 e"
+        using assms by (simp add: srcma_ecomp_uni_USG_nin_SG1)
+      have "e \<notin> dom(srcma_ecomp_uni SG1)"
+      proof (rule ccontr, simp)
+        assume "e \<in> dom (srcma_ecomp_uni SG1)"
+        then show "False" 
+          using EsC_sub_ES assms(1) assms(3) disjGs_imp_disjEsGs 
+              es_disj_Ga_Gb ftotal_on_dom h1 srcma_def 
+              wf_sg_ftotal_on_srcma by fastforce
+      qed
+      hence "(srcma_ecomp_uni SG1 ++ srcma_ecomp_uni SG2) e = srcma_ecomp_uni SG2 e"
+        using h map_add_disj_dom2f[where x = e and f = "srcma_ecomp_uni SG2" and g = "srcma_ecomp_uni SG1"]
+        map_add_comm[of "srcma_ecomp_uni SG1" "srcma_ecomp_uni SG2"]
+        by force
+      then show "srcma_ecomp_uni (SG1 USG SG2) e =
+        (srcma_ecomp_uni SG1 ++ srcma_ecomp_uni SG2) e"
+        using h2 by auto
     qed
   qed
+qed
+
+lemma srcma_erel_uni_USG_in_SG1:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+    and "e \<in> Es SG1"
+  shows "srcma_erel_uni (SG1 USG SG2) e = srcma_erel_uni SG1 e"
+  using assms EsTy_sub_Es[of SG1 "{erel duni}"]
+    EsTy_sub_Es[of SG2 "{erel duni}"]
+    disjGs_imp_disjEsGs[of "SG1" "SG2"]
+  by (auto simp add: srcma_erel_uni_def EsTy_USG disjEsGs_def)
+
+lemma srcma_erel_uni_USG_nin_SG1:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+    and "e \<notin> Es SG1"
+  shows "srcma_erel_uni (SG1 USG SG2) e = srcma_erel_uni SG2 e"
+  using assms EsTy_sub_Es[of SG1 "{erel duni}"]
+          EsTy_sub_Es[of SG2 "{erel duni}"]
+          disjGs_imp_disjEsGs[of "SG1" "SG2"]
+  by (auto simp add: srcma_erel_uni_def EsTy_USG disjEsGs_def)
+
+lemma srcma_erel_uni_USG:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "srcma_erel_uni (SG1 USG SG2) = (srcma_erel_uni SG1) ++ (srcma_erel_uni SG2)"
+proof -
+  have h: "dom(srcma_erel_uni SG1) \<inter> dom(srcma_erel_uni SG2) = {}"
+  using assms dom_srcma_erel_uni_sub_dom_srcma[of SG1]
+      dom_srcma_erel_uni_sub_dom_srcma[of SG2]
+      srcma_disj_SGs[of SG1 SG2]
+    by (auto)
+  show ?thesis
+  proof
+    fix e
+    show "srcma_erel_uni (SG1 USG SG2) e =
+         (srcma_erel_uni SG1 ++ srcma_erel_uni SG2) e"
+    proof (case_tac "e \<in> Es SG1")
+      assume h1: "e \<in> Es SG1"
+      hence h2: "srcma_erel_uni (SG1 USG SG2) e = srcma_erel_uni SG1 e"
+        using assms srcma_erel_uni_USG_in_SG1 by auto
+      have "e \<notin> dom(srcma_erel_uni SG2)"
+      proof (rule ccontr, simp)
+        assume "e \<in> dom (srcma_erel_uni SG2)"
+        then show "False" 
+          using EsC_sub_ES assms(2) assms(3) disjGs_imp_disjEsGs 
+              es_disj_Ga_Gb ftotal_on_dom h1 srcma_def 
+              wf_sg_ftotal_on_srcma by fastforce
+      qed
+      hence "(srcma_erel_uni SG1 ++ srcma_erel_uni SG2) e = srcma_erel_uni SG1 e"
+        using h map_add_disj_dom2f[where f = "srcma_erel_uni SG1"]
+        by simp
+      then show "srcma_erel_uni (SG1 USG SG2) e =
+        (srcma_erel_uni SG1 ++ srcma_erel_uni SG2) e"
+        using h2 by auto
+    next
+      assume h1: "e \<notin> Es SG1"
+      hence h2: "srcma_erel_uni (SG1 USG SG2) e = srcma_erel_uni SG2 e"
+        using assms srcma_erel_uni_USG_nin_SG1 by auto
+      have "e \<notin> dom(srcma_erel_uni SG1)"
+      proof (rule ccontr, simp)
+        assume "e \<in> dom (srcma_erel_uni SG1)"
+        then show "False" 
+          using EsC_sub_ES assms(1) assms(3) disjGs_imp_disjEsGs 
+              es_disj_Ga_Gb ftotal_on_dom h1 srcma_def 
+              wf_sg_ftotal_on_srcma by fastforce
+      qed
+      hence "(srcma_erel_uni SG1 ++ srcma_erel_uni SG2) e = srcma_erel_uni SG2 e"
+        using h map_add_disj_dom2f[where x = e and f = "srcma_erel_uni SG2" and g = "srcma_erel_uni SG1"]
+        map_add_comm[of "srcma_erel_uni SG1" "srcma_erel_uni SG2"]
+        by force
+      then show "srcma_erel_uni (SG1 USG SG2) e =
+        (srcma_erel_uni SG1 ++ srcma_erel_uni SG2) e"
+        using h2 by auto
+    qed
+  qed
+qed
+ 
+lemma srcma_USG:
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "srcma (SG1 USG SG2) = srcma (SG1) ++ srcma (SG2)"
+proof
+  fix e
+  show "srcma (SG1 USG SG2) e = (srcma (SG1) ++ srcma (SG2)) e"
+    by (smt (verit, ccfv_threshold) assms disjoint_iff domIff 
+        map_add_dom_app_simps(1) map_add_dom_app_simps(3) 
+        srcm_cupSG srcma_def srcma_disj_SGs 
+        srcma_ecomp_uni_USG srcma_erel_uni_USG)
+qed
+
+lemma acyclic_SGr_Un_dist: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "acyclicGr (inhG (SG1 USG SG2)) = (acyclicGr (inhG SG1) \<and> acyclicGr (inhG SG2))"
+  using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2] 
+    disjGs_imp_disjEsGs[of SG1 SG2]
+    wf_g_inhG[of SG1] wf_g_inhG[of SG2] 
+    disjGs_inhG[of SG1 SG2]
+  by (simp add: inhG_USG acyclic_Gr_dist_disj)
+
+lemma is_wf_sg_Un: 
+  assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
+  shows "wf_sg (SG1 USG SG2)"
+proof (simp add: wf_sg_def)
+  apply_end(rule conjI)
+  show "wf_g (SG1 USG SG2)"
+    using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]  
+    by (simp add: is_wf_g_Un2)
+next
+  apply_end(rule conjI)
+  show "ftotal_on (nty (SG1 USG SG2)) (Ns (SG1 USG SG2)) SGNT_set"
+    using assms wf_sg_ftotal_on_nty[of SG1] wf_sg_ftotal_on_nty[of SG2] 
+    ftotal_on_map_add[where f = "nty SG1" and g = "nty SG2" 
+      and A="Ns SG1" and C="Ns SG2" and B="SGNT_set" and D="SGNT_set"]
+    by (auto simp add: cupSG_def  disjGs_def)
+next
+  apply_end(rule conjI)
+  show "ftotal_on (ety (SG1 USG SG2)) (Es (SG1 USG SG2)) SGET_set"
+    using assms wf_sg_ftotal_on_ety[of SG1] wf_sg_ftotal_on_ety[of SG2] 
+    ftotal_on_map_add[where f = "ety SG1" and g = "ety SG2" 
+      and A="Es SG1" and C="Es SG2" and B="SGET_set" and D="SGET_set"] 
+    by (auto simp add: cupSG_def  disjGs_def)
+next
+  apply_end(rule conjI)
+  show "ftotal_on (srcma (SG1 USG SG2)) (EsC (SG1 USG SG2)) MultC_set"
+  using assms wf_sg_ftotal_on_srcma[of SG1] 
+        wf_sg_ftotal_on_srcma[of SG2] 
+         EsC_sub_ES[of SG1] EsC_sub_ES[of SG2] 
+         disjGs_imp_disjEsGs[of SG1 SG2]
+        ftotal_on_map_add[where f = "srcma SG1" and g = "srcma SG2" 
+      and A="EsC SG1" and C="EsC SG2" and B="MultC_set" and D="MultC_set"]
+  by (simp add: EsC_USG srcma_USG disjEsGs_def, force)
+next
+  apply_end(rule conjI)
+  show "ftotal_on (tgtm SG1 ++ tgtm SG2) (EsC (SG1 USG SG2)) MultC_set"
+  using assms wf_sg_ftotal_on_tgtm[of SG1] 
+        wf_sg_ftotal_on_tgtm[of SG2] 
+        EsC_sub_ES[of SG1] EsC_sub_ES[of SG2] 
+        disjGs_imp_disjEsGs[of SG1 SG2]
+        ftotal_on_map_add[where f = "tgtm SG1" and g = "tgtm SG2" 
+      and A="EsC SG1" and C="EsC SG2" and B="MultC_set" and D="MultC_set"]
+  by (simp add: EsC_USG disjEsGs_def, force)
+next
+  apply_end(rule conjI)
+  show "dom (db SG2) \<union> dom (db SG1) = EsD (SG1 USG SG2)"
+  using assms wf_sg_dom_db[of SG1] wf_sg_dom_db[of SG2] 
+  by (auto simp add:  EsD_USG)
+next
+  show "multsOk (SG1 USG SG2)"
+qed
         
 definition morphSGr :: "SGr \<Rightarrow> SGr \<Rightarrow> Morph set"
 where

@@ -1,0 +1,29 @@
+fragment F_PVM_2 {
+  SG SG_PVM_2 {
+    proxy PMotor
+    proxy PVehicle
+    node Car
+    node Motorbike
+    node Motortrike
+    node Bicycle
+    node Cart
+    proxy PTwoWheeler
+    proxy PThreeWheeler
+    proxy PFourWheeler
+    inh Car->PMotor
+    inh Motorbike->PMotor
+    inh Motortrike->PMotor
+    inh Bicycle->PVehicle
+    inh Cart->PVehicle
+    inh Cart->PFourWheeler
+    inh Bicycle->PTwoWheeler
+    inh Motorbike->PTwoWheeler
+    inh Car->PFourWheeler
+    inh Motortrike->PThreeWheeler
+  }
+  ref PMotor->Motor
+  ref PVehicle->Vehicle
+  ref PTwoWheeler->TwoWheeler
+  ref PThreeWheeler->ThreeWheeler
+  ref PFourWheeler->FourWheeler
+}

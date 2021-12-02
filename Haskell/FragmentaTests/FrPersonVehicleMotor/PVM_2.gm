@@ -1,0 +1,15 @@
+Morphism PVM_2 {
+	nodes {
+		 PVehicle->Vehicle
+		 PMotor->Vehicle
+		 Bicycle->Vehicle
+		 Cart->Vehicle
+		 Car->Vehicle
+		 Motorbike->Vehicle
+		 Motortrike->Vehicle
+		 PTwoWheeler->Manner
+		 PThreeWheeler->Manner
+		 PFourWheeler->Manner
+	}
+	edges {}
+}

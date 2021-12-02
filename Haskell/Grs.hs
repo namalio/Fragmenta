@@ -1,8 +1,10 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Grs (Gr, GrM, TK(..), MK(..), isKTotal, ns_g, es_g, src_g, tgt_g, cons_g, empty_g, cons_gm, empty_gm, fV, fE, restrict, restrictNs, 
-   adjacent, successors, predecessors, getAdjacent, relOfG, esIncident, acyclicG, disj_gs, union_g, union_gs, union_gm, gid, ogm,
-   union_gms, is_wf_gm_g, subsume_g, invertg) where
+module Grs (Gr, GrM, TK(..), MK(..), isKTotal, ns_g, es_g, src_g, tgt_g, cons_g, empty_g, cons_gm, empty_gm, fV, 
+   fE, restrict, restrictNs, subtractNs, adjacent, successors, predecessors, getAdjacent, relOfG, 
+   esIncident, esConnect, acyclicG, 
+   disj_gs, union_g, union_gs, union_gm, gid, ogm, union_gms, is_wf_gm_g, subsume_g, invertg) 
+where
 
 import Gr_Cls
 import Sets
@@ -51,6 +53,12 @@ check_wf_g id g = check_wf_of g id (is_wf_g) errors_wf_g
 -- Builds a new graph by restricting to a set of edges
 --rst_ns g le = no_dups $ union (ran_of (dres (src g)  le))  (ran_of (dres (tgt g)  le))
 
+-- Incident edges of a set of nodes
+esIncident g vs = img (inv $ src g) vs `union` img (inv $ tgt g) vs
+
+-- Connection edges of a set of nodes
+esConnect g vs = img (inv $ src g) vs `intersec` img (inv $ tgt g) vs
+
 -- Restricts a graph to given edges
 restrict g le = 
    let es' = (es g) `intersec` le in
@@ -61,9 +69,17 @@ restrict g le =
 -- Restricts a graph to given nodes
 restrictNs g vs = 
    let ns' = (ns g) `intersec` vs in
-   let es' = foldr (\e es->if [appl (src g) e, appl (tgt g) e] `subseteq` ns' then e:es else es) [] (es g) in
+   let es' = esConnect g vs in
    let s = dres (src g) es' in
    let t = dres (tgt g) es' in
+   cons_g ns' es' s t
+
+-- Subtracts nodes from a graph 
+subtractNs g vs = 
+   let ns' = (ns g) `diff` vs in
+   let es' = (es g) `diff` esIncident g vs in
+   let s = dsub (src g) (esIncident g vs) in
+   let t = dsub (tgt g) (esIncident g vs) in
    cons_g ns' es' s t
 
 -- Replaces nodes in a graph according to a substitution mapping
@@ -96,8 +112,6 @@ invertg g = cons_g (ns g) (es g) (tgt g) (src g)
 -- gets adjacency relation induced by graph
 relOfG g = foldr (\e r-> (appl (src g) e, appl (tgt g) e):r) [] (es g)
 
--- All incident edges of a set of nodes
-esIncident g vs = img (inv $ src g) vs `union` img (inv $ tgt g) vs
 
 -- checks whether a graph is acyclic
 acyclicG::(Eq a, GR g) => g a->Bool

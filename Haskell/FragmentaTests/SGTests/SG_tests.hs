@@ -1,8 +1,8 @@
 ------------------
 -- Project: PCs/Fragmenta
--- Module: 'Sg_ty_tests'
--- Description: Test which focus on SGs and SG refinement, following many examples 
---    given in the SGs section of the PCs paper
+-- Module: 'Sg_tests'
+-- Description: Test which focus on SGs, following many examples 
+--    given in the SGs section of the Fragmenta paper
 -- Author: Nuno Amálio
 --------------------
 import SGrs
@@ -17,8 +17,8 @@ import Mult
 import SimpleFuns
 import Utils
 
-def_path = "Tests/SGTests/"
-img_path = "Tests/SGTests/img/"
+def_path = "FragmentaTests/SGTests/"
+img_path = "FragmentaTests/SGTests/img/"
 
 
 -- Example used in the PCs paper with morphisms m_1..m7, just checks that the SG morphisms are valid

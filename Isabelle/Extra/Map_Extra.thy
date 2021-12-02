@@ -1,10 +1,15 @@
 theory Map_Extra
-imports Main List_Extra
+imports Main List_Extra "../Extra/Set_Extra"
 begin
 
-thm map_add_subsumed2
+lemma map_comp_assoc: "(f \<circ>\<^sub>m g)\<circ>\<^sub>m h = f \<circ>\<^sub>m (g\<circ>\<^sub>m h)"
+proof
+  fix x
+  show " (f \<circ>\<^sub>m g \<circ>\<^sub>m h) x = (f \<circ>\<^sub>m (g \<circ>\<^sub>m h)) x"
+    by (auto simp add: map_comp_def option.case_eq_if)
+qed
 
-(*Converts a partial function (a Isabelle map) to a relation*)
+(*Goes from a partial function (a Isabelle map) to a relation*)
 definition pfunToRel:: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<times>'b) set"
 where
   "pfunToRel f \<equiv> {(x, y). f x = Some y}"
@@ -43,20 +48,38 @@ by (auto simp add: mid_on_def map_add_def split: option.splits)
 lemma mid_on_comp_f:"(mid_on (ran f))\<circ>\<^sub>m f = f"
   by (auto simp add: mid_on_def map_comp_def ran_def split: option.splits) 
 
-lemma mid_on_comp_A_in_ran:
+lemma mid_on_comp_idemp1:
   assumes "ran f \<subseteq> A"
   shows "(mid_on A)\<circ>\<^sub>m f = f"
 proof
   fix x
   show "(mid_on A \<circ>\<^sub>m f) x = f x"
   using assms 
-  by (auto simp add: mid_on_def map_comp_def ran_def split: option.splits)
+  by (auto simp add: mid_on_def map_comp_def ran_def 
+      split: option.splits)
 qed
 
-  
-lemma f_comp_mid_on:"f \<circ>\<^sub>m (mid_on (dom f))  = f"
-  by (auto simp add: mid_on_def map_comp_def dom_def split: option.splits) 
+lemma mid_on_comp_idemp2:
+  assumes "dom f \<subseteq> A"
+  shows "f \<circ>\<^sub>m (mid_on A)= f"
+proof
+  fix x
+  show "(f \<circ>\<^sub>m mid_on A) x = f x"
+  proof (cases "x \<in> A")
+    assume "x \<in> A"
+    then show "(f \<circ>\<^sub>m mid_on A) x = f x" 
+      using assms by (simp add: mid_on_def map_comp_def )
+  next
+    assume "x \<notin> A"
+    hence "x\<notin> dom f" using assms by auto
+    then show "(f \<circ>\<^sub>m mid_on A) x = f x" 
+    by (auto simp add: mid_on_def map_comp_def)
+  qed
+qed
 
+lemma f_comp_mid_on:"f \<circ>\<^sub>m (mid_on (dom f))  = f"
+  by (auto simp add: mid_on_def map_comp_def dom_def 
+      split: option.splits) 
 
 definition mtotalise_in::"('a \<rightharpoonup> 'a) \<Rightarrow> 'a set\<Rightarrow>('a \<rightharpoonup> 'a)"
   where
@@ -86,6 +109,12 @@ definition ftotal_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow>
 where
   "ftotal_on f A B \<equiv> dom f = A \<and> ran f \<subseteq> B"
 
+lemma ftotal_on_empty[simp]: "ftotal_on Map.empty {} {}"
+  by (auto simp add: ftotal_on_def)
+
+lemma ftotal_on_mid[simp]: "ftotal_on (mid_on A) A A"
+  by (auto simp add: ftotal_on_def)
+
 lemma ftotal_on_dom: "ftotal_on f A B \<Longrightarrow> dom f = A"
   by (auto simp add: ftotal_on_def)
 
@@ -94,6 +123,21 @@ lemma ftotal_on_ran: "ftotal_on f A B \<Longrightarrow> ran f \<subseteq> B"
 
 lemma app_ftotal: "ftotal_on f A B \<Longrightarrow> x \<in> A \<Longrightarrow> \<exists> y. f x = Some y"
   by (auto simp add: ftotal_on_def dom_def)
+
+lemma ftotal_on_map_add: 
+  assumes "ftotal_on f A B" and  "ftotal_on g C D"
+    and "A \<inter> C = {}"
+  shows "ftotal_on (f++g) (A \<union> C) (B \<union> D)"
+  using assms 
+  by (auto simp add: ftotal_on_def ran_map_add)
+
+lemma ftotal_on_mcomp: 
+  assumes "ftotal_on f A B" and "ftotal_on g B C"  
+  shows "ftotal_on (g \<circ>\<^sub>m f) A C"
+  using assms
+  by (auto simp add: map_comp_def ftotal_on_def dom_def ran_def
+      split: option.splits) 
+
 
 definition fpartial_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
 where
@@ -104,6 +148,35 @@ lemma fpartial_on_map_add:
   shows  "fpartial_on (f++g) (A \<union> C) (B \<union> D)"
   using assms 
   by (auto simp add: fpartial_on_def map_add_def dom_def ran_def split: option.splits)
+
+definition mrres::"('a\<rightharpoonup>'b)\<Rightarrow> 'b set \<Rightarrow> ('a\<rightharpoonup>'b)" (infixl "\<rhd>\<^sub>m" 100)
+where
+  "f \<rhd>\<^sub>m B = (\<lambda>x. if (f x) \<in> Some `B then f x else None)" 
+
+lemma mrres_empty[simp]: "f \<rhd>\<^sub>m {} = Map.empty"
+  by (simp add: mrres_def)
+
+lemma mrres_emptyf[simp]: "Map.empty \<rhd>\<^sub>m A = Map.empty"
+  by (simp add: mrres_def)
+
+lemma mrres_ran_sub1: "ran(f \<rhd>\<^sub>m A) \<subseteq> A"
+  by (auto simp add: mrres_def ran_def)
+
+lemma mrres_ran_sub2: 
+  assumes "(ran f) \<subseteq> B"
+  shows "ran(f \<rhd>\<^sub>m A) \<subseteq> B"
+  using assms
+  by (auto simp add: mrres_def ran_def)
+
+definition mdsub::"'a set \<Rightarrow> ('a\<rightharpoonup>'b)\<Rightarrow>('a\<rightharpoonup>'b)" (infixl "\<unlhd>\<^sub>m" 100)
+  where
+  "A \<unlhd>\<^sub>m f = (\<lambda>x. if x \<in> A then None  else f x)" 
+
+lemma mdsub_empty[simp]: " {} \<unlhd>\<^sub>m f = f"
+  by (simp add: mdsub_def)
+
+lemma mdsub_emptyf[simp]: "A \<unlhd>\<^sub>m Map.empty  = Map.empty"
+  by (simp add: mdsub_def)
 
 (*definition set_to_ls :: "'a set \<Rightarrow>'a list"
 where
@@ -129,14 +202,14 @@ lemma map_add_disj_domf:
       by (auto simp add: map_add_def split: option.splits)
   qed
 
-(*lemma map_add_disj_domg: 
-  assumes "x \<in> dom g"
-  shows "(f++g)x = g x"
-  proof -
+lemma map_add_disj_dom2f: 
+  assumes h1: "dom f \<inter> dom g = {}"
+  shows "x \<notin> dom g \<longrightarrow> (f++g)x = f x"
+  proof
     fix x
-    from assms show ?thesis
+    from assms show "x \<notin> dom g \<Longrightarrow> (f ++ g) x = f x"
       by (auto simp add: map_add_def split: option.splits)
-  qed*)
+  qed
 
 lemma map_add_app_disj: 
   assumes h1: "dom f \<inter> dom g = {}"
@@ -163,17 +236,56 @@ lemma map_add_app_disj:
     qed
   qed
 
-lemma map_add_restrict_dist: "(f++g)|`A = f|`A ++ g|`A"
-  proof
-    fix x
-    show "((f ++ g) |` A) x = (f |` A ++ g |` A) x"
-      by (simp add: restrict_map_def map_add_def)
+lemma map_add_comp_disj_1:
+  shows "(f ++ g \<circ>\<^sub>m h) = (f \<circ>\<^sub>m h)++ (g \<circ>\<^sub>m h)"
+  by (auto simp add: map_add_def map_comp_def option.case_eq_if)
+
+lemma dom_map_comp_dom_eq_ran:
+  assumes "dom f = ran h" 
+  shows "dom (f \<circ>\<^sub>m h) = dom h"
+  using assms 
+  by (auto simp add: map_comp_def dom_def ran_def split: option.splits)
+
+lemma map_add_comp_disj:
+  assumes "dom f \<inter> dom g = {}" and "dom h \<inter> dom k = {}" 
+    and "ran h \<subseteq> dom f" and  "ran k \<subseteq> dom g"
+  shows "(f ++ g) \<circ>\<^sub>m (h ++ k) = (f \<circ>\<^sub>m h)++(g \<circ>\<^sub>m k)"
+proof
+  fix x
+  show "(f ++ g \<circ>\<^sub>m h ++ k) x = ((f \<circ>\<^sub>m h) ++ (g \<circ>\<^sub>m k)) x"
+  proof (case_tac "x \<in> dom h")
+    assume h: "x \<in> dom h"
+    hence "x \<in> dom (f \<circ>\<^sub>m h)"
+      using assms(3) ranI by fastforce     
+    hence "(f ++ g \<circ>\<^sub>m h ++ k) x = (f \<circ>\<^sub>m h) x"
+      by (metis assms(1) assms(2) h map_add_comm map_add_comp_disj_1 map_add_dom_app_simps(1) map_comp_def)
+    then show "(f ++ g \<circ>\<^sub>m h ++ k) x = ((f \<circ>\<^sub>m h) ++ (g \<circ>\<^sub>m k)) x"
+      by (metis assms(2) disjoint_iff domIff h map_add_dom_app_simps(3) map_comp_simps(1))
+  next
+    assume h: "x \<notin> dom h" 
+    then show "(f ++ g \<circ>\<^sub>m h ++ k) x = ((f \<circ>\<^sub>m h) ++ (g \<circ>\<^sub>m k)) x"
+      by (smt (verit, ccfv_threshold) assms(4) domIff map_add_None 
+          map_add_comp_disj_1 map_add_dom_app_simps(1) 
+          map_comp_None_iff map_comp_def ranI subset_eq)
   qed
+qed
+
+
+lemma ftotal_on_munion: 
+  assumes "ftotal_on f A B" and "ftotal_on g C D"
+    and "disjoint [A, B, C, D]"
+  shows "ftotal_on (f ++ g) (A \<union> C) (B \<union> D)"
+  using assms
+    by (simp add: ftotal_on_def ran_map_add)(blast)
+
+lemma map_add_restrict_dist: "(f++g)|`A = f|`A ++ g|`A"
+  by (auto simp add: restrict_map_def map_add_def)
 
 lemma map_add_image_dist: 
-  assumes h1: "A \<subseteq> dom f" and h2: "dom f \<inter> dom g = {}"
+  assumes "A \<subseteq> dom f" and "dom f \<inter> dom g = {}"
   shows "(f++g)`A = f`A"
-  using h1 h2 by (auto simp add: image_def map_add_def split: option.splits)
+  using assms 
+  by (auto simp add: image_def map_add_def split: option.splits)
 
 lemma map_add_image_dist2: 
   assumes h1: "A \<subseteq> dom g" and h2: "dom f \<inter> dom g = {}"
@@ -202,32 +314,6 @@ proof
       by (auto simp add: map_add_def image_def split: option.splits)
 qed*)
 
-lemma ran_map_add_dist[simp]:
-  assumes "dom f \<inter> dom g = {}"
-  shows "ran (f++g) = ran f \<union> ran g"
-  proof
-    show "ran (f++g) \<subseteq> ran f \<union> ran g"
-      by (auto simp add: map_add_def ran_def split: option.split)
-  next
-    show "ran f \<union> ran g \<subseteq> ran (f ++ g)"
-    proof
-      fix x
-      assume h2: "x \<in> ran f \<union> ran g"
-      have h2a: "x \<in> ran f \<or> x \<in> ran g" using h2 by (simp)
-      show "x \<in> ran (f ++ g)"
-      proof (case_tac "x \<in> ran f")
-        assume h3: "x \<in> ran f"
-        from assms show "x \<in> ran (f ++ g)" 
-          using h3 by (auto simp add: ran_def dom_def map_add_def split: option.split)
-      next
-        assume h3: "x \<notin> ran f"
-        have h3a: "x \<in> ran g" using h3 h2a by (simp) 
-        from assms show "x \<in> ran (f ++ g)" 
-          using h3 h3a by (auto simp add: ran_def dom_def map_add_def split: option.split)
-     qed
-  qed
-qed
-
 lemma ran_map_add_sub:
   shows "ran (f++g) \<subseteq> ran f \<union> ran g"
   proof
@@ -246,20 +332,9 @@ lemma ran_map_add_disj_ran_g: "ran f \<inter> ran g = {} \<Longrightarrow> y \<i
    by (auto simp add: map_add_def dom_def ran_def split: option.splits)
 
 lemma ran_restrict_sub: "ran (f |`A) \<subseteq> ran f"
-  proof
-    fix x
-    assume h1: "x \<in> ran (f |` A)"
-    then show "x \<in> ran f" by (auto simp add: restrict_map_def ran_def split: if_splits)
-  qed
+  by (auto simp add: restrict_map_def ran_def split: if_splits)
 
-lemma ran_restrict_in: 
-  assumes "x \<in> ran (f |`A)"
-  shows "x \<in> ran f"
-  proof -
-    from assms show ?thesis
-      using ran_restrict_sub[where f="f" and A="A"]
-      by (auto)
-  qed
+
 
 lemma vimage_in_dom:
   assumes h1: "None \<notin> B" and "dom f = A"
@@ -317,31 +392,16 @@ lemma map_add_dists_vimage: "\<lbrakk>None \<notin> A; dom f \<inter> dom g = {}
  qed
 qed
 
-lemma disj_fun_vimage_Un:
-  assumes h1: "B \<inter> dom f = {}" and h2: "A \<subseteq> dom f"
+lemma retrict_Un:
+  assumes "B \<inter> dom f = {}" 
   shows "f|`(A\<union>B) = f |`A"
-  proof -
-    show ?thesis
-    proof
-      fix x
-      show "(f |` (A \<union> B)) x = (f |` A) x"
-      proof (case_tac "x \<in> A")
-        assume h3: "x \<in> A"
-        show "(f |` (A \<union> B)) x = (f |` A) x"
-        proof (case_tac "x \<in> B")
-          assume h4: "x \<in> B"
-          from h1 h2 h3 h4 show "(f |` (A \<union> B)) x = (f |` A) x"
-          by (auto simp add: restrict_map_def)
-        next
-          assume h4: "\<not> x \<in> B"
-          from h1 h2 h3 h4 show "(f |` (A \<union> B)) x = (f |` A) x"
-          by (auto simp add: restrict_map_def)
-        qed
-      next
-        assume h3: "\<not> x \<in> A"
-        from h1 h2 h3 show "(f |` (A \<union> B)) x = (f |` A) x"
-        by (auto simp add: restrict_map_def)
-      qed
+proof -
+  show ?thesis
+  proof
+    fix x
+    show "(f |` (A \<union> B)) x = (f |` A) x"
+      using assms
+      by (auto simp add: restrict_map_def)
   qed
 qed
 

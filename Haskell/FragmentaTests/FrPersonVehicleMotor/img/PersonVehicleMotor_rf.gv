@@ -1,0 +1,44 @@
+digraph {graph[label=PersonVehicleMotor_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_PersonVehicleMotor_rf{style=dashed;label=PersonVehicleMotor_rf;
+"PlateNo"[shape=record,fillcolor=lightskyblue1,style = filled,label="PlateNo"];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Customer"[shape=record,fillcolor=lightskyblue1,style = filled,label="Customer"];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Person</I><br/>(A)}>];
+"Cart"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cart"];
+"Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
+"Motorbike"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorbike"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Motortrike"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motortrike"];
+"Wheeled"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Wheeled</I><br/>(V)}>];
+"Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
+"Motor"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Motor</I><br/>(A)}>];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
+"TwoWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TwoWheeler</I><br/>(V)}>];
+"ThreeWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>ThreeWheeler</I><br/>(V)}>];
+"FourWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>FourWheeler</I><br/>(V)}>];
+
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"Motor"->"PlateNo"[label="Motor_plateNo▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Customer"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Motor"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Motor"[arrowhead=onormal,arrowsize=2.0];
+"Motorbike"->"Motor"[arrowhead=onormal,arrowsize=2.0];
+"Motortrike"->"Motor"[arrowhead=onormal,arrowsize=2.0];
+"Bicycle"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Cart"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Cart"->"FourWheeler"[arrowhead=onormal,arrowsize=2.0];
+"Bicycle"->"TwoWheeler"[arrowhead=onormal,arrowsize=2.0];
+"Motorbike"->"TwoWheeler"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"FourWheeler"[arrowhead=onormal,arrowsize=2.0];
+"Motortrike"->"ThreeWheeler"[arrowhead=onormal,arrowsize=2.0];
+"TwoWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
+"ThreeWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
+"FourWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
+"Wheeled"->"Wheel"[label="HasWheels▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"TwoWheeler"->"Wheel"[label="HWs_1:HasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2:HasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"FourWheeler"->"Wheel"[label="HWs_3:HasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+
+}
+}

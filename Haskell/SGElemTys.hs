@@ -42,7 +42,9 @@ ety_eq (Ecomp _) (Ecomp _) = True
 ety_eq ety1 ety2         = ety1 == ety2
 
 -- Relation used for refinement: wander edges are refined by any non-inheritance edges
-ety_leq et1 Ewander  = et1 /= Einh
+ety_leq Einh _ = False
+ety_leq _ Einh = False
+ety_leq et1 Ewander  = True
 ety_leq Eder et2     = et2 `elem` [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
 ety_leq et1 et2      = et1 `ety_eq` et2
 

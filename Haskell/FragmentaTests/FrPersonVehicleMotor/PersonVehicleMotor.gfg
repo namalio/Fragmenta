@@ -1,0 +1,7 @@
+GFG PersonVehicleMotor {
+  fragment PVM_1
+  fragment PVM_2
+  fragment PVM_3
+  PVM_2 references PVM_1
+  PVM_2 references PVM_3
+}

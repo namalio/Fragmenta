@@ -1,0 +1,29 @@
+Morphism M_PVI_To_PVA {
+	nodes {
+		 Person->Person
+	   Vehicle->Vehicle
+		 PVehicle->Vehicle
+		 Motor->Vehicle
+		 Bicycle->Vehicle
+		 Cart->Vehicle
+		 Car->Vehicle
+		 Motorbike->Vehicle
+		 Motortrike->Vehicle
+		 Wheeled->Vehicle
+		 TwoWheeler->Vehicle
+		 ThreeWheeler->Vehicle
+		 FourWheeler->Vehicle
+		 PlateNo->Any
+		 Employee->Person
+		 Customer->Person
+		 Wheel->Any
+	}
+	edges {
+		Owns->Owns
+	  Motor_plateNo->MannerRel
+		HasWheels->MannerRel
+		HWs_1->MannerRel
+		HWs_2->MannerRel
+		HWs_3->MannerRel
+	}
+}

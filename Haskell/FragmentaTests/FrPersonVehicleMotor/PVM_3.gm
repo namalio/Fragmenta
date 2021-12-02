@@ -1,0 +1,15 @@
+Morphism PVM_3 {
+	nodes {
+		 Wheeled->Manner
+		 TwoWheeler->Manner
+		 ThreeWheeler->Manner
+		 FourWheeler->Manner
+		 Wheel->Any
+	}
+	edges {
+		HasWheels->MannerRel
+		HWs_1->MannerRel
+		HWs_2->MannerRel
+		HWs_3->MannerRel
+	}
+}

@@ -27,14 +27,16 @@ g2 =
 saveDrawings = do
     (nm1, g1) <-load_g_def def_path "G_A_B.g"
     (nm2, g2) <-load_g_def def_path "G_C_D.g"
+    (nm3, g3) <-load_g_def def_path "G_chain_4.g"
     draw_to_file img_path nm1 (wrapG g1)
     draw_to_file img_path nm2 (wrapG g2)
-    let g3 = g1 `union_g` g2
-    draw_to_file img_path "G_A_B_C_D" (wrapG g3)
-    let g4 = subsume_g g3 [("C", "A")]
-    draw_to_file img_path "G_A_B_C_1" (wrapG g4)
-    let g5 = invertg g4
-    draw_to_file img_path "G_A_B_C_2" (wrapG g5)
+    draw_to_file img_path nm3 (wrapG g3)
+    let g4 = g1 `union_g` g2
+    draw_to_file img_path "G_A_B_C_D" (wrapG g4)
+    let g5 = subsume_g g3 [("C", "A")]
+    draw_to_file img_path "G_A_B_C_1" (wrapG g5)
+    let g6 = invertg g5
+    draw_to_file img_path "G_A_B_C_2" (wrapG g6)
 
 
 --confirms that 'g_1' and 'g_2' are malformed
@@ -42,6 +44,15 @@ test_gerrs = do
     check_report_wf "G1" Nothing g1 False
     check_report_wf "G2" Nothing g2 False
 
+do_test_1 = do
+    (nm1, g1) <-load_g_def def_path "G_chain_4.g"
+    check_report_wf nm1 Nothing g1 True
+    putStrLn $ "Incident edges of 'V3': " ++ (show $ esIncident g1 ["V3"])
+    putStrLn $ "Incident edges of 'V2': " ++ (show $ esIncident g1 ["V2"])
+    putStrLn $ "Connection edges of 'V3': " ++ (show $ esConnect g1 ["V3"])
+    putStrLn $ "Connection edges of 'V2': " ++ (show $ esConnect g1 ["V2"])
+    putStrLn $ "Connection edges of '{V2, V3}': " ++ (show $ esConnect g1 ["V2", "V3"])
+    putStrLn $ "Subtracting 'V3': " ++  (show $ subtractNs g1 ["V3"])
 
 -- Examples of the PCs paper
 --confirms that 'G_A_B_C' is well-formed and does stuff with these graphs

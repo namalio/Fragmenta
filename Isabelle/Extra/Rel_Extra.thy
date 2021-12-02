@@ -2,6 +2,52 @@ theory Rel_Extra
 imports Main
 begin
 
+definition rel_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
+where
+  "rel_on r A B \<equiv> Domain r \<subseteq> A \<and> Range r \<subseteq> B"
+
+definition rel_total_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
+where
+  "rel_total_on r A B \<equiv> Domain r = A \<and> Range r \<subseteq> B"
+
+abbreviation "functional \<equiv> single_valued"
+
+definition fun_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
+where
+  "fun_on f A B \<equiv> rel_total_on f A B \<and> functional f"
+
+definition pfun_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
+where
+  "pfun_on f A B \<equiv> rel_on f A B \<and> functional f"
+
+definition injective::"('a \<times> 'b) set \<Rightarrow> bool"
+  where
+  "injective r \<equiv> functional (r\<inverse>)"
+
+lemma rel_comp_inj_eq_id: 
+  assumes "injective r"
+  shows "r O (r\<inverse>) = Id_on (Domain r)"
+  using assms 
+  by (auto simp add: relcomp_def Id_on_def injective_def
+      single_valued_def)
+
+definition surj_on::"('a \<times> 'b) set \<Rightarrow> 'b set \<Rightarrow>bool"
+  where
+  "surj_on r B \<equiv> Range r = B"
+
+definition pinj_on::"('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow>bool"
+  where 
+  "pinj_on f A B \<equiv> pfun_on f A B \<and> injective f"
+
+definition injf_on::"('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow>bool"
+  where 
+  "injf_on f A B \<equiv> rel_total_on f A B \<and> functional f \<and> injective f"
+
+
+definition bij_on::"('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow>bool"
+  where
+  "bij_on r A B \<equiv> rel_total_on r A B \<and> functional r \<and> injective r \<and> surj_on r B"
+
 lemma single_valued_Un: "single_valued (r \<union> s) \<Longrightarrow> single_valued r \<and> single_valued s"
   by (auto simp add: single_valued_def)
 
@@ -18,6 +64,10 @@ lemma single_valued_dist_Un:
     then show "single_valued (r \<union> s)"
       using h1 by (auto simp add: single_valued_def)
   qed
+
+definition tree::"('a \<times> 'a) set \<Rightarrow>bool"
+  where
+  "tree r \<equiv> acyclic r \<and> functional r"
 
 (* Domain restriction *)
 definition dres :: "'a set \<Rightarrow> ('a \<times> 'b) set \<Rightarrow> ('a \<times> 'b) set" (infixl "\<lhd>" 100)
@@ -42,6 +92,9 @@ where
   "r\<rhd> B \<equiv> {(x, y). (x, y) \<in> r \<and> y \<in> B}"
 
 lemma rres_empty[simp]: "r\<rhd>{} = {}"
+  by (simp add: rres_def)
+
+lemma rres_emptyr[simp]: "{}\<rhd>B = {}"
   by (simp add: rres_def)
 
 (* Domain subtraction *)
@@ -161,9 +214,6 @@ lemma in_r_in_override:
 using assms 
 by (auto simp add: rel_override_def Domain_iff dsub_def dres_def)
 
-definition rel_total_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
-where
-  "rel_total_on r A B \<equiv> Domain r = A \<and> Range r \<subseteq> B"
 
 lemma in_to_image: "((x, y) \<in> r) = (y \<in> r``{x})"
   proof

@@ -1,0 +1,15 @@
+fragment F_PVM_1 {
+  SG SG_PVM_1 {
+    nodea Person
+    nodea Vehicle
+    nodea Motor
+    node Employee
+    node Customer
+    node PlateNo
+    rel Person->Vehicle[Owns]:1,*
+    relu Motor->PlateNo[Motor_plateNo]
+    inh Employee->Person
+    inh Customer->Person
+    inh Motor->Vehicle
+  }
+}

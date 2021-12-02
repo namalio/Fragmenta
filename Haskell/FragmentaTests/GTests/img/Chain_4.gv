@@ -1,4 +1,4 @@
-digraph {graph[label=G_A_B_C_1,labelloc=tl,labelfontsize=12];
+digraph {graph[label=Chain_4,labelloc=tl,labelfontsize=12];
 "V1"[shape=box,fillcolor=lightskyblue1,style = filled,label="V1"];
 "V2"[shape=box,fillcolor=lightskyblue1,style = filled,label="V2"];
 "V3"[shape=box,fillcolor=lightskyblue1,style = filled,label="V3"];

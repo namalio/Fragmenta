@@ -1,6 +1,7 @@
-module Relations (dom_of, ran_of, img, inv, dres, rres, dsub, rsub, override, id_on, rcomp, bcomp, functional, total, fun_total, 
-    fun_total_seq, pfun, fun_total', fun_pinj, fun_inj, fun_bij, inj_surj_fun, injective, relation, cl_override, mktotal_in, 
-    appl, find_monces, acyclic, trancl, rtrancl_on, antireflexive, cross, flatten) where
+module Relations (dom_of, ran_of, img, inv, dres, rres, dsub, rsub, override, id_on, rcomp, bcomp, functional, 
+    total, fun_total, fun_total_seq, pfun, fun_total', fun_pinj, fun_inj, fun_bij, inj_surj_fun, injective, 
+    relation, cl_override, mktotal_in, appl, find_monces, acyclic, trancl, rtrancl_on, antireflexive, cross, 
+    flatten, tree) where
 
 import SimpleFuns
 import Sets
@@ -85,11 +86,13 @@ fun_bij r xs ys = fun_total r xs ys && injective r && surjective r ys
 -- Checks that a relation is anti-reflexive
 antireflexive r = all (\(x,y)-> x /= y) r
 
+
 -- transitive closure
 trancl r = let r' = r `union` (r `rcomp` r) in if r' == r then r else trancl r'
 rtrancl r = (trancl r) `union` (id_on ((dom_of r) `union` (ran_of r)))
 rtrancl_on r es= (trancl r) `union` (id_on es)
 
+-- Checks whether a relation forms a tree
 tree r = acyclic r && functional r
 
 -- An equivalence relation over r

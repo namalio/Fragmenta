@@ -1,0 +1,18 @@
+digraph {graph[label=PVM_3,labelloc=tl,labelfontsize=12];
+subgraph cluster_PVM_3{style=dashed;label=PVM_3;
+"Wheeled"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Wheeled</I><br/>(V)}>];
+"TwoWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TwoWheeler</I><br/>(V)}>];
+"ThreeWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>ThreeWheeler</I><br/>(V)}>];
+"FourWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>FourWheeler</I><br/>(V)}>];
+"Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
+
+"TwoWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
+"ThreeWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
+"FourWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
+"Wheeled"->"Wheel"[label="HasWheels▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"TwoWheeler"->"Wheel"[label="HWs_1:HasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2:HasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"FourWheeler"->"Wheel"[label="HWs_3:HasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+
+}
+}

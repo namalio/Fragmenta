@@ -1,0 +1,44 @@
+fragment F_Person_Vehicle_Motor {
+  SG SG_Person_Vehicle_Motor {
+    nodea Person
+    nodea Vehicle
+    nodea Motor
+    proxy PVehicle
+    node Car
+    node Motorbike
+    node Motortrike
+    node Bicycle
+    node Cart
+    node Employee
+    node Customer
+    node PlateNo
+    virtual Wheeled
+    virtual TwoWheeler
+    virtual ThreeWheeler
+    virtual FourWheeler
+    node Wheel
+    rel Person->Vehicle[Owns]:1,*
+    inh Employee->Person
+    inh Customer->Person
+    inh Motor->PVehicle
+    inh Car->Motor
+    inh Motorbike->Motor
+    inh Motortrike->Motor
+    inh Bicycle->Vehicle
+    inh Cart->Vehicle
+    inh TwoWheeler->Wheeled
+    inh ThreeWheeler->Wheeled
+    inh FourWheeler->Wheeled
+    inh Cart->FourWheeler
+    inh Bicycle->TwoWheeler
+    inh Motorbike->TwoWheeler
+    inh Car->FourWheeler
+    inh Motortrike->ThreeWheeler
+    relu Motor->PlateNo[Motor_plateNo]
+    compu Wheeled->Wheel[HasWheels]:1..*
+    derived TwoWheeler->Wheel[HWs_1:HasWheels]:0..1,2
+    derived ThreeWheeler->Wheel[HWs_2:HasWheels]:0..1,3
+    derived FourWheeler->Wheel[HWs_3:HasWheels]:0..1,4
+  }
+  ref PVehicle->Vehicle
+}

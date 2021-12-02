@@ -1,0 +1,8 @@
+digraph {graph[label=PersonVehicleMotor_gfg,labelloc=tl,labelfontsize=12];
+"PVM_1"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="PVM_1"];
+"PVM_2"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="PVM_2"];
+"PVM_3"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="PVM_3"];
+
+"PVM_2"->"PVM_1"[label=" ",arrowhead=veevee];
+"PVM_2"->"PVM_3"[label=" ",arrowhead=veevee];
+}

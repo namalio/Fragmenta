@@ -66,6 +66,9 @@ nsP = (flip nsTys) [Nprxy]
 -- Gets optional nodes
 nsO = (flip nsTys) [Nopt]
 
+-- Gets virtual nodes
+nsV = (flip nsTys) [Nvirt]
+
 -- Gets ethereal nodes
 nsEther = (flip nsTys) [Nabst, Nvirt, Nenum]
 
@@ -107,6 +110,25 @@ inhst sg = rtrancl_on (inh sg) (ns sg)
 -- totalises 'srcm' by providing multiplicities of uni-directional composition and relation edges
 srcma sg = (srcm sg) `override` ((esTys sg [Ecomp Duni] `cross` [msole_k 1]) `override` (esTys sg [Erel Duni] `cross` [msole_many]))
 
+-- src relation which takes wander edges into account
+srcr::Eq a=>SGr a->[(a, a)]
+srcr sg = src sg `union` (dres (tgt sg) (esW sg))
+
+-- tgt relation which takes wander edges into account
+tgtr::Eq a=>SGr a->[(a, a)]
+tgtr sg = tgt sg `union` (dres (src sg) (esW sg))
+
+-- src* relations: base and final definitions
+srcst_0 sg = dres (srcr sg) (esC sg) 
+srcst sg = (srcst_0 sg) `rcomp` (inv . inhst $ sg)
+
+-- tgt* relations: base and final definitions
+tgtst_0 sg = dres (tgtr sg) (esC sg)
+tgtst sg = (tgtst_0 sg) `rcomp` (inv $ inhst sg)
+
+-- Incident edges to a set of nodes, which takes inheritance into account
+esIncidentst sg vs = img (inv $ srcst sg) vs `union` img (inv $ tgtst sg) vs
+
 -- Checks whether edges comply with their type multiplicity allowances
 edge_mult_ok::Eq a =>SGr a->a->Bool
 edge_mult_ok sg e = (appl (ety sg) e) `allowedm` (appl (srcma sg) e, appl (tgtm sg) e)
@@ -114,23 +136,30 @@ edge_mult_ok sg e = (appl (ety sg) e) `allowedm` (appl (srcma sg) e, appl (tgtm 
 mult_etys_ok::Eq a =>SGr a->Bool
 mult_etys_ok sg = all (\e->edge_mult_ok sg e) (esC sg)
 
--- Checks whether inheritance relations between nodes comply with the inheritance restrictions of their types
+-- Inheritance relation between pair of nodes complies with the inheritance restrictions of their types
 inh_nty_ok sg (v, v') = (appl(nty sg) v) < (appl(nty sg) v')
-inh_ntys_ok::Eq a =>SGr a->Bool
 inh_ntys_ok sg = all (inh_nty_ok sg) (inh sg)
 
--- Checks whether
+-- Whether an inheritance hierarchy of a SG is scylic
+acyclicI::Eq a =>SGr a->Bool
+acyclicI = acyclicG . inhG
+
+-- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
+isInhTree sg = tree . relOfG $ subtractNs (inhG sg) (nsV sg)
+
+-- Checks whether the inheritance hierarchy complies with required restrictions
+inh_ok::Eq a =>SGr a->Bool
+inh_ok sg = inh_ntys_ok sg && (acyclicI sg) && (isInhTree sg)
+
+-- Checks whether an optional node is involved in non-compulsory relations
 nodeopt_ok::Eq a =>SGr a->a->Bool
-nodeopt_ok sg n = img (ety sg) (esIncident (g_sg sg) [n]) `subseteq` [Ewander]
+nodeopt_ok sg n = img (ety sg) ((esIncidentst sg [n]) `diff` (esI sg))  `subseteq` [Ewander]
 
 optsVoluntary::Eq a =>SGr a->Bool
 optsVoluntary sg = all (\n->nodeopt_ok sg n) $ nsO sg
 
 -- Function that checks that a list of multiplicies are well-formed
 mults_wf = all multwf
-
-acyclicI::Eq a =>SGr a->Bool
-acyclicI = acyclicG . inhG
 
 -- Checks whether a SG is well-forfEd either totally or partially
 is_wf_sg::Eq a =>SGr a->Bool
@@ -140,7 +169,8 @@ is_wf_sg sg = is_wf Nothing (g_sg sg)
    && mults_wf (ran_of $ srcm sg) && mults_wf (ran_of $ tgtm sg) 
    && fun_total' (srcma sg) (esC sg) && fun_total' (tgtm sg) (esC sg)
    && mult_etys_ok sg && optsVoluntary sg 
-   && inh_ntys_ok sg && acyclicI sg
+   && inh_ok sg 
+   -- && acyclicI sg
 
 -- Ethereal nodes must be inherited
 etherealInherited::Eq a =>SGr a->Bool
@@ -165,9 +195,12 @@ check_optsVoluntary sg =
    if optsVoluntary sg then nile else cons_se $ "The following optional nodes are engaged in compulsory relations:" ++ (showElems' err_opts)
    where err_opts = foldr (\n ns-> if nodeopt_ok sg n then ns else n:ns) [] (nsO sg)
 
-check_inh_ntys_ok::(Eq a, Show a) =>SGr a->ErrorTree
-check_inh_ntys_ok sg = 
-   if inh_ntys_ok sg then nile else cons_se $ "The following inheritance relations are not compliant with the node type restrictions:" ++ (showElems' err_inh_pairs)
+check_inh_ok::(Eq a, Show a) =>SGr a->ErrorTree
+check_inh_ok sg = 
+   let errs1 = if inh_ntys_ok sg then nile else cons_se $ "The following inheritance pairs are not compliant with the node type restrictions:" ++ (showElems' err_inh_pairs) in
+   let errs2 = if acyclicI sg then nile else cons_se "The inheritance hierarchy has cycles." in
+   let errs3 = if isInhTree sg then nile else cons_se "The inheritance hierarchy without virtual nodes is not a tree." in
+   if inh_ok sg then nile else cons_et "Errors in the inheritance hierarchy." [errs1, errs2, errs3]
    where err_inh_pairs = filter (not . (inh_nty_ok sg)) (inh sg)
 
 -- Handles errors related to multiplicity 
@@ -195,9 +228,8 @@ errors_sg sg =
    let err7 = err_prepend "Target multplicity function is not total. " $ check_fun_total' (tgtm sg) (esC sg) in
    let err8 = check_mult_etys_ok sg in
    let err9 = check_optsVoluntary sg in
-   let err10 = check_inh_ntys_ok sg in
-   let err11 = if acyclicI sg then nile else cons_se "The inheritance hierarchy has cycles." in
-   [err1, err2, err3, err4, err5, err6, err7, err8, err9, err10, err11]
+   let err10 = check_inh_ok sg in
+   [err1, err2, err3, err4, err5, err6, err7, err8, err9, err10]
 
 check_wf_sg::(Eq a, Show a)=>String->SGr a-> ErrorTree
 check_wf_sg nm sg = check_wf_of sg nm is_wf_sg errors_sg
@@ -230,22 +262,6 @@ check_wf_sg' id _            = check_wf_sg id
 instance G_WF_CHK SGr where
    is_wf = is_wf_sg'
    check_wf = check_wf_sg'
-
--- src relation which takes wander edges into account
-srcr::Eq a=>SGr a->[(a, a)]
-srcr sg = src sg `union` (dres (tgt sg) (esW sg))
-
--- tgt relation which takes wander edges into account
-tgtr::Eq a=>SGr a->[(a, a)]
-tgtr sg = tgt sg `union` (dres (src sg) (esW sg))
-
--- src* relations: base and final definitions
-srcst_0 sg = dres (srcr sg) (esC sg) 
-srcst sg = (srcst_0 sg) `rcomp` (inv . inhst $ sg)
-
--- tgt* relations: base and final definitions
-tgtst_0 sg = dres (tgtr sg) (esC sg)
-tgtst sg = (tgtst_0 sg) `rcomp` (inv $ inhst sg)
 
 -- Checs whether SGs are disjoint
 disj_sgs sgs = disj_gs (map g_sg sgs) 
