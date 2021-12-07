@@ -155,10 +155,7 @@ lemma in_trancl_in_Domain:
 lemma in_trancl_in_Range: 
   assumes "(x, y) \<in> r\<^sup>+"
   shows "y \<in> Range r"
-  proof -
-    from assms show ?thesis 
-    by (induct) auto
-  qed
+  using assms by (induct) auto
 
 lemma trcl_parts_in_whole: "(r\<^sup>+ \<union> s\<^sup>+) \<subseteq> (r \<union> s)\<^sup>+"
   proof (rule subrelI)
@@ -169,7 +166,7 @@ lemma trcl_parts_in_whole: "(r\<^sup>+ \<union> s\<^sup>+) \<subseteq> (r \<unio
   qed
   
 lemma trancl_disj_dist_Un: 
-  assumes h1: "Field r \<inter> Field s = {}"
+  assumes "Field r \<inter> Field s = {}"
   shows "(r \<union> s)\<^sup>+ = r\<^sup>+ \<union> s\<^sup>+"
   proof
     show "(r \<union> s)\<^sup>+ \<subseteq> r\<^sup>+ \<union> s\<^sup>+"
@@ -191,9 +188,9 @@ lemma trancl_disj_dist_Un:
         show "(x, z) \<in> r\<^sup>+ \<union> s\<^sup>+" 
         proof (case_tac "{x, y} \<subseteq> Field r")
           assume h5: "{x, y} \<subseteq> Field r"
-          have h6: "(y, z) \<in> r" using h3 h1 h5 by (auto simp add: Field_def)
+          have h6: "(y, z) \<in> r" using h3 assms h5 by (auto simp add: Field_def)
           have h7: "(x, y) \<in> r\<^sup>+" 
-            using h4 h1 h5 in_trancl_in_field[where r="s" and x="x" and y="y"] 
+            using h4 assms h5 in_trancl_in_field[where r="s" and x="x" and y="y"] 
             by (simp) (erule disjE, auto)
           show "(x, z) \<in> r\<^sup>+ \<union> s\<^sup>+" 
             using h6 h7 h4 by (auto)
@@ -202,9 +199,9 @@ lemma trancl_disj_dist_Un:
           show "(x, z) \<in> r\<^sup>+ \<union> s\<^sup>+" 
           proof (case_tac "{x, y} \<subseteq> Field s")
             assume h6: "{x, y} \<subseteq> Field s" 
-            have h7: "(y, z) \<in> s" using h3 h1 h6 by (auto simp add: Field_def)
+            have h7: "(y, z) \<in> s" using h3 assms h6 by (auto simp add: Field_def)
             have h8: "(x, y) \<in> s\<^sup>+" 
-            using h4 h1 h6 in_trancl_in_field[where r="r" and x="x" and y="y"] 
+            using h4 assms h6 in_trancl_in_field[where r="r" and x="x" and y="y"] 
               by (simp) (erule disjE, auto)
             show "(x, z) \<in> r\<^sup>+ \<union> s\<^sup>+" 
               using h7 h8 h4 by (simp) (rule disjI2, auto)
@@ -214,7 +211,7 @@ lemma trancl_disj_dist_Un:
             proof (rule ccontr)
               assume h7: "(x, z) \<notin> r\<^sup>+ \<union> s\<^sup>+"
               have h8: "x \<in> Field (r \<union> s)" 
-                using h1 h2 in_trancl_in_field[where r="r \<union> s"] by (simp)
+                using assms h2 in_trancl_in_field[where r="r \<union> s"] by (simp)
               then show "False"
                 using h5 h6 h7 h3 h4 h8 
                   in_trancl_in_field[where r="r" and x="x" and y="y"] 
@@ -230,9 +227,10 @@ lemma trancl_disj_dist_Un:
 qed
 
 lemma rtrancl_disj_dist_Un: 
-  assumes h1: "Field r \<inter> Field s = {}"
+  assumes "Field r \<inter> Field s = {}"
   shows "(r \<union> s)\<^sup>* = r\<^sup>* \<union> s\<^sup>*"
-    using h1 by (auto simp add: rtrancl_eq_or_trancl trancl_disj_dist_Un)
+  using assms 
+  by (auto simp add: rtrancl_eq_or_trancl trancl_disj_dist_Un)
 
 lemma trancl_disj_dist_Un_2: 
   assumes h1: "Domain r \<inter> Domain s = {}" and h2: "Range s  \<inter> Domain r = {}"
@@ -694,9 +692,20 @@ lemma single_valued_rel_trcl_eq:
     qed
   qed
 
-(*lemma in_Domain_r_in_trcl:
-  assumes "x \<in> Domain r"
-  shows "\<exists> y. (x, y) \<in> r\<^sup>+ \<and> y \<notin> Domain (r\<^sup>+)"*)
+lemma in_rtrcl_in_Range_if_neq:
+  assumes "(x, y) \<in> r\<^sup>*" and "x \<noteq> y"
+  shows "y \<in> Range r"
+  using assms by (auto simp add: Range_iff elim: rtranclE)
+
+lemma in_rtrcl_in_Domain_if_neq:
+  assumes "(x, y) \<in> r\<^sup>*" and "x \<noteq> y"
+  shows "x \<in> Domain r"
+proof (rule ccontr)
+  assume "x \<notin> Domain r"
+  hence "x = y" 
+    using assms(1) by (simp add: Not_Domain_rtrancl)
+  then show "False" using assms(2) by auto
+qed    
   
 
 end

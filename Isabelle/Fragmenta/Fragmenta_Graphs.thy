@@ -184,18 +184,8 @@ proof
   qed
 next
   show "G1\<^sup>\<Leftrightarrow> \<union> G2\<^sup>\<Leftrightarrow> \<subseteq> (G1 UG G2)\<^sup>\<Leftrightarrow>"
-  proof (rule subrelI)
-    fix x y
-    assume "(x, y) \<in> G1\<^sup>\<Leftrightarrow> \<union> G2\<^sup>\<Leftrightarrow>"
-    then show "(x, y) \<in> G1\<^sup>\<Leftrightarrow> \<union> G2\<^sup>\<Leftrightarrow> \<Longrightarrow> (x, y) \<in> (G1 UG G2)\<^sup>\<Leftrightarrow>"
-    proof 
-       show "(x, y) \<in> G1\<^sup>\<Leftrightarrow> \<Longrightarrow> (x, y) \<in> (G1 UG G2)\<^sup>\<Leftrightarrow>" 
-       using assms by (simp add: relG_def adj_G_is_adj_U1)
-   next
-       show "(x, y) \<in> G2\<^sup>\<Leftrightarrow> \<Longrightarrow> (x, y) \<in> (G1 UG G2)\<^sup>\<Leftrightarrow>" 
-       using assms by (simp add: relG_def adj_G_is_adj_U2)
-     qed
-   qed
+    using assms 
+    by (auto simp add: relG_def adj_G_is_adj_U1 adj_G_is_adj_U2)
 qed
 
 lemma relG_disj_Gs: 
@@ -351,6 +341,11 @@ next
   qed
 qed     
 
+lemma esIncident_ns_disj:
+  assumes "wf_g G" and "vs \<inter> Ns G = {}"
+  shows "G \<circ>\<rightarrow>\<circ> vs = {}"
+  using assms ran_src_G[of G] ran_tgt_G[of G]
+  by (auto simp add: esIncident_def ran_def)
 (*lemma esIncident_eq_src_rres:
   assumes "wf_g G" and "ns \<subseteq> Ns G"
   shows "dom (src G \<rhd>\<^sub>m ns) = G \<bullet>\<rightarrow>\<bullet> ns"
@@ -1037,6 +1032,109 @@ next
        by (auto simp add:  mdsub_def ran_def esIncident_def image_def)
    qed
  qed
+
+lemma subtract_Ns_UG:
+   assumes "wf_g G1" and "wf_g G2" and "disjEsGs G1 G2"
+   shows "(G1 UG G2) \<ominus>\<^sub>N\<^sub>S ns = (G1 \<ominus>\<^sub>N\<^sub>S ns) UG (G2 \<ominus>\<^sub>N\<^sub>S ns)"
+proof -
+  have h1: "G2 \<circ>\<rightarrow>\<circ> ns \<inter> Es G1 = {}"
+    using assms esIncident_sub_EsG[of G2 ns]
+    esIncident_sub_EsG[of G1 ns] 
+    by (auto simp add: disjEsGs_def)
+  have h2: "G1 \<circ>\<rightarrow>\<circ> ns \<inter> Es G2 = {}"
+    using assms esIncident_sub_EsG[of G2 ns]
+    esIncident_sub_EsG[of G1 ns] 
+    by (auto simp add: disjEsGs_def)
+  have h3: "G2 \<circ>\<rightarrow>\<circ> ns \<union> G1 \<circ>\<rightarrow>\<circ> ns = G1 \<circ>\<rightarrow>\<circ> ns \<union> G2 \<circ>\<rightarrow>\<circ> ns"
+    by auto
+  show ?thesis
+  proof (simp add: Gr_eq)
+    apply_end (rule conjI)
+    show "Ns G1 \<union> Ns G2 - ns = Ns G1 - ns \<union> (Ns G2 - ns)"
+      by auto
+  next
+    apply_end (rule conjI)
+    show "Es G1 \<union> Es G2 - (G1 UG G2 \<circ>\<rightarrow>\<circ> ns) =
+      Es G1 - (G1 \<circ>\<rightarrow>\<circ> ns) \<union> (Es G2 - (G2 \<circ>\<rightarrow>\<circ> ns))" 
+      using assms disjGs_imp_disjEsGs[of G1 G2]
+        esIncident_sub_EsG[of G1 ns] esIncident_sub_EsG[of G2 ns]
+      by (auto simp add: esIncident_dist_Un set_eq_iff disjEsGs_def)
+  next
+    apply_end (rule conjI)
+    show "G1 UG G2 \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m (src G1 ++ src G2) =
+      G1 \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m src G1 ++ (G2 \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m src G2)"
+      using assms disjGs_imp_disjEsGs[of G1 G2]
+        esIncident_sub_EsG[of G1 ns] esIncident_sub_EsG[of G2 ns]
+        dom_src_G[of G1] dom_src_G[of G2]
+        mdsub_map_add_absorb_1[of "G2 \<circ>\<rightarrow>\<circ> ns" "src G1" "G1 \<circ>\<rightarrow>\<circ> ns"]
+        mdsub_map_add_absorb_1[of "G1 \<circ>\<rightarrow>\<circ> ns" "src G2" "G2 \<circ>\<rightarrow>\<circ> ns"]
+      by (auto simp add: mdsub_map_add esIncident_dist_Un
+          h1 h2 h3)
+  next
+    show "G1 UG G2 \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m (tgt G1 ++ tgt G2) =
+      G1 \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m tgt G1 ++ (G2 \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m tgt G2)"
+      using assms disjGs_imp_disjEsGs[of G1 G2]
+        esIncident_sub_EsG[of G1 ns] esIncident_sub_EsG[of G2 ns]
+        dom_tgt_G[of G1] dom_tgt_G[of G2]
+        mdsub_map_add_absorb_1[of "G2 \<circ>\<rightarrow>\<circ> ns" "tgt G1" "G1 \<circ>\<rightarrow>\<circ> ns"]
+        mdsub_map_add_absorb_1[of "G1 \<circ>\<rightarrow>\<circ> ns" "tgt G2" "G2 \<circ>\<rightarrow>\<circ> ns"]
+      by (auto simp add: mdsub_map_add esIncident_dist_Un
+          h1 h2 h3)
+  qed
+qed
+
+lemma subtract_Ns_Un:
+  assumes "wf_g G" 
+  shows "G \<ominus>\<^sub>N\<^sub>S (ns1 \<union> ns2) = (G \<ominus>\<^sub>N\<^sub>S ns1) \<ominus>\<^sub>N\<^sub>S ns2"
+proof (simp add: Gr_eq)
+  apply_end (rule conjI)
+  show "Ns G - (ns1 \<union> ns2) = Ns G - ns1 - ns2" 
+    by auto
+next
+  apply_end (rule conjI)
+  show "Es G - G \<circ>\<rightarrow>\<circ> (ns1 \<union> ns2) =
+    Es G - G \<circ>\<rightarrow>\<circ> ns1 - G \<ominus>\<^sub>N\<^sub>S ns1 \<circ>\<rightarrow>\<circ> ns2"
+    using assms 
+    by (auto simp add: esIncident_def mdsub_def image_def)
+next
+  apply_end (rule conjI)
+  show "G \<circ>\<rightarrow>\<circ> (ns1 \<union> ns2) \<unlhd>\<^sub>m src G =
+    G \<ominus>\<^sub>N\<^sub>S ns1 \<circ>\<rightarrow>\<circ> ns2 \<unlhd>\<^sub>m (G \<circ>\<rightarrow>\<circ> ns1 \<unlhd>\<^sub>m src G)"
+  by (auto simp add: mdsub_def esIncident_def image_def fun_eq_iff)
+next
+  show "G \<circ>\<rightarrow>\<circ> (ns1 \<union> ns2) \<unlhd>\<^sub>m tgt G =
+    G \<ominus>\<^sub>N\<^sub>S ns1 \<circ>\<rightarrow>\<circ> ns2 \<unlhd>\<^sub>m (G \<circ>\<rightarrow>\<circ> ns1 \<unlhd>\<^sub>m tgt G)"
+    by (auto simp add: mdsub_def esIncident_def image_def fun_eq_iff)
+qed
+    
+lemma subtract_Ns_disj:
+  assumes "wf_g G" and "ns \<inter> Ns G = {}"
+  shows "G \<ominus>\<^sub>N\<^sub>S ns = G"
+proof (simp add: Gr_eq)
+  apply_end (rule conjI)
+  show "Ns G - ns = Ns G"
+    using assms by auto
+next
+  apply_end (rule conjI)
+  show "Es G - G \<circ>\<rightarrow>\<circ> ns = Es G"
+    using assms
+    by (simp add: esIncident_ns_disj)
+next
+  apply_end (rule conjI)
+  show "G \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m src G = src G"
+    using assms
+    by (simp add: esIncident_ns_disj)
+next
+  show "G \<circ>\<rightarrow>\<circ> ns \<unlhd>\<^sub>m tgt G = tgt G"
+    using assms
+    by (simp add: esIncident_ns_disj)
+qed
+
+lemma disjEsGs_subtractG:
+  assumes "disjEsGs G1 G2"
+  shows "disjEsGs (G1 \<ominus>\<^sub>N\<^sub>S ns1)(G2 \<ominus>\<^sub>N\<^sub>S ns2)"
+  using assms by (simp add: disjEsGs_def disjoint_iff_not_equal)
+(*\<open>(v, v') \<in> inh SG1\<close>*)
 (*lemma subsumeG_union:
   assumes "wf_g G1" and "wf_g G1" and "disjGs G1 G2"
     and "fpartial_on s1 (Ns G1) (Ns G1)"

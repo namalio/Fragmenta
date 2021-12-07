@@ -29,6 +29,14 @@ next
   by (smt map_comp_def mem_Collect_eq option.case(2) pfunToRel_def prod.simps(2) relcompE subrelI)
 qed
 
+lemma pfunToRel_iff:
+  "(x, y) \<in> pfunToRel f \<longleftrightarrow> f x = Some y"
+  by (simp add: pfunToRel_def)
+
+lemma Domain_is_dom:
+  "Domain (pfunToRel f) = dom f"
+  by (auto simp add: Domain_iff domIff pfunToRel_iff)
+    
 definition mid_on::"'a set \<Rightarrow> ('a \<rightharpoonup> 'a)"
   where
   "mid_on A \<equiv> \<lambda>x. if x \<in> A then Some x else None"
@@ -138,7 +146,6 @@ lemma ftotal_on_mcomp:
   by (auto simp add: map_comp_def ftotal_on_def dom_def ran_def
       split: option.splits) 
 
-
 definition fpartial_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
 where
   "fpartial_on f A B \<equiv> dom f \<subseteq> A \<and> ran f \<subseteq> B"
@@ -170,13 +177,23 @@ lemma mrres_ran_sub2:
 
 definition mdsub::"'a set \<Rightarrow> ('a\<rightharpoonup>'b)\<Rightarrow>('a\<rightharpoonup>'b)" (infixl "\<unlhd>\<^sub>m" 100)
   where
-  "A \<unlhd>\<^sub>m f = (\<lambda>x. if x \<in> A then None  else f x)" 
+  "A \<unlhd>\<^sub>m f = (\<lambda>x. if x \<in> A then None else f x)" 
 
 lemma mdsub_empty[simp]: " {} \<unlhd>\<^sub>m f = f"
   by (simp add: mdsub_def)
 
 lemma mdsub_emptyf[simp]: "A \<unlhd>\<^sub>m Map.empty  = Map.empty"
   by (simp add: mdsub_def)
+
+lemma mdsub_map_add: "A \<unlhd>\<^sub>m(f ++g) = (A \<unlhd>\<^sub>mf)++(A \<unlhd>\<^sub>mg)"
+  by (simp add: map_add_def mdsub_def fun_eq_iff)
+
+lemma mdsub_map_add_absorb_1: 
+  assumes "B \<inter> (dom f) = {}"
+  shows "(A \<union> B) \<unlhd>\<^sub>m f = A \<unlhd>\<^sub>mf"
+  using assms 
+  by (simp add: domIff mdsub_def disjoint_iff fun_eq_iff)
+
 
 (*definition set_to_ls :: "'a set \<Rightarrow>'a list"
 where
@@ -194,7 +211,7 @@ theorem "funRelToMap {(1::nat, 2)} = [1\<mapsto>2]"
   by (auto simp add: funRelToMap_def set_to_ls_def)  *)
 
 lemma map_add_disj_domf: 
-  assumes h1: "dom f \<inter> dom g = {}"
+  assumes "dom f \<inter> dom g = {}"
   shows "x \<in> dom f \<longrightarrow> (f++g)x = f x"
   proof
     fix x
@@ -203,13 +220,76 @@ lemma map_add_disj_domf:
   qed
 
 lemma map_add_disj_dom2f: 
-  assumes h1: "dom f \<inter> dom g = {}"
+  assumes "dom f \<inter> dom g = {}"
   shows "x \<notin> dom g \<longrightarrow> (f++g)x = f x"
   proof
     fix x
     from assms show "x \<notin> dom g \<Longrightarrow> (f ++ g) x = f x"
       by (auto simp add: map_add_def split: option.splits)
   qed
+
+lemma pfunToRel_map_add: 
+  assumes "dom f \<inter> dom g = {}"
+  shows "pfunToRel (f ++ g) = pfunToRel f \<union> pfunToRel g"
+proof
+  show "pfunToRel (f ++ g) \<subseteq> pfunToRel f \<union> pfunToRel g"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> pfunToRel (f ++ g)"
+    hence "(f ++ g) x = Some y" by (simp only: pfunToRel_iff)
+    then show "(x, y) \<in> pfunToRel f \<union> pfunToRel g"
+    proof (case_tac "x \<in> dom f")
+      assume "x \<in> dom f"
+      hence "f x = Some y" 
+        using assms \<open>(f ++ g) x = Some y\<close>
+        by (auto simp add: map_add_def split: option.splits)
+      then show "(x, y) \<in> pfunToRel f \<union> pfunToRel g"
+        by (simp add: pfunToRel_iff)
+    next
+      assume "x \<notin> dom f"
+      hence "g x = Some y" 
+        using assms \<open>(f ++ g) x = Some y\<close>
+        by (auto simp add: map_add_def split: option.splits)
+      then show "(x, y) \<in> pfunToRel f \<union> pfunToRel g"
+        by (simp add: pfunToRel_iff)
+    qed
+  qed
+next
+  show "pfunToRel f \<union> pfunToRel g \<subseteq> pfunToRel (f ++ g)"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> pfunToRel f \<union> pfunToRel g"
+    then show "(x, y) \<in> pfunToRel (f ++ g)"
+    proof
+      assume "(x, y) \<in> pfunToRel f"
+      hence "f x = Some y" by (simp only: pfunToRel_iff)
+      hence "x \<in> dom f" by auto
+      then show "(x, y) \<in> pfunToRel (f ++ g)"
+        using assms \<open>f x = Some y\<close>
+        by (simp add: pfunToRel_iff map_add_disj_domf)
+    next
+      assume "(x, y) \<in> pfunToRel g"
+      hence "g x = Some y" by (simp only: pfunToRel_iff)
+      hence "x \<in> dom g" by auto
+      then show "(x, y) \<in> pfunToRel (f ++ g)"
+        using assms \<open>g x = Some y\<close>
+        by (simp add: pfunToRel_iff map_add_disj_domf)
+    qed
+  qed
+qed
+
+lemma in_union_if_is_map_add:
+  shows "(\<lambda> x. if x \<in> A \<union> B then Some v else None) 
+    = (\<lambda> x. if x \<in> A then Some v else None) 
+      ++ (\<lambda> x. if x \<in> B then Some v else None)"
+proof
+  fix x
+  show "(if x \<in> A \<union> B then Some v else None) =
+         ((\<lambda>x. if x \<in> A then Some v else None) ++
+          (\<lambda>x. if x \<in> B then Some v else None))
+          x"
+    by (smt (z3) Un_iff map_add_None map_add_Some_iff)
+qed
 
 lemma map_add_app_disj: 
   assumes h1: "dom f \<inter> dom g = {}"
@@ -258,7 +338,8 @@ proof
     hence "x \<in> dom (f \<circ>\<^sub>m h)"
       using assms(3) ranI by fastforce     
     hence "(f ++ g \<circ>\<^sub>m h ++ k) x = (f \<circ>\<^sub>m h) x"
-      by (metis assms(1) assms(2) h map_add_comm map_add_comp_disj_1 map_add_dom_app_simps(1) map_comp_def)
+      by (metis assms(1) assms(2) h map_add_comm map_add_comp_disj_1 
+          map_add_dom_app_simps(1) map_comp_def)
     then show "(f ++ g \<circ>\<^sub>m h ++ k) x = ((f \<circ>\<^sub>m h) ++ (g \<circ>\<^sub>m k)) x"
       by (metis assms(2) disjoint_iff domIff h map_add_dom_app_simps(3) map_comp_simps(1))
   next

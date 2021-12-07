@@ -6,6 +6,18 @@ definition rel_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set
 where
   "rel_on r A B \<equiv> Domain r \<subseteq> A \<and> Range r \<subseteq> B"
 
+lemma rel_on_Un: 
+  assumes "rel_on r A C" and "rel_on s B D"
+  shows "rel_on (r \<union> s) (A \<union> B) (C \<union> D)"
+  using assms 
+  by (auto simp add: rel_on_def single_valued_def
+      Domain_def Range_def)
+
+lemma rel_on_dom:
+  assumes "rel_on r A C"
+  shows "Domain r \<subseteq> A"
+  using assms by (auto simp add: rel_on_def)
+
 definition rel_total_on::"('a\<times>'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
 where
   "rel_total_on r A B \<equiv> Domain r = A \<and> Range r \<subseteq> B"
@@ -65,6 +77,19 @@ lemma single_valued_dist_Un:
       using h1 by (auto simp add: single_valued_def)
   qed
 
+lemma pfun_on_Un:
+  assumes "A \<inter> B = {}" and "C \<inter> D = {}" 
+    and "pfun_on f A C" and "pfun_on g B D"
+  shows "pfun_on (f \<union> g) (A \<union> B) (C \<union> D)"
+proof -
+  have h: "Domain f \<inter> Domain g = {}"
+    using assms rel_on_dom[of f A C] rel_on_dom[of g B D] 
+    by (simp add: pfun_on_def, force)
+  show ?thesis
+  using assms h
+  by (auto simp add: pfun_on_def rel_on_Un single_valued_dist_Un)
+qed
+
 definition tree::"('a \<times> 'a) set \<Rightarrow>bool"
   where
   "tree r \<equiv> acyclic r \<and> functional r"
@@ -84,6 +109,18 @@ lemma in_dres: "(a, b) \<in> A \<lhd> r \<Longrightarrow> a \<in> A"
   by (simp add: dres_def)
 
 lemma dres_union_r: "A \<lhd> (r \<union> s) = (A \<lhd> r) \<union> (A \<lhd> s)"
+  by (auto simp add: dres_def)
+
+lemma dres_union_set: "(A \<union> B)\<lhd> r = (A \<lhd> r) \<union> (B \<lhd> r)"
+  by (auto simp add: dres_def)
+
+lemma domain_r_dres: "Domain (A\<lhd> r) \<subseteq> A"
+  by (auto simp add: dres_def)
+
+lemma dres_not_in_dom:
+  assumes "A \<inter> Domain (r) = {}"
+  shows "A \<lhd> r = {}"
+  using assms
   by (auto simp add: dres_def)
 
 (* Range restriction *)
@@ -225,6 +262,11 @@ lemma in_to_image: "((x, y) \<in> r) = (y \<in> r``{x})"
     then show "(x, y) \<in> r"
       by auto
   qed
+
+lemma Image_outside_domain:
+  assumes  "xs \<inter> Domain r = {}"
+  shows "r``xs = {}"
+  using assms by auto
 
 definition rtotalise_in::"('a\<times>'a) set \<Rightarrow> 'a set\<Rightarrow>('a\<times>'a) set"
   where

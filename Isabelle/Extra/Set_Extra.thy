@@ -26,7 +26,6 @@ lemma disjoint_sym: "disjoint [A, B] = disjoint [B, A]"
 lemma disjoint_bin[simp]: "(disjoint [A, B]) = (A \<inter> B = {})"
   by (auto simp add: disjoint_def)
 
-
 (*definition set_to_ls :: "'a set \<Rightarrow>'a list"
 where
   "set_to_ls s \<equiv> (SOME l. set l = s)"
