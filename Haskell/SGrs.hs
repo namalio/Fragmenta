@@ -145,7 +145,7 @@ acyclicI::Eq a =>SGr a->Bool
 acyclicI = acyclicG . inhG
 
 -- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
-isInhTree sg = tree . relOfG $ subtractNs (inhG sg) (nsV sg)
+isInhTree sg = pfun (relOfG $ subtractNs (inhG sg) (nsV sg)) (ns sg) (ns sg) 
 
 -- Checks whether the inheritance hierarchy complies with required restrictions
 inh_ok::Eq a =>SGr a->Bool

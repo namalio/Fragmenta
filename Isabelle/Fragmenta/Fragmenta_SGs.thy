@@ -35,6 +35,12 @@ definition gr_sg :: "SGr \<Rightarrow> Gr"
 where
   "gr_sg SG = \<lparr>Ns = Ns SG, Es = Es SG, src = src SG, tgt = tgt SG\<rparr>"
 
+definition cons_sg::"Gr \<Rightarrow> (V \<rightharpoonup> SGNT) \<Rightarrow> (E \<rightharpoonup> SGET) \<Rightarrow> (E \<rightharpoonup> MultC) \<Rightarrow> (E \<rightharpoonup> MultC) \<Rightarrow> (E \<rightharpoonup> E) \<Rightarrow> SGr"
+  where
+  "cons_sg G nt et ms mt d = 
+    \<lparr>Ns = Ns G, Es = Es G, src = src G, tgt =  tgt G, 
+    nty = nt, ety = et, srcm = ms, tgtm = mt, db = d\<rparr>"
+
 (*Nodes of some type*)
 definition NsTy ::"SGr \<Rightarrow> SGNT set \<Rightarrow> E set"
 where
@@ -521,6 +527,29 @@ where
     tgtm = tgtm SG1 ++ tgtm SG2,
     db = db SG1 ++ db SG2\<rparr>"
 
+lemma USG_EmptySG:
+  "emptySG USG SG = SG"
+  by (simp add: emptySG_def cupSG_def)
+
+definition subsumeSG::"SGr \<Rightarrow>(V \<rightharpoonup> V) \<Rightarrow> SGr" (infixl "\<odot>\<^sup>S\<^sup>G" 100)
+  where
+  "SG \<odot>\<^sup>S\<^sup>G s \<equiv> if fpartial_on s (Ns SG) (Ns SG) then 
+    cons_sg ((gr_sg SG) \<odot> s) ((dom s) \<unlhd>\<^sub>m (nty SG))
+    (ety SG) (srcm SG) (tgtm SG) (db SG) 
+    else SG"
+
+lemma subsumeSG_EmptySG:
+  "emptySG \<odot>\<^sup>S\<^sup>G s = emptySG"
+  by (simp add: subsumeSG_def fpartial_on_def emptySG_def
+      cons_sg_def subsumeG_def gr_sg_def)
+
+lemma subsumeSG_MapEmpty:
+  assumes "wf_sg SG"
+  shows "SG \<odot>\<^sup>S\<^sup>G Map.empty = SG"
+using assms ran_src_G[of SG] ran_tgt_G[of SG] 
+  by (auto simp add: subsumeSG_def fpartial_on_def emptySG_def
+      cons_sg_def subsumeG_def gr_sg_def mid_on_comp_idemp1
+      wf_sg_wf_g)
 
 lemma USG_sym: 
   assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
