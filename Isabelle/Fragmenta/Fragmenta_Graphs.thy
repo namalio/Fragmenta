@@ -1134,6 +1134,7 @@ lemma disjEsGs_subtractG:
   assumes "disjEsGs G1 G2"
   shows "disjEsGs (G1 \<ominus>\<^sub>N\<^sub>S ns1)(G2 \<ominus>\<^sub>N\<^sub>S ns2)"
   using assms by (simp add: disjEsGs_def disjoint_iff_not_equal)
+
 (*\<open>(v, v') \<in> inh SG1\<close>*)
 (*lemma subsumeG_union:
   assumes "wf_g G1" and "wf_g G1" and "disjGs G1 G2"
