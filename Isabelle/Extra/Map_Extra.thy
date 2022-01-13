@@ -104,14 +104,6 @@ lemma mtotalise_empty_in_something[simp]:
 lemma mtotalise_in_in_union:
   shows "mtotalise_in f (A \<union> B) = mtotalise_in f A ++ mtotalise_in f B"
   by (metis map_add_assoc map_add_subsumed1 map_le_map_add mid_on_union mtotalise_in_def)
-  
-(*lemma mtotalise_map_add_dist: 
-  "mtotalise_in (f++g) (A = (mtotalise_in f A)++(mtotalise_in g A)"*)
-
-(*primrec pfunToListPairs::"('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<times>'b) list"
-  where
-    "pfunToListPairs Map.empty = []" |
-    "pfunToListPairs (f(a\<mapsto>b)) = (a, b)#(pfunToListPairs f)"*)
 
 definition ftotal_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
 where
@@ -156,6 +148,112 @@ lemma fpartial_on_map_add:
   using assms 
   by (auto simp add: fpartial_on_def map_add_def dom_def ran_def split: option.splits)
 
+lemma fpartial_on_sup: 
+  assumes "fpartial_on f A B" and "A \<subseteq> C"
+  shows  "fpartial_on f C B"
+  using assms 
+  by (auto simp add: fpartial_on_def map_add_def dom_def ran_def split: option.splits)
+
+lemma not_fpartial_on_sub: 
+  assumes "\<not>fpartial_on f C B" and "A \<subseteq> C"
+  shows  "\<not>fpartial_on f A B"
+  using assms 
+  by (auto simp add: fpartial_on_def map_add_def dom_def ran_def split: option.splits)
+
+
+definition injective::"('a\<rightharpoonup>'b)\<Rightarrow>bool"
+  where
+  "injective f \<equiv> \<forall> x y. {x, y} \<subseteq> dom f \<and> f x = f y \<longrightarrow> x = y"
+
+lemma injective_map_add:
+  assumes "injective f" and "injective g"
+    and "ran f \<inter> ran g = {}"
+  shows "injective (f ++ g)"
+proof (simp only: injective_def, clarify)
+  fix x y
+  assume "{x, y} \<subseteq> dom (f ++ g)" and "(f ++ g) x = (f ++ g) y"
+  hence "{x, y} \<subseteq> dom f \<union> dom g" by auto
+  hence "x \<in> dom f \<or> x \<in> dom g" by auto
+  show "x = y"
+  proof (case_tac "x \<in> dom g")
+    assume "x \<in> dom g"
+    show "x = y"
+    proof (case_tac "y \<in> dom g")
+      assume "y \<in> dom g"
+      then show "x = y"
+        using assms(2) \<open>(f ++ g) x = (f ++ g) y\<close>
+        \<open>x \<in> dom g\<close>
+        by (auto simp add: injective_def dom_def split: option.splits)
+    next
+      assume "y \<notin> dom g"
+      hence "y \<in> dom f" 
+        using \<open>{x, y} \<subseteq> dom f \<union> dom g\<close>
+        by auto
+      then show "x = y"
+        using  \<open>(f ++ g) x = (f ++ g) y\<close> \<open>x \<in> dom g\<close>
+        assms
+        by (auto simp add: injective_def ran_def dom_def map_add_def
+            split: option.splits)
+    qed
+  next
+    assume "x \<notin> dom g"
+    hence "x \<in> dom f"
+      using \<open>{x, y} \<subseteq> dom f \<union> dom g\<close>
+      by auto
+    show "x = y"
+    proof (case_tac "y \<in> dom g")
+      assume "y \<in> dom g"
+      then show "x = y"
+        by (metis \<open>(f ++ g) x = (f ++ g) y\<close> \<open>x \<notin> dom g\<close> assms(3) disjoint_iff domD 
+            map_add_dom_app_simps(1) map_add_dom_app_simps(3) ranI)
+    next
+      assume "y \<notin> dom g"
+      hence "y \<in> dom f" using \<open>{x, y} \<subseteq> dom f \<union> dom g\<close>
+        by auto
+      then show "x = y"
+      using  \<open>(f ++ g) x = (f ++ g) y\<close> \<open>y \<in> dom f\<close>
+        assms
+        by (auto simp add: injective_def ran_def dom_def map_add_def
+            split: option.splits)
+    qed
+  qed
+qed
+
+definition finj_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
+  where
+  "finj_on f A B \<equiv> ftotal_on f A B  \<and> injective f"
+
+lemma finj_on_dist_map_add:
+  assumes "finj_on f A B" and "finj_on g C D"
+    and "disjoint [A, B, C, D]"
+  shows "finj_on (f++g) (A \<union> C) (B \<union> D)"
+proof-
+  have "A \<inter> C = {}"
+    using assms(3) by (auto)
+  have "ran f \<inter> ran g = {}"
+    using assms by (auto simp add: finj_on_def ftotal_on_def) 
+  show ?thesis
+    using assms(1) assms(2) \<open>A \<inter> C = {}\<close> \<open>ran f \<inter> ran g = {}\<close>
+    by (simp add: finj_on_def ftotal_on_map_add injective_map_add)
+qed
+
+definition fbij_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
+  where
+  "fbij_on f A B \<equiv> finj_on f A B \<and> ran f = B" 
+
+lemma fbij_on_dist_map_add:
+  assumes "fbij_on f A B" and "fbij_on g C D"
+    and "disjoint [A, B, C, D]"
+  shows "fbij_on (f++g) (A \<union> C) (B \<union> D)"
+proof -
+  have "dom f \<inter> dom g = {}" 
+    using assms by (auto simp add: fbij_on_def finj_on_def 
+        ftotal_on_def)
+  show ?thesis
+  using assms \<open>dom f \<inter> dom g = {}\<close>
+  by (simp add: fbij_on_def finj_on_dist_map_add ran_map_add)
+qed
+
 definition mrres::"('a\<rightharpoonup>'b)\<Rightarrow> 'b set \<Rightarrow> ('a\<rightharpoonup>'b)" (infixl "\<rhd>\<^sub>m" 100)
 where
   "f \<rhd>\<^sub>m B = (\<lambda>x. if (f x) \<in> Some `B then f x else None)" 
@@ -169,6 +267,81 @@ lemma mrres_emptyf[simp]: "Map.empty \<rhd>\<^sub>m A = Map.empty"
 lemma mrres_ran_sub1: "ran(f \<rhd>\<^sub>m A) \<subseteq> A"
   by (auto simp add: mrres_def ran_def)
 
+lemma dom_mrres_sub_dom:
+  "dom (f \<rhd>\<^sub>m B) \<subseteq> dom f"
+  by (simp add: domIff mrres_def subset_iff)
+
+lemma map_add_mrres_un:
+  assumes "dom f \<inter> dom g = {}" 
+    and "A \<inter> ran g = {}" and "B \<inter> ran f = {}"
+  shows "f ++ g \<rhd>\<^sub>m (A \<union> B) = (f \<rhd>\<^sub>m A) ++  (g \<rhd>\<^sub>m B)"
+proof
+  fix x
+  show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = ((f \<rhd>\<^sub>m A) ++ (g \<rhd>\<^sub>m B)) x"
+  proof (case_tac "x \<in> dom g")
+    assume "x \<in> dom g"
+    hence h: "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (g \<rhd>\<^sub>m (A \<union> B)) x"
+      by (auto simp add: mrres_def)
+    show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x"
+    proof (case_tac "g x \<in> Some `B")
+      assume "g x \<in> Some `B"
+      hence "g x \<in> Some ` (A \<union> B)" by auto
+      hence "(g \<rhd>\<^sub>m (A \<union> B)) x = (g \<rhd>\<^sub>m B) x"
+        using \<open>x \<in> dom g\<close> \<open>g x \<in> Some `B\<close>
+        by (simp add: mrres_def )
+      then show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x"
+        using \<open>x \<in> dom g\<close> \<open>g x \<in> Some `B\<close>
+        by (auto simp add: h map_add_dom_app_simps(1) mrres_def)
+    next
+      assume "g x \<notin> Some `B"
+      have "g x \<notin> Some ` (A \<union> B)"
+      proof (rule ccontr)
+        assume "\<not> g x \<notin> Some ` (A \<union> B)"
+        hence "g x \<in> Some ` (A \<union> B)" by auto
+        hence "g x \<in> Some ` A" 
+          using \<open>g x \<notin> Some `B\<close> by auto
+        then show "False"
+          using assms(2) by (auto simp add: ran_def)
+      qed
+      hence h1: "(g \<rhd>\<^sub>m (A \<union> B)) x = None"
+        by (simp add: mrres_def)
+      have h2: "(f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x = None"
+        using \<open>g x \<notin> Some `B\<close> \<open>x \<in> dom g\<close> assms(1)
+        by (auto simp add: mrres_def)
+      then show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x"
+        by (simp add: h h1 h2)
+    qed
+  next
+    assume "x \<notin> dom g"
+    then show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x"
+    proof (case_tac "f x \<in> Some ` A")
+      assume "f x \<in> Some ` A"
+      hence "f x \<in> Some ` (A \<union> B)" by auto
+      hence "(f ++ g) x \<in> Some ` (A \<union> B)" 
+        using \<open>f x \<in> Some ` A\<close> \<open>x \<notin> dom g\<close>
+        by (simp add: map_add_dom_app_simps(3))
+      hence h1: "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A) x"
+        using \<open>f x \<in> Some ` A\<close> \<open>f x \<in> Some ` (A \<union> B)\<close> \<open>x \<notin> dom g\<close>
+        by (simp add: map_add_dom_app_simps(3) mrres_def)
+      have h2: "(f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x = (f \<rhd>\<^sub>m A) x"
+        using \<open>x \<notin> dom g\<close>
+        by (auto simp add: map_add_dom_app_simps(3) mrres_def domIff)
+      show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x"
+        by (simp add: h1 h2)
+    next
+      assume "f x \<notin> Some ` A"
+      hence h1: "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = None"
+        using \<open>x \<notin> dom g\<close> assms(3)
+        by (auto simp add: map_add_dom_app_simps(3) mrres_def ranI)
+      have h2: "(f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x = None"
+        using \<open>x \<notin> dom g\<close> \<open>f x \<notin> Some ` A\<close>
+        by (auto simp add: map_add_dom_app_simps(3) mrres_def)
+      then show "(f ++ g \<rhd>\<^sub>m (A \<union> B)) x = (f \<rhd>\<^sub>m A ++ (g \<rhd>\<^sub>m B)) x"
+        by (simp add: h1 h2)
+    qed
+  qed
+qed
+ 
 lemma mrres_ran_sub2: 
   assumes "(ran f) \<subseteq> B"
   shows "ran(f \<rhd>\<^sub>m A) \<subseteq> B"
@@ -193,31 +366,97 @@ lemma mdsub_map_add_absorb_1:
   shows "(A \<union> B) \<unlhd>\<^sub>m f = A \<unlhd>\<^sub>mf"
   using assms 
   by (simp add: domIff mdsub_def disjoint_iff fun_eq_iff)
+  
+lemma dom_mdsub_if:
+  assumes "dom f = A" and "dom g \<subseteq> A" and "ran g \<subseteq> A"
+  shows "dom ( (dom g - ran g)  \<unlhd>\<^sub>m f) = A - (dom g) \<union> (ran g)"
+proof
+  show "dom ((dom g - ran g) \<unlhd>\<^sub>m f) \<subseteq> A - dom g \<union> ran g"
+    by (smt (verit, ccfv_SIG) DiffI UnI1 UnI2 assms(1) domIff mdsub_def subsetI)
+next
+  show "A - dom g \<union> ran g \<subseteq> dom ((dom g - ran g) \<unlhd>\<^sub>m f)"
+  proof
+    fix x
+    assume "x \<in> A - dom g \<union> ran g"
+    hence "x \<in> A \<and> x \<notin> dom g \<or> x \<in> ran g"
+      by auto
+    then show "x \<in> dom ((dom g - ran g) \<unlhd>\<^sub>m f)"
+    proof
+      assume "x \<in> A \<and> x \<notin> dom g"
+      then show "x \<in> dom ((dom g - ran g) \<unlhd>\<^sub>m f)"
+        using assms(1)
+        by (auto simp add: mdsub_def dom_def)
+    next
+      assume "x \<in> ran g"
+      hence "x \<in> A" using assms(3) by auto
+      then show "x \<in> dom ((dom g - ran g) \<unlhd>\<^sub>m f)"
+        using assms(1) \<open>x \<in> ran g\<close>
+        by (auto simp add: mdsub_def)
+    qed
+  qed
+qed
 
+lemma ran_mdsub_sub:
+  shows "ran (A  \<unlhd>\<^sub>m f) \<subseteq> ran f "
+  by (auto simp add: mdsub_def ran_def)
 
-(*definition set_to_ls :: "'a set \<Rightarrow>'a list"
-where
-  "set_to_ls s \<equiv> (SOME l. set l = s)"
+lemma mdsub_not_in_dom:
+  assumes "A \<inter> dom f = {}"
+  shows "A \<unlhd>\<^sub>m f = f"
+proof
+  fix x
+  show "(A \<unlhd>\<^sub>m f) x = f x" 
+  proof (case_tac "x \<in> A")
+    assume "x \<in> A"
+    hence "x \<notin> dom f" using assms by auto
+    then show "(A \<unlhd>\<^sub>m f) x = f x" 
+      using assms by (auto simp add: mdsub_def)
+  next
+    assume "x \<notin> A"
+    then show "(A \<unlhd>\<^sub>m f) x = f x" 
+      using assms by (auto simp add: mdsub_def)
+  qed
+qed  
 
-lemma set_set_to_ls:
-   "finite s \<Longrightarrow> set (set_to_ls s) = s"
-   unfolding set_to_ls_def by (metis (mono_tags) finite_list some_eq_ex)
+definition mrsub::"('a\<rightharpoonup>'b)\<Rightarrow>'b set \<Rightarrow> ('a\<rightharpoonup>'b)" (infixl "\<unrhd>\<^sub>m" 100)
+  where
+  "f \<unrhd>\<^sub>m B = (\<lambda>x. if f x \<in> (Some ` B) then None else f x)" 
 
-definition funRelToMap:: "('a \<times>'b) set \<Rightarrow> ('a \<rightharpoonup>'b)"
-where
-  "funRelToMap r \<equiv> map_of(set_to_ls r)"
+lemma mrsub_empty[simp]: " f \<unrhd>\<^sub>m {} = f"
+  by (simp add: mrsub_def)
 
-theorem "funRelToMap {(1::nat, 2)} = [1\<mapsto>2]"
-  by (auto simp add: funRelToMap_def set_to_ls_def)  *)
+lemma mrsub_emptym[simp]: "Map.empty \<unrhd>\<^sub>m B = Map.empty"
+  by (simp add: mrsub_def)
+
+lemma dom_mrsub_sub_dom:
+  "dom (f \<unrhd>\<^sub>m B) \<subseteq> dom f"
+  by (simp add: mrsub_def domIff subset_iff)
+ 
+
+(*definition minv::"('a\<rightharpoonup>'b)\<Rightarrow>('b\<rightharpoonup>'a)" ("(_\<inverse>\<^sup>m)" [1000] 999)
+  where
+  " f\<inverse>\<^sup>m = (\<lambda>x. if x \<in> (ran f) then Some (the_elem (f -`{Some x})) else None)"
+
+lemma 
+  assumes "injective f"
+  shows "f\<inverse>\<^sup>m \<circ>\<^sub>m f = mid_on (dom f)"
+proof
+  fix x
+  show "(f\<inverse>\<^sup>m \<circ>\<^sub>m f) x = mid_on (dom f) x"
+  proof (case_tac "x \<in> dom f")
+    assume "x \<in> dom f"
+    then show "(f\<inverse>\<^sup>m \<circ>\<^sub>m f) x = mid_on (dom f) x"
+      using assms
+      by (auto simp add: mid_on_def minv_def map_comp_def vimage_def
+          the_elem_def ran_def injective_def dom_def split: option.splits)
+*)
 
 lemma map_add_disj_domf: 
   assumes "dom f \<inter> dom g = {}"
   shows "x \<in> dom f \<longrightarrow> (f++g)x = f x"
-  proof
-    fix x
-    from assms show "x \<in> dom f \<Longrightarrow> (f ++ g) x = f x"
-      by (auto simp add: map_add_def split: option.splits)
-  qed
+  using assms
+  by (auto simp add: map_add_def split: option.splits)
+
 
 lemma map_add_disj_dom2f: 
   assumes "dom f \<inter> dom g = {}"
@@ -320,11 +559,17 @@ lemma map_add_comp_disj_1:
   shows "(f ++ g \<circ>\<^sub>m h) = (f \<circ>\<^sub>m h)++ (g \<circ>\<^sub>m h)"
   by (auto simp add: map_add_def map_comp_def option.case_eq_if)
 
-lemma dom_map_comp_dom_eq_ran:
-  assumes "dom f = ran h" 
+lemma dom_map_comp_ran_sub_dom:
+  assumes "ran h \<subseteq>dom f" 
   shows "dom (f \<circ>\<^sub>m h) = dom h"
   using assms 
   by (auto simp add: map_comp_def dom_def ran_def split: option.splits)
+
+lemma ran_map_comp_ran_sub_dom:
+  assumes "ran h \<subseteq>dom f" 
+  shows "ran (f \<circ>\<^sub>m h) \<subseteq> ran f"
+  using assms 
+  by (auto simp add: map_comp_Some_iff ran_def dom_def)
 
 lemma map_add_comp_disj:
   assumes "dom f \<inter> dom g = {}" and "dom h \<inter> dom k = {}" 
@@ -415,16 +660,106 @@ lemma ran_map_add_disj_ran_g: "ran f \<inter> ran g = {} \<Longrightarrow> y \<i
 lemma ran_restrict_sub: "ran (f |`A) \<subseteq> ran f"
   by (auto simp add: restrict_map_def ran_def split: if_splits)
 
+lemma ran_map_add_eq:
+  shows "ran (f++g) = ran ((dom g) \<unlhd>\<^sub>m f) \<union> ran g"
+proof
+  show "ran (f ++ g) \<subseteq> ran (dom g \<unlhd>\<^sub>m f) \<union> ran g"
+    by (smt (z3) UnI1 dom_def map_add_Some_iff mdsub_def mem_Collect_eq ran_def subsetI sup_commute)
+next
+  show "ran (dom g \<unlhd>\<^sub>m f) \<union> ran g \<subseteq> ran (f ++ g)"
+    by (smt (z3) disjoint_iff_not_equal dom_def map_add_Some_iff mdsub_def mem_Collect_eq ran_def ran_map_add subsetI)
+qed
 
-
+lemma ran_mtotalise_in_if_dom_sub:
+  shows "ran(mtotalise_in f A) = A - dom f \<union> ran f"
+proof 
+  show "ran (mtotalise_in f A) \<subseteq> A - dom f \<union> ran f"
+    by (smt (verit, ccfv_threshold) Diff_iff Un_iff dom_def map_add_dom_app_simps(3) map_le_def map_le_map_add mem_Collect_eq mid_on_def mtotalise_in_def option.simps(1) ran_def subsetI)
+next
+  show "A - dom f \<union> ran f \<subseteq> ran (mtotalise_in f A)"
+  proof
+    fix y
+    assume "y \<in> A - dom f \<union> ran f"
+    hence "y \<in> A \<and> y \<notin> dom f \<or> y\<in> ran f" by auto
+    then show "y \<in> ran (mtotalise_in f A)"
+    proof
+      assume "y \<in> A \<and> y \<notin> dom f"
+      hence "mtotalise_in f A y = Some y"
+        by (simp add: mtotalise_in_def map_add_def dom_def
+           mid_on_def)
+      then show "y \<in> ran (mtotalise_in f A)"
+        by (simp add: mtotalise_in_def ranI)
+    next
+      assume "y \<in> ran f"
+      from \<open>y \<in> ran f\<close> obtain x where "f x = Some y" 
+        by (auto simp add: ran_def)
+      hence "mtotalise_in f A x = Some y"
+        by (simp add: mtotalise_in_def map_add_def dom_def
+           mid_on_def)
+      then show "y \<in> ran (mtotalise_in f A)"
+        by (simp add: mtotalise_in_def ranI)
+    qed
+  qed
+qed
+  
 lemma vimage_in_dom:
-  assumes h1: "None \<notin> B" and "dom f = A"
-  shows "f-`B \<subseteq> A"
+  assumes "dom f = A"
+  shows "f-`(Some ` B) \<subseteq> A"
+  using assms
+  by (auto simp add: vimage_def dom_def)
+
+lemma vimage_is_dom_rres:
+  "f -` (Some ` B) = dom (f \<rhd>\<^sub>m B)"
+proof
+  show "f -` Some ` B \<subseteq> dom (f \<rhd>\<^sub>m B)"
   proof
     fix x
-    from assms show "x \<in> f -` B \<Longrightarrow> x \<in> A"
-    by (auto simp add: vimage_def dom_def)
+    assume "x \<in> f -` Some ` B"
+    from \<open>x \<in> f -` Some ` B\<close> obtain y where "f x = Some y \<and> y \<in> B"
+      by (auto simp add: vimage_def image_def)
+    then show "x \<in> dom (f \<rhd>\<^sub>m B)"
+      by (simp add: mrres_def dom_def)
   qed
+next
+  show "dom (f \<rhd>\<^sub>m B) \<subseteq> f -` Some ` B"
+    by (auto simp add: mrres_def subsetI dom_def)
+qed
+
+lemma vimage_disj_ran_1:
+  assumes "ran f \<inter> ran g = {}" and "dom f \<inter> dom g = {}" and "x \<in> ran f"
+  shows "(f++g) -`{Some x} = f -`{Some x}"
+  by (smt (verit, ccfv_SIG) Int_commute assms disjoint_iff 
+      inf_sup_absorb map_add_Some_iff map_add_comm ranI 
+      vimage_insert vimage_inter_cong vimage_singleton_eq)
+
+lemma vimage_disj_ran_2:
+  assumes "ran f \<inter> ran g = {}" and "dom f \<inter> dom g = {}" and "x \<in> ran g"
+  shows "(f++g) -`{Some x} = g -`{Some x}"
+  by (metis assms inf_sup_aci(1) map_add_comm vimage_disj_ran_1)
+
+lemma mdsub_vimage_is_int:
+  "A \<unlhd>\<^sub>m f -` (Some ` B) = dom (f \<rhd>\<^sub>m B) - A"
+proof
+  show "A \<unlhd>\<^sub>m f -` Some ` B \<subseteq> dom (f \<rhd>\<^sub>m B) - A"
+  proof
+    fix x
+    assume "x \<in> A \<unlhd>\<^sub>m f -` Some ` B"
+    hence "x \<notin> A \<and> x \<in> f -` Some ` B" 
+      by (auto  simp add: mdsub_def image_def split: if_splits)
+    then show "x \<in> dom (f \<rhd>\<^sub>m B) - A"
+      by (simp add: vimage_is_dom_rres)
+  qed
+next
+  show "dom (f \<rhd>\<^sub>m B) - A \<subseteq> A \<unlhd>\<^sub>m f -` Some ` B"
+  proof
+    fix x
+    assume "x \<in> dom (f \<rhd>\<^sub>m B) - A"
+    hence "x \<notin> A \<and> x \<in> f -` Some ` B"
+      by (simp add: vimage_is_dom_rres)
+    then show "x \<in> A \<unlhd>\<^sub>m f -` Some ` B"
+      by (simp add: mdsub_def)
+  qed
+qed 
 
 lemma map_add_dists_vimage: "\<lbrakk>None \<notin> A; dom f \<inter> dom g = {}\<rbrakk>\<Longrightarrow>(f++g)-`A =f-`A \<union> g-`A"
   proof -

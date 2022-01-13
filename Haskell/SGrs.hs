@@ -6,7 +6,7 @@
 -----------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module SGrs(SGr, is_wf_sg, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, derb, empty_sg, nsTys, nsP, esTys, esA, esI, esW, 
+module SGrs(SGr, is_wf_sg, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, derb, empty_sg, nsTys, nsP, nsO, esTys, esA, esI, esW, 
    esC, srcst, tgtst, inh, inhst, disj_sgs, union_sg, union_sgs, subsume_sg, sg_refinesz, errs_sg_refinesz, tsg_refinesz, 
    errs_tsg_refinesz, ns_of_ntys, es_of_ety, totaliseForDer)  
 where
@@ -282,7 +282,8 @@ union_sgs sgs =
 -- SG subsumption
 subsume_sg :: Eq a => SGr a -> [(a, a)] -> SGr a
 subsume_sg sg sub 
-   | pfun sub (nsP sg) (ns sg) && antireflexive sub = cons_sg s_g (dsub (nty sg) (dom_of sub)) (ety sg) (srcm sg) (tgtm sg) (derb sg)
+   | pfun sub (nsP sg) (ns sg) = cons_sg s_g (dsub (nty sg) ((dom_of sub) `diff` (ran_of sub))) (ety sg) (srcm sg) (tgtm sg) (derb sg)
+   | otherwise = sg
    where s_g = subsume_g (g_sg sg) sub 
 
 -- Notion of allowed edge refinefEnts

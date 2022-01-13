@@ -27,7 +27,12 @@ record Gr =
 lemma Gr_eq: 
   shows "(G1 = G2) \<longleftrightarrow> Ns G1 = Ns G2 \<and> Es G1 = Es G2 \<and> src G1 = src G2 \<and> tgt G1 = tgt G2
     \<and> Gr.more G1 = Gr.more G2"
-    by (auto)
+  by (auto)
+
+(* Graph construction*)
+definition consG :: "V set\<Rightarrow>E set\<Rightarrow>(E \<rightharpoonup> V)\<Rightarrow>(E \<rightharpoonup> V)\<Rightarrow>Gr"
+  where
+  "consG ns es s t \<equiv> \<lparr>Ns = ns, Es = es, src = s, tgt =t\<rparr>"
 
 (*Conditions for a graph to be well-formed*)
 definition wf_g :: "'a Gr_scheme \<Rightarrow> bool"
@@ -127,9 +132,14 @@ definition esConnect::"'a Gr_scheme \<Rightarrow> V set \<Rightarrow> E set" (in
   where
   "G \<bullet>\<leftrightarrow>\<bullet> vs \<equiv>  (src G) -` (Some ` vs) \<inter> (tgt G) -` (Some ` vs)"
 
+
 (* Empty graph*)
 definition emptyG :: "Gr"
 where
-  "emptyG \<equiv> \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt = Map.empty\<rparr>"
+  "emptyG \<equiv> consG {} {}  Map.empty Map.empty"
+
+lemma emptyG_eq:
+  "emptyG = \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt =Map.empty\<rparr>"
+  by (simp add: emptyG_def consG_def)
 
 end

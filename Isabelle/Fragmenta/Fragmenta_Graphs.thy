@@ -116,7 +116,7 @@ qed
 
 lemma Ug_Id[simp]:
   shows "G UG emptyG = G"
-  by (simp add: cupG_def emptyG_def)
+  by (simp add: cupG_def emptyG_eq)
 
 lemma adjacent_dist: 
   assumes "wf_g G1" and "wf_g G2" and "disjEsGs G1 G2"
@@ -188,22 +188,33 @@ next
     by (auto simp add: relG_def adj_G_is_adj_U1 adj_G_is_adj_U2)
 qed
 
+lemma Field_RelG_Sub_Ns:
+  assumes "wf_g G"
+  shows "Field (G\<^sup>\<Leftrightarrow>) \<subseteq> Ns G"
+  using assms
+  by (auto simp add: relG_def adjacent_def Field_def wf_g_def
+      ftotal_on_def ran_def)
+
 lemma relG_disj_Gs: 
-  assumes "disjGs G1 G2" and "wf_g G1" and "wf_g G2"
+  assumes "wf_g G1" and "wf_g G2" and "disjGs G1 G2"
   shows "Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>) = {}"
-proof
-  show "Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>) \<subseteq> {}"
-  proof
-    fix x 
-    show "x \<in> Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>) \<Longrightarrow> x \<in> {}"
-    using assms ns_disj_Ga_Gb[of G1 G2] 
-      ran_src_G[of G1] ran_src_G[of G2] 
-      ran_tgt_G[of G1] ran_tgt_G[of G2]
-      by (auto simp add: relG_def adjacent_def Field_def intro!: ranI)
-  qed
-  next
-     show "{} \<subseteq> Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>)" by auto  
+proof (rule ccontr)
+  assume "Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>) \<noteq> {}"
+  then obtain x where "x \<in> Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>)" by auto
+  from \<open>x \<in> Field (G1\<^sup>\<Leftrightarrow>) \<inter> Field (G2\<^sup>\<Leftrightarrow>)\<close> 
+  have "x \<in> Ns (G1) \<and> x \<in> Ns (G2)" 
+    using assms(1) assms(2) Field_RelG_Sub_Ns[of G1]
+    Field_RelG_Sub_Ns[of G2] 
+    by (auto)
+  then show "False" using assms(3) ns_disj_Ga_Gb[of G1 G2]
+    by (auto) 
 qed
+
+lemma acyclic_Gr_UG_disj_imp_acylic_Grs: 
+  assumes "disjEsGs G1 G2" and "wf_g G1" and "wf_g G2" 
+  shows "acyclicGr (G1 UG G2) \<longrightarrow> (acyclicGr G1 \<and> acyclicGr G2)"
+  using assms 
+  by (simp add: acyclicGr_def relG_UG acyclic_subset)
 
 lemma acyclic_Gr_dist_disj: 
   assumes "disjGs G1 G2" and "wf_g G1" and "wf_g G2" 
@@ -212,7 +223,7 @@ proof
    assume "acyclicGr (G1 UG G2)"
    then show "acyclicGr G1 \<and> acyclicGr G2"
      using assms disjGs_imp_disjEsGs[of G1 G2]
-     by (simp add: acyclicGr_def relG_UG acyclic_subset)
+     by (simp add: acyclic_Gr_UG_disj_imp_acylic_Grs)
  next
    apply_end(clarsimp)
    assume "acyclicGr G1" and "acyclicGr G2"
@@ -222,9 +233,13 @@ proof
      by (simp add: acyclicGr_def relG_UG acyclic_disj_dist)
  qed
 
+lemma acyclic_Gr_iff_acyclic_relG:
+  shows "acyclicGr G = acyclic (G\<^sup>\<Leftrightarrow>)"
+  by (simp add: acyclicGr_def)
+
 (*Theorems for \<^sup>\<rightleftharpoons>*)
 lemma G_inv_emptyG[simp]: "emptyG\<^sup>\<rightleftharpoons> = emptyG"
-  by (simp add: invertG_def emptyG_def)
+  by (simp add: invertG_def emptyG_eq)
 
 lemma G_inv_inv_eq_G[simp]: "(G\<^sup>\<rightleftharpoons>)\<^sup>\<rightleftharpoons> = G"
   by (simp add: invertG_def)
@@ -249,7 +264,7 @@ lemma esIncident_Nsempty[simp]:
 
 lemma esIncident_Gempty[simp]:
    shows "emptyG \<circ>\<rightarrow>\<circ> ns = {}"
-  by (simp add: esIncident_def emptyG_def)
+  by (simp add: esIncident_def emptyG_eq)
 
 lemma in_esIncident:
   "x \<in> G \<circ>\<rightarrow>\<circ> vs \<longleftrightarrow> x \<in> (src G) -` (Some `vs) \<or> x \<in> (tgt G) -` (Some `vs)"
@@ -366,7 +381,7 @@ lemma esConnect_Nsempty[simp]:
 
 lemma esConnect_Gempty[simp]:
    shows "emptyG \<bullet>\<leftrightarrow>\<bullet> ns = {}"
-  by (simp add: esConnect_def emptyG_def)
+  by (simp add: esConnect_def emptyG_eq)
 
 lemma esConnect_sub_EsG:
   assumes "wf_g G"
@@ -558,7 +573,7 @@ where
   "rst_Ns G es \<equiv> ran ((src G) |` es) \<union> ran((tgt G) |` es)"
 
 lemma rst_Ns_emptyG[simp]: "rst_Ns emptyG es = {}"
-  by (simp add: rst_Ns_def emptyG_def)
+  by (simp add: rst_Ns_def emptyG_eq)
 
 lemma rst_Ns_empty[simp]: "rst_Ns G {} = {}"
   by (simp add: rst_Ns_def)
@@ -636,11 +651,11 @@ where
 
 lemma emptyG_restrict[simp]:
   shows "emptyG \<bowtie>\<^sub>E\<^sub>S es = emptyG"
-  by (simp add: restrict_def rst_fun_def)(simp add: emptyG_def)
+  by (simp add: restrict_def rst_fun_def)(simp add: emptyG_eq)
 
 lemma G_restrict_empty[simp]:
   shows "G \<bowtie>\<^sub>E\<^sub>S {} = emptyG"
-  by (simp add: restrict_def rst_fun_def emptyG_def)
+  by (simp add: restrict_def rst_fun_def emptyG_eq)
 
 lemma Ns_restrict[simp]: "Ns (G \<bowtie>\<^sub>E\<^sub>S es) = rst_Ns G es"
   by (simp add: restrict_def)
@@ -876,23 +891,102 @@ definition subsumeG::"Gr \<Rightarrow>(V \<rightharpoonup> V) \<Rightarrow> Gr" 
   "G \<odot> s \<equiv> if fpartial_on s (Ns G) (Ns G) then 
     \<lparr>Ns = (Ns G) - (dom s) \<union> (ran s), Es = Es G, 
     src =  (mtotalise_in s (Ns G))\<circ>\<^sub>m (src G), 
-    tgt =  (mtotalise_in s (Ns G))\<circ>\<^sub>m (tgt G)\<rparr> else G"
+    tgt =  (mtotalise_in s (Ns G))\<circ>\<^sub>m (tgt G)\<rparr> 
+    else consG (Ns G) (Es G) (src G) (tgt G)"
 
 lemma subsumeG_empty: 
   assumes "wf_g G"
   shows "G \<odot> Map.empty = G"
 using assms ran_src_G[of G] ran_tgt_G[of G] 
-  by (auto simp add: subsumeG_def mid_on_comp_idemp1)
+  by (auto simp add: subsumeG_def mid_on_comp_idemp1 consG_def)
 
 lemma subsumeG_same: 
   assumes "wf_g G"
   shows "G \<odot> mid_on (Ns G) = G"
 using assms ran_src_G[of G] ran_tgt_G[of G] 
   by (simp add: subsumeG_def mid_on_comp_idemp1 
-      mtotalise_in_def map_add_subsumed2)
+      mtotalise_in_def map_add_subsumed2 consG_def)
+
+lemma subsumeG_invalid_s:
+  assumes "\<not>dom s \<subseteq> Ns G \<or> \<not>ran s\<subseteq> Ns G"
+  shows "G \<odot> s = G"
+proof -
+  from assms have "\<not>fpartial_on s (Ns G) (Ns G)"
+    by (simp add: fpartial_on_def)
+  show ?thesis
+  using \<open>\<not>fpartial_on s (Ns G) (Ns G)\<close>
+  by (simp add: subsumeG_def consG_def)
+qed
 
 lemma subsumeG_emptyG: "emptyG \<odot> s = emptyG"
-  by (simp add: emptyG_def subsumeG_def fpartial_on_def)
+  by (simp add: emptyG_eq subsumeG_def fpartial_on_def consG_def)
+
+lemma wf_subsumeG: 
+  assumes "wf_g G" 
+  shows "wf_g(G \<odot> s)"
+proof -
+  have h1: "ran (mtotalise_in s (Ns G)) = Ns G - dom s \<union> ran s"
+    using ran_mtotalise_in_if_dom_sub
+    by (simp add: mtotalise_in_def)
+  show ?thesis
+  proof (case_tac "fpartial_on s (Ns G) (Ns G)")
+    assume "fpartial_on s (Ns G) (Ns G)"
+    show ?thesis
+    proof (simp add:wf_g_def)
+    apply_end (rule conjI)
+    show "Ns (G \<odot> s) \<subseteq> V_A"
+      using assms \<open>fpartial_on s (Ns G) (Ns G)\<close>
+      by (auto simp add: subsumeG_def wf_g_def fpartial_on_def)
+    next
+    apply_end (rule conjI)
+    show "Es (G \<odot> s) \<subseteq> E_A"
+      using assms \<open>fpartial_on s (Ns G) (Ns G)\<close>
+      by (auto simp add: subsumeG_def wf_g_def fpartial_on_def)
+    next
+    apply_end (rule conjI) 
+    have h2: "ran (src G) \<subseteq> dom(mtotalise_in s (Ns G))"
+      using assms ran_src_G
+      by (auto simp add: mtotalise_in_def fpartial_on_def)
+    hence h3: "dom (mtotalise_in s (Ns G) \<circ>\<^sub>m src G) = Es G"
+      using assms dom_src_G
+      dom_map_comp_ran_sub_dom[of "src G" "mtotalise_in s (Ns G)"]
+      by (simp)
+    have h4: "ran (mtotalise_in s (Ns G) \<circ>\<^sub>m src G) \<subseteq> Ns G - dom s \<union> ran s"
+      using h1 h2 
+        ran_map_comp_ran_sub_dom[of "src G" "mtotalise_in s (Ns G)"]
+      by simp
+    show "ftotal_on (src (G \<odot> s)) (Es (G \<odot> s)) (Ns (G \<odot> s))"
+      using assms h3 h4 \<open>fpartial_on s (Ns G) (Ns G)\<close>
+      by (simp add: subsumeG_def wf_g_def fpartial_on_def
+      ftotal_on_def)
+    next
+      have h2: "ran (tgt G) \<subseteq> dom(mtotalise_in s (Ns G))"
+        using assms ran_tgt_G
+        by (auto simp add: mtotalise_in_def fpartial_on_def)
+      hence h3: "dom (mtotalise_in s (Ns G) \<circ>\<^sub>m tgt G) = Es G"
+        using assms dom_tgt_G
+          dom_map_comp_ran_sub_dom[of "tgt G" "mtotalise_in s (Ns G)"]
+        by (simp)
+      hence h4: "ran (mtotalise_in s (Ns G) \<circ>\<^sub>m tgt G) \<subseteq> Ns G - dom s \<union> ran s"
+        using h1 h2 
+          ran_map_comp_ran_sub_dom[of "tgt G" "mtotalise_in s (Ns G)"]
+        by simp
+      show "ftotal_on (tgt (G \<odot> s)) (Es (G \<odot> s)) (Ns (G \<odot> s))"
+        using assms h3 h4 \<open>fpartial_on s (Ns G) (Ns G)\<close>
+        by (simp add: subsumeG_def wf_g_def fpartial_on_def
+            ftotal_on_def)
+    qed
+  next
+    assume "\<not> fpartial_on s (Ns G) (Ns G)"
+    hence "G \<odot> s = G"
+      using subsumeG_invalid_s[of s G] 
+      by (simp add: fpartial_on_def)
+    then show " wf_g (G \<odot> s)"
+      using assms by simp
+  qed
+qed
+ 
+  
 
 (*Restricts a graph to a set of nodes*)
 definition restrictNs :: "'a Gr_scheme \<Rightarrow> V set \<Rightarrow> Gr" (infixl "\<bowtie>\<^sub>N\<^sub>S" 100)
@@ -901,10 +995,10 @@ where
       src = (src G) |` (G \<bullet>\<leftrightarrow>\<bullet> vs), tgt = (tgt G) |` (G \<bullet>\<leftrightarrow>\<bullet> vs)\<rparr>"
 
 lemma restrictNs_empty_G: "emptyG \<bowtie>\<^sub>N\<^sub>S ns = emptyG"
-  by (simp add: restrictNs_def)(simp add: emptyG_def)
+  by (simp add: restrictNs_def)(simp add: emptyG_eq)
 
 lemma restrictNs_empty: "G \<bowtie>\<^sub>N\<^sub>S {} = emptyG"
-  by (simp add: restrictNs_def emptyG_def)
+  by (simp add: restrictNs_def emptyG_eq)
 
 lemma restrictNs_Ns[simp]: "Ns (G \<bowtie>\<^sub>N\<^sub>S ns) = Ns G \<inter> ns"
   by (simp add: restrictNs_def)
@@ -976,7 +1070,7 @@ where
       src = (G \<circ>\<rightarrow>\<circ> vs) \<unlhd>\<^sub>m (src G), tgt = (G \<circ>\<rightarrow>\<circ> vs) \<unlhd>\<^sub>m (tgt G)\<rparr>"
 
 lemma subtractNs_empty_G: "emptyG \<ominus>\<^sub>N\<^sub>S ns = emptyG"
-  by (simp add: subtractNs_def)(simp add: emptyG_def)
+  by (simp add: subtractNs_def)(simp add: emptyG_eq)
 
 lemma subtractNs_empty: "G \<ominus>\<^sub>N\<^sub>S {} = G"
   by (simp add: subtractNs_def emptyG_def)
@@ -1461,7 +1555,7 @@ lemma fE_gid[simp]: "fE (gid G) = mid_on (Es G)"
   by (simp add: gid_def)
 
 lemma gid_emptyG[simp]: "gid emptyG = emptyGM"
-  by (simp add: emptyG_def emptyGM_def gid_def)
+  by (simp add: emptyG_eq emptyGM_def gid_def)
 
 definition is_domG::"'a Morph_scheme \<Rightarrow> 'a Gr_scheme \<Rightarrow> bool"
   where
@@ -1469,7 +1563,7 @@ definition is_domG::"'a Morph_scheme \<Rightarrow> 'a Gr_scheme \<Rightarrow> bo
 
 lemma domG_empty:
   "is_domG emptyGM emptyG"
-  by (simp add: is_domG_def emptyGM_def emptyG_def)
+  by (simp add: is_domG_def emptyGM_def emptyG_eq)
 
 
 definition is_codG::"'a Morph_scheme \<Rightarrow> 'a Gr_scheme \<Rightarrow> bool"

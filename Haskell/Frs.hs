@@ -87,7 +87,7 @@ union_f f1 f2 = cons_f ((fsg f1) `union_sg` (fsg f2)) ((esR f1) `union` (esR f2)
 union_fs fs = foldr (\f ufs->f `union_f` ufs) empty_f fs
 
 -- Checks whether fragments are disjoint
-disj_fs fs = disj_sgs (map fsg fs) && disjoint (map esR fs)
+disj_fs fs = disjoint (map fLNs fs) && disjoint (map fEs fs) 
 
 -- Resolution function, which restricts range of references function to the local nodes (those can that can be resolved locally)
 res::Eq a=>Fr a->[(a, a)]
@@ -108,7 +108,8 @@ reso_f f = cons_f (reso_sg f) es' (dres (srcR f) es') (dres (tgtR f) es')
 
 -- Base well-formedness predicate
 is_wfz_f f = is_wf (Just Partial) (fsg f) && disjoint [(fLEs f), esR f] 
-    && fun_bij (srcR f) (esR f) (nsP .fsg $ f) && fun_total' (tgtR f) (esR f)
+    && fun_bij (srcR f) (esR f) (nsP .fsg $ f) && fun_total' (tgtR f) (esR f) 
+    && disjoint [ran_of . tgtR $ f, nsO . fsg $ f]
 
 -- Base well-formedness with acyclicity
 is_wfa_f f = is_wfz_f f && acyclicG (refsG f)
@@ -118,6 +119,7 @@ is_wf_f f = is_wfa_f f && is_wf (Just Partial) (reso_sg f)
 
 -- Says whether flow of references goes from one fragment into another
 refs_in f1 f2 = ran_of (tgtR f1) `subseteq` fLNs f2
+
 -- Says whether flow of references goes from one fragment into another, but not the other way round
 oneway f1 f2 = f1 `refs_in` f2 && (not $ f2 `refs_in` f1)
 

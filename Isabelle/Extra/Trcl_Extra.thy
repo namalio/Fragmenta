@@ -478,7 +478,7 @@ where
   "reachable_from r p \<equiv> {(a, b). (fst p, a) \<in> r\<^sup>* \<and> (snd p, b) \<in> r\<^sup>*}"
 
 lemma acyclic_disj_dist: 
-  assumes h1: "Field r \<inter> Field s = {}"
+  assumes "Field r \<inter> Field s = {}"
   shows "acyclic (r \<union> s) = (acyclic r \<and> acyclic s)"
   proof -
     show ?thesis
@@ -488,7 +488,7 @@ lemma acyclic_disj_dist:
         by (simp add: acyclic_subset)
     next
       show "acyclic r \<and> acyclic s \<Longrightarrow> acyclic (r \<union> s)"
-        using h1 by (simp add: acyclic_def trancl_disj_dist_Un)
+        using assms by (simp add: acyclic_def trancl_disj_dist_Un)
     qed
   qed
 
