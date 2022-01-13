@@ -452,6 +452,20 @@ lemma esIncidentst_Un:
   shows "SG \<circ>\<rightarrow>\<circ>\<^sup>* (vs1 \<union> vs2) = SG \<circ>\<rightarrow>\<circ>\<^sup>* vs1 \<union> SG \<circ>\<rightarrow>\<circ>\<^sup>* vs2"
   using esIncidentst_def by auto
 
+lemma inhst_NsO:
+  assumes "wf_sg SG" and "v \<in> NsO SG" and "(v, v') \<in> inhst SG"
+  shows "v' = v"
+proof (rule ccontr)
+   assume "v' \<noteq> v"
+   then obtain va where  "(v, va) \<in> inh SG  \<and> (va, v') \<in> inhst SG"
+     using \<open>(v, v') \<in> inhst SG\<close>
+      by (metis inhst_def converse_rtranclE)
+   hence "the ((nty SG) v)  <\<^sub>N\<^sub>T the ((nty SG) va)"
+      using assms(1) inhOk_def wf_sg_inhOk by blast
+   then show "False"
+      using assms(2) 
+      by (simp add: NsO_def NsTy_def ilt_NT_def)
+qed
 
 (*lemma inhG_partitions_disjEsGs:
   shows "disjEsGs (restrict (inhG SG) (Es (inhG SG) - EsP SG)) (restrict (inhG SG) (EsP SG))"
@@ -839,6 +853,7 @@ proof
     then obtain v where "(e, v) \<in> srcst (SG \<odot>\<^sup>S\<^sup>G s) \<and> v \<in> NsO (SG \<odot>\<^sup>S\<^sup>G s)"
       by auto
     hence "(e, v) \<in> srcr (SG \<odot>\<^sup>S\<^sup>G s) \<and> (v, v) \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
+      using inhst_NsO[of "SG \<odot>\<^sup>S\<^sup>G s" v]
       by (simp add: srcst_def relcomp_unfold)
     hence "e \<in> EsW (SG)" 
     hence "(e, v) \<in> srcst (SG)"
@@ -1369,20 +1384,6 @@ lemma inhst_USG:
       by (simp add: inhst_def inh_USG 
           inh_disj_SGs_disj_fields rtrancl_disj_dist_Un)
 
-lemma inhst_NsO:
-  assumes "wf_sg SG" and "v \<in> NsO SG" and "(v', v) \<in> inhst SG"
-  shows "v' = v"
-proof (rule ccontr)
-   assume "v' \<noteq> v"
-   then obtain va where  "(v', va) \<in> inhst SG \<and> (va, v) \<in> inh SG"
-      using \<open>(v', v) \<in> inhst SG\<close>
-      by (metis inhst_def rtranclE)
-   hence "the ((nty SG) va)  <\<^sub>N\<^sub>T the ((nty SG) v)"
-      using assms(1) inhOk_def wf_sg_inhOk by blast
-   then show "False"
-      using assms(2) 
-      by (simp add: NsO_def NsTy_def ilt_NT_def)
-qed
 
 
 lemma srcst_USG: 
