@@ -33,13 +33,10 @@ where
 (*Dictates allowed inheritance relations between node types*)
 definition ilt_NT::"SGNT \<Rightarrow> SGNT  \<Rightarrow> bool" (infixl "<\<^sub>N\<^sub>T" 100)
   where
-  "nt\<^sub>1 <\<^sub>N\<^sub>T nt\<^sub>2 \<equiv> nt\<^sub>2 = nenum \<longleftrightarrow> nt\<^sub>1 = nval
-    \<and> nt\<^sub>1 = nvirt \<longrightarrow> nt\<^sub>2 = nvirt
-    \<and> nt\<^sub>1 = nabst \<longrightarrow>  nt\<^sub>2 \<in> {nabst, nprxy, nvirt}
-    \<and> (nt\<^sub>1 \<notin> {nprxy, nenum, nopt} \<or> nt\<^sub>2 \<noteq> nopt)"
-
-lemma "\<not> (nopt <\<^sub>N\<^sub>T nt)"
-  
+  "nt\<^sub>1 <\<^sub>N\<^sub>T nt\<^sub>2 \<equiv> (nt\<^sub>2 = nenum \<and> nt\<^sub>1 = nval
+    \<or> nt\<^sub>1 = nvirt \<and> nt\<^sub>2 = nvirt
+    \<or> nt\<^sub>1 = nabst \<and> nt\<^sub>2 \<in> {nabst, nprxy, nvirt})
+    \<and> nt\<^sub>1 \<notin> {nprxy, nenum, nopt} \<and> nt\<^sub>2 \<noteq> nopt"
 
 (*Dictates allowed refinement relations between node types*)
 definition rleq_NT::"SGNT \<Rightarrow> SGNT  \<Rightarrow> bool" (infixl "\<le>\<^sub>N\<^sub>T" 100)
