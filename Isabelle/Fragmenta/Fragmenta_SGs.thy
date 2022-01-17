@@ -627,12 +627,10 @@ qed
 
 definition subsumeSG::"SGr \<Rightarrow>(V \<rightharpoonup> V) \<Rightarrow> SGr" (infixl "\<odot>\<^sup>S\<^sup>G" 100)
   where
-  "SG \<odot>\<^sup>S\<^sup>G s \<equiv> if fpartial_on s (NsP SG) (Ns SG) then 
+  "SG \<odot>\<^sup>S\<^sup>G s \<equiv> if fpartial_on s (NsP SG) (Ns SG- NsO SG) then 
     consSG ((gr_sg SG) \<odot> s) ((dom s-ran s) \<unlhd>\<^sub>m (nty SG))
     (ety SG) (srcm SG) (tgtm SG) (db SG) 
     else SG"
-
-
 
 (*lemma emptySG_subsume_map_empty[simp]: 
   shows "emptySG \<odot> Map.empty = emptyG"
@@ -652,12 +650,12 @@ lemma wf_g_SG_eq_gr_sg:
   by (simp add: consG_def gr_sg_def wf_g_def)
 
 lemma subsumeSG_not_from_NsP:
-  assumes "\<not>fpartial_on s (NsP SG) (Ns SG)"
+  assumes "\<not>fpartial_on s (NsP SG) (Ns SG - NsO SG)"
   shows "(SG \<odot>\<^sup>S\<^sup>G s) = SG"
   using assms by (simp add: subsumeSG_def)
 
 lemma gr_sg_subsumeSG_eq:
-  assumes "fpartial_on s (NsP SG) (Ns SG)"
+  assumes "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
   shows "gr_sg (SG \<odot>\<^sup>S\<^sup>G s) = (gr_sg SG) \<odot> s"
   using assms
   by (simp add: subsumeSG_def consG_def consSG_def 
@@ -690,7 +688,7 @@ lemma ety_subsumeSG:
   by (simp add: subsumeSG_def consSG_def)
 
 lemma nty_subsumeSG_s_ok:
-  assumes "fpartial_on s (NsP SG) (Ns SG)"
+  assumes "fpartial_on s (NsP SG) (Ns SG- NsO SG)"
   shows "nty (SG \<odot>\<^sup>S\<^sup>G s) = (dom s - ran s) \<unlhd>\<^sub>m nty SG"
   using assms by (simp add: subsumeSG_def consSG_def)
 
@@ -711,7 +709,7 @@ lemma EsTy_subsumeSG:
   by (simp add: EsTy_def ety_subsumeSG)
 
 lemma NsO_subsumeSG:
-  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
+  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
   shows "NsO (SG \<odot>\<^sup>S\<^sup>G s) = NsO (SG)"
 proof -
   have "NsP SG  \<inter> NsO SG = {}"
@@ -772,7 +770,7 @@ lemma srcma_subsumeSG:
       ftotal_on_def srcm_subsumeSG)
 
 lemma wf_g_subsumeSG:
-  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
+  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
   shows "wf_g (SG \<odot>\<^sup>S\<^sup>G s)"
   using assms wf_sg_wf_g[of SG]
   by (simp add: wf_g_SG_eq_gr_sg gr_sg_subsumeSG_eq
@@ -815,25 +813,31 @@ lemma dom_db_eq_EsD_subsumeSG:
     by (simp add: db_subsumeSG EsD_subsumeSG)
 
 lemma multsOk_subsumeSG:
-  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
+  assumes "wf_sg SG" 
+    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
   shows "multsOk (SG \<odot>\<^sup>S\<^sup>G s)"
     using assms 
     by (simp add: multsOk_def EsC_subsumeSG ety_subsumeSG
         srcma_subsumeSG tgtm_subsumeSG wf_sg_def)
 
 lemma inhst_subsume_of_NsO:
-  assumes "wf_sg SG" and "v \<in> NsO SG" and "(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
+  assumes "wf_sg SG" and "v \<in> NsO SG" 
+    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+    and "(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
   shows "v' = v"
 proof (rule ccontr)
    assume "v' \<noteq> v"
    then obtain va where  "(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
      using \<open>(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close>
       by (metis inhst_def converse_rtranclE)
-   hence "the ((nty SG) v)  <\<^sub>N\<^sub>T the ((nty SG) va)"
-      using assms(1) inhOk_def wf_sg_inhOk by blast
-   then show "False"
-      using assms(2) 
-      by (simp add: NsO_def NsTy_def ilt_NT_def)
+   hence "the ((nty (SG \<odot>\<^sup>S\<^sup>G s)) v)  <\<^sub>N\<^sub>T the ((nty (SG \<odot>\<^sup>S\<^sup>G s)) va)"
+     using assms(3) nty_subsumeSG_s_ok[of s SG] 
+       assms(1) inhOk_def[of SG] 
+      by auto
+   show "False"
+     using assms(1) assms(2) wf_sg_inhOk[of SG] 
+       \<open>(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close> 
+     by (auto simp add: inh_def inhOk_def relG_def adjacent_def )
   qed
 
 lemma srcst_img_inv_NsO:
@@ -1332,6 +1336,7 @@ next
     by (auto simp add:  disjEsGs_def)
 qed
 
+
 lemma inhG_USG:
   assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
   shows "inhG (SG1 USG SG2) = inhG (SG1) UG  inhG (SG2)"
@@ -1370,6 +1375,56 @@ lemma inh_disj_SGs_disj_fields:
   using assms disjGs_inhG[of SG1 SG2] wf_sg_wf_g[of SG1]
         wf_sg_wf_g[of SG2] wf_g_inhG[of SG1] wf_g_inhG[of SG2] 
         by (simp add: inh_def relG_disj_Gs)
+
+lemma restrict_SG:
+  shows "SG \<bowtie>\<^sub>E\<^sub>S es = gr_sg SG \<bowtie>\<^sub>E\<^sub>S es"
+proof (simp add: restrict_def)
+  apply_end (rule conjI)
+  show "rst_Ns SG es = rst_Ns (gr_sg SG) es"
+    by (simp add: rst_Ns_def gr_sg_def consG_def)
+next
+  apply_end (rule conjI)
+  show "Es SG \<inter> es = Es (gr_sg SG) \<inter> es"
+    by (simp add: gr_sg_def consG_def)
+next
+  apply_end (rule conjI)
+  show "rst_fun es (src SG) = rst_fun es (src (gr_sg SG))"
+    by (simp add: rst_fun_def gr_sg_def consG_def)
+next
+  show "rst_fun es (tgt SG) = rst_fun es (tgt (gr_sg SG))"
+    by (simp add: rst_fun_def gr_sg_def consG_def)
+qed
+
+lemma inhG_subsume_sg:
+  assumes "wf_sg SG" 
+    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  shows "inhG (SG \<odot>\<^sup>S\<^sup>G s) = (inhG SG) \<odot> s"
+  using assms(2) EsI_subsumeSG[of SG s]
+  by (simp add: inh_def inhG_def restrict_SG 
+      gr_sg_subsumeSG_eq )
+lemma inh_subsume_sg:
+  assumes "wf_sg SG" 
+    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  shows "inh (SG \<odot>\<^sup>S\<^sup>G s) = ((inhG SG) \<odot> s)\<^sup>\<Leftrightarrow>"
+  using assms(2) EsI_subsumeSG[of SG s]
+  by (simp add: inh_def inhG_def restrict_SG 
+      gr_sg_subsumeSG_eq )
+proof
+  show "inh (SG \<odot>\<^sup>S\<^sup>G s) \<subseteq> (inhG SG \<odot> s)\<^sup>\<Leftrightarrow>"
+  proof (rule subrelI)
+    fix x y
+    assume "(x, y) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)"
+    using assms(2)
+    by (simp add: subsumeSG_def inh_def)
+lemma in_Domain_inh_subsume_in_SG:
+  assumes "wf_sg SG" and "v \<notin> dom s"
+  shows "v \<in> Domain (inh (SG \<odot>\<^sup>S\<^sup>G s)) \<longrightarrow> v \<in> Domain (inh SG)"
+proof
+  assume "v \<in> Domain (inh (SG \<odot>\<^sup>S\<^sup>G s))"
+  then obtain v' where "(v, v') \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)"
+    by auto
+  hence "(v, v') \<in> inh SG"
+    by (simp add: subsumeSG_def inh_def)
 
 lemma inhst_USG: 
   assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"

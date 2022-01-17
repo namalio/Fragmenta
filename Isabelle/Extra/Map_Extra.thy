@@ -670,7 +670,7 @@ next
     by (smt (z3) disjoint_iff_not_equal dom_def map_add_Some_iff mdsub_def mem_Collect_eq ran_def ran_map_add subsetI)
 qed
 
-lemma ran_mtotalise_in_if_dom_sub:
+lemma ran_mtotalise_in_eq:
   shows "ran(mtotalise_in f A) = A - dom f \<union> ran f"
 proof 
   show "ran (mtotalise_in f A) \<subseteq> A - dom f \<union> ran f"
@@ -691,7 +691,7 @@ next
         by (simp add: mtotalise_in_def ranI)
     next
       assume "y \<in> ran f"
-      from \<open>y \<in> ran f\<close> obtain x where "f x = Some y" 
+      then obtain x where "f x = Some y" 
         by (auto simp add: ran_def)
       hence "mtotalise_in f A x = Some y"
         by (simp add: mtotalise_in_def map_add_def dom_def
@@ -701,7 +701,11 @@ next
     qed
   qed
 qed
-  
+
+lemma ran_mtotalise_comp_restrict_in_eq:
+  assumes "fpartial_on f A A"
+  shows "ran ((mtotalise_in f A \<circ>\<^sub>m g) |` es) = ran (g |` es) - dom f \<union> ran f"
+
 lemma vimage_in_dom:
   assumes "dom f = A"
   shows "f-`(Some ` B) \<subseteq> A"

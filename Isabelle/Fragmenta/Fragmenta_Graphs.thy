@@ -926,7 +926,7 @@ lemma wf_subsumeG:
   shows "wf_g(G \<odot> s)"
 proof -
   have h1: "ran (mtotalise_in s (Ns G)) = Ns G - dom s \<union> ran s"
-    using ran_mtotalise_in_if_dom_sub
+    using ran_mtotalise_in_eq
     by (simp add: mtotalise_in_def)
   show ?thesis
   proof (case_tac "fpartial_on s (Ns G) (Ns G)")
@@ -981,12 +981,60 @@ proof -
     hence "G \<odot> s = G"
       using subsumeG_invalid_s[of s G] 
       by (simp add: fpartial_on_def)
-    then show " wf_g (G \<odot> s)"
+    then show "wf_g (G \<odot> s)"
       using assms by simp
   qed
 qed
- 
-  
+
+lemma subsume_restrict_eq:
+  assumes "wf_g G" and "fpartial_on s (rst_Ns G es) (rst_Ns G es)"
+  shows "G \<odot> s \<bowtie>\<^sub>E\<^sub>S es = (G \<bowtie>\<^sub>E\<^sub>S es) \<odot> s "
+proof -
+  have "fpartial_on s (Ns G) (Ns G)"
+    using assms rst_Ns_sub[of G es]
+    by (auto simp add: fpartial_on_def)
+  show ?thesis
+  proof (simp add: Gr_eq)
+    apply_end(rule conjI)
+    show "rst_Ns (G \<odot> s) es = Ns (G \<bowtie>\<^sub>E\<^sub>S es \<odot> s)"
+    proof 
+      show "rst_Ns (G \<odot> s) es \<subseteq> Ns (G \<bowtie>\<^sub>E\<^sub>S es \<odot> s)"
+      proof
+        fix v
+        assume "v \<in> rst_Ns (G \<odot> s) es"
+        show "v \<in> Ns (G \<bowtie>\<^sub>E\<^sub>S es \<odot> s)"
+        proof (case_tac "v \<in> ran s")
+          assume "v \<in> ran s"
+          then show "v \<in> Ns (G \<bowtie>\<^sub>E\<^sub>S es \<odot> s)"
+            using assms(2) \<open>fpartial_on s (Ns G) (Ns G)\<close>
+            \<open>v \<in> rst_Ns (G \<odot> s) es\<close>
+          by (auto simp add: rst_Ns_def subsumeG_def 
+              mtotalise_in_def split: option.splits)
+      next
+        assume "v \<notin> ran s"
+        hence "v \<in> ran (src G |` es) \<union> ran (tgt G |` es)"
+          using assms(2) \<open>fpartial_on s (Ns G) (Ns G)\<close>
+            \<open>v \<in> rst_Ns (G \<odot> s) es\<close>
+          by (auto simp add: rst_Ns_def subsumeG_def 
+              mtotalise_in_def map_comp_def map_add_def 
+              ran_def restrict_map_def mid_on_def
+              split: option.splits)
+        then show "v \<in> Ns (G \<bowtie>\<^sub>E\<^sub>S es \<odot> s)"
+            using assms(2) \<open>fpartial_on s (Ns G) (Ns G)\<close>
+            \<open>v \<in> rst_Ns (G \<odot> s) es\<close>
+          by (auto simp add: rst_Ns_def subsumeG_def 
+              mtotalise_in_def map_add_def 
+              split: option.splits)
+        then show "v \<in> Ns (G \<bowtie>\<^sub>E\<^sub>S es \<odot> s)"
+        using assms(2) \<open>fpartial_on s (Ns G) (Ns G)\<close>
+        by (simp add: subsumeG_def rst_Ns_def)
+        hence "v \<in> ran (mid_on (Ns G) ++ s)"
+          
+          by (simp add: rst_Ns_def subsumeG_def 
+              mtotalise_in_def)
+      using assms(2) \<open>fpartial_on s (Ns G) (Ns G)\<close>
+      by (simp add: subsumeG_def restrict_def)
+        (simp add: rst_Ns_def)
 
 (*Restricts a graph to a set of nodes*)
 definition restrictNs :: "'a Gr_scheme \<Rightarrow> V set \<Rightarrow> Gr" (infixl "\<bowtie>\<^sub>N\<^sub>S" 100)
