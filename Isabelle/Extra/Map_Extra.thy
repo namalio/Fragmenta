@@ -36,7 +36,16 @@ lemma pfunToRel_iff:
 lemma Domain_is_dom:
   "Domain (pfunToRel f) = dom f"
   by (auto simp add: Domain_iff domIff pfunToRel_iff)
-    
+
+definition anti_reflexive::"('a \<rightharpoonup> 'a) \<Rightarrow> bool"
+  where
+    "anti_reflexive f \<equiv> (\<forall>x \<in> dom f. f x \<noteq> Some x)"
+
+lemma anti_reflexive_imp_neq:
+  assumes "anti_reflexive f" and "f x = Some y"
+  shows "x \<noteq> y"
+  using assms by (auto simp add: anti_reflexive_def)
+
 definition mid_on::"'a set \<Rightarrow> ('a \<rightharpoonup> 'a)"
   where
   "mid_on A \<equiv> \<lambda>x. if x \<in> A then Some x else None"
@@ -50,6 +59,21 @@ lemma dom_mid_on[simp]: "dom (mid_on A) = A"
 lemma ran_mid_on[simp]: "ran (mid_on A) = A"
   by (auto simp add: mid_on_def ran_def split: if_splits)
 
+lemma map_empty_if_ran_empty: 
+  assumes "ran s = {}"
+  shows "s = Map.empty"
+proof
+  fix x
+  show "s x = None"
+  proof (rule ccontr)
+    assume "s x \<noteq> None"
+    then obtain y where "s x = Some y" by auto
+    hence "y \<in> ran s" by (auto intro!: ranI)
+    then show "False"
+      using assms by auto
+  qed
+qed
+ 
 lemma mid_on_union: "mid_on (A \<union> B) = (mid_on A) ++ (mid_on B)"
 by (auto simp add: mid_on_def map_add_def split: option.splits)
 
@@ -63,8 +87,8 @@ proof
   fix x
   show "(mid_on A \<circ>\<^sub>m f) x = f x"
   using assms 
-  by (auto simp add: mid_on_def map_comp_def ran_def 
-      split: option.splits)
+  by (auto simp add: mid_on_def map_comp_def
+      split: option.splits intro!: ranI)
 qed
 
 lemma mid_on_comp_idemp2:
@@ -73,7 +97,7 @@ lemma mid_on_comp_idemp2:
 proof
   fix x
   show "(f \<circ>\<^sub>m mid_on A) x = f x"
-  proof (cases "x \<in> A")
+  proof (case_tac "x \<in> A")
     assume "x \<in> A"
     then show "(f \<circ>\<^sub>m mid_on A) x = f x" 
       using assms by (simp add: mid_on_def map_comp_def )
@@ -89,6 +113,10 @@ lemma f_comp_mid_on:"f \<circ>\<^sub>m (mid_on (dom f))  = f"
   by (auto simp add: mid_on_def map_comp_def dom_def 
       split: option.splits) 
 
+lemma mid_on_restrict[simp]: 
+  "(mid_on A) |` A = (mid_on A)"
+  by (simp add: mid_on_def restrict_map_def fun_eq_iff)
+
 definition mtotalise_in::"('a \<rightharpoonup> 'a) \<Rightarrow> 'a set\<Rightarrow>('a \<rightharpoonup> 'a)"
   where
   "mtotalise_in f A = (mid_on A) ++ f"
@@ -98,12 +126,42 @@ lemma mtotalise_in_in_empty[simp]:
   by (simp add: mtotalise_in_def) 
 
 lemma mtotalise_empty_in_something[simp]:
-  shows "mtotalise_in Map.empty s = (mid_on s)"
+  shows "mtotalise_in Map.empty A = (mid_on A)"
   by (simp add: mtotalise_in_def)
 
 lemma mtotalise_in_in_union:
   shows "mtotalise_in f (A \<union> B) = mtotalise_in f A ++ mtotalise_in f B"
-  by (metis map_add_assoc map_add_subsumed1 map_le_map_add mid_on_union mtotalise_in_def)
+proof
+  fix x
+  show "mtotalise_in f (A \<union> B) x =
+         (mtotalise_in f A ++ mtotalise_in f B) x"
+  proof (case_tac "x \<in> dom (f |` B)")
+    assume "x \<in> dom (f |` B)"
+    then show "mtotalise_in f (A \<union> B) x =
+         (mtotalise_in f A ++ mtotalise_in f B) x"
+      by (simp add: mtotalise_in_def map_add_dom_app_simps)
+  next
+    assume "x \<notin> dom (f |` B)"
+    hence "x \<notin> dom f \<or> x \<notin> B" by auto
+    then show "mtotalise_in f (A \<union> B) x =
+         (mtotalise_in f A ++ mtotalise_in f B) x"
+    proof
+      assume "x \<notin> dom f"
+      then show "mtotalise_in f (A \<union> B) x =
+         (mtotalise_in f A ++ mtotalise_in f B) x"
+        by (simp add: mtotalise_in_def map_add_dom_app_simps 
+          mid_on_union)
+          (auto simp add: mid_on_def map_add_def split: if_splits)
+    next
+      assume "x \<notin> B"
+      then show "mtotalise_in f (A \<union> B) x =
+         (mtotalise_in f A ++ mtotalise_in f B) x"
+        by (simp add: mtotalise_in_def map_add_dom_app_simps 
+          mid_on_union)
+          (auto simp add: mid_on_def map_add_def split: option.splits)
+    qed
+  qed
+qed
 
 definition ftotal_on::"('a\<rightharpoonup>'b)\<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
 where
@@ -131,6 +189,13 @@ lemma ftotal_on_map_add:
   using assms 
   by (auto simp add: ftotal_on_def ran_map_add)
 
+lemma ftotal_on_map_add2: 
+  assumes "ftotal_on f A (B-D)" and  "ftotal_on g C (B-E)"
+    and "A \<inter> C = {}" and "D \<inter> E = {}"
+  shows "ftotal_on (f++g) (A \<union> C) (B - (D \<union> E))"
+  using assms 
+  by (auto simp add: ftotal_on_def ran_map_add)
+
 lemma ftotal_on_mcomp: 
   assumes "ftotal_on f A B" and "ftotal_on g B C"  
   shows "ftotal_on (g \<circ>\<^sub>m f) A C"
@@ -153,6 +218,7 @@ lemma fpartial_on_sup:
   shows  "fpartial_on f C B"
   using assms 
   by (auto simp add: fpartial_on_def map_add_def dom_def ran_def split: option.splits)
+
 
 lemma not_fpartial_on_sub: 
   assumes "\<not>fpartial_on f C B" and "A \<subseteq> C"
@@ -454,17 +520,12 @@ proof
 lemma map_add_disj_domf: 
   assumes "dom f \<inter> dom g = {}"
   shows "x \<in> dom f \<longrightarrow> (f++g)x = f x"
-  using assms
-  by (auto simp add: map_add_def split: option.splits)
-
-
-lemma map_add_disj_dom2f: 
-  assumes "dom f \<inter> dom g = {}"
-  shows "x \<notin> dom g \<longrightarrow> (f++g)x = f x"
   proof
     fix x
-    from assms show "x \<notin> dom g \<Longrightarrow> (f ++ g) x = f x"
-      by (auto simp add: map_add_def split: option.splits)
+    assume "x \<in> dom f"
+    hence "x \<notin> dom g" using assms by auto
+    then show "(f ++ g) x = f x"
+      by (simp add: map_add_dom_app_simps)
   qed
 
 lemma pfunToRel_map_add: 
@@ -640,14 +701,15 @@ proof
       by (auto simp add: map_add_def image_def split: option.splits)
 qed*)
 
+lemma map_add_not_in_ran_g:
+  assumes "x \<notin> ran g" and "(f++g) y = Some x"
+  shows "f y = Some x"
+  using assms
+  by (auto simp add: map_add_def ran_def split: option.splits)
+
 lemma ran_map_add_sub:
   shows "ran (f++g) \<subseteq> ran f \<union> ran g"
-  proof
-    fix x
-    assume "x \<in> ran (f ++ g)"
-    then show "x \<in> ran f \<union> ran g"
-      by (auto simp add: map_add_def ran_def split: option.splits)
-  qed
+by (auto simp add: map_add_def ran_def split: option.splits)
 
 lemma ran_map_add_disj_ran_f: "ran f \<inter> ran g = {} \<Longrightarrow> y \<in> ran f \<Longrightarrow> (f++g) x = Some y 
   \<Longrightarrow> x \<in> dom f"
@@ -660,6 +722,24 @@ lemma ran_map_add_disj_ran_g: "ran f \<inter> ran g = {} \<Longrightarrow> y \<i
 lemma ran_restrict_sub: "ran (f |`A) \<subseteq> ran f"
   by (auto simp add: restrict_map_def ran_def split: if_splits)
 
+lemma ran_restrict_sub_2:
+  assumes "A \<subseteq> B"
+  shows "ran (f |`A) \<subseteq> ran (f |`B)"
+  using assms
+  by (auto simp add: restrict_map_def ran_def split: if_splits)
+
+lemma map_restrict_absorb:
+  assumes "B \<inter> dom f = {}"
+  shows "f |` (A \<union> B) = f |`A"
+  using assms
+  by (auto simp add: restrict_map_def fun_eq_iff split: if_splits)
+
+lemma fpartial_restrict: 
+  assumes "fpartial_on f A B" and "C \<subseteq> A"
+  shows "fpartial_on (f|`C) C B"
+  using assms ran_restrict_sub[of f C]
+  by (auto simp add: fpartial_on_def)
+
 lemma ran_map_add_eq:
   shows "ran (f++g) = ran ((dom g) \<unlhd>\<^sub>m f) \<union> ran g"
 proof
@@ -671,16 +751,18 @@ next
 qed
 
 lemma ran_mtotalise_in_eq:
+  assumes "fpartial_on f A A"
   shows "ran(mtotalise_in f A) = A - dom f \<union> ran f"
 proof 
   show "ran (mtotalise_in f A) \<subseteq> A - dom f \<union> ran f"
-    by (smt (verit, ccfv_threshold) Diff_iff Un_iff dom_def map_add_dom_app_simps(3) map_le_def map_le_map_add mem_Collect_eq mid_on_def mtotalise_in_def option.simps(1) ran_def subsetI)
+  by (auto simp add: mtotalise_in_def ran_def mid_on_def
+          restrict_map_def split: if_splits)
 next
   show "A - dom f \<union> ran f \<subseteq> ran (mtotalise_in f A)"
   proof
     fix y
     assume "y \<in> A - dom f \<union> ran f"
-    hence "y \<in> A \<and> y \<notin> dom f \<or> y\<in> ran f" by auto
+    hence "y \<in> A \<and> y \<notin> dom f \<or> y \<in> ran f" by auto
     then show "y \<in> ran (mtotalise_in f A)"
     proof
       assume "y \<in> A \<and> y \<notin> dom f"
@@ -694,17 +776,19 @@ next
       then obtain x where "f x = Some y" 
         by (auto simp add: ran_def)
       hence "mtotalise_in f A x = Some y"
-        by (simp add: mtotalise_in_def map_add_def dom_def
-           mid_on_def)
+        using assms
+        by (auto simp add: mtotalise_in_def map_add_def 
+           mid_on_def fpartial_on_def intro: domI)
       then show "y \<in> ran (mtotalise_in f A)"
         by (simp add: mtotalise_in_def ranI)
     qed
   qed
 qed
 
-lemma ran_mtotalise_comp_restrict_in_eq:
+(*lemma ran_mtotalise_comp_restrict_in_eq:
   assumes "fpartial_on f A A"
-  shows "ran ((mtotalise_in f A \<circ>\<^sub>m g) |` es) = ran (g |` es) - dom f \<union> ran f"
+  shows "ran ((mtotalise_in f A \<circ>\<^sub>m g) |` es) = ran (g |` es) - dom f \<union> ran (f |` A)"
+*)
 
 lemma vimage_in_dom:
   assumes "dom f = A"
@@ -765,51 +849,38 @@ next
   qed
 qed 
 
-lemma map_add_dists_vimage: "\<lbrakk>None \<notin> A; dom f \<inter> dom g = {}\<rbrakk>\<Longrightarrow>(f++g)-`A =f-`A \<union> g-`A"
-  proof -
-    assume h1: "None \<notin> A"
-    assume h3: "dom f \<inter> dom g = {}"
-    show "(f++g)-`A =f-`A \<union> g-`A"
-    proof
-      show "f ++ g -` A \<subseteq> f -` A \<union> g -` A"
-      proof
-        fix x
-        show "x \<in> f ++ g -` A \<Longrightarrow> x \<in> f -` A \<union> g -` A"
-          by (auto simp add: map_add_def split: option.splits)
-      qed
-      next
-      show "f -` A \<union> g -` A \<subseteq> f ++ g -` A"
-      proof
-        fix x
-        show "x \<in> f -` A \<union> g -` A \<Longrightarrow> x \<in> f ++ g -` A"
-        proof (simp add: vimage_def)
-          assume h5: "f x \<in> A \<or> g x \<in> A"
-          have h5a: "f x \<noteq> None \<or> g x \<noteq> None" 
-            using h1 h5 by (auto)
-          show "(f ++ g) x \<in> A"
-          proof (case_tac "g x = None")
-            assume h6: "g x = None"
-            show "(f ++ g) x \<in> A"
-              using h1 h3 h5a h5 h6 
-              by (auto simp add: vimage_def map_add_def split: option.splits)
-         next
-            assume h7: "g x \<noteq> None"
-            show "(f ++ g) x \<in> A"
-            proof (case_tac "f x = None")
-              assume h8: "f x = None"
-              show "(f ++ g) x \<in> A" 
-                using h1 h5 h5a h7 h8 
-                by (auto simp add: vimage_def map_add_def split: option.splits)
-              next
-              assume h9: "f x \<noteq> None"
-              show "(f ++ g) x \<in> A" 
-                using h7 h9 h3
-                by (auto simp add: vimage_def map_add_def split: option.splits)
-           qed
-        qed
+lemma map_add_dists_vimage: 
+  assumes "dom f \<inter> dom g = {}"
+  shows "(f++g)-` Some ` A =f-` Some `A \<union> g-` Some `A"
+proof
+  show "f ++ g -` Some ` A \<subseteq> f -` Some ` A \<union> g -` Some ` A"
+  proof
+    fix x
+    assume "x \<in> f ++ g -` Some ` A"
+    then show "x \<in> f -` Some ` A \<union> g -` Some ` A"
+      by (auto simp add: map_add_def split: option.splits)
+  qed
+next
+  show "f -` Some ` A \<union> g -` Some ` A \<subseteq> f ++ g -` Some ` A"
+  proof
+    fix x
+    assume "x \<in> f -` Some ` A \<union> g -` Some ` A"
+    hence "f x \<in> Some ` A \<or> g x \<in> Some ` A"
+      by auto
+    then show "x \<in> f ++ g -` Some `A"
+    proof 
+      assume "f x \<in> Some ` A"
+      hence "x \<notin> dom g"
+        using assms by auto
+      then show "x \<in> f ++ g -` Some ` A"
+        using \<open>f x \<in> Some ` A\<close>
+        by (simp add: vimage_def map_add_dom_app_simps)
+    next
+      assume "g x \<in> Some ` A"
+      then show "x \<in> f ++ g -` Some ` A"
+        by (auto simp add: domI vimage_def map_add_dom_app_simps)
      qed
    qed
- qed
 qed
 
 lemma retrict_Un:

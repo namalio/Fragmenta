@@ -54,4 +54,9 @@ lemma insert_all_thm:
   shows "A \<union> B = insert_allL lA B"
   using assms by (induction) auto*)
 
+(*lemma diff_dist_cup:
+  "A - (B \<union> C) = (A - B) \<union> (A - C)"*)
+
+  
+
 end

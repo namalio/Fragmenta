@@ -1,3 +1,10 @@
+------------------
+-- Project: Fragmenta
+-- Module: 'Grs'
+-- Description: Module dedicated to Fragmenta's graphs (Grs)
+-- Author: Nuno Amálio
+-----------------
+
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module Grs (Gr, GrM, TK(..), MK(..), isKTotal, ns_g, es_g, src_g, tgt_g, cons_g, empty_g, cons_gm, empty_gm, fV, 
@@ -50,8 +57,8 @@ errors_wf_g g =
 
 check_wf_g id g = check_wf_of g id (is_wf_g) errors_wf_g
 
--- Builds a new graph by restricting to a set of edges
---rst_ns g le = no_dups $ union (ran_of (dres (src g)  le))  (ran_of (dres (tgt g)  le))
+-- Gives the nodes of a graph involved in a set of edges
+rns g le = no_dups $ union (ran_of (dres (src g)  le))  (ran_of (dres (tgt g)  le))
 
 -- Incident edges of a set of nodes
 esIncident g vs = img (inv $ src g) vs `union` img (inv $ tgt g) vs
@@ -59,12 +66,12 @@ esIncident g vs = img (inv $ src g) vs `union` img (inv $ tgt g) vs
 -- Connection edges of a set of nodes
 esConnect g vs = img (inv $ src g) vs `intersec` img (inv $ tgt g) vs
 
--- Restricts a graph to given edges
+-- Restricts a graph to a given set of edges
 restrict g le = 
    let es' = (es g) `intersec` le in
    let s = dres (src g) le in
    let t = dres (tgt g) le in
-   cons_g (ns g) es' s t
+   cons_g (rns g le) es' s t
 
 -- Restricts a graph to given nodes
 restrictNs g vs = 

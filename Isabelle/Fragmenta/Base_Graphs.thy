@@ -44,6 +44,40 @@ lemma disjoint_WF_G: "wf_g G \<Longrightarrow> disjoint[Ns G, Es G]"
   using disj_V_E
   by (auto simp add: wf_g_def)
 
+lemma ftotal_on_src_G:
+  assumes "wf_g G"
+  shows "ftotal_on (src G)(Es G)(Ns G)"
+  using assms by (simp add: wf_g_def)
+
+lemma dom_src_G:
+  assumes "wf_g G"
+  shows "dom (src G) = Es G"
+  using assms ftotal_on_src_G [of G] 
+  by (simp add: ftotal_on_def)
+
+lemma ran_src_G:
+  assumes "wf_g G"
+  shows "ran (src G) \<subseteq> Ns G"
+  using assms ftotal_on_src_G [of G] 
+  by (simp add: ftotal_on_def)
+
+lemma ftotal_on_tgt_G:
+  assumes "wf_g G"
+  shows "ftotal_on (tgt G)(Es G)(Ns G)"
+  using assms by (simp add: wf_g_def)
+
+lemma dom_tgt_G:
+  assumes "wf_g G"
+  shows "dom (tgt G) = Es G"
+  using assms ftotal_on_tgt_G[of G] 
+  by (simp add: ftotal_on_def)
+
+lemma ran_tgt_G:
+  assumes "wf_g G"
+  shows "ran (tgt G) \<subseteq> Ns G"
+  using assms ftotal_on_tgt_G[of G] 
+  by (simp add: ftotal_on_def)
+
 (*Self edges*)
 definition EsId ::"'a Gr_scheme \<Rightarrow> E set"
 where
@@ -134,12 +168,55 @@ definition esConnect::"'a Gr_scheme \<Rightarrow> V set \<Rightarrow> E set" (in
 
 
 (* Empty graph*)
-definition emptyG :: "Gr"
+definition emptyG :: "Gr"  ("\<emptyset>\<^sub>G")
 where
-  "emptyG \<equiv> consG {} {}  Map.empty Map.empty"
+  "\<emptyset>\<^sub>G \<equiv> consG {} {}  Map.empty Map.empty"
 
 lemma emptyG_eq:
-  "emptyG = \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt =Map.empty\<rparr>"
+  "\<emptyset>\<^sub>G = \<lparr>Ns = {}, Es = {}, src = Map.empty, tgt =Map.empty\<rparr>"
   by (simp add: emptyG_def consG_def)
+
+lemma wf_emptyG:
+  shows "wf_g \<emptyset>\<^sub>G"
+  by (simp add: emptyG_eq wf_g_def)
+
+lemma NotEmptyG_imp_non_empty_Ns:
+  assumes "wf_g G" and "G \<noteq> \<emptyset>\<^sub>G"
+  shows "Ns G  \<noteq> {}"
+  proof (rule ccontr)
+    assume "\<not>Ns G \<noteq> {}"
+    hence "Ns G = {}" by auto
+    hence "src G = Map.empty"
+      using assms(1) ran_src_G[of G] 
+      by (simp add: map_empty_if_ran_empty)
+    have "tgt G = Map.empty"
+      using \<open>Ns G = {}\<close> ran_tgt_G[of G] assms(1)
+      by (simp add: map_empty_if_ran_empty)
+    hence "Es G = {}"
+      using dom_tgt_G[of G] assms(1) 
+      by auto
+    then show "False"
+      using \<open>G \<noteq> \<emptyset>\<^sub>G\<close> \<open>Ns G = {}\<close> \<open>src G = Map.empty\<close>
+      \<open>tgt G = Map.empty\<close>
+     by (simp add: Gr_eq emptyG_def consG_def)
+ qed  
+
+(*lemma NotEmptyG_imp_non_empty_Es:
+  assumes "wf_g G" and "G \<noteq> \<emptyset>\<^sub>G"
+  shows "Es G  \<noteq> {}"
+proof (rule ccontr)
+  assume "\<not> Es G \<noteq> {}"
+  hence "Es G = {}" by auto
+  hence "src G = Map.empty"
+    using assms(1) dom_src_G[of G] 
+    by (simp) 
+  have "tgt G = Map.empty"
+    using assms(1) dom_tgt_G[of G] \<open>Es G = {}\<close>
+    by (simp)
+  then show "False"
+    using 
+    \<open>src G = Map.empty\<close> \<open>Es G = {}\<close>
+      \<open>tgt G = Map.empty\<close>
+    by (simp add: Gr_eq emptyG_def consG_def)*)
 
 end

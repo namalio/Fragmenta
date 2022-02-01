@@ -155,16 +155,16 @@ definition inhG ::"SGr \<Rightarrow> Gr"
 where
   "inhG SG \<equiv> restrict SG (EsI SG)"
 
-lemma Ns_inhG[simp]: "Ns (inhG SG) = rst_Ns SG (EsI SG)"
+lemma Ns_inhG[simp]: "Ns (inhG SG) = rNs SG (EsI SG)"
   by (simp add: inhG_def)
 
 lemma Es_inhG[simp]: "Es (inhG SG) = Es SG \<inter> (EsI SG)"
   by (simp add: inhG_def)
 
-lemma src_inhG[simp]: "src (inhG SG) = rst_fun (EsI SG) (src SG)"
+lemma src_inhG[simp]: "src (inhG SG) = src SG |` EsI SG"
   by (simp add: inhG_def)
 
-lemma tgt_inhG[simp]: "tgt (inhG SG) = rst_fun (EsI SG) (tgt SG)"
+lemma tgt_inhG[simp]: "tgt (inhG SG) = tgt SG |` EsI SG"
   by (simp add: inhG_def)
 
 definition inh ::"SGr \<Rightarrow> V rel"
@@ -346,7 +346,7 @@ lemma NsInhG_sub_Ns:
     ran_restrict_sub[of "tgt SG" "EsI SG"] 
     wf_sg_wf_g[of SG] ran_src_G[of SG]
     ran_tgt_G[of SG]
-  by (auto simp add: inhG_def rst_Ns_def)
+  by (auto simp add: inhG_def rNs_def)
 
 lemma EsTy_sub_Es: 
   assumes "wf_sg SG"
@@ -389,7 +389,7 @@ lemma Domain_inh:
   shows "Domain (inh SG) \<subseteq> Ns SG"
   using assms wf_sg_ftotal_on_srcG[of SG]
   by (auto simp add: inh_def relG_def adjacent_def ftotal_on_def 
-      rst_fun_def EsI_def EsTy_def
+      EsI_def EsTy_def
       restrict_map_def inhG_def intro!: ranI)
 
 lemma Range_inh:
@@ -397,7 +397,7 @@ lemma Range_inh:
   shows "Range (inh SG) \<subseteq> Ns SG"
   using assms wf_sg_ftotal_on_tgtG[of SG]
   by (auto simp add: inh_def relG_def adjacent_def ftotal_on_def 
-      rst_fun_def EsI_def EsTy_def
+      EsI_def EsTy_def
       restrict_map_def inhG_def intro!: ranI)
 
 lemma inhG_disj_Es:
@@ -627,7 +627,7 @@ qed
 
 definition subsumeSG::"SGr \<Rightarrow>(V \<rightharpoonup> V) \<Rightarrow> SGr" (infixl "\<odot>\<^sup>S\<^sup>G" 100)
   where
-  "SG \<odot>\<^sup>S\<^sup>G s \<equiv> if fpartial_on s (NsP SG) (Ns SG- NsO SG) then 
+  "SG \<odot>\<^sup>S\<^sup>G s \<equiv> if fpartial_on s (NsP SG) (Ns SG) then 
     consSG ((gr_sg SG) \<odot> s) ((dom s-ran s) \<unlhd>\<^sub>m (nty SG))
     (ety SG) (srcm SG) (tgtm SG) (db SG) 
     else SG"
@@ -650,12 +650,12 @@ lemma wf_g_SG_eq_gr_sg:
   by (simp add: consG_def gr_sg_def wf_g_def)
 
 lemma subsumeSG_not_from_NsP:
-  assumes "\<not>fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  assumes "\<not>fpartial_on s (NsP SG) (Ns SG)"
   shows "(SG \<odot>\<^sup>S\<^sup>G s) = SG"
   using assms by (simp add: subsumeSG_def)
 
 lemma gr_sg_subsumeSG_eq:
-  assumes "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  assumes "fpartial_on s (NsP SG) (Ns SG)"
   shows "gr_sg (SG \<odot>\<^sup>S\<^sup>G s) = (gr_sg SG) \<odot> s"
   using assms
   by (simp add: subsumeSG_def consG_def consSG_def 
@@ -688,7 +688,7 @@ lemma ety_subsumeSG:
   by (simp add: subsumeSG_def consSG_def)
 
 lemma nty_subsumeSG_s_ok:
-  assumes "fpartial_on s (NsP SG) (Ns SG- NsO SG)"
+  assumes "fpartial_on s (NsP SG) (Ns SG)"
   shows "nty (SG \<odot>\<^sup>S\<^sup>G s) = (dom s - ran s) \<unlhd>\<^sub>m nty SG"
   using assms by (simp add: subsumeSG_def consSG_def)
 
@@ -709,7 +709,7 @@ lemma EsTy_subsumeSG:
   by (simp add: EsTy_def ety_subsumeSG)
 
 lemma NsO_subsumeSG:
-  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
   shows "NsO (SG \<odot>\<^sup>S\<^sup>G s) = NsO (SG)"
 proof -
   have "NsP SG  \<inter> NsO SG = {}"
@@ -770,7 +770,7 @@ lemma srcma_subsumeSG:
       ftotal_on_def srcm_subsumeSG)
 
 lemma wf_g_subsumeSG:
-  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
   shows "wf_g (SG \<odot>\<^sup>S\<^sup>G s)"
   using assms wf_sg_wf_g[of SG]
   by (simp add: wf_g_SG_eq_gr_sg gr_sg_subsumeSG_eq
@@ -784,7 +784,8 @@ lemma ftotal_on_nty_subsumeSG:
       ran_mdsub_sub[of "dom s - ran s" "nty SG"]  
       NsP_sub_Ns[of SG]
     by (auto simp add: subsumeSG_def ftotal_on_def consSG_def
-        subsumeG_def Ns_gr_sg_eq fpartial_on_def )
+        subsumeG_def Ns_gr_sg_eq fpartial_on_def ran_def 
+        restrict_map_def mdsub_def split: if_splits)
 
 lemma ftotal_on_ety_subsumeSG:
   assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
@@ -814,26 +815,184 @@ lemma dom_db_eq_EsD_subsumeSG:
 
 lemma multsOk_subsumeSG:
   assumes "wf_sg SG" 
-    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+    and "fpartial_on s (NsP SG) (Ns SG)"
   shows "multsOk (SG \<odot>\<^sup>S\<^sup>G s)"
     using assms 
     by (simp add: multsOk_def EsC_subsumeSG ety_subsumeSG
         srcma_subsumeSG tgtm_subsumeSG wf_sg_def)
+
+
+lemma if_in_inh_subsume_SG:
+  assumes "wf_sg SG" 
+    and "fpartial_on s (NsP SG) (Ns SG)" 
+    and "(v, v') \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)" 
+  shows "\<exists> va vb. (va, vb) \<in> inh SG \<and> (s va = Some v \<or> va = v) \<and> (s vb = Some v' \<or> vb = v')"
+proof -
+  have h: "fpartial_on s (Ns (gr_sg SG)) (Ns (gr_sg SG))"
+    using assms(1) assms(2) NsP_sub_Ns[of SG]
+    by (auto simp add: gr_sg_def consG_def fpartial_on_def)
+  obtain e where "e \<in> EsI SG 
+    \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m src SG) e = Some v
+    \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m tgt SG) e = Some v'"
+    using \<open>(v, v') \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)\<close> assms h 
+      EsI_subsumeSG[of SG s]
+    by (auto simp add: subsumeSG_def gr_sg_def consSG_def 
+        consG_def subsumeG_def inh_def inhG_def relG_def
+        adjacent_def)
+  then obtain va vb where "src SG e = Some va 
+    \<and> mtotalise_in s (Ns SG) va = Some v
+    \<and> tgt SG e = Some vb \<and> mtotalise_in s (Ns SG) vb = Some v'"
+      using \<open>e \<in> EsI SG 
+      \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m src SG) e = Some v
+      \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m tgt SG) e = Some v'\<close>
+      map_add_not_in_ran_g[of v s "mid_on (Ns SG)"]
+      by (auto simp add: map_comp_Some_iff)
+  have "e \<in> EsI SG"
+    using \<open>e \<in> EsI SG 
+      \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m src SG) e = Some v
+      \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m tgt SG) e = Some v'\<close> by auto
+  have "src SG e = Some va \<and> s va = Some v \<or> src SG e = Some v \<and> va = v"
+  proof (case_tac "s va \<noteq> Some v")
+    assume "s va \<noteq> Some v"
+    hence "src SG e = Some v \<and> va = v"
+      using assms(1) wf_sg_wf_g ran_src_G[of SG]
+      \<open>src SG e = Some va \<and> mtotalise_in s (Ns SG) va = Some v
+      \<and> tgt SG e = Some vb \<and> mtotalise_in s (Ns SG) vb = Some v'\<close>
+      by (auto simp add: map_add_dom_app_simps
+          mtotalise_in_def mid_on_def intro!: ranI)
+    then show ?thesis by simp
+  next
+    assume "\<not> s va \<noteq> Some v"
+    hence "s va = Some v" by simp
+    then show ?thesis 
+      using \<open>src SG e = Some va \<and> mtotalise_in s (Ns SG) va = Some v
+      \<and> tgt SG e = Some vb \<and> mtotalise_in s (Ns SG) vb = Some v'\<close>
+      by (simp add: mtotalise_in_def)
+  qed
+  have "tgt SG e = Some vb \<and> s vb = Some v' \<or> tgt SG e = Some v' \<and> vb = v'"
+  proof (case_tac "s vb \<noteq> Some v'")
+    assume "s vb \<noteq> Some v'"
+    hence "tgt SG e = Some v' \<and> vb = v'"
+      using assms(1) wf_sg_wf_g ran_tgt_G[of SG]
+      \<open>src SG e = Some va \<and> mtotalise_in s (Ns SG) va = Some v
+      \<and> tgt SG e = Some vb \<and> mtotalise_in s (Ns SG) vb = Some v'\<close>
+      by (auto simp add: map_add_dom_app_simps
+          mtotalise_in_def mid_on_def intro!: ranI)
+    then show ?thesis by simp
+  next
+    assume "\<not> s vb \<noteq> Some v'"
+    hence "s vb = Some v'" by simp
+    then show ?thesis 
+      using \<open>src SG e = Some va \<and> mtotalise_in s (Ns SG) va = Some v
+      \<and> tgt SG e = Some vb \<and> mtotalise_in s (Ns SG) vb = Some v'\<close>
+      by (simp add: mtotalise_in_def)
+  qed
+  then show ?thesis
+  proof
+    assume "tgt SG e = Some vb \<and> s vb = Some v'"
+    from \<open>src SG e = Some va \<and> s va = Some v \<or> src SG e = Some v \<and> va = v\<close>
+    show ?thesis 
+    proof
+      assume "src SG e = Some va \<and> s va = Some v"
+      hence "(va, vb) \<in> inh SG \<and> s va = Some v \<and> s vb = Some v'"
+        using \<open>tgt SG e = Some vb \<and> s vb = Some v'\<close>
+        \<open>e \<in> EsI SG\<close> assms(1) EsI_sub_Es[of SG]
+        by (auto simp add: inh_def inhG_def restrict_def relG_def
+            adjacent_def restrict_map_def)
+      then show ?thesis by auto
+    next
+      assume "src SG e = Some v \<and> va = v"
+      hence "(v, vb) \<in> inh SG \<and> s vb = Some v'"
+        using \<open>tgt SG e = Some vb \<and> s vb = Some v'\<close>
+        \<open>e \<in> EsI SG\<close> assms(1) EsI_sub_Es[of SG]
+        by (auto simp add: inh_def inhG_def restrict_def relG_def
+            adjacent_def restrict_map_def)
+      then show ?thesis by auto
+    qed
+  next
+    assume "tgt SG e = Some v' \<and> vb = v'"
+    from \<open>src SG e = Some va \<and> s va = Some v \<or> src SG e = Some v \<and> va = v\<close>
+    show ?thesis 
+    proof
+      assume "src SG e = Some va \<and> s va = Some v"
+      hence "(va, vb) \<in> inh SG \<and> s va = Some v \<and> vb = v'"
+        using \<open>tgt SG e = Some v' \<and> vb = v'\<close>
+        \<open>e \<in> EsI SG\<close> assms(1) EsI_sub_Es[of SG]
+        by (auto simp add: inh_def inhG_def restrict_def relG_def
+            adjacent_def restrict_map_def)
+      then show ?thesis by auto
+  next
+    assume "src SG e = Some v \<and> va = v"
+    hence "(va, vb) \<in> inh SG \<and> va = v \<and> vb = v'"
+        using \<open>tgt SG e = Some v' \<and> vb = v'\<close>
+        \<open>e \<in> EsI SG\<close> assms(1) EsI_sub_Es[of SG]
+        by (auto simp add: inh_def inhG_def restrict_def relG_def
+            adjacent_def restrict_map_def)
+      then show ?thesis by auto
+    qed
+  qed
+qed
+
+(*
+lemma if_in_inhst_subsume_SG:
+  assumes "wf_sg SG" 
+    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)" 
+    and "(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)" 
+  shows "\<exists> va vb. (va, vb) \<in> inhst SG \<and> (s va = Some v \<or> va = v) \<and> (s vb = Some v' \<or> vb = v')"
+proof -
+  have h: "fpartial_on s (Ns (gr_sg SG)) (Ns (gr_sg SG))"
+    using assms(1) assms(2) NsP_sub_Ns[of SG]
+    by (auto simp add: gr_sg_def consG_def fpartial_on_def)
+  obtain e where "e \<in> EsI SG 
+    \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m src SG) e = Some v
+    \<and> (mtotalise_in s (Ns SG) \<circ>\<^sub>m tgt SG) e = Some v'"
+    using \<open>(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close> assms h 
+      EsI_subsumeSG[of SG s]
+    by (auto simp add: subsumeSG_def gr_sg_def consSG_def 
+        consG_def subsumeG_def inhst_def )
 
 lemma inhst_subsume_of_NsO:
   assumes "wf_sg SG" and "v \<in> NsO SG" 
     and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
     and "(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
   shows "v' = v"
-proof (rule ccontr)
-   assume "v' \<noteq> v"
-   then obtain va where  "(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
-     using \<open>(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close>
+proof -
+  have h: "fpartial_on s (Ns (gr_sg SG)) (Ns (gr_sg SG))"
+    using assms(1) assms(3) NsP_sub_Ns[of SG]
+    by (auto simp add: gr_sg_def consG_def fpartial_on_def)
+  obtain va where  "(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
+      using \<open>(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close>
+      sledgehammer
+  show ?thesis
+  
+  proof (rule ccontr)
+    assume "v' \<noteq> v"
+    then obtain va where  "(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)"
+      using \<open>(v, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close>
       by (metis inhst_def converse_rtranclE)
+    have "v \<notin> ran s \<and> v \<notin> dom s"
+      using assms(2) assms(3) 
+      by (auto simp add: fpartial_on_def NsO_def NsP_def NsTy_def)
+    then show "False"
+    proof (case_tac "va \<in> ran s")
+     assume "va \<in> ran s"
+     then obtain vb where "s vb = Some va \<and> vb \<in> NsP SG 
+        \<and> va \<in> Ns SG \<and> va \<notin> NsO SG" 
+       using assms(3)
+       by (auto simp add: fpartial_on_def ran_def)
+     hence "(v, vb) \<in> inh (SG)"
+       using \<open>(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close>
+       using \<open>s vb = Some va \<and> vb \<in> NsP SG 
+        \<and> va \<in> Ns SG \<and> va \<notin> NsO SG\<close>
+       using assms(3) h
+       by (simp add: subsumeSG_def consSG_def inh_def subsumeG_def
+           inhG_def relG_def adjacent_def)
    hence "the ((nty (SG \<odot>\<^sup>S\<^sup>G s)) v)  <\<^sub>N\<^sub>T the ((nty (SG \<odot>\<^sup>S\<^sup>G s)) va)"
      using assms(3) nty_subsumeSG_s_ok[of s SG] 
        assms(1) inhOk_def[of SG] 
-      by auto
+        \<open>(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close> 
+     sledgehammer
+     by auto
    show "False"
      using assms(1) assms(2) wf_sg_inhOk[of SG] 
        \<open>(v, va) \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)  \<and> (va, v') \<in> inhst (SG \<odot>\<^sup>S\<^sup>G s)\<close> 
@@ -856,14 +1015,15 @@ proof
     hence "e \<in> EsW (SG)" 
     hence "(e, v) \<in> srcst (SG)"
       by (simp add: srcst_def EsC_subsumeSG dres_def relcomp_unfold)
+*)
 
-lemma optsVoluntary_subsumeSG:
+(*lemma optsVoluntary_subsumeSG:
   assumes "wf_sg SG" and "fpartial_on s (NsP SG) (Ns SG)"
     and "(ran s) \<inter> NsO (SG) = {}"
   shows "optsVoluntary (SG \<odot>\<^sup>S\<^sup>G s)"
     using assms
     by (simp add: optsVoluntary_def ety_subsumeSG EsI_subsumeSG
-        NsO_subsumeSG esIncidentst_def)
+        NsO_subsumeSG esIncidentst_def)*)
 
 (*
 lemma wf_subsumeSG:
@@ -1023,7 +1183,7 @@ lemma restrict_USG:
   proof -
     have h4: "(SG1 USG SG2)\<bowtie>\<^sub>E\<^sub>S es = (SG1 UG SG2)\<bowtie>\<^sub>E\<^sub>S es"
       using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
-      by (simp add: cupSG_def restrict_def rst_Ns_dist_UG rst_Ns_def)
+      by (simp add: cupSG_def restrict_def rNs_dist_UG rNs_def)
     show ?thesis 
       using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
       by (simp add: h4 restrict_dist_UG)
@@ -1288,7 +1448,7 @@ lemma disjGs_inhG:
   shows "disjGs (inhG SG1) (inhG SG2)"
 proof (simp add: disjGs_def)
   apply_end(rule conjI)
-  show "rst_Ns SG1 (EsI SG1) \<inter> rst_Ns SG2 (EsI SG2) = {}"
+  show "rNs SG1 (EsI SG1) \<inter> rNs SG2 (EsI SG2) = {}"
     using assms wf_sg_wf_g[of SG1] wf_sg_wf_g[of SG2]
       ran_src_G[of SG1] ran_src_G[of SG2] 
       ran_tgt_G[of SG1] ran_tgt_G[of SG2] 
@@ -1296,38 +1456,38 @@ proof (simp add: disjGs_def)
       ran_restrict_sub[of "src SG2" "EsI SG2"]
       ran_restrict_sub[of "tgt SG1" "EsI SG1"]
       ran_restrict_sub[of "tgt SG2" "EsI SG2"]
-    unfolding rst_Ns_def disjGs_def by force
+    unfolding rNs_def disjGs_def by force
 next
   apply_end(rule conjI)
-  show "rst_Ns SG1 (EsI SG1) \<inter> (Es SG1 \<inter> EsI SG1) = {}"
+  show "rNs SG1 (EsI SG1) \<inter> (Es SG1 \<inter> EsI SG1) = {}"
     using assms(1) assms(3) disj_V_E wf_sg_wf_g[of SG1]
       ran_restrict_sub[of "src SG1" "EsI SG1"]
       ran_restrict_sub[of "tgt SG1" "EsI SG1"]
-    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+    by (auto simp add: rNs_def wf_g_def disjGs_def 
         ftotal_on_def)
 next
   apply_end(rule conjI)
-  show "rst_Ns SG1 (EsI SG1) \<inter> (Es SG2 \<inter> EsI SG2) = {}"
+  show "rNs SG1 (EsI SG1) \<inter> (Es SG2 \<inter> EsI SG2) = {}"
     using assms(1) assms(3) disj_V_E wf_sg_wf_g[of SG1]
       ran_restrict_sub[of "src SG1" "EsI SG1"]
       ran_restrict_sub[of "tgt SG1" "EsI SG1"]
-    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+    by (auto simp add: rNs_def wf_g_def disjGs_def 
         ftotal_on_def)
 next
   apply_end(rule conjI)
-  show "rst_Ns SG2 (EsI SG2) \<inter> (Es SG1 \<inter> EsI SG1) = {}"
+  show "rNs SG2 (EsI SG2) \<inter> (Es SG1 \<inter> EsI SG1) = {}"
     using assms(2) assms(3) disj_V_E wf_sg_wf_g[of SG2]
       ran_restrict_sub[of "src SG2" "EsI SG2"]
       ran_restrict_sub[of "tgt SG2" "EsI SG2"]
-    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+    by (auto simp add: rNs_def wf_g_def disjGs_def 
         ftotal_on_def)
 next
   apply_end(rule conjI)
-  show "rst_Ns SG2 (EsI SG2) \<inter> (Es SG2 \<inter> EsI SG2) = {}"
+  show "rNs SG2 (EsI SG2) \<inter> (Es SG2 \<inter> EsI SG2) = {}"
     using assms(2) assms(3) disj_V_E wf_sg_wf_g[of SG2]
       ran_restrict_sub[of "src SG2" "EsI SG2"]
       ran_restrict_sub[of "tgt SG2" "EsI SG2"]
-    by (auto simp add: rst_Ns_def wf_g_def disjGs_def 
+    by (auto simp add: rNs_def wf_g_def disjGs_def 
         ftotal_on_def)
 next
   show "Es SG1 \<inter> EsI SG1 \<inter> (Es SG2 \<inter> EsI SG2) = {}"
@@ -1380,20 +1540,26 @@ lemma restrict_SG:
   shows "SG \<bowtie>\<^sub>E\<^sub>S es = gr_sg SG \<bowtie>\<^sub>E\<^sub>S es"
 proof (simp add: restrict_def)
   apply_end (rule conjI)
-  show "rst_Ns SG es = rst_Ns (gr_sg SG) es"
-    by (simp add: rst_Ns_def gr_sg_def consG_def)
+  show "rNs SG es = rNs (gr_sg SG) es"
+    by (simp add: rNs_def gr_sg_def consG_def)
 next
   apply_end (rule conjI)
   show "Es SG \<inter> es = Es (gr_sg SG) \<inter> es"
     by (simp add: gr_sg_def consG_def)
 next
   apply_end (rule conjI)
-  show "rst_fun es (src SG) = rst_fun es (src (gr_sg SG))"
-    by (simp add: rst_fun_def gr_sg_def consG_def)
+  show "src SG |` es = src (gr_sg SG) |` es"
+    by (simp add: gr_sg_def consG_def)
 next
-  show "rst_fun es (tgt SG) = rst_fun es (tgt (gr_sg SG))"
-    by (simp add: rst_fun_def gr_sg_def consG_def)
+  show "tgt SG |` es = tgt (gr_sg SG) |` es"
+    by (simp add: gr_sg_def consG_def)
 qed
+
+(*lemma fpartial_on_SG_fpartial_rns_EsI:
+  assumes "wf_sg SG" 
+    and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
+  shows "fpartial_on s (rNs (gr_sg SG) (EsI SG))
+      (rNs (gr_sg SG) (EsI SG))"
 
 lemma inhG_subsume_sg:
   assumes "wf_sg SG" 
@@ -1402,11 +1568,14 @@ lemma inhG_subsume_sg:
   using assms(2) EsI_subsumeSG[of SG s]
   by (simp add: inh_def inhG_def restrict_SG 
       gr_sg_subsumeSG_eq )
+
 lemma inh_subsume_sg:
   assumes "wf_sg SG" 
     and "fpartial_on s (NsP SG) (Ns SG - NsO SG)"
   shows "inh (SG \<odot>\<^sup>S\<^sup>G s) = ((inhG SG) \<odot> s)\<^sup>\<Leftrightarrow>"
   using assms(2) EsI_subsumeSG[of SG s]
+  assms wf_sg_wf_g[of SG] wf_g_SG_eq_gr_sg[of SG]
+  subsume_restrict_eq[of "gr_sg SG" s "EsI SG"]
   by (simp add: inh_def inhG_def restrict_SG 
       gr_sg_subsumeSG_eq )
 proof
@@ -1424,7 +1593,7 @@ proof
   then obtain v' where "(v, v') \<in> inh (SG \<odot>\<^sup>S\<^sup>G s)"
     by auto
   hence "(v, v') \<in> inh SG"
-    by (simp add: subsumeSG_def inh_def)
+    by (simp add: subsumeSG_def inh_def)*)
 
 lemma inhst_USG: 
   assumes "wf_sg SG1" and "wf_sg SG2" and "disjGs SG1 SG2"
@@ -1432,7 +1601,6 @@ lemma inhst_USG:
   using assms
       by (simp add: inhst_def inh_USG 
           inh_disj_SGs_disj_fields rtrancl_disj_dist_Un)
-
 
 
 lemma srcst_USG: 

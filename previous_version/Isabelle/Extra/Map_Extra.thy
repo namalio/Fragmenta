@@ -60,8 +60,11 @@ lemma map_add_disj_domf:
   shows "x \<in> dom f \<longrightarrow> (f++g)x = f x"
   proof
     fix x
-    from assms show "x \<in> dom f \<Longrightarrow> (f ++ g) x = f x"
-      by (auto simp add: map_add_def split: option.splits)
+    assume "x \<in> dom f"
+    hence "x \<notin> dom g" 
+      using assms by auto
+    then show "(f ++ g) x = f x"
+      by (simp add: map_add_dom_app_simps)
   qed
 
 (*lemma map_add_disj_domg: 
@@ -99,11 +102,7 @@ lemma map_add_app_disj:
   qed
 
 lemma map_add_restrict_dist: "(f++g)|`A = f|`A ++ g|`A"
-  proof
-    fix x
-    show "((f ++ g) |` A) x = (f |` A ++ g |` A) x"
-      by (simp add: restrict_map_def map_add_def)
-  qed
+  by (simp add: restrict_map_def map_add_def fun_eq_iff)
 
 lemma map_add_image_dist: 
   assumes h1: "A \<subseteq> dom f" and h2: "dom f \<inter> dom g = {}"
@@ -125,17 +124,6 @@ lemma map_add_image_dist2:
     show "g ` A \<subseteq> f ++ g ` A"
       using h1 h2 by (auto simp add: map_add_def image_def split: option.splits)
   qed
-
-(*lemma map_add_image_dist: "(f++g)`A = f`A \<union> g`A"
-proof
-  show "f ++ g ` A \<subseteq> f ` A \<union> g ` A"
-  proof
-    fix x
-    assume "x \<in> f ++ g ` A"
-    then show "x \<in> f ` A \<union> g ` A"
-    proof (case_tac 
-      by (auto simp add: map_add_def image_def split: option.splits)
-qed*)
 
 lemma ran_map_add_dist[simp]:
   assumes "dom f \<inter> dom g = {}"
@@ -203,53 +191,40 @@ lemma vimage_in_dom:
     fix x
     from assms show "x \<in> f -` B \<Longrightarrow> x \<in> A"
     by (auto simp add: vimage_def dom_def)
-  qed
+qed
 
-lemma map_add_dists_vimage: "\<lbrakk>None \<notin> A; dom f \<inter> dom g = {}\<rbrakk>\<Longrightarrow>(f++g)-`A =f-`A \<union> g-`A"
-  proof -
-    assume h1: "None \<notin> A"
-    assume h3: "dom f \<inter> dom g = {}"
-    show "(f++g)-`A =f-`A \<union> g-`A"
-    proof
-      show "f ++ g -` A \<subseteq> f -` A \<union> g -` A"
-      proof
-        fix x
-        show "x \<in> f ++ g -` A \<Longrightarrow> x \<in> f -` A \<union> g -` A"
-          by (auto simp add: map_add_def split: option.splits)
-      qed
-      next
-      show "f -` A \<union> g -` A \<subseteq> f ++ g -` A"
-      proof
-        fix x
-        show "x \<in> f -` A \<union> g -` A \<Longrightarrow> x \<in> f ++ g -` A"
-        proof (simp add: vimage_def)
-          assume h5: "f x \<in> A \<or> g x \<in> A"
-          have h5a: "f x \<noteq> None \<or> g x \<noteq> None" 
-            using h1 h5 by (auto)
-          show "(f ++ g) x \<in> A"
-          proof (case_tac "g x = None")
-            assume h6: "g x = None"
-            show "(f ++ g) x \<in> A"
-              using h1 h3 h5a h5 h6 
-              by (auto simp add: vimage_def map_add_def split: option.splits)
-         next
-            assume h7: "g x \<noteq> None"
-            show "(f ++ g) x \<in> A"
-            proof (case_tac "f x = None")
-              assume h8: "f x = None"
-              show "(f ++ g) x \<in> A" 
-                using h1 h5 h5a h7 h8 
-                by (auto simp add: vimage_def map_add_def split: option.splits)
-              next
-              assume h9: "f x \<noteq> None"
-              show "(f ++ g) x \<in> A" 
-                using h7 h9 h3
-                by (auto simp add: vimage_def map_add_def split: option.splits)
-           qed
-        qed
+lemma map_add_dists_vimage: 
+  assumes "dom f \<inter> dom g = {}"
+  shows "(f++g)-` Some ` A =f-` Some `A \<union> g-` Some `A"
+proof
+  show "f ++ g -` Some ` A \<subseteq> f -` Some ` A \<union> g -` Some ` A"
+  proof
+    fix x
+    assume "x \<in> f ++ g -` Some ` A"
+    then show "x \<in> f -` Some ` A \<union> g -` Some ` A"
+      by (auto simp add: map_add_def split: option.splits)
+  qed
+next
+  show "f -` Some ` A \<union> g -` Some ` A \<subseteq> f ++ g -` Some ` A"
+  proof
+    fix x
+    assume "x \<in> f -` Some ` A \<union> g -` Some ` A"
+    hence "f x \<in> Some ` A \<or> g x \<in> Some ` A"
+      by auto
+    then show "x \<in> f ++ g -` Some `A"
+    proof 
+      assume "f x \<in> Some ` A"
+      hence "x \<notin> dom g"
+        using assms by auto
+      then show "x \<in> f ++ g -` Some ` A"
+        using \<open>f x \<in> Some ` A\<close>
+        by (simp add: vimage_def map_add_dom_app_simps)
+    next
+      assume "g x \<in> Some ` A"
+      then show "x \<in> f ++ g -` Some ` A"
+        by (auto simp add: domI vimage_def map_add_dom_app_simps)
      qed
    qed
- qed
 qed
 
 lemma disj_fun_vimage_Un:
