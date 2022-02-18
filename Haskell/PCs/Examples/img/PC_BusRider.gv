@@ -1,28 +1,28 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BusRider];
 RefOnBus [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-getOff [shape=ellipse,fillcolor=greenyellow,style = filled,label="getOff"];
+alight [shape=ellipse,fillcolor=greenyellow,style = filled,label="alight"];
 move [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
 stand [shape=ellipse,fillcolor=greenyellow,style = filled,label="stand"];
 seat [shape=ellipse,fillcolor=greenyellow,style = filled,label="seat"];
 OpOnBus [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 OnBus [shape=box,fillcolor=deepskyblue,style = filled,label="OnBus "];
 BusRider [shape=box,fillcolor=deepskyblue,style = filled,label="BusRider "];
-getOn [shape=ellipse,fillcolor=greenyellow,style = filled,label="getOn"];
+board [shape=ellipse,fillcolor=greenyellow,style = filled,label="board"];
 
 {rank=min;StartN_,BusRider}
-{rank=same;getOn,OnBus}
+{rank=same;board,OnBus}
 
 RefOnBus->OnBus[arrowhead="normalnormal",label=" "];
 move->RefOnBus[arrowtail=dot,dir=both,label="after"];
 stand->RefOnBus[arrowtail=dot,dir=both,label="after"];
 seat->RefOnBus[arrowtail=dot,dir=both,label="after"];
-OpOnBus->getOff[arrowhead="vee",fillcolor=white];
-OpOnBus->move[arrowhead="vee",fillcolor=white];
-OpOnBus->stand[arrowhead="vee",fillcolor=white];
-OpOnBus->seat[arrowhead="vee",fillcolor=white];
-getOn->OnBus[arrowtail=dot,dir=both,label="after"];
-StartN_->BusRider[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
+OpOnBus->alight[arrowhead="open"];
+OpOnBus->move[arrowhead="open"];
+OpOnBus->stand[arrowhead="open"];
+OpOnBus->seat[arrowhead="open"];
+board->OnBus[arrowtail=dot,dir=both,label="after"];
+StartN_->BusRider[arrowtail=diamond,dir=both,label="starts"];
 OnBus->OpOnBus[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
-BusRider->getOn[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+BusRider->board[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
 }

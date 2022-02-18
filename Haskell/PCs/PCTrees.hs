@@ -1,13 +1,13 @@
-------------------
+-----------------------
 -- Project: PCs/Fragmenta
--- Module: 'CSP_AST'
--- Description: Module that represents PCs as PCTs, a recursive datatype representation of abstract syntax
+-- Module: PCTrees
+-- Description: Handles representation of PCs as PCTs, a recursive datatype representation of abstract syntax
 -- Author: Nuno Amálio
------------------
-module PCTrees(PCT(..), TOp(..), CT(..), PCTD(..), withinRel, consPCTD, atomsOfPCTD, 
+-----------------------
+module PCs.PCTrees(PCT(..), TOp(..), CT(..), PCTD(..), withinRel, consPCTD, atomsOfPCTD, 
   show_pctd, isOperator, isAtom, isAtomAny, isAtomic, isSole) where
 
-import PCs
+import PCs.PCs
 import Gr_Cls
 import Grs
 import GrswT
@@ -15,7 +15,7 @@ import Sets
 import Relations
 import The_Nil
 import MyMaybe
-import PCs_MM_Names
+import PCs.PCs_MM_Names
 import ShowUtils
 import ParseUtils
 

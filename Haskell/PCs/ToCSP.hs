@@ -5,9 +5,9 @@
 -- Description: Module responsible for transforming PCTs into CSP
 -- Author: Nuno Amálio
 -----------------
-module PCsCSP(findAfterAtom, toCSP) where
+module PCs.ToCSP(findAfterAtom, toCSP) where
 
-import PCs
+import PCs.PCs
 import CSP_AST
 import Relations
 import Sets
@@ -15,10 +15,10 @@ import Grs
 import Gr_Cls
 import SGrs
 import CSPPrint
-import PCTrees
+import PCs.PCTrees
 import The_Nil
 import MyMaybe
-import PCs_MM_Names
+import PCs.PCs_MM_Names
 import GrswT
 import SimpleFuns
 

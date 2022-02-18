@@ -1,12 +1,12 @@
 ------------------
 -- Project: PCs/Fragmenta
 -- Module: 'PCsDraw'
--- Description: Module that deals with the drawing of PCs as graphviz ddescriptions
+-- Description: Draws PCs as graphviz ddescriptions
 -- Author: Nuno Amálio
 -----------------
-module PCsDraw(wrPCAsGraphviz) where
+module PCs.PCsDraw(wrPCAsGraphviz) where
  
-import PCs
+import PCs.PCs
 import SGrs
 import Gr_Cls
 import Grs
@@ -15,7 +15,7 @@ import Relations
 import ShowUtils
 import The_Nil
 import MyMaybe
-import PCs_MM_Names
+import PCs.PCs_MM_Names
 
 type Guard = Maybe String
 data NodeInfo = Compound [String] | Atom String Guard (Maybe (String, String)) 
@@ -128,13 +128,13 @@ wrNode (Node nm Skip) = nm ++ " [shape=box,fillcolor=\"#B9E0A5\",style = filled,
 wrNode (Node nm Import) = nm ++ " [shape=hexagon,fillcolor=orangered,style=filled,label =" ++  nm ++ "];" 
 
 wrConnectorSettings CDef = "[arrowhead=\"onormal\",dir=both,arrowtail=obox,penwidth=2,label=\"=\"];"
-wrConnectorSettings CBranch = "[arrowhead=\"vee\",fillcolor=white];"
-wrConnectorSettings (CBranchIf g) = "[arrowhead=\"vee\",fillcolor=white,label=\""++g ++"\"];"
-wrConnectorSettings CBranchElse = "[arrowhead=\"vee\",label=\"Else\"];"
-wrConnectorSettings CBranchJump = "[arrowhead=\"vee\",label=\"Jump\"];"
+wrConnectorSettings CBranch = "[arrowhead=\"open\"];"
+wrConnectorSettings (CBranchIf g) = "[arrowhead=\"open\",label=\""++g ++"\"];"
+wrConnectorSettings CBranchElse = "[arrowhead=\"open\",label=\"Else\"];"
+wrConnectorSettings CBranchJump = "[arrowhead=\"open\",label=\"Jump\"];"
 wrConnectorSettings (CAfter o) =  "[arrowtail=" ++ (if o then "odot" else "dot") ++ ",dir=both,label=\"after\"];"
 wrConnectorSettings (CRef ps _) = "[arrowhead=\"normalnormal\",label=" ++ (wrParamsLabel "" ps) ++ "];"
-wrConnectorSettings CStart = "[arrowhead=\"open\",arrowtail=diamond,dir=both,label=\"starts\"];"
+wrConnectorSettings CStart = "[arrowtail=diamond,dir=both,label=\"starts\"];"
 wrConnector (Connector _ (CRef _ True) _ _) = ""
 wrConnector (Connector nm ek s t) = s ++ "->" ++ t ++ (wrConnectorSettings ek)
 

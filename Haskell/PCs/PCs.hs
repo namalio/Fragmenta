@@ -6,10 +6,11 @@
 -- Author: Nuno Amálio
 -----------------
 
-module PCs(PC, MMInfo, isNodeOfTys, getAtoms, getPCStart, load_mm_info, pc_cmm, pc_amm, pc_rm, pc_sg_cmm, startCompound, getPCDef, 
-  srcOf, tgtOf, afterCRel, paramsOf, nmOfNamed, guardOf, pc_ns_of_nty, nmOfRef, nmOfRefF, paramsOfRef, anyExpOfAt, renamingsOf,
-  opValOfOp, nextNode, nextNodes, successorsOf, compoundStart, withinRel, importsOf, nextAfterC, nextNodesAfter, nextNodeAfter, 
-  branchesOfOp, innerKs, innerRefKs, commonInnerKs, hidden_RC, inner_Ref, openAC, guardOfOp) 
+module PCs.PCs(PC, MMInfo, isNodeOfTys, getAtoms, getPCStart, load_mm_info, pc_cmm, pc_amm, pc_rm, pc_sg_cmm, 
+    startCompound, getPCDef, srcOf, tgtOf, afterCRel, paramsOf, nmOfNamed, guardOf, pc_ns_of_nty, nmOfRef,
+     nmOfRefF, paramsOfRef, anyExpOfAt, renamingsOf,opValOfOp, nextNode, nextNodes, successorsOf, 
+     compoundStart, withinRel, importsOf, nextAfterC, nextNodesAfter, nextNodeAfter, branchesOfOp, innerKs, 
+     innerRefKs, commonInnerKs, hidden_RC, inner_Ref, openAC, guardOfOp) 
 where
 
 import Gr_Cls
@@ -26,7 +27,7 @@ import The_Nil
 import MyMaybe
 import ParseUtils
 import SimpleFuns
-import PCs_MM_Names
+import PCs.PCs_MM_Names
 import Control.Monad(when)
 
 type PC a = GrwT a

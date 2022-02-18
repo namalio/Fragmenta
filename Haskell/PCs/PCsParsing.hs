@@ -1,10 +1,10 @@
 ------------------
 -- Project: PCs/Fragmenta
 -- Module: 'PCsParsing'
--- Description: Module responsible for the parsing of PC textual descriptions
+-- Description: Parses PC textual descriptions
 -- Author: Nuno Amálio
 -----------------
-module PCsParsing(loadPC) where
+module PCs.PCsParsing(loadPC) where
 
 import Text.ParserCombinators.ReadP
 import Control.Applicative
@@ -17,7 +17,7 @@ import The_Nil
 import MyMaybe
 import GrswT
 import ParseUtils
-import PCs_MM_Names
+import PCs.PCs_MM_Names
 import SimpleFuns
 import CommonParsing
 
@@ -301,7 +301,7 @@ loadPCFrFile fn = do
     let pc = parseMaybe pc_def contents
     return pc
 
-nilQl = ([], [], [], [])
+--nilQl = ([], [], [], [])
 combineQAsConcat (x, y, z, w) (x', y', z', w') = (x++x', y++y', z++z', w++w')
 combineQAsUnion (x, y, z, w) (x', y', z', w') = (x `union` x', y `union` y', z `union` z', w `union` w')
 combineQAsInsert (x, y, z, w) (x', y', z', w') = (insert x x', insert y y', insert z z', insert w w')

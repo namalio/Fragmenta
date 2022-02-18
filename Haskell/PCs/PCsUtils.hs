@@ -5,20 +5,20 @@
 -- Description: Utilities module of PCs
 -- Author: Nuno Amálio
 -----------------
-module PCsUtils(writeCSPToFile, checkWFAndGeneratePCTree, checkWF, optionsPCs, startPCOps, 
+module PCs.PCsUtils(writeCSPToFile, checkWFAndGeneratePCTree, checkWF, optionsPCs, startPCOps, 
    outputDrawing, outputCSP) where
 
 import Gr_Cls
-import PCs
+import PCs.PCs
 import SGrs
 import GrswT
-import PCsCSP
-import PCTrees
+import PCs.ToCSP
+import PCs.PCTrees
 import CSPPrint
 import System.IO
 import Control.Monad(when, forM)
-import PCsDraw
-import PCsParsing
+import PCs.PCsDraw
+import PCs.PCsParsing
 import Relations
 import Sets
 import SimpleFuns
@@ -29,9 +29,9 @@ import MyMaybe
 import System.Environment
 
 mm_path = "PCs/MM/"
-pcs_path = "PCs/PCs/"
-csp_path = "PCs/PCs/CSP/"
-img_path = "PCs/PCs/img/"
+pcs_path = "PCs/Examples/"
+csp_path = "PCs/Examples/CSP/"
+img_path = "PCs/Examples/img/"
 
 getImportedAtoms::FilePath->SGr String->GrwT String->IO([String])
 getImportedAtoms pcs_path sg_mm pc = do
@@ -294,8 +294,8 @@ generate_Authentication mmi = do
 generate_CashMachine mmi = do
    check_generate pcs_path img_path csp_path mmi "PC_CashMachine.pc"
 
-generate_TravelBus mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_TravelBus.pc"
+generate_BusRider mmi = do
+   check_generate pcs_path img_path csp_path mmi "PC_BusRider.pc"
 
 generate_ABusRide mmi = do
     check_generate pcs_path img_path csp_path mmi "PC_ABusRide.pc"
@@ -352,7 +352,7 @@ generateAll = do
         generate_BoolSetter mmi
         generate_Lasbscs mmi 
         generate_Timer mmi
-        generate_TravelBus mmi 
+        generate_BusRider mmi 
         generate_ABusRide mmi
         generate_SimpleLife mmi
         generate_CardReader mmi
@@ -386,9 +386,10 @@ main = do
 
 test = do 
     mmi<-load_mm_info mm_path
-    pc <- loadPC (pc_sg_cmm mmi) (pcs_path ++ "PC_CMBarred.pc")
-    is<-getImports pcs_path (pc_sg_cmm mmi) pc
-    putStrLn $ show is
+    generate_BusRider mmi
+    --pc <- loadPC (pc_sg_cmm mmi) (pcs_path ++ "BusRider.pc")
+    --is<-getImports pcs_path (pc_sg_cmm mmi) pc
+    --putStrLn $ show is
     --generate_Timer mmi
     --generate_CashMachineOps mmi
     --generate_HouseUnderAttack mmi
