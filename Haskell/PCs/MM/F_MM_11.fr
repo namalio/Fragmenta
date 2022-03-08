@@ -13,7 +13,7 @@ fragment F_MM_11 {
     inh BElseC->BranchC
     inh BJumpC->BranchC
     inh BranchC->PConnector4
-    relu BranchC->POperator2[BranchCSrc]
+    relu BranchC->PCombination[BranchCSrc]
     relu BranchC->PAction4[BranchCTgt]
   }
   ref PConnector4->Connector

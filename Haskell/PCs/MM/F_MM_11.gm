@@ -6,7 +6,7 @@ Morphism F_MM_11 {
 		BranchC->Connector
 		PConnector4->Connector
 		PAction4->Node
-		POperator2->Node
+		PCombination->Node
 		PGuarded2->Element
 	}
 	edges {

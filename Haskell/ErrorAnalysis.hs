@@ -46,8 +46,9 @@ check_surj f ys =
 -- Finds error with a function
 check_fun' msg f =
     let emsg = msg ++ " More than one mapping for the elements: " in
+    let emsg2 = ". Function is: " in
     let xs_monce = find_monces f in
-    if functional f then nile else cons_se $ emsg ++ (showElems' xs_monce)
+    if functional f then nile else cons_se $ emsg ++ (showElems' xs_monce) ++ emsg2 ++ (showElems' f)
 
 check_fun f = check_fun' "Errors in function." f
 

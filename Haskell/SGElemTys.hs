@@ -21,7 +21,10 @@ sgety_set = [Einh, Ewander, Eder] ++ [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
 
 -- Order which dictates allowed inheritance relations 
 nty_lti:: SGNTy->SGNTy->Bool
-nty_lti nt1 nt2 = ((nt2 == Nenum && nt1 == Nval) || (nt1 == Nvirt && nt2 == Nvirt) || (nt1 == Nabst && nt2 `elem` [Nvirt, Nabst, Nprxy]))
+nty_lti nt1 nt2 = ((nt2 == Nenum && nt1 == Nval) 
+    || (nt1 == Nvirt && nt2 == Nvirt) 
+    || (nt1 == Nabst && nt2 `elem` [Nvirt, Nabst, Nprxy]))
+    || (nt1 == Nnrml && (not $ nt2 `elem` [Nenum, Nval]))
     &&  (not $ nt1 `elem` [Nprxy, Nenum, Nopt]) && nt2 /= Nopt
 
 -- Ordering used to state refinement relations

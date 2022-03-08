@@ -107,7 +107,7 @@ reso_f f = cons_f (reso_sg f) es' (dres (srcR f) es') (dres (tgtR f) es')
     where es' = rEsR f
 
 -- Base well-formedness predicate
-is_wfz_f f = is_wf (Just Partial) (fsg f) && disjoint [(fLEs f), esR f] 
+is_wfz_f f = is_wf Nothing (fsg f) && disjoint [(fLEs f), esR f] 
     && fun_bij (srcR f) (esR f) (nsP .fsg $ f) && fun_total' (tgtR f) (esR f) 
     && disjoint [ran_of . tgtR $ f, nsO . fsg $ f]
 

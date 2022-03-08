@@ -1,21 +1,21 @@
 digraph {graph[label=m_feline_canidae_uf,labelloc=tl,labelfontsize=12];
 subgraph cluster_m_feline_canidae_uf{style=dashed;label=m_feline_canidae_uf;
-"PFeline"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feline<br/>(P)>];
-"PCanidae"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canidae<br/>(P)>];
 "Lynx"[shape=record,fillcolor=lightskyblue1,style = filled,label="Lynx"];
 "Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"PFeline"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feline<br/>(P)>];
 "Wolf"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wolf"];
 "Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
-"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Mammal"];
-"Canidae"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canidae"];
+"PCanidae"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canidae<br/>(P)>];
 "Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+"Canidae"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canidae"];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Mammal"];
 
 "Lynx"->"PFeline"[arrowhead=onormal,arrowsize=2.0];
 "Cat"->"PFeline"[arrowhead=onormal,arrowsize=2.0];
 "Wolf"->"PCanidae"[arrowhead=onormal,arrowsize=2.0];
 "Dog"->"PCanidae"[arrowhead=onormal,arrowsize=2.0];
-"Canidae"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 "Feline"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Canidae"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 
 }
 "PFeline"->"Feline"[arrowhead=normalnormal];

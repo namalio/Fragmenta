@@ -5,15 +5,15 @@ subgraph cluster_m_feline_canidae_rf{style=dashed;label=m_feline_canidae_rf;
 "Wolf"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wolf"];
 "Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
 "Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Mammal"];
-"Canidae"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canidae"];
 "Feline"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feline"];
+"Canidae"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canidae"];
 
 "Lynx"->"Feline"[arrowhead=onormal,arrowsize=2.0];
 "Cat"->"Feline"[arrowhead=onormal,arrowsize=2.0];
 "Wolf"->"Canidae"[arrowhead=onormal,arrowsize=2.0];
 "Dog"->"Canidae"[arrowhead=onormal,arrowsize=2.0];
-"Canidae"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 "Feline"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Canidae"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 
 }
 }

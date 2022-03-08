@@ -6,7 +6,7 @@
 -----------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module SGrs(SGr, is_wf_sg, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, derb, empty_sg, nsTys, nsP, nsO, esTys, esA, esI, esW, 
+module SGrs(SGr, is_wf_sg, is_wf_sgz, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, derb, empty_sg, nsTys, nsP, nsO, esTys, esA, esI, esW, 
    esC, srcst, tgtst, inh, inhst, disj_sgs, union_sg, union_sgs, subsume_sg, sg_refinesz, errs_sg_refinesz, tsg_refinesz, 
    errs_tsg_refinesz, ns_of_ntys, es_of_ety, totaliseForDer)  
 where
@@ -145,7 +145,8 @@ acyclicI::Eq a =>SGr a->Bool
 acyclicI = acyclicG . inhG
 
 -- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
-isInhTree sg = pfun (relOfG $ subtractNs (inhG sg) (nsV sg)) (ns sg) (ns sg) 
+inhMinus sg = relOfG $ subtractNs (inhG sg) (nsV sg)
+isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg) 
 
 -- Checks whether the inheritance hierarchy complies with required restrictions
 inh_ok::Eq a =>SGr a->Bool
@@ -161,11 +162,18 @@ optsVoluntary sg = all (\n->nodeopt_ok sg n) $ nsO sg
 -- Function that checks that a list of multiplicies are well-formed
 mults_wf = all multwf
 
--- Checks whether a SG is well-forfEd either totally or partially
-is_wf_sg::Eq a =>SGr a->Bool
-is_wf_sg sg = is_wf Nothing (g_sg sg)
+-- Checks whether a SG is well-formed either totally or partially
+is_wf_sgz::Eq a =>SGr a->Bool
+is_wf_sgz sg = is_wf Nothing (g_sg sg)
    && fun_total (nty sg) (ns sg) (sgnty_set) 
    && fun_total (ety sg) (es sg) (sgety_set)
+   && dom_of (srcm sg) `subseteq` es sg  
+   && dom_of (tgtm sg) `subseteq` es sg
+   && dom_of (derb sg) `subseteq` es sg
+
+-- Checks whether a SG is well-formed either totally or partially
+is_wf_sg::Eq a =>SGr a->Bool
+is_wf_sg sg = is_wf_sgz sg
    && mults_wf (ran_of $ srcm sg) && mults_wf (ran_of $ tgtm sg) 
    && fun_total' (srcma sg) (esC sg) && fun_total' (tgtm sg) (esC sg)
    && mult_etys_ok sg && optsVoluntary sg 
@@ -199,7 +207,7 @@ check_inh_ok::(Eq a, Show a) =>SGr a->ErrorTree
 check_inh_ok sg = 
    let errs1 = if inh_ntys_ok sg then nile else cons_se $ "The following inheritance pairs are not compliant with the node type restrictions:" ++ (showElems' err_inh_pairs) in
    let errs2 = if acyclicI sg then nile else cons_se "The inheritance hierarchy has cycles." in
-   let errs3 = if isInhTree sg then nile else cons_se "The inheritance hierarchy without virtual nodes is not a tree." in
+   let errs3 = if isInhTree sg then nile else err_prepend "The inheritance hierarchy without virtual nodes is not a tree. " (check_pfun (inhMinus sg) (ns sg) (ns sg)) in
    if inh_ok sg then nile else cons_et "Errors in the inheritance hierarchy." [errs1, errs2, errs3]
    where err_inh_pairs = filter (not . (inh_nty_ok sg)) (inh sg)
 
@@ -254,7 +262,8 @@ check_wf_tsg::(Eq a, Show a)=>String->SGr a-> ErrorTree
 check_wf_tsg nm sg = check_wf_of sg nm is_wf_tsg errors_tsg
 
 is_wf_sg' (Just Total) = is_wf_tsg 
-is_wf_sg' _ = is_wf_sg
+is_wf_sg' (Just Partial) = is_wf_sg 
+is_wf_sg' Nothing = is_wf_sgz
 
 check_wf_sg' id (Just Total) = check_wf_tsg id
 check_wf_sg' id _            = check_wf_sg id  

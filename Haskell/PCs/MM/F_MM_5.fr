@@ -9,8 +9,8 @@ fragment F_MM_5 {
     node Combination
     inh Stop->PNode
     inh Skip->PNode
-    inh Operator->PNode
-    inh Operator->PParameterised
+    inh Combination->PNode
+    inh Combination->PParameterised
     inh Stop->PAction
     inh Skip->PAction
     inh Combination->PAction
