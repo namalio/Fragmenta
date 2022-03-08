@@ -21,13 +21,13 @@ CMOkBalanceForget [shape=box,fillcolor=deepskyblue,style = filled,label="CMOkBal
 {rank=same;cardSwallow,RefCashMachine}
 
 cardSwallow->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",label=" "];
+RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
 cCollectTimeout->cardSwallow[arrowtail=dot,dir=both,label="after"];
 cardEject->cCollectTimeout[arrowtail=dot,dir=both,label="after"];
 cancel->cardEject[arrowtail=dot,dir=both,label="after"];
 showBalance->cancel[arrowtail=dot,dir=both,label="after"];
 grant->showBalance[arrowtail=dot,dir=both,label="after"];
 cardIn->grant[arrowtail=dot,dir=both,label="after"];
-StartN_->CMOkBalanceForget[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-CMOkBalanceForget->cardIn[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+StartN_->CMOkBalanceForget[arrowtail=diamond,dir=both,label="starts"];
+CMOkBalanceForget->cardIn[arrowhead="onormal",penwidth=2,label="="];
 }

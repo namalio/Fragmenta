@@ -23,7 +23,7 @@ CMOkWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="CMOkWithdraw
 {rank=same;cCollect,RefCashMachine}
 
 cCollect->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",label=" "];
+RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
 cardEject->cCollect[arrowtail=dot,dir=both,label="after"];
 cancel->cardEject[arrowtail=dot,dir=both,label="after"];
 cashDispense->cancel[arrowtail=dot,dir=both,label="after"];
@@ -31,6 +31,6 @@ withdraw->cashDispense[arrowtail=dot,dir=both,label="after"];
 optWithdraw->withdraw[arrowtail=dot,dir=both,label="after"];
 grant->optWithdraw[arrowtail=dot,dir=both,label="after"];
 cardIn->grant[arrowtail=dot,dir=both,label="after"];
-StartN_->CMOkWithdraw[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-CMOkWithdraw->cardIn[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+StartN_->CMOkWithdraw[arrowtail=diamond,dir=both,label="starts"];
+CMOkWithdraw->cardIn[arrowhead="onormal",penwidth=2,label="="];
 }

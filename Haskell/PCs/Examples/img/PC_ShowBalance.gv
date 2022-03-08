@@ -3,8 +3,6 @@ StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC
 showBalance [shape=ellipse,fillcolor=greenyellow,style = filled,label="showBalance"];
 ShowBalance [shape=box,fillcolor=deepskyblue,style = filled,label="ShowBalance "];
 
-{rank=min;StartN_,ShowBalance}
-
-StartN_->ShowBalance[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-ShowBalance->showBalance[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+StartN_->ShowBalance[arrowtail=diamond,dir=both,label="starts"];
+ShowBalance->showBalance[arrowhead="onormal",penwidth=2,label="="];
 }

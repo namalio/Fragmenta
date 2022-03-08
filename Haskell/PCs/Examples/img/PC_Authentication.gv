@@ -11,12 +11,12 @@ Authenticate [shape=box,fillcolor=deepskyblue,style = filled,label="Authenticate
 {rank=min;StartN_,Authenticate}
 {rank=same;fail,RefAuthenticate}
 
-RefAuthenticate->Authenticate[arrowhead="normalnormal",label=" (n-1)"];
+RefAuthenticate->Authenticate[arrowhead="normalnormal",fillcolor=white,label=" (n-1)"];
 fail->RefAuthenticate[arrowtail=dot,dir=both,label="after"];
-OpAuthenticateChoice->fail[arrowhead="vee",fillcolor=white];
-OpAuthenticateChoice->grant[arrowhead="vee",fillcolor=white];
-OpAuthenticate->deny[arrowhead="vee",label="Else"];
-OpAuthenticate->OpAuthenticateChoice[arrowhead="vee",fillcolor=white,label="n>0"];
-StartN_->Authenticate[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-Authenticate->OpAuthenticate[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+OpAuthenticateChoice->fail[arrowhead="open"];
+OpAuthenticateChoice->grant[arrowhead="open"];
+OpAuthenticate->deny[arrowhead="open",label="Else"];
+OpAuthenticate->OpAuthenticateChoice[arrowhead="open",label="n>0"];
+StartN_->Authenticate[arrowtail=diamond,dir=both,label="starts"];
+Authenticate->OpAuthenticate[arrowhead="onormal",penwidth=2,label="="];
 }

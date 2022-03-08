@@ -1,6 +1,6 @@
 Morphism F_MM_6 {
 	nodes {
-		OperatorVal->Attribute
+		Operator->Attribute
 		OpChoice->Attribute
 		OpIntChoice->Attribute
 		OpParallel->Attribute

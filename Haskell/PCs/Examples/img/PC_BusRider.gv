@@ -13,7 +13,7 @@ board [shape=ellipse,fillcolor=greenyellow,style = filled,label="board"];
 {rank=min;StartN_,BusRider}
 {rank=same;board,OnBus}
 
-RefOnBus->OnBus[arrowhead="normalnormal",label=" "];
+RefOnBus->OnBus[arrowhead="normalnormal",fillcolor=white,label=" "];
 move->RefOnBus[arrowtail=dot,dir=both,label="after"];
 stand->RefOnBus[arrowtail=dot,dir=both,label="after"];
 seat->RefOnBus[arrowtail=dot,dir=both,label="after"];
@@ -23,6 +23,6 @@ OpOnBus->stand[arrowhead="open"];
 OpOnBus->seat[arrowhead="open"];
 board->OnBus[arrowtail=dot,dir=both,label="after"];
 StartN_->BusRider[arrowtail=diamond,dir=both,label="starts"];
-OnBus->OpOnBus[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
-BusRider->board[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+OnBus->OpOnBus[arrowhead="onormal",penwidth=2,label="="];
+BusRider->board[arrowhead="onormal",penwidth=2,label="="];
 }

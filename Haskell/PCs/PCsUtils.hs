@@ -380,9 +380,8 @@ generate fnm = do
   check_generate pcs_path img_path csp_path mmi (fnm ++ ".pc")
 
 main = do
-  mmi<-load_mm_info mm_path
   args <- getArgs
-  check_generate pcs_path img_path csp_path mmi ((head args) ++ ".pc")
+  generate ((head args) ++ ".pc")
 
 test = do 
     mmi<-load_mm_info mm_path

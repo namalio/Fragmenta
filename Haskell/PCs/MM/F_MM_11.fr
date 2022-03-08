@@ -1,7 +1,7 @@
 fragment F_MM_11 {
   SG SG_MM_11 {
     proxy PConnector4
-    proxy POperator2
+    proxy PCombination
     proxy PAction4
     proxy PGuarded2
     node BMainIfC
@@ -17,7 +17,7 @@ fragment F_MM_11 {
     relu BranchC->PAction4[BranchCTgt]
   }
   ref PConnector4->Connector
-  ref POperator2->Operator
+  ref PCombination->Combination
   ref PAction4->Action
   ref PGuarded2->Guarded
 }

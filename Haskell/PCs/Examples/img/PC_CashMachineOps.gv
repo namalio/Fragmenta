@@ -8,8 +8,8 @@ PC_Authentication [shape=hexagon,fillcolor=orangered,style=filled,label =PC_Auth
 {rank=min;StartN_,CashMachineOps}
 {rank=same;cardIn,RefAuthenticate}
 
-RefAuthenticate->PC_Authentication[arrowhead="normalnormal",label=" "];
+RefAuthenticate->PC_Authentication[arrowhead="normalnormal",fillcolor=white,label=" "];
 cardIn->RefAuthenticate[arrowtail=dot,dir=both,label="after"];
-StartN_->CashMachineOps[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-CashMachineOps->cardIn[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+StartN_->CashMachineOps[arrowtail=diamond,dir=both,label="starts"];
+CashMachineOps->cardIn[arrowhead="onormal",penwidth=2,label="="];
 }

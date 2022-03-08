@@ -29,30 +29,30 @@ RefBarredAsset [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",lab
 {rank=same;doOther,RefCarryOut}
 {rank=same;erect,DoBarred}
 
-RefBarredAsset2->BarredAsset[arrowhead="normalnormal",label=" (ses,rses,bes,pes,oes)"];
+RefBarredAsset2->BarredAsset[arrowhead="normalnormal",fillcolor=white,label=" (ses,rses,bes,pes,oes)"];
 protected->refDoBarred[arrowtail=dot,dir=both,label="after"];
 doOther2->refDoBarred[arrowtail=dot,dir=both,label="after"];
-refDoBarred->DoBarred[arrowhead="normalnormal",label=" "];
-OpDoBarred2->protected[arrowhead="vee",fillcolor=white];
-OpDoBarred2->doOther2[arrowhead="vee",fillcolor=white];
-OpDoBarred->SKIP2[arrowhead="vee",fillcolor=white];
-OpDoBarred->OpDoBarred2[arrowhead="vee",fillcolor=white];
+refDoBarred->DoBarred[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpDoBarred2->protected[arrowhead="open"];
+OpDoBarred2->doOther2[arrowhead="open"];
+OpDoBarred->SKIP2[arrowhead="open"];
+OpDoBarred->OpDoBarred2[arrowhead="open"];
 erect->DoBarred[arrowtail=dot,dir=both,label="after"];
 doOther->RefCarryOut[arrowtail=dot,dir=both,label="after"];
-RefCarryOut->CarryOut[arrowhead="normalnormal",label=" "];
-OpCarryOut2->erect[arrowhead="vee",fillcolor=white];
-OpCarryOut2->doOther[arrowhead="vee",fillcolor=white];
-OpCarryOut->SKIP[arrowhead="vee",fillcolor=white];
-OpCarryOut->OpCarryOut2[arrowhead="vee",fillcolor=white];
+RefCarryOut->CarryOut[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpCarryOut2->erect[arrowhead="open"];
+OpCarryOut2->doOther[arrowhead="open"];
+OpCarryOut->SKIP[arrowhead="open"];
+OpCarryOut->OpCarryOut2[arrowhead="open"];
 start->DoIt[arrowtail=dot,dir=both,label="after"];
-OpBarredAsset->restart[arrowhead="vee",fillcolor=white];
-OpBarredAsset->start[arrowhead="vee",fillcolor=white];
+OpBarredAsset->restart[arrowhead="open"];
+OpBarredAsset->start[arrowhead="open"];
 BarredAsset->RefBarredAsset2[arrowtail=dot,dir=both,label="after"];
-RefBarredAsset->BarredAsset[arrowhead="normalnormal",label=" ({cardIn},{cancel},{grant},{optWithdraw, showBalance},{withdraw, cashDeny, cashDispense, fail, cardSwallow, cCollectTimeout, cCollect, cardEject, deny, cancel})"];
-StartN_->CMBarred[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-DoBarred->OpDoBarred[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
-CarryOut->OpCarryOut[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
-DoIt->CarryOut[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
-BarredAsset->OpBarredAsset[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
-CMBarred->RefBarredAsset[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+RefBarredAsset->BarredAsset[arrowhead="normalnormal",fillcolor=white,label=" ({cardIn},{cancel},{grant},{optWithdraw, showBalance},{withdraw, cashDeny, cashDispense, fail, cardSwallow, cCollectTimeout, cCollect, cardEject, deny, cancel})"];
+StartN_->CMBarred[arrowtail=diamond,dir=both,label="starts"];
+DoBarred->OpDoBarred[arrowhead="onormal",penwidth=2,label="="];
+CarryOut->OpCarryOut[arrowhead="onormal",penwidth=2,label="="];
+DoIt->CarryOut[arrowhead="onormal",penwidth=2,label="="];
+BarredAsset->OpBarredAsset[arrowhead="onormal",penwidth=2,label="="];
+CMBarred->RefBarredAsset[arrowhead="onormal",penwidth=2,label="="];
 }

@@ -25,7 +25,7 @@ CMInvalidWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="CMInval
 {rank=same;cCollect,RefCashMachine}
 
 cCollect->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",label=" "];
+RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
 cardEject->cCollect[arrowtail=dot,dir=both,label="after"];
 cancel->cardEject[arrowtail=dot,dir=both,label="after"];
 cashDispense->cancel[arrowtail=dot,dir=both,label="after"];
@@ -34,6 +34,6 @@ optWithdraw->withdraw[arrowtail=dot,dir=both,label="after"];
 fail2->optWithdraw[arrowtail=dot,dir=both,label="after"];
 fail->fail2[arrowtail=dot,dir=both,label="after"];
 cardIn->fail[arrowtail=dot,dir=both,label="after"];
-StartN_->CMInvalidWithdraw[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-CMInvalidWithdraw->cardIn[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+StartN_->CMInvalidWithdraw[arrowtail=diamond,dir=both,label="starts"];
+CMInvalidWithdraw->cardIn[arrowhead="onormal",penwidth=2,label="="];
 }

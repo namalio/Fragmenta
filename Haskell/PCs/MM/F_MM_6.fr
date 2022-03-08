@@ -1,5 +1,5 @@
 fragment F_MM_6 {
   SG SG_MM_6 {
-    enum OperatorVal: OpChoice, OpIntChoice, OpParallel, OpIf, OpInterleave, OpThrow
+    enum Operator: OpChoice, OpIntChoice, OpParallel, OpIf, OpInterleave, OpThrow
   }
 }

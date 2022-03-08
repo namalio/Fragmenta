@@ -127,13 +127,13 @@ wrNode (Node nm Stop) = nm ++ " [shape=box,fillcolor=mistyrose2,style = filled,l
 wrNode (Node nm Skip) = nm ++ " [shape=box,fillcolor=\"#B9E0A5\",style = filled,label=\"SKIP\"];"
 wrNode (Node nm Import) = nm ++ " [shape=hexagon,fillcolor=orangered,style=filled,label =" ++  nm ++ "];" 
 
-wrConnectorSettings CDef = "[arrowhead=\"onormal\",dir=both,arrowtail=obox,penwidth=2,label=\"=\"];"
+wrConnectorSettings CDef = "[arrowhead=\"onormal\",penwidth=2,label=\"=\"];"
 wrConnectorSettings CBranch = "[arrowhead=\"open\"];"
 wrConnectorSettings (CBranchIf g) = "[arrowhead=\"open\",label=\""++g ++"\"];"
 wrConnectorSettings CBranchElse = "[arrowhead=\"open\",label=\"Else\"];"
 wrConnectorSettings CBranchJump = "[arrowhead=\"open\",label=\"Jump\"];"
 wrConnectorSettings (CAfter o) =  "[arrowtail=" ++ (if o then "odot" else "dot") ++ ",dir=both,label=\"after\"];"
-wrConnectorSettings (CRef ps _) = "[arrowhead=\"normalnormal\",label=" ++ (wrParamsLabel "" ps) ++ "];"
+wrConnectorSettings (CRef ps _) = "[arrowhead=\"normalnormal\",fillcolor=white,label=" ++ (wrParamsLabel "" ps) ++ "];"
 wrConnectorSettings CStart = "[arrowtail=diamond,dir=both,label=\"starts\"];"
 wrConnector (Connector _ (CRef _ True) _ _) = ""
 wrConnector (Connector nm ek s t) = s ++ "->" ++ t ++ (wrConnectorSettings ek)

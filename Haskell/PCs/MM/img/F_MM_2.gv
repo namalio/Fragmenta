@@ -21,7 +21,7 @@ subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
 "Atom"->"Guarded"[arrowhead=onormal,arrowsize=2.0];
 "Compound"->"Action"[arrowhead=onormal,arrowsize=2.0];
 "Parameterised"->"Parameter"[label="HasParams▼",arrowhead=vee,headlabel="*",arrowsize=.5];
-"Guarded"->"Guard"[label="HasGuard▼",dir=none,taillabel="",headlabel="0..1"];
+"Guarded"->"Guard"[label="HasGuard▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
 
 }
 

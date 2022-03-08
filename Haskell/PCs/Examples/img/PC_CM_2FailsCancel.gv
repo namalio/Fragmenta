@@ -19,12 +19,12 @@ CM2FsC [shape=box,fillcolor=deepskyblue,style = filled,label="CM2FsC "];
 {rank=same;cCollect,RefCashMachine}
 
 cCollect->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",label=" "];
+RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
 cardEject->cCollect[arrowtail=dot,dir=both,label="after"];
 cancel->cardEject[arrowtail=dot,dir=both,label="after"];
 fail2->cancel[arrowtail=dot,dir=both,label="after"];
 fail->fail2[arrowtail=dot,dir=both,label="after"];
 cardIn->fail[arrowtail=dot,dir=both,label="after"];
-StartN_->CM2FsC[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-CM2FsC->cardIn[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+StartN_->CM2FsC[arrowtail=diamond,dir=both,label="starts"];
+CM2FsC->cardIn[arrowhead="onormal",penwidth=2,label="="];
 }
