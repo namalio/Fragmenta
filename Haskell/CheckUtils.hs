@@ -34,7 +34,7 @@ check_ty_morphism id omk gwt sg b = do
 show_typing_msg errs = 
    if is_nil errs
       then putStrLn "The PC is well-typed."
-      else putStrLn $ "The PC is not well-typed:\n" ++ (show_err errs) 
+      else putStrLn $ "The PC is ill-typed:\n" ++ (show_err errs) 
 
 --check_instance_morphism_strong id om gwt sg b = do
 --   let errs = check_wf_gm' id (Just PartialM) (gwt, sg) 

@@ -1,0 +1,22 @@
+fragment F_AASD {
+  SG SG_AASD {
+    node StructureDiagram
+    virtual Manner
+    nodea PElement
+    node VType
+    node Block
+    node Composition
+    node Feature
+    compu StructureDiagram->PElement[ConsistsOf]:*
+    rel Manner->Feature[Has]:*,*
+    rel Feature->Feature[AssociatedWith]:*,*
+    rel Feature->VType[HasType]:*,0..1
+    inh StructureDiagram->Manner
+    inh PElement->Manner
+    inh Block->PElement
+    inh Composition->PElement
+    inh VType->PElement
+    relu Composition->Block[Composition_src]
+    relu Composition->Block[Composition_tgt]
+  }
+}

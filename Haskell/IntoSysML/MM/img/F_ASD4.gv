@@ -1,0 +1,36 @@
+digraph {graph[label=F_ASD4,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
+"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
+"PBlock"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block<br/>(P)>];
+"PFlowPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FlowPort<br/>(P)>];
+"PVariable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Variable<br/>(P)>];
+"BElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElement"];
+"cyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
+"subsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
+"physical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
+"ComponentKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="ComponentKind\l(enum)"];
+"discrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
+"continuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
+"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
+"PhenomenaKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="PhenomenaKind\l(enum)"];
+
+"System"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
+"PBlock"->"PFlowPort"[label="Block_fports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Component"->"PVariable"[label="Component_vars",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Compound"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"BElement"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"cyber"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"subsystem"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"physical"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"ComponentKind"[label="Component_kind",arrowhead=vee,headlabel="",arrowsize=.5];
+"discrete"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"continuous"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"PhenomenaKind"[label="Compound_phenomena",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+
+
+}

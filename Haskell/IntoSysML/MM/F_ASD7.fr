@@ -1,0 +1,25 @@
+fragment F_ASD7 {
+  SG SG_ASD7 {
+    node ConfigurationDiagram
+    proxy PNamed4
+    proxy PValueType3
+    proxy PFlowPort2
+    proxy PBlock3
+    proxy PComposition3
+    virtual CDElement
+    node Connector
+    compu ConfigurationDiagram->CDElement[ConsistsOf]
+    inh ConfigurationDiagram->PNamed4
+    relu Connector->PValueType3[Connector_ftype]
+    relu Connector->PFlowPort2[Connector_src]
+    relu Connector->PFlowPort2[Connector_tgt]
+    inh PComposition3->CDElement
+    inh PBlock3->CDElement
+    inh Connector->CDElement
+  }
+    ref PNamed4->Named
+    ref PValueType3->ValueType
+    ref PComposition3->Composition
+    ref PFlowPort2->FlowPort
+    ref PBlock3->Block
+}

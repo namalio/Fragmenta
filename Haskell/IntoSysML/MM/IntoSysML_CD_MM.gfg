@@ -1,0 +1,7 @@
+GFG IntoSysML_AMM {
+  fragment F_B1
+  fragment F_TYS
+  fragment F_CD1
+  F_CD1 references F_B1
+  F_CD1 references F_TYS
+}

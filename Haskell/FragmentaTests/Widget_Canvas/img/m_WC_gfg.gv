@@ -1,0 +1,6 @@
+digraph {graph[label=m_WC_gfg,labelloc=tl,labelfontsize=12];
+"F_WC1"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_WC1"];
+"F_WC2"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_WC2"];
+
+"F_WC2"->"F_WC1"[label=" ",arrowhead=veevee];
+}

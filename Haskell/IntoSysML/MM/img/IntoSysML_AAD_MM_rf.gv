@@ -1,0 +1,23 @@
+digraph {graph[label=IntoSysML_AAD_MM_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_IntoSysML_AAD_MM_rf{style=dashed;label=IntoSysML_AAD_MM_rf;
+"ArchitectureDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="ArchitectureDiagram"];
+"Feature"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feature"];
+"Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
+"VType"[shape=record,fillcolor=lightskyblue1,style = filled,label="VType"];
+"PElement"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PElement</I><br/>(A)}>];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part"];
+
+"ArchitectureDiagram"->"PElement"[label="ConsistsOf",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Manner"->"Manner"[label="Has▼",dir=none,taillabel="*",headlabel="*"];
+"ArchitectureDiagram"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"PElement"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Feature"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Part"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"Connector"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"VType"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"Connector"->"Part"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Part"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

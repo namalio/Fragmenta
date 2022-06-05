@@ -1,0 +1,28 @@
+fragment F_ASD3 {
+  SG SG_ASD3 {
+    proxy PValueType2
+    proxy PNamed3
+    proxy PPType
+    proxy PName
+    proxy PField
+    node DType
+    node UnitType
+    relu DType->PPType[DType_base]
+    inh DType->PValueType2
+    inh UnitType->DType
+    relu UnitType->PName[UnitType_unit]
+    node Enumeration
+    node Literal
+    node StrtType
+    compu Enumeration->Literal[HasLiterals]:*
+    inh Enumeration->PValueType2
+    inh StrtType->PValueType2
+    inh Literal->PNamed3
+    compu StrtType->PField[StrtType_fields]:*
+  }
+    ref PValueType2->ValueType
+    ref PNamed3->Named
+    ref PField->Field
+    ref PPType->PType
+    ref PName->Name
+}

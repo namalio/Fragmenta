@@ -1,0 +1,8 @@
+fragment F_WC2 {
+   SG SG_WC2 {
+      proxy PContainer
+	  node Widget
+	  inh Widget->PContainer
+   }
+   ref PContainer->Container
+}

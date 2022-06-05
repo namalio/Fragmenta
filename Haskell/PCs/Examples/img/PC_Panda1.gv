@@ -1,0 +1,16 @@
+digraph {
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Panda1];
+leaves [shape=ellipse,fillcolor=greenyellow,style = filled,label="leaves"];
+shoots [shape=ellipse,fillcolor=greenyellow,style = filled,label="shoots"];
+Panda [shape=box,fillcolor=deepskyblue,style = filled,label="Panda "];
+eats [shape=ellipse,fillcolor=greenyellow,style = filled,label="eats"];
+
+{rank=min;StartN_,Panda}
+{rank=same;eats,shoots,leaves}
+{rank=same;shoots,leaves}
+
+shoots->leaves[arrowtail=dot,dir=both,label="after"];
+eats->shoots[arrowtail=dot,dir=both,label="after"];
+StartN_->Panda[arrowtail=diamond,dir=both,label="starts"];
+Panda->eats[arrowhead="onormal",penwidth=2,label="="];
+}

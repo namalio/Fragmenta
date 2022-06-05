@@ -1,0 +1,171 @@
+digraph {graph[label=IntoSysML_CMM,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_ASD1{style=dashed;label=F_ASD1;
+"Composition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composition"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"StructureDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="StructureDiagram"];
+"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Block</I><br/>(A)}>];
+"ValueType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>ValueType</I><br/>(A)}>];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+
+"StructureDiagram"->"Block"[label="HasBlocks",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"StructureDiagram"->"ValueType"[label="HasVTypes",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"StructureDiagram"->"Composition"[label="HasCompositions",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Named"->"Name"[label="Named_name",arrowhead=vee,headlabel="",arrowsize=.5];
+"StructureDiagram"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Block"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"ValueType"->"Named"[arrowhead=onormal,arrowsize=2.0];
+
+}
+subgraph cluster_F_ASD2{style=dashed;label=F_ASD2;
+"PNat"[shape=record,fillcolor=lightskyblue1,style = filled,label="PNat"];
+"PReal"[shape=record,fillcolor=lightskyblue1,style = filled,label="PReal"];
+"PBool"[shape=record,fillcolor=lightskyblue1,style = filled,label="PBool"];
+"PString"[shape=record,fillcolor=lightskyblue1,style = filled,label="PString"];
+"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
+"PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
+"PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
+
+"PNat"->"PInt"[arrowhead=onormal,arrowsize=2.0];
+"PInt"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PInterval"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PReal"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PBool"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PString"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PInterval"->"PInt"[label="PInterval_lb",arrowhead=vee,headlabel="",arrowsize=.5];
+"PInterval"->"PInt"[label="PInterval_ub",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+subgraph cluster_F_ASD3{style=dashed;label=F_ASD3;
+"varInit"[shape=cds,fillcolor="#FFF2CC",style = filled,label="varInit"];
+"parameter"[shape=cds,fillcolor="#FFF2CC",style = filled,label="parameter"];
+"varNoInit"[shape=cds,fillcolor="#FFF2CC",style = filled,label="varNoInit"];
+"VariableKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="VariableKind\l(enum)"];
+"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
+"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"Field"[shape=record,fillcolor=lightskyblue1,style = filled,label="Field"];
+"Variable"[shape=record,fillcolor=lightskyblue1,style = filled,label="Variable"];
+"Property"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Property</I><br/>(A)}>];
+"FlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>FlowPort</I><br/>(A)}>];
+"OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
+"InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
+
+"varInit"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
+"parameter"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
+"varNoInit"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
+"Variable"->"VariableKind"[label="Variable_kind",arrowhead=vee,headlabel="",arrowsize=.5];
+"Property"->"PValueType"[label="Property_type",arrowhead=vee,headlabel="",arrowsize=.5];
+"Property"->"Exp"[label="Property_init",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Property"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Field"->"Property"[arrowhead=onormal,arrowsize=2.0];
+"FlowPort"->"Property"[arrowhead=onormal,arrowsize=2.0];
+"Variable"->"Property"[arrowhead=onormal,arrowsize=2.0];
+"InFlowPort"->"FlowPort"[arrowhead=onormal,arrowsize=2.0];
+"OutFlowPort"->"FlowPort"[arrowhead=onormal,arrowsize=2.0];
+"OutFlowPort"->"InFlowPort"[label="OutFlowPort_depends",arrowhead=vee,headlabel="*",arrowsize=.5];
+
+}
+
+
+subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
+"PPType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PType<br/>(P)>];
+"DType"[shape=record,fillcolor=lightskyblue1,style = filled,label="DType"];
+"UnitType"[shape=record,fillcolor=lightskyblue1,style = filled,label="UnitType"];
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
+"Enumeration"[shape=record,fillcolor=lightskyblue1,style = filled,label="Enumeration"];
+"PValueType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType2<br/>(P)>];
+"Literal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Literal"];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"StrtType"[shape=record,fillcolor=lightskyblue1,style = filled,label="StrtType"];
+"PField"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Field<br/>(P)>];
+
+"DType"->"PPType"[label="DType_base",arrowhead=vee,headlabel="",arrowsize=.5];
+"DType"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
+"UnitType"->"DType"[arrowhead=onormal,arrowsize=2.0];
+"UnitType"->"PName"[label="UnitType_unit",arrowhead=vee,headlabel="",arrowsize=.5];
+"Enumeration"->"Literal"[label="HasLiterals",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Enumeration"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
+"StrtType"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
+"Literal"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
+"StrtType"->"PField"[label="HasFields",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+
+}
+
+
+
+
+
+subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
+"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
+"PBlock"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block<br/>(P)>];
+"PFlowPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FlowPort<br/>(P)>];
+"PVariable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Variable<br/>(P)>];
+"Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part"];
+"cyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
+"subsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
+"physical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
+"ComponentKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="ComponentKind\l(enum)"];
+"discrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
+"continuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
+"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
+"PhenomenaKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="PhenomenaKind\l(enum)"];
+
+"System"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
+"PBlock"->"PFlowPort"[label="Block_fports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Component"->"PVariable"[label="Component_vars",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Compound"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"Part"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"cyber"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"subsystem"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"physical"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"ComponentKind"[label="Component_kind",arrowhead=vee,headlabel="",arrowsize=.5];
+"discrete"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"continuous"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"PhenomenaKind"[label="Compound_phenomena",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+
+
+subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
+"PBlock2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block2<br/>(P)>];
+"PComposition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition<br/>(P)>];
+"Mult"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mult</I><br/>(A)}>];
+"MultValMany"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValMany"];
+"MultValNum"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValNum"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"MultSingle"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultSingle"];
+"MultRange"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultRange"];
+"MultVal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>MultVal</I><br/>(A)}>];
+
+"PComposition"->"PBlock2"[label="Composition_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"PComposition"->"PBlock2"[label="Composition_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"PComposition"->"Mult"[label="Composition_srcM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"PComposition"->"Mult"[label="Composition_tgtM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"MultSingle"->"Mult"[arrowhead=onormal,arrowsize=2.0];
+"MultRange"->"Mult"[arrowhead=onormal,arrowsize=2.0];
+"MultValNum"->"MultVal"[arrowhead=onormal,arrowsize=2.0];
+"MultValMany"->"MultVal"[arrowhead=onormal,arrowsize=2.0];
+"MultRange"->"Nat"[label="MultRange_lb",arrowhead=vee,headlabel="",arrowsize=.5];
+"MultValNum"->"Nat"[label="MultValNum_n",arrowhead=vee,headlabel="",arrowsize=.5];
+"MultSingle"->"MultVal"[label="MultRange_val",arrowhead=vee,headlabel="",arrowsize=.5];
+"MultRange"->"MultVal"[label="MultRange_ub",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+
+subgraph cluster_F_ASD7{style=dashed;label=F_ASD7;
+"PStructureDiagram"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StructureDiagram<br/>(P)>];
+"PComposition2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition2<br/>(P)>];
+"PSystem"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<System<br/>(P)>];
+
+"PStructureDiagram"->"PSystem"[label="HasSystem:HasBlocks ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"PComposition2"->"PSystem"[label="Composition_tgt_sys:Composition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+
+}
+
+
+
+}

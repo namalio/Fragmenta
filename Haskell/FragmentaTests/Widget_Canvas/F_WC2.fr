@@ -1,0 +1,11 @@
+fragment F_WC2 {
+   SG SG_WC2 {
+      proxy PCanvas
+	  proxy PWidget
+	  node Component
+	  inh PWidget->Component
+	  inh Component->PCanvas
+   }
+   ref PCanvas->Canvas
+   ref PWidget->Widget
+}

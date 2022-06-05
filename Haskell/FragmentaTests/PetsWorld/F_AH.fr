@@ -5,14 +5,12 @@ fragment F_AH {
     node Room
     node Hotel
     virtual Manner
-    proxy PManner
     rel Room->Guest[Hosts]:0..1,*
     compu Hotel->Room[Hotel_rooms]:*
     wander Manner->Other[AnyRel]
     inh Room->Manner
     inh Hotel->Manner
-    inh Guest->PManner
+    inh Guest->Manner
     inh Other->Manner
   }
-  ref PManner->Manner
 }

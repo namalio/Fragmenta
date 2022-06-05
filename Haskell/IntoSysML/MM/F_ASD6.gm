@@ -1,0 +1,13 @@
+Morphism M_F_ASD6 {
+	nodes {
+		PStructureDiagram->ArchitectureDiagram
+		PComposition2->Connector
+		PSystem->Part
+		PBElement->Part
+	}
+	edges {
+		HasSystem->ConsistsOf
+		Composition_tgt_sys->Connector_tgt
+		Composition_src_elem->Connector_src
+	}
+}

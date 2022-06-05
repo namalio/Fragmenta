@@ -1,0 +1,7 @@
+fragment F_WC1 {
+	SG SG_WC1 {
+		node Canvas
+		node Widget
+		inh Canvas->Widget
+	}
+}

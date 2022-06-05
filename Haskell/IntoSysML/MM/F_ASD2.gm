@@ -1,0 +1,22 @@
+Morphism M_F_ASD2 {
+	nodes {
+		PNamed2->Manner
+		PValueType->VType
+		Exp->Feature
+		Property->Part
+		Field->Part
+		Variable->Part
+		VariableKind->Feature
+		var->Feature
+		parameter->Feature
+		FlowPort->Part
+		InFlowPort->Part
+		OutFlowPort->Part
+	}
+	edges {
+		Variable_kind->Has
+		Property_init->Has
+		Property_type->Has
+		OutFlowPort_depends->Has
+	}
+}

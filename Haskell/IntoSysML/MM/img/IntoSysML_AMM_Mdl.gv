@@ -1,0 +1,23 @@
+digraph {graph[label=IntoSysML_AMM,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_AASD{style=dashed;label=F_AASD;
+"StructureDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="StructureDiagram"];
+"Feature"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feature"];
+"Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
+"VType"[shape=record,fillcolor=lightskyblue1,style = filled,label="VType"];
+"PElement"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PElement</I><br/>(A)}>];
+"Composition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composition"];
+"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label="Block"];
+
+"StructureDiagram"->"PElement"[label="ConsistsOf",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Manner"->"Feature"[label="Has▼▲",dir=none,taillabel="*",headlabel="*"];
+"StructureDiagram"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"PElement"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Feature"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Block"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"Composition"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"VType"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"Composition"->"Block"[label="Composition_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"Composition"->"Block"[label="Composition_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

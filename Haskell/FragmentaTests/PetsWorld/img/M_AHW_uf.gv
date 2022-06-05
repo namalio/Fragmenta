@@ -3,7 +3,6 @@ subgraph cluster_M_AHW_uf{style=dashed;label=M_AHW_uf;
 "Room"[shape=record,fillcolor=lightskyblue1,style = filled,label="Room"];
 "Hotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Hotel"];
 "Guest"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guest"];
-"PManner"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Manner<br/>(P)>];
 "Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
 "Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
 
@@ -12,9 +11,8 @@ subgraph cluster_M_AHW_uf{style=dashed;label=M_AHW_uf;
 "Manner"->"Other"[label="AnyRel▼▲",dir=none,taillabel="*",headlabel="*"];
 "Room"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Hotel"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Guest"->"PManner"[arrowhead=onormal,arrowsize=2.0];
+"Guest"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Other"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 
 }
-"PManner"->"Manner"[arrowhead=normalnormal];
 }

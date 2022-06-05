@@ -31,6 +31,7 @@ data State = State Name StateTy [StCDesc]
 data Transition = Transition Name Name Name (Maybe Event) (Maybe Guard) (Maybe Action) 
    deriving(Eq, Show) 
 
+-- An element is either a state or a transition
 data Elem = ElemSt State | ElemT Transition
    deriving(Eq, Show) 
 

@@ -1,0 +1,7 @@
+PC PC_Panda1@Panda
+atom eats
+compound Panda@eats
+atom shoots
+after_connector eats->shoots
+atom leaves
+after_connector shoots->leaves

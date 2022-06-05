@@ -1,7 +1,7 @@
 digraph {graph[label=m_felines_gfg,labelloc=tl,labelfontsize=12];
-"F_CLF"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_CLF"];
-"F_FL"[shape=oval,fillcolor="#FFCCCC",style ="filled,dotted",label="F_FL"];
+"F_CLF"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_CLF"];
+"F_FL"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_FL"];
 
-"F_CLF"->"F_FL"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
-"F_FL"->"F_CLF"[label=®,dir=both,arrowtail=obox,arrowhead=emptyempty];
+"F_CLF"->"F_FL"[label=" ",arrowhead=veevee];
+"F_FL"->"F_CLF"[label=" ",arrowhead=veevee];
 }

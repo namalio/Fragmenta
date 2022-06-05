@@ -1,12 +1,15 @@
 digraph {graph[label=F_PW4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW4{style=dashed;label=F_PW4;
 "Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
-"PPHCard2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard2<br/>(P)>];
 "PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
+"PMammalHotel"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<MammalHotel<br/>(P)>];
+"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
 
-"PPHCard2"->"Nat"[label="PHCard_points▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"PPHCard2"->"PHCardId"[label="PHCard_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"Nat"[label="PHCard_points▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"PHCardId"[label="PHCard_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"PMammalHotel"->"PPHCard"[label="MammalHotel_lcards▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 
 }
+
 
 }

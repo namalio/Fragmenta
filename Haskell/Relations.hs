@@ -88,7 +88,7 @@ antireflexive r = all (\(x,y)-> x /= y) r
 
 
 -- transitive closure
-trancl r = let r' = r `union` (r `rcomp` r) in if r' == r then r else trancl r'
+trancl r = let r' = r `union` (r `rcomp` r) in if seteq r' r then r else trancl r'
 rtrancl r = (trancl r) `union` (id_on ((dom_of r) `union` (ran_of r)))
 rtrancl_on r es= (trancl r) `union` (id_on es)
 

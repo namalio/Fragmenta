@@ -36,7 +36,7 @@ is_wf_gfg gfg = is_wf Nothing (gOf gfg) && acyclicG (restrict gfg $ (es gfg) `di
 errors_wf_gfg::(Eq a, Show a) => String->GFGr a -> [ErrorTree]
 errors_wf_gfg id gfg =
     let err1 = check_wf id Nothing (gOf gfg) in
-    let err2 = if acyclicG (restrict gfg $ (es gfg) `diff` (esId gfg)) then nile else cons_se "The GFG has references cycles." in
+    let err2 = if acyclicG (restrict gfg $ (es gfg) `diff` (esId gfg)) then nile else cons_se "The GFG has cycles." in
     [err1, err2]
 
 check_wf_gfg id gfg = check_wf_of gfg id (is_wf_gfg) (errors_wf_gfg id)

@@ -8,19 +8,20 @@ fragment F_PW3 {
     node RoomId
     virtual WRoomId
     nodea Facility
-    proxy PPHCard
+    node HotelGroup
     compu MammalHotel->PetRoom[MammalHotel_rooms]:*
     compu MammalHotel->Facility[MammalHotel_facilities]:*
-    compu MammalHotel->PPHCard[MammalHotel_lcards]:*
     rel PetRoom->PMammal[Hosts]:0..1,*
     relu WRoomId->RoomId[Room_id]
     inh MammalHotel->PNamed
     inh MammalHotel->PLocatable
     inh PetRoom->WRoomId
     inh Facility->WRoomId
+    inh HotelGroup->PNamed
+    inh HotelGroup->PLocatable
+    rel MammalHotel->HotelGroup[PartOfGroup]:*,0..1
   }
   ref PMammal->Mammal
   ref PNamed->Named
-  ref PPHCard->PHCard
   ref PLocatable->Locatable
 }

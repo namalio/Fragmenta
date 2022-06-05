@@ -1,13 +1,12 @@
 digraph {graph[label=M_PW_gfg,labelloc=tl,labelfontsize=12];
-rankdir=LR;
 "F_PW1"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW1"];
 "F_PW2"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW2"];
 "F_PW3"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW3"];
 "F_PW4"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW4"];
 "F_PW5"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW5"];
 
-"F_PW2"->"F_PW1"[arrowhead=veevee];
-"F_PW3"->"F_PW2"[arrowhead=veevee];
-"F_PW4"->"F_PW3"[arrowhead=veevee];
-"F_PW5"->"F_PW4"[arrowhead=veevee];
+"F_PW2"->"F_PW1"[label=" ",arrowhead=veevee];
+"F_PW3"->"F_PW2"[label=" ",arrowhead=veevee];
+"F_PW4"->"F_PW3"[label=" ",arrowhead=veevee];
+"F_PW5"->"F_PW4"[label=" ",arrowhead=veevee];
 }

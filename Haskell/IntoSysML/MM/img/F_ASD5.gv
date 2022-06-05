@@ -1,0 +1,29 @@
+digraph {graph[label=F_ASD5,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
+"PBlock2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block2<br/>(P)>];
+"PComposition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition<br/>(P)>];
+"Mult"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mult</I><br/>(A)}>];
+"MultValMany"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValMany"];
+"MultValNum"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValNum"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"MultSingle"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultSingle"];
+"MultRange"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultRange"];
+"MultVal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>MultVal</I><br/>(A)}>];
+
+"PComposition"->"PBlock2"[label="Composition_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"PComposition"->"PBlock2"[label="Composition_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"PComposition"->"Mult"[label="Composition_srcM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"PComposition"->"Mult"[label="Composition_tgtM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"MultSingle"->"Mult"[arrowhead=onormal,arrowsize=2.0];
+"MultRange"->"Mult"[arrowhead=onormal,arrowsize=2.0];
+"MultValNum"->"MultVal"[arrowhead=onormal,arrowsize=2.0];
+"MultValMany"->"MultVal"[arrowhead=onormal,arrowsize=2.0];
+"MultRange"->"Nat"[label="MultRange_lb",arrowhead=vee,headlabel="",arrowsize=.5];
+"MultValNum"->"Nat"[label="MultValNum_n",arrowhead=vee,headlabel="",arrowsize=.5];
+"MultSingle"->"MultVal"[label="MultSingle_val",arrowhead=vee,headlabel="",arrowsize=.5];
+"MultRange"->"MultVal"[label="MultRange_ub",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+
+}

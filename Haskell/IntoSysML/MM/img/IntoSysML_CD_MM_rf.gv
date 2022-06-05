@@ -1,0 +1,41 @@
+digraph {graph[label=IntoSysML_CD_MM_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_IntoSysML_CD_MM_rf{style=dashed;label=IntoSysML_CD_MM_rf;
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"PNat"[shape=record,fillcolor=lightskyblue1,style = filled,label="PNat"];
+"PReal"[shape=record,fillcolor=lightskyblue1,style = filled,label="PReal"];
+"PBool"[shape=record,fillcolor=lightskyblue1,style = filled,label="PBool"];
+"PString"[shape=record,fillcolor=lightskyblue1,style = filled,label="PString"];
+"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
+"PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
+"PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
+"ConfigurationDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="ConfigurationDiagram"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label="Port"];
+"CompositionI"[shape=record,fillcolor=lightskyblue1,style = filled,label="CompositionI"];
+"BlockI"[shape=record,fillcolor=lightskyblue1,style = filled,label="BlockI"];
+"VTypeRef"[shape=record,fillcolor=lightskyblue1,style = filled,label="VTypeRef"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+
+"Named"->"Name"[label="Named_name",arrowhead=vee,headlabel="",arrowsize=.5];
+"PNat"->"PInt"[arrowhead=onormal,arrowsize=2.0];
+"PInt"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PInterval"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PReal"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PBool"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PString"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PInterval"->"PInt"[label="PInterval_lb",arrowhead=vee,headlabel="",arrowsize=.5];
+"PInterval"->"PInt"[label="PInterval_ub",arrowhead=vee,headlabel="",arrowsize=.5];
+"ConfigurationDiagram"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"ConfigurationDiagram"->"CompositionI"[label="compositions",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"ConfigurationDiagram"->"BlockI"[label="blocks",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"ConfigurationDiagram"->"Connector"[label="connectors",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"Connector"->"Port"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Port"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"VTypeRef"[label="Connector_ftype",arrowhead=vee,headlabel="",arrowsize=.5];
+"BlockI"->"Port"[label="BlockI_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"CompositionI"->"BlockI"[label="CompositionI_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"CompositionI"->"BlockI"[label="CompositionI_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"VTypeRef"->"Named"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

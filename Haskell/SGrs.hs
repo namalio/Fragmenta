@@ -150,7 +150,9 @@ isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg)
 
 -- Checks whether the inheritance hierarchy complies with required restrictions
 inh_ok::Eq a =>SGr a->Bool
-inh_ok sg = inh_ntys_ok sg && (acyclicI sg) && (isInhTree sg)
+inh_ok sg = inh_ntys_ok sg 
+   && acyclicI sg
+   && isInhTree sg
 
 -- Checks whether an optional node is involved in non-compulsory relations
 nodeopt_ok::Eq a =>SGr a->a->Bool
@@ -171,12 +173,13 @@ is_wf_sgz sg = is_wf Nothing (g_sg sg)
    && dom_of (tgtm sg) `subseteq` es sg
    && dom_of (derb sg) `subseteq` es sg
 
--- Checks whether a SG is well-formed either totally or partially
+-- Checks whether a SG is well-formed partially
 is_wf_sg::Eq a =>SGr a->Bool
 is_wf_sg sg = is_wf_sgz sg
    && mults_wf (ran_of $ srcm sg) && mults_wf (ran_of $ tgtm sg) 
    && fun_total' (srcma sg) (esC sg) && fun_total' (tgtm sg) (esC sg)
-   && mult_etys_ok sg && optsVoluntary sg 
+   && mult_etys_ok sg 
+   && optsVoluntary sg 
    && inh_ok sg 
    -- && acyclicI sg
 

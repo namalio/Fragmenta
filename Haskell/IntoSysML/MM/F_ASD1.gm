@@ -1,0 +1,14 @@
+Morphism M_F_ASD1 {
+	nodes {
+		StructureDiagram->ArchitectureDiagram
+     	PNamed->Manner
+     	Block->Part
+     	Composition->Connector
+     	ValueType->VType
+	}
+	edges {
+	   HasBlocks->ConsistsOf
+	   HasVTypes->ConsistsOf
+	   HasCompositions->ConsistsOf
+	}
+}

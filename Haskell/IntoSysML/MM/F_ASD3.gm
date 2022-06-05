@@ -1,0 +1,20 @@
+Morphism M_F_ASD3 {
+	nodes {
+		PValueType2->VType
+		PPType->Feature
+		DType->VType
+		UnitType->VType
+		Enumeration->VType
+		Literal->Feature
+		StrtType->VType
+		PName->Feature
+		PNamed3->Manner
+		PField->Part
+	}
+	edges {
+		DType_base->Has
+		UnitType_unit->Has
+		StrtType_fields->Has
+		HasLiterals->Has
+	}
+}

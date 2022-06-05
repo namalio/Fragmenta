@@ -1,0 +1,9 @@
+Morphism M_F_B1 {
+	nodes {
+     	Named->Manner
+     	Name->Feature
+	}
+	edges {
+	   Named_name->Has
+	}
+}

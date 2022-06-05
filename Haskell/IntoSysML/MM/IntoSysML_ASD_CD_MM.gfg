@@ -1,0 +1,19 @@
+GFG IntoSysML_AMM {
+  fragment F_B1
+  fragment F_ASD1
+  fragment F_ASD2
+  fragment F_ASD3
+  fragment F_ASD4
+  fragment F_ASD5
+  fragment F_ASD6
+  fragment F_ASD7
+  fragment F_ASD8
+  F_ASD1 references F_B1
+  F_ASD3 references F_ASD1
+  F_ASD4 references F_ASD3
+  F_ASD4 references F_ASD2
+  F_ASD5 references F_ASD4
+  F_ASD6 references F_ASD5
+  F_ASD7 references F_ASD6
+  F_ASD8 references F_ASD6
+}

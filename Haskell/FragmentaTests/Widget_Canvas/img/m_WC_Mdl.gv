@@ -1,0 +1,20 @@
+digraph {graph[label=m_WC,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_WC1{style=dashed;label=F_WC1;
+"Canvas"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canvas"];
+"Widget"[shape=record,fillcolor=lightskyblue1,style = filled,label="Widget"];
+
+"Canvas"->"Widget"[arrowhead=onormal,arrowsize=2.0];
+
+}
+subgraph cluster_F_WC2{style=dashed;label=F_WC2;
+"PWidget"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Widget<br/>(P)>];
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label="Component"];
+"PCanvas"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canvas<br/>(P)>];
+
+"PWidget"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"PCanvas"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+
+}

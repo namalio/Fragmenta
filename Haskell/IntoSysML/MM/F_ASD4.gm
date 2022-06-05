@@ -1,0 +1,24 @@
+Morphism M_F_ASD4 {
+	nodes {
+		PBlock->Part
+		System->Part
+		Component->Part
+		PFlowPort->Part
+		PVariable->Part
+		BElement->Part
+		Compound->Part
+		ComponentKind->Feature
+		cyber->Feature
+		subsystem->Feature
+		physical->Feature
+		PhenomenaKind->Feature
+		discrete->Feature
+		continuous->Feature
+	}
+	edges {
+		Block_fports->Has
+		Component_vars->Has
+		Component_kind->Has
+		Compound_phenomena->Has
+	}
+}

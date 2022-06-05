@@ -1,10 +1,10 @@
--------------------------
+------------------------------------------
 -- Project: PCs/Fragmenta
 -- Module: 'Fr_tests'
--- Description: Test which focus on the example of PCs paper in the Fragmenta/Fragments section 
---      with nodes Cat, Feline and Lynx
+-- Description: Test focused on inheritance cycle example with fragments revolving 
+--              around Cat, Feline and Lynx (from Fragmenta paper)
 -- Author: Nuno Amálio
---------------------------
+------------------------------------------
 import Gr_Cls
 import Frs
 import Utils
@@ -12,8 +12,8 @@ import CheckUtils
 import LoadCheckDraw
 import Mdls
 
-def_path = "Tests/CatLynxFeline/"
-img_path = "Tests/CatLynxFeline/img/"
+def_path = "FragmentaTests/CatLynxFeline/"
+img_path = "FragmentaTests/CatLynxFeline/img/"
 
 saveDrawings= do
     draw_mdl def_path img_path "m_felines"
@@ -43,9 +43,11 @@ do_test_mdl = do
 
 
 do_main = do
-    do_test_frs
+    putStrLn "Inheritance cycle example with fragments revolving around Lynx, Cat, Feline"
     do_test_mdl
 
 main = do
    option_main_save do_main saveDrawings
+
+
 

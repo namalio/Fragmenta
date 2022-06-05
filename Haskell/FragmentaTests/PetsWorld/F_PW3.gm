@@ -1,25 +1,22 @@
 Morphism F_PW3 {
 	nodes {
-     PPHCard->Other
-		 PNamed->Manner
-		 PLocatable->Manner
+     PNamed->Manner
+	 PLocatable->Manner
      MammalHotel->Hotel
      PMammal->Guest
      PetRoom->Room
      RoomId->Other
-     Nat->Other
-     PHCardId->Other
-		 Facility->Other
-		 WRoomId->Manner
+	 Facility->Other
+	 WRoomId->Manner
+     HotelGroup->Other
   }
   edges {
     MammalHotel_rooms->Hotel_rooms
     MammalHotel_lcards->AnyRel
-		MammalHotel_facilities->AnyRel
+	MammalHotel_facilities->AnyRel
     Hosts->Hosts
     PetRoom_capacity->AnyRel
-    PHCard_points->AnyRel
-    PHCard_id->AnyRel
-		Room_id->AnyRel
+	Room_id->AnyRel
+    PartOfGroup->AnyRel
   }
 }

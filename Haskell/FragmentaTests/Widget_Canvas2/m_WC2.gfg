@@ -1,0 +1,8 @@
+GFG WC2 {
+  fragment F_WC1
+  fragment F_WC2
+  fragment F_WC3
+  F_WC1 references F_WC2
+  F_WC2 references F_WC3
+  F_WC3 references F_WC1
+}

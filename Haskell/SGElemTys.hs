@@ -22,10 +22,10 @@ sgety_set = [Einh, Ewander, Eder] ++ [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
 -- Order which dictates allowed inheritance relations 
 nty_lti:: SGNTy->SGNTy->Bool
 nty_lti nt1 nt2 = ((nt2 == Nenum && nt1 == Nval) 
-    || (nt1 == Nvirt && nt2 == Nvirt) 
+    || (nt1 `elem` [Nvirt, Nprxy] && nt2 == Nvirt) 
     || (nt1 == Nabst && nt2 `elem` [Nvirt, Nabst, Nprxy]))
     || (nt1 == Nnrml && (not $ nt2 `elem` [Nenum, Nval]))
-    &&  (not $ nt1 `elem` [Nprxy, Nenum, Nopt]) && nt2 /= Nopt
+    &&  (not $ nt1 `elem` [Nenum, Nopt]) && nt2 /= Nopt
 
 -- Ordering used to state refinement relations
 nty_leqr:: SGNTy->SGNTy->Bool
@@ -40,15 +40,17 @@ instance Ord SGNTy where
     (<) = nty_lti
     (<=) = nty_leqr
 
-ety_eq (Erel _) (Erel _) = True
+ety_eq (Erel _) (Erel _)   = True
 ety_eq (Ecomp _) (Ecomp _) = True
-ety_eq ety1 ety2         = ety1 == ety2
+ety_eq ety1 ety2           = ety1 == ety2
 
 -- Relation used for refinement: wander edges are refined by any non-inheritance edges
-ety_leq Einh _ = False
-ety_leq _ Einh = False
+ety_leq Einh _       = False
+ety_leq _ Einh       = False
 ety_leq et1 Ewander  = True
 ety_leq Eder et2     = et2 `elem` [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
+ety_leq (Ecomp _) (Erel Dbi)  = True
+ety_leq (Ecomp Duni) (Erel Duni)  = True
 ety_leq et1 et2      = et1 `ety_eq` et2
 
 instance Ord SGETy where

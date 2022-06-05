@@ -1,0 +1,3 @@
+PandaEats = SKIP
+       |~| (leaves -> PandaEats
+       |~| shoots -> PandaEats)

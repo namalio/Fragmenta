@@ -1,0 +1,26 @@
+fragment F_ASD2 {
+  SG SG_ASD2 {
+    proxy PValueType
+    proxy PNamed2
+    nodea Property
+    node Exp
+    node Field
+    node Variable
+    nodea FlowPort
+    node InFlowPort
+    node OutFlowPort
+    enum VariableKind: var, parameter
+    relu Variable->VariableKind[Variable_kind]
+    relu Property->PValueType[Property_type]
+    relu Property->Exp[Property_init]:0..1
+    inh Property->PNamed2
+    inh Field->Property
+    inh FlowPort->Property
+    inh Variable->Property
+    inh InFlowPort->FlowPort
+    inh OutFlowPort->FlowPort
+    relu OutFlowPort->InFlowPort[OutFlowPort_depends]:*
+  }
+    ref PValueType->ValueType
+    ref PNamed2->Named
+}

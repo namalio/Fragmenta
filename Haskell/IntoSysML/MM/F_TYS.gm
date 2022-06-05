@@ -1,0 +1,15 @@
+Morphism M_F_TYS {
+	nodes {
+		PType->Feature
+     	PReal->Feature
+     	PBool->Feature
+     	PString->Feature
+     	PNat->Feature
+     	PInt->Feature
+     	PInterval->Feature
+	}
+	edges {
+		PInterval_lb->Has
+		PInterval_ub->Has
+	}
+}

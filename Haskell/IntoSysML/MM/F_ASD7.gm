@@ -1,0 +1,18 @@
+Morphism M_F_ASD7 {
+	nodes {
+		ConfigurationDiagram->ArchitectureDiagram
+		PNamed4->Manner
+		PComposition3->Connector
+		Connector->Connector
+		PValueType3->VType
+		PFlowPort2->Part
+		PBlock3->Part
+		CDElement->PElement
+	}
+	edges {
+		Connector_ftype->Has
+		Connector_src->Connector_src
+		Connector_tgt->Connector_tgt
+		ConsistsOf->ConsistsOf
+	}
+}

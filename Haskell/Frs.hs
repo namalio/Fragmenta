@@ -1,6 +1,6 @@
 -------------------------
 -- Project: PCs/Fragmenta
--- Module: 'GrswT'
+-- Module: 'Frs'
 -- Description: Fragmenta's fragments (Frs)
 -- Author: Nuno Amálio
 ---------------------------
@@ -114,13 +114,13 @@ is_wfz_f f = is_wf Nothing (fsg f) && disjoint [(fLEs f), esR f]
 -- Base well-formedness with acyclicity
 is_wfa_f f = is_wfz_f f && acyclicG (refsG f)
 
--- Partial well-formedness of fragments (the last predicate could be proved and hence removed)
+-- Partial well-formedness of fragments (last predicate could be proved and hence removed)
 is_wf_f f = is_wfa_f f && is_wf (Just Partial) (reso_sg f)
 
 -- Says whether flow of references goes from one fragment into another
 refs_in f1 f2 = ran_of (tgtR f1) `subseteq` fLNs f2
 
--- Says whether flow of references goes from one fragment into another, but not the other way round
+-- Says whether flow of references is uni-directional (from one fragment into another, but not the reverse)
 oneway f1 f2 = f1 `refs_in` f2 && (not $ f2 `refs_in` f1)
 
 -- checks whether references are local
@@ -159,6 +159,7 @@ errors_tfr nm f =
 
 check_wf_tf nm f = check_wf_of f nm is_wf_tf (errors_tfr nm)
 
+is_wf_f' Nothing = is_wfz_f
 is_wf_f' (Just Total) = is_wf_tf
 is_wf_f' _ = is_wf_f
 

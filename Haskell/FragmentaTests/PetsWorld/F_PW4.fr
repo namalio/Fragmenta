@@ -1,10 +1,13 @@
 fragment F_PW4 {
   SG SG_PW4 {
-    proxy PPHCard2
+    proxy PPHCard
+    proxy PMammalHotel
     node Nat
     node PHCardId
-    relu PPHCard2->Nat[PHCard_points]
-    relu PPHCard2->PHCardId[PHCard_id]
+    relu PPHCard->Nat[PHCard_points]
+    relu PPHCard->PHCardId[PHCard_id]
+    compu PMammalHotel->PPHCard[MammalHotel_lcards]:*
   }
-  ref PPHCard2->PHCard
+  ref PPHCard->PHCard
+  ref PMammalHotel->MammalHotel
 }

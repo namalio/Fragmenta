@@ -1,0 +1,25 @@
+digraph {graph[label=F_CD1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_CD1{style=dashed;label=F_CD1;
+"ConfigurationDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="ConfigurationDiagram"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label="Port"];
+"CompositionI"[shape=record,fillcolor=lightskyblue1,style = filled,label="CompositionI"];
+"BlockI"[shape=record,fillcolor=lightskyblue1,style = filled,label="BlockI"];
+"VTypeRef"[shape=record,fillcolor=lightskyblue1,style = filled,label="VTypeRef"];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+
+"ConfigurationDiagram"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"ConfigurationDiagram"->"CompositionI"[label="compositions",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"ConfigurationDiagram"->"BlockI"[label="blocks",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"ConfigurationDiagram"->"Connector"[label="connectors",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"Connector"->"Port"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Port"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"VTypeRef"[label="Connector_ftype",arrowhead=vee,headlabel="",arrowsize=.5];
+"BlockI"->"Port"[label="BlockI_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"CompositionI"->"BlockI"[label="CompositionI_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"CompositionI"->"BlockI"[label="CompositionI_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"VTypeRef"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+}

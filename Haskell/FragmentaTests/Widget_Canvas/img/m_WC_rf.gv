@@ -1,0 +1,12 @@
+digraph {graph[label=m_WC_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_WC_rf{style=dashed;label=m_WC_rf;
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label="Component"];
+"Canvas"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canvas"];
+"Widget"[shape=record,fillcolor=lightskyblue1,style = filled,label="Widget"];
+
+"Canvas"->"Widget"[arrowhead=onormal,arrowsize=2.0];
+"Widget"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"Canvas"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

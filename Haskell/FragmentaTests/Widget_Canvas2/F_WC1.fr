@@ -1,0 +1,8 @@
+fragment F_WC1 {
+	SG SG_WC1 {
+		node Canvas
+		proxy PWidget
+		inh Canvas->PWidget
+	}
+	ref PWidget->Widget
+}

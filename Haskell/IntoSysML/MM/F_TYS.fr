@@ -1,0 +1,20 @@
+fragment F_TYS {
+  SG SG_TYS {
+    nodea PType
+    node PInt
+    node PReal
+    node PInterval
+    node PNat
+    node PBool
+    node PString
+    inh PNat->PInt
+    inh PInt->PType
+    inh PReal->PType
+    inh PInterval->PType
+    inh PReal->PType
+    inh PBool->PType
+    inh PString->PType
+    relu PInterval->PInt[PInterval_lb]
+    relu PInterval->PInt[PInterval_ub]
+  }
+}

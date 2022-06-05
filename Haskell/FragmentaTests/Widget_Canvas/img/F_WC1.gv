@@ -1,0 +1,9 @@
+digraph {graph[label=F_WC1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_WC1{style=dashed;label=F_WC1;
+"Canvas"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canvas"];
+"Widget"[shape=record,fillcolor=lightskyblue1,style = filled,label="Widget"];
+
+"Canvas"->"Widget"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

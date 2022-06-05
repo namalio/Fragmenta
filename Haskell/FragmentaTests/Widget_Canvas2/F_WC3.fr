@@ -1,0 +1,10 @@
+fragment F_WC3 {
+   SG SG_WC3 {
+      node Container
+	  node Panel
+	  proxy PCanvas
+	  inh Container->Panel
+	  inh Panel->PCanvas
+   }
+   ref PCanvas->Canvas
+}

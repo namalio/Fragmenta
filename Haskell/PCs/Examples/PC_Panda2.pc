@@ -1,0 +1,13 @@
+PC PC_Panda2@PandaEats
+operator OpEats.OpIntChoice
+compound PandaEats@OpEats
+atom shoots
+atom leaves
+skip SKIP
+op_connector OpEats->shoots
+op_connector OpEats->leaves
+op_connector OpEats->SKIP
+reference RefPandaEats
+after_connector shoots->RefPandaEats
+after_connector leaves->RefPandaEats
+ref_connector RefPandaEats->PandaEats

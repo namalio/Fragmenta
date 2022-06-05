@@ -1,0 +1,17 @@
+GFG IntoSysML_ASD_MM {
+  fragment F_B1
+  fragment F_TYS
+  fragment F_ASD1
+  fragment F_ASD2
+  fragment F_ASD3
+  fragment F_ASD4
+  fragment F_ASD5
+  fragment F_ASD6
+  F_ASD1 references F_B1
+  F_ASD2 references F_ASD1
+  F_ASD3 references F_ASD2
+  F_ASD3 references F_TYS
+  F_ASD4 references F_ASD3
+  F_ASD5 references F_ASD4
+  F_ASD6 references F_ASD5
+}

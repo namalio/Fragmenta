@@ -1,0 +1,16 @@
+fragment F_ASD1 {
+  SG SG_ASD1 {
+    node StructureDiagram
+    proxy PNamed
+    nodea Block
+    nodea ValueType
+    node Composition
+    compu StructureDiagram->Block[HasBlocks]:*
+    compu StructureDiagram->ValueType[HasVTypes]:*
+    compu StructureDiagram->Composition[HasCompositions]:*
+    inh StructureDiagram->PNamed
+    inh Block->PNamed
+    inh ValueType->PNamed
+  }
+  ref PNamed->Named
+}

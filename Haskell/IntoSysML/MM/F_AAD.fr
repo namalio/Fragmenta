@@ -1,0 +1,21 @@
+fragment F_AAD {
+  SG SG_AAD {
+    node ArchitectureDiagram
+    virtual Manner
+    nodea PElement
+    node VType
+    node Part
+    node Connector
+    node Feature
+    compu ArchitectureDiagram->PElement[ConsistsOf]:*
+    rel Manner->Manner[Has]:*,*
+    inh ArchitectureDiagram->Manner
+    inh PElement->Manner
+    inh Feature->Manner
+    inh Part->PElement
+    inh Connector->PElement
+    inh VType->PElement
+    relu Connector->Part[Connector_src]
+    relu Connector->Part[Connector_tgt]
+  }
+}
