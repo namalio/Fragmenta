@@ -32,6 +32,7 @@ type Exp = String
 
 -- Primitive types
 type PType = PReal | PString | PBool | PNat | PInt | Pinterval int int
+  deriving(Eq, Show, Read) 
 
 
 data MultVal = MultNat int | MMany
@@ -52,47 +53,38 @@ data VariableKind = Var | Parameter
 data Variable = Variable VariableKind Property 
    deriving(Eq, Show) 
 
--- A Flowport is either in or out
-data FlowPortKind = InFP | OutFP
-   deriving(Eq, Show) 
-
 -- A flowport has a kind, an embedded property and a lists of dependencies (names of other ports)
-data FlowPort = FlowPort FlowPortKind Property [Name]
+data FlowPort = InFlowPort Property | OutFlowPort Property [Name]
    deriving(Eq, Show) 
 
 -- Components are either cyber, subsystem or physical
 data ComponentKind = Cyber | Subsystem | Physical 
    deriving(Eq, Show) 
 
--- A base block definition comprises a name and a list of flow ports
-data BlockBase = BlockBase Name [FlowPort] 
-   deriving(Eq, Show) 
-
--- A Block component comprises a component kind and a block base
-data BComomponent = BCompound ComponentKind BlockBase 
-   deriving(Eq, Show) 
-
 -- The phenomena of a compound component can either be discrete or continuous
 data PhenomenaKind = Discrete | Continuous
+   deriving(Eq, Show, Read) 
+
+--
+-- A block component comprises a kind, a list of flow ports and a list of variables
+data BComponent = BComponent ComponentKind [FlowPort] [Variable] 
    deriving(Eq, Show) 
 
 -- A Block is either a system, a compound, or a block element
-data Block = BSystem BlockBase |  BCompound PhenomenaKind BComomponent | BElement BComomponent
+data Block = BSystem Name [FlowPort] 
+   | BCompound Name PhenomenaKind BComponent
+   | BElement Name BComponent
    deriving(Eq, Show) 
 
--- A Value type is either an enumeration, a structural type, a derived type or a unit type
-data VTypeDecl = VTypeEnum [Name] | VTypeStrt [Property] | DType PType | UnitType PType Name
-    deriving(Eq, Show)
-
--- A value type definition comprises a name and a value type declaration
-data VTypeDef = VTypeDef Name VTypeDecl
+-- A value type definition is either an enumeration, a structural type, a derived type or a unit type
+data VTypeDef = VTypeEnum Name [Name] | VTypeStrt Name [Property] | DType Name PType | UnitType Name PType Name
    deriving(Eq, Show) 
 
 -- A composition has a source and target block and a source and a target multiplicity
 data Composition = Composition Block Block Mult Mult
 
  -- An ASD element is either a value type definition, a block definition or a composition
-data ASDElem = VTypeDef | Block | Composition
+data ASDElem = ElemVT VTypeDef | ElemB Block | ElemC Composition
    deriving(Eq, Show)
 
 -- An ASD description comprises a name followed by a number of elements
@@ -105,10 +97,8 @@ getTgt (Composition _ t _ _) = t
 getSrcM (Composition _ _ sm _) = sm
 getTgtM (Composition _ _ _ tm) = tm
 
-
-
---getStates desc = foldr (\e es-> if isState e then (getSt e):es else es) [] (gElems desc)
---getTransitions desc = foldr (\e es-> if isTransition e then (getT e):es else es) [] (gElems desc)
+-- getStates desc = foldr (\e es-> if isState e then (getSt e):es else es) [] (gElems desc)
+-- getTransitions desc = foldr (\e es-> if isTransition e then (getT e):es else es) [] (gElems desc)
 -- getTheCs elems = foldl (\es e-> if not . isNode $ e then (getC e):es else es) [] elems
 
 asd_desc :: ReadP ASD
@@ -119,20 +109,204 @@ asd_desc = do
    skipSpaces
    char ':'
    skipSpaces
-   es<- manyTill (stc_desc) eof
+   es<- manyTill (asd_elem) eof
    skipSpaces
    return (ASDDesc nm es)
 
-stc_desc :: ReadP StCDesc
-stc_desc = do
-   string "StC"
+asd_venum :: ReadP VTypeDef
+asd_venum = do
+   string "enum"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   ls<-manyTill stc_elem (char ';')
+   skipSpaces
+   return (VTypeEnum nm ls)
+
+init_exp :: ReadP String
+init_exp = do
+   char "\""
+   iexp<-parse_until_chs "\"" -- Parses until terminators
+   skipSpaces
+   return (iexp)
+
+asd_property :: ReadP Property
+asd_property = do
+  string "property"
+  skipSpaces
+  nm<-parse_id 
+  skipSpaces
+  vty<-parse_id
+  skipSpaces
+  iexp<-init_exp <++ return ""
+  skipSpaces
+  return (Property nm vty iexp)
+
+asd_vstrt :: ReadP VTypeDef
+asd_vstrt = do
+  string "strt"
+  skipSpaces
+  nm<-parse_id 
+  skipSpaces
+  char '{'
+  skipSpaces
+  ps<-manyTill asd_property (char '}')
+  skipSpaces
+  return (VTypeStrt nm ps)
+
+into_ptype_nrml :: ReadP PType
+into_ptype = do
+  str <- string "Int" <|> string "Nat" <|> string "Real" <|> string "Bool" <|> string "String"
+  skipSpaces
+  return (read $ "P" ++ str)
+
+into_ptype_interval :: ReadP PType
+into_ptype_interval = do
+  string "Interval" 
+  skipSpaces
+  n1<-parse_number
+  skipSpaces
+  n2<-parse_number
+  skipSpaces
+  return (read $ "PInterval" n1 n2)
+
+into_ptype :: ReadP PType
+into_ptype = do
+  r <- into_ptype_nrml <|> into_ptype_interval
+  return r
+
+asd_dtype :: ReadP VTypeDef
+asd_dtype = do
+   string "dtype"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   pt<-into_ptype
+   return (DType nm pt)
+
+asd_utype :: ReadP VTypeDef
+asd_utype = do
+   string "utype"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   pt<-into_ptype
+   skipSpaces
+   idu<-parse_id
+   skipSpaces
+   return (UType nm pt idu)
+
+asd_vtype :: ReadP VTypeDef
+asd_vtype = do
+  vt<- asd_vstrt <|> asd_dtype <|> asd_utype <|> asd_venum
+  return vt
+
+asd_infport :: ReadP FlowPort
+asd_infport = do
+  string "in fport"
+  skipSpaces
+  p<-asd_property
+  skipSpaces
+  return (InFlowPort p)
+
+
+asd_outfport :: ReadP FlowPort
+asd_outfport = do
+  string "out fport"
+  skipSpaces
+  p<-asd_property
+  skipSpaces
+  char '{'
+  skipSpaces
+  ds<-parse_ls_ids "}" ","
+  skipSpaces
+  return (OutFlowPort p ds)
+
+asd_fport :: ReadP FlowPort
+asd_fport = do
+  fp<- asd_infport <|> asd_outfport
+  return fp
+
+asd_fports :: ReadP [FlowPort]
+asd_fports = do
+   char '{'
+   skipSpaces
+   fps<-manyTill asd_fport (char '}')
+   skipSpaces
+   return fps
+
+asd_vars :: ReadP [Variable]
+asd_vars = do
+   char '{'
+   skipSpaces
+   vs<-manyTill asd_variable (char '}')
+   skipSpaces
+   return vs
+
+asd_bsys :: ReadP BBlock
+asd_bsys = do
+   string "system"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   fps<-asd_fports
+   return (BSystem nm fps)
+
+asd_bphenomena :: ReadP PhenomenaKind
+asd_bphenomena = do
+  p<- string "Discrete" <|> string "Continuous"
+  return (read p)
+
+asd_bcomponent :: ReadP BComponent
+asd_bcomponent = do
+  sck<-string "Discrete" <|> string "Continuous"
+  string "ports"
+  skipSpaces
+  fps<-asd_fports
+  skipSpaces
+  string "vars"
+  vs<-asd_fports
+  return (BComponent (read sck) fps vs)
+
+
+asd_bcompound :: ReadP BBlock
+asd_bcompound = do
+   string "compound"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   pk<-asd_bphenomena
+   skipSpaces
+   c<-asd_bcomponent
+   skipSpaces
+   return (BCompound nm pk c)
+
+asd_belement :: ReadP BBlock
+asd_belement = do
+   string "element"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   c<-asd_bcomponent
+   skipSpaces
+   return (BElement nm c)
+
+asd_bblock :: ReadP BBlock
+asd_bblock = do
+   string "bblock"
    skipSpaces
    nm<-parse_id 
    skipSpaces
    char '{'
    skipSpaces
-   es<-manyTill stc_elem (char '}')
+   fps<-manyTill asd_fport (char '}')
    skipSpaces
+   return (BBlock nm fps)
+
+asd_elem :: ReadP ASDElem
+asd_elem = do
+   
+
    return (StCDesc nm es)
 
 stc_state_inner::ReadP [StCDesc]
