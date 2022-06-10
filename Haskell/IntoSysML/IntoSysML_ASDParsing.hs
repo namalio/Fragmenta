@@ -81,10 +81,13 @@ data VTypeDef = VTypeEnum Name [Name] | VTypeStrt Name [Property] | DType Name P
    deriving(Eq, Show) 
 
 -- A composition has a source and target block and a source and a target multiplicity
-data Composition = Composition Block Block Mult Mult
+--data Composition = Composition Block Block Mult Mult
 
  -- An ASD element is either a value type definition, a block definition or a composition
-data ASDElem = ElemVT VTypeDef | ElemB Block | ElemC Composition
+ -- A composition has a source and target block and a source and a target multiplicity
+data ASDElem = ElemVT VTypeDef 
+   | ElemB Block 
+   | ElemC Block Block Mult Mult
    deriving(Eq, Show)
 
 -- An ASD description comprises a name followed by a number of elements
@@ -196,10 +199,10 @@ asd_utype = do
    skipSpaces
    return (UType nm pt idu)
 
-asd_vtype :: ReadP VTypeDef
+asd_vtype :: ReadP ASDElem
 asd_vtype = do
-  vt<- asd_vstrt <|> asd_dtype <|> asd_utype <|> asd_venum
-  return vt
+  vt <-asd_vstrt <|> asd_dtype <|> asd_utype <|> asd_venum
+  return (ElemVT vt)
 
 asd_infport :: ReadP FlowPort
 asd_infport = do
@@ -291,23 +294,20 @@ asd_belement = do
    skipSpaces
    return (BElement nm c)
 
-asd_bblock :: ReadP BBlock
-asd_bblock = do
-   string "bblock"
-   skipSpaces
-   nm<-parse_id 
-   skipSpaces
-   char '{'
-   skipSpaces
-   fps<-manyTill asd_fport (char '}')
-   skipSpaces
-   return (BBlock nm fps)
+asd_block :: ReadP ASDElem
+asd_block = do
+   b<-asd_bcompound <|> asd_belement <|> asd_bsys
+   return (ElemB b)
+
+asd_composition :: ReadP ASDElem
+asd_block = do
+   b<-asd_bcompound <|> asd_belement <|> asd_bsys
+   return (ElemB b)
 
 asd_elem :: ReadP ASDElem
 asd_elem = do
-   
-
-   return (StCDesc nm es)
+   e<-asd_bblock <|> asd_vtype
+   return e
 
 stc_state_inner::ReadP [StCDesc]
 stc_state_inner = do
