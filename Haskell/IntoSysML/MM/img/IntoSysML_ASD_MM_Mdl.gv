@@ -135,6 +135,9 @@ subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
 
 subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
 "PBlock2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block2<br/>(P)>];
+"optional"[shape=cds,fillcolor="#FFF2CC",style = filled,label="optional"];
+"compulsory"[shape=cds,fillcolor="#FFF2CC",style = filled,label="compulsory"];
+"MultCompSrc"[shape=record,fillcolor="#FFCCFF",style = filled,label="MultCompSrc\l(enum)"];
 "PComposition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition<br/>(P)>];
 "Mult"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mult</I><br/>(A)}>];
 "MultValMany"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValMany"];
@@ -146,7 +149,9 @@ subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
 
 "PComposition"->"PBlock2"[label="Composition_src",arrowhead=vee,headlabel="",arrowsize=.5];
 "PComposition"->"PBlock2"[label="Composition_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
-"PComposition"->"Mult"[label="Composition_srcM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
+"optional"->"MultCompSrc"[arrowhead=onormal,arrowsize=2.0];
+"compulsory"->"MultCompSrc"[arrowhead=onormal,arrowsize=2.0];
+"PComposition"->"MultCompSrc"[label="Composition_srcM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
 "PComposition"->"Mult"[label="Composition_tgtM",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
 "MultSingle"->"Mult"[arrowhead=onormal,arrowsize=2.0];
 "MultRange"->"Mult"[arrowhead=onormal,arrowsize=2.0];

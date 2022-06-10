@@ -1,4 +1,4 @@
-module CommonParsing (parse_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids, parse_str_ret_nil) where
+module CommonParsing (parse_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids) where
 
 import Text.ParserCombinators.ReadP
 

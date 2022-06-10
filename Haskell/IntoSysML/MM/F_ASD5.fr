@@ -5,7 +5,8 @@ fragment F_ASD5 {
     relu PComposition->PBlock2[Composition_src]
     relu PComposition->PBlock2[Composition_tgt]
     nodea Mult
-    compu PComposition->Mult[Composition_srcM]
+    enum MultCompSrc: optional, compulsory
+    compu PComposition->MultCompSrc[Composition_srcM]
     compu PComposition->Mult[Composition_tgtM]
     node MultSingle
     node MultRange

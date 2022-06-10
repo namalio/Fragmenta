@@ -3,6 +3,9 @@ Morphism M_F_ASD5 {
 		PComposition->Connector
 		PBlock2->Part
 		Mult->Feature
+		MultCompSrc->Feature
+		optional->Feature
+		compulsory->Feature
 		MultSingle->Feature
 		MultRange->Feature
 		MultVal->Feature
