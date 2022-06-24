@@ -25,6 +25,7 @@ combineTwInsert (x, y, z) (x', y' , z') = (insert x x', insert y y', insert z z'
 
 -- A quadruple with empty lists
 nilQl = ([], [], [], [])
+
 -- Makes a quadruple out of an element and a triple
 makeQFrTFst x (y, z, w) = (x, y, z, w)
 

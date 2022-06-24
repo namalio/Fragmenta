@@ -1,6 +1,7 @@
-module CommonParsing (parse_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids) where
+module CommonParsing (parse_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids, capitalise_fst, lower_fst) where
 
 import Text.ParserCombinators.ReadP
+import qualified Data.Char as Char
 
 is_letter::Char->Bool
 is_letter ch = (ch>='a' && ch<='z') || (ch>='A' && ch<='Z')
@@ -35,7 +36,7 @@ parseMaybe parser input =
 
 parse_until_chs::String->ReadP String
 parse_until_chs chs = do
-    str<-munch (\ch-> all (ch /=) chs)
+    str<-manyTill (satisfy (\ch->True)) (satisfy (\ch-> any (ch ==) chs))
     return str
 
 parse_ls_ids ::String->String->ReadP [String]
@@ -47,3 +48,11 @@ parse_either_strs::[String]->ReadP String
 parse_either_strs (s:ss) = do
     str<- string s <++ parse_either_strs ss
     return str
+
+capitalise_fst::String->String
+capitalise_fst "" = ""
+capitalise_fst (c:cs) = (Char.toUpper c):cs
+
+lower_fst::String->String
+lower_fst "" = ""
+lower_fst (c:cs) = (Char.toLower c):cs

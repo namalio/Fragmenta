@@ -214,7 +214,7 @@ cNm nm = nm++"_"
 descId nm = nm ++ "_Desc"
 stId nm = nm ++ "_St"
 
--- Gets id of entity being named and actual id being assigned to entity
+-- builds id of entity being named and actual id being assigned to entity
 mk_nm_info_q snm nm = ((nm, show_cmm_n CMM_Name), ("ENmOf"++snm, show_cmm_e CMM_ENamed_name), 
                    ("ENmOf"++snm, snm), ("ENmOf"++snm, nm))
 
