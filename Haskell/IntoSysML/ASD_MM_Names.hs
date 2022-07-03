@@ -2,7 +2,7 @@ module IntoSysML.ASD_MM_Names (IntoSysML_ASD_MM_Ns(..), IntoSysML_ASD_MM_Es(..),
 where
 
 data IntoSysML_ASD_MM_Ns = ASD_MM_Named | ASD_MM_Name | ASD_MM_PNat | ASD_MM_PReal | ASD_MM_PBool | ASD_MM_PString | ASD_MM_PType | ASD_MM_PInterval 
-   | ASD_MM_PInt | ASD_MM_Composition | ASD_MM_StructureDiagram | ASD_MM_Block | ASD_MM_ValueType | ASD_MM_varInit | ASD_MM_parameter | ASD_MM_varNoInit 
+   | ASD_MM_PInt | ASD_MM_Composition | ASD_MM_StructureDiagram | ASD_MM_Block | ASD_MM_ValueType | ASD_MM_var | ASD_MM_parameter 
    | ASD_MM_VariableKind | ASD_MM_Exp | ASD_MM_Field | ASD_MM_Variable | ASD_MM_Property | ASD_MM_FlowPort | ASD_MM_OutFlowPort | ASD_MM_InFlowPort 
    | ASD_MM_DType | ASD_MM_UnitType | ASD_MM_Enumeration | ASD_MM_Literal | ASD_MM_StrtType | ASD_MM_System | ASD_MM_BElement | ASD_MM_cyber 
    | ASD_MM_subsystem | ASD_MM_physical | ASD_MM_Component | ASD_MM_ComponentKind | ASD_MM_discrete | ASD_MM_continuous | ASD_MM_Compound | ASD_MM_PhenomenaKind 
@@ -19,4 +19,6 @@ data IntoSysML_ASD_MM_Es = ASD_MM_ENamed_name | ASD_MM_EPInterval_lb | ASD_MM_EP
 
 show_asd_mm_n nt = drop 7 (show nt)
 show_asd_mm_e et = drop 7 (show et)
+
+read_asd_mm :: String -> IntoSysML_ASD_MM_Ns
 read_asd_mm x = read ("ASD_MM_" ++ x)

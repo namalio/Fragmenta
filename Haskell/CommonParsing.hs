@@ -1,4 +1,4 @@
-module CommonParsing (parse_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids, capitalise_fst, lower_fst) where
+module CommonParsing (parse_id, parse_spc_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids, capitalise_fst, lower_fst) where
 
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
@@ -28,6 +28,12 @@ parse_id = do
    str<-(munch is_val_id_char)
    return (ch:str)
 
+parse_spc_id::ReadP String
+parse_spc_id = do
+   skipSpaces
+   id<-parse_id
+   return (id)
+
 parseMaybe :: ReadP a -> String -> Maybe a
 parseMaybe parser input =
     case readP_to_S parser input of
@@ -39,10 +45,12 @@ parse_until_chs chs = do
     str<-manyTill (satisfy (\ch->True)) (satisfy (\ch-> any (ch ==) chs))
     return str
 
-parse_ls_ids ::String->String->ReadP [String]
-parse_ls_ids ts sep = do
-   ps<-sepBy (parse_until_chs ts) (satisfy (\ch->any (ch==) sep))
-   return ps
+parse_ls_ids ::String->ReadP [String]
+parse_ls_ids sep = do
+   ps<-sepBy (parse_spc_id) (satisfy (\ch->any (ch==) sep))
+   -- parses last id
+   p<-parse_spc_id
+   return (ps++[p])
 
 parse_either_strs::[String]->ReadP String
 parse_either_strs (s:ss) = do

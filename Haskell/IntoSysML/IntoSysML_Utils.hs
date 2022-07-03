@@ -1,68 +1,67 @@
 ------------------------
 -- Project: Fragmenta
 -- Module: 'StCsUtils'
--- Description: Utilities module  of statecharts which checks well-formedness  and draws statecharts
+-- Description: Utilities module  of IntoSysML which checks well-formedness  and draws statecharts
 -- Author: Nuno Amálio
 ------------------------
 
-module Statecharts.StCsUtils
+module IntoSysML.StCsUtils
 where
 
 import Gr_Cls
 import Grs
-import Statecharts.StCs
-import Statecharts.StCsParsing
+import IntoSysML.IntoSysML
+import IntoSysML.ASDParsing
 import CheckUtils
 import Control.Monad(when, forM)
 import MyMaybe
 import The_Nil
 import ErrorAnalysis
 import LoadCheckDraw
-import Statecharts.StCsDraw
+--import Statecharts.StCsDraw
 import SimpleFuns
-import MMI
 
-mm_path   = "Statecharts/MM/"
-stcs_path = "Statecharts/Examples/"
-mm_img_path = "Statecharts/MM/img/"
-stc_img_path = "Statecharts/Examples/img/"
+mm_path   = "IntoSysML/MM/"
+intosyml_path = "IntoSysML/Examples/"
+mm_img_path = "IntoSysML/MM/img/"
+intosyml_img_path = "IntoSysML/Examples/img/"
 
-saveMMDrawings = do
-   draw_mdl mm_path mm_img_path "StCs_AMM"
-   draw_mdl mm_path mm_img_path "StCs_MM"
+--saveMMDrawings = do
+--   draw_mdl mm_path mm_img_path "StCs_AMM"
+--   draw_mdl mm_path mm_img_path "StCs_MM"
 
-check_stcs_MM = do
-    mmi<-load_stcs_mmi mm_path
-    check_report_wf "StCs_AMM" (Just Total) (mmi_amm mmi) True
-    check_report_wf "StCs_MM" (Just Total) (mmi_cmm mmi) True
-    check_morphism "Refinement of 'StCs_MM' by 'StCs_AMM'" (Just TotalM) (mmi_cmm mmi) (mmi_rm mmi) (mmi_amm mmi) True
+check_asd_MM = do
+    mmi<-load_asd_mmi mm_path
+    check_report_wf "IntoSysML_AMM" (Just Total) (stc_amm mmi) True
+    check_report_wf "IntoSysML_MM" (Just Total) (stc_cmm mmi) True
+    check_morphism "Refinement of 'IntoSysML_MM' by 'IntoSysML_AMM'" (Just TotalM) (stc_cmm mmi) (stc_rm mmi) (stc_amm mmi) True
 
-checkWF::MMI String->StC String->IO(Bool)
-checkWF mmi stc = do
-    let stc_nm = gStCName stc
-    let errs = check_wf_gm' stc_nm (Just TotalM) (stc, mmi_cmm mmi) 
+checkWF::MMI String->ASD String->IO(Bool)
+checkWF mmi asd = do
+    let asd_nm = gASDName asd
+    let errs = check_wf_gm' asd_nm (Just TotalM) (asd, mmi_cmm mmi) 
     when (not . is_nil $ errs) $ do
-        show_wf_msg ("StC " ++ stc_nm) errs
+        show_wf_msg ("ASD " ++ stc_nm) errs
     return (is_nil errs)
 
-loadAndCheck stcs_path fnm mmi = do
-  stc <- loadStC (stcs_path ++ fnm)
-  b <- checkWF mmi stc 
-  return (boolMaybe b stc)
+loadAndCheck asd_path fnm mmi = do
+  asd <- loadASD (asd_path ++ fnm)
+  b <- checkWF mmi asd 
+  return (boolMaybe b asd)
 
-writeStCDrawingToFile stc_img_path mmi stc = do
-   let draw_src = wrStCAsGraphviz mmi stc 
-   writeFile (stc_img_path ++ (gStCName stc) ++ ".gv") draw_src
+--writeASDDrawingToFile asd_img_path mmi asd = do
+--   let draw_src = wrASDAsGraphviz mmi asd
+--   writeFile (asd_img_path ++ (gASDName asd) ++ ".gv") draw_src
 
-drawStCToFile stc_img_path mmi stc = do
-   putStrLn "Writing the statechart drawing to the GraphViz file..." 
-   writeStCDrawingToFile stc_img_path mmi stc
+--drawASDToFile asd_img_path mmi asd = do
+--   putStrLn "Writing the ASD drawing to the GraphViz file..." 
+--   writeStCDrawingToFile stc_img_path mmi stc
 
-check_draw_stc stcs_path stc_img_path mmi fn = do
-   putStrLn $ "Processing '" ++ fn ++ "'" 
-   ostc <- loadAndCheck stcs_path fn mmi
-   when (isSomething ostc) $ do
-      drawStCToFile stc_img_path mmi (the ostc)
+--check_draw_stc stcs_path stc_img_path mmi fn = do
+--   putStrLn $ "Processing '" ++ fn ++ "'" 
+--   ostc <- loadAndCheck stcs_path fn mmi
+--   when (isSomething ostc) $ do
+--      drawStCToFile stc_img_path mmi (the ostc)
 
 check_draw_BoolSetter = do
     mmi<-load_stcs_mmi mm_path

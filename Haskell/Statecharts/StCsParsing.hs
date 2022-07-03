@@ -4,7 +4,7 @@
 -- Description: Parses statechart textual descriptions to produce a graph with typing
 -- Author: Nuno Amálio
 --------------------
-module Statecharts.StcsParsing(loadStC) where
+module Statecharts.StCsParsing(loadStC) where
 
 import Text.ParserCombinators.ReadP
 import Control.Applicative

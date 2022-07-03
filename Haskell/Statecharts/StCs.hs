@@ -1,10 +1,10 @@
------------------------
+--------------------------
 -- Project: Fragmenta
 -- Module: 'StCs'
 -- Description: Handler module of StCs
 -- Author: Nuno Amálio
------------------------
-module Statecharts.StCs(StC, StC_MMI, stc_cmm, stc_amm, stc_rm, stc_sg_cmm, load_stcs_mmi, 
+--------------------------
+module Statecharts.StCs(StC, load_stcs_mmi, 
        gStCName, gDescInfo, gTransitionInfo, gDescs, gMainDescs, nmOfNamed, nmOfNamed',
        isMutableStatewInner, gCMMStTy, gInnerStart)
 where
@@ -22,18 +22,9 @@ import Relations
 import The_Nil
 import Sets
 import MyMaybe
+import MMI
 
 type StC a = GrwT a
-
-data StC_MMI a = StC_MMI {cmm_ :: Mdl a, amm_ :: Mdl a, rm_:: GrM a, sg_cmm_ :: SGr a}
-  deriving (Show)
-
-cons_mm_info cmm amm rm sgcmm = StC_MMI {cmm_ = cmm, amm_ = amm, rm_ = rm, sg_cmm_ = sgcmm}
-
-stc_cmm StC_MMI {cmm_ = cmm, amm_ = _, rm_ = _, sg_cmm_ = _} = cmm
-stc_amm StC_MMI {cmm_ = _, amm_ = amm, rm_ = _, sg_cmm_ = _} = amm
-stc_rm StC_MMI {cmm_ = _, amm_ = _, rm_ = rm, sg_cmm_ = _} = rm
-stc_sg_cmm StC_MMI {cmm_ = _, amm_ = _, rm_ = _ , sg_cmm_ = sgcmm} = sgcmm
 
 load_stcs_amm def_path = do
   mdl<-load_mdl_def def_path "StCs_AMM"
