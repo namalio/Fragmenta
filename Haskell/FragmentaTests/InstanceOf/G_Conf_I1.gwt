@@ -1,0 +1,11 @@
+GrwT G_Conf_I1 {
+   node IB1 : BlockI
+   node IB2 : BlockI
+   node IP1 : PortI
+   node IP2 : PortI
+   edge IB1->IP1 : BlockI_ports
+   edge IB2->IP2 : BlockI_ports
+   node C1 : Connection
+   edge C1->IP1 : Connection_src
+   edge C1->IP2 : Connection_tgt
+}

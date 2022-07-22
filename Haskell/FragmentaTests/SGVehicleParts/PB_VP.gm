@@ -1,0 +1,13 @@
+Morphism M_PB_VP {
+	nodes {
+	   Bicycle->Vehicle
+	   Wheel->Part
+       CPair->Composite
+       X->Part
+       Y->Part
+	}
+	edges {
+	   CPair_fst->HasParts
+	   CPair_snd->HasParts
+	}
+}

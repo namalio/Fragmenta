@@ -1,0 +1,20 @@
+fragment F_ASD8 {
+  SG SG_ASD8 {
+    proxy PStructureDiagram
+    proxy PComposition2
+    proxy PSystem
+    proxy PBElement
+    proxy PAPIPort
+    proxy PInterface
+    derived PStructureDiagram->PSystem[HasSystem:HasBlocks]:1,1
+    derived PComposition2->PSystem[Composition_tgt_sys:Composition_tgt]:0,0
+    derived PComposition2->PBElement[Composition_src_elem:Composition_src]:0,0
+    derived PAPIPort->PInterface[API_type:TypedName_type]:0..1,1
+  }
+    ref PStructureDiagram->StructureDiagram
+    ref PSystem->System
+    ref PComposition2->Composition
+    ref PBElement->BElement
+    ref PAPIPort->APIPort
+    ref PInterface->Interface
+}

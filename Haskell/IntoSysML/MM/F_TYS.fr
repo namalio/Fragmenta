@@ -7,6 +7,7 @@ fragment F_TYS {
     node PNat
     node PBool
     node PString
+    nodea AType
     inh PNat->PInt
     inh PInt->PType
     inh PReal->PType
@@ -16,5 +17,6 @@ fragment F_TYS {
     inh PString->PType
     relu PInterval->PInt[PInterval_lb]
     relu PInterval->PInt[PInterval_ub]
+    inh PType->AType
   }
 }

@@ -1,26 +1,23 @@
 fragment F_ASD2 {
   SG SG_ASD2 {
-    proxy PValueType
+    proxy PAType2
     proxy PNamed2
-    nodea Property
+    virtual TypedName
+    virtual Initialisable
     node Exp
     node Field
+    node FieldI
     node Variable
-    nodea FlowPort
-    node InFlowPort
-    node OutFlowPort
     enum VariableKind: var, parameter
     relu Variable->VariableKind[Variable_kind]
-    relu Property->PValueType[Property_type]
-    relu Property->Exp[Property_init]:0..1
-    inh Property->PNamed2
-    inh Field->Property
-    inh FlowPort->Property
-    inh Variable->Property
-    inh InFlowPort->FlowPort
-    inh OutFlowPort->FlowPort
-    relu OutFlowPort->InFlowPort[OutFlowPort_depends]:*
+    relu TypedName->PAType2[TypedName_type]
+    relu Initialisable->Exp[Initialisable_init]:0..1
+    inh TypedName->PNamed2
+    inh Field->TypedName
+    inh Initialisable->TypedName
+    inh FieldI->Initialisable
+    inh Variable->Initialisable
   }
-    ref PValueType->ValueType
+    ref PAType2->AType
     ref PNamed2->Named
 }

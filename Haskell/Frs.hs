@@ -6,7 +6,7 @@
 ---------------------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Frs(Fr, srcR, tgtR, esR, fsg, cons_f, union_f, disj_fs, refs, union_fs, reso_f, mres) where
+module Frs(Fr, srcR, tgtR, esR, fsg, cons_f, union_f, disj_fs, reps_of_fs, refs, union_fs, reso_f, mres) where
 
 import Gr_Cls
 import Grs
@@ -17,6 +17,7 @@ import ErrorAnalysis
 import Utils
 import GrswT
 import ShowUtils
+import SimpleFuns
 
 data Fr a = Fr {
    sg_ :: (SGr a), 
@@ -89,11 +90,14 @@ union_fs fs = foldr (\f ufs->f `union_f` ufs) empty_f fs
 -- Checks whether fragments are disjoint
 disj_fs fs = disjoint (map fLNs fs) && disjoint (map fEs fs) 
 
+-- Gets the repeated elements of fragments
+reps_of_fs fs = (dups . gapp $ (map fLNs) fs) ++ (dups . gapp $ map fEs fs)
+
 -- Resolution function, which restricts range of references function to the local nodes (those can that can be resolved locally)
 res::Eq a=>Fr a->[(a, a)]
 res f = rres (refs f) (fLNs f)
 
--- Yields resolved SG (◉ operator)
+-- Yields resolved SG (◉ operator, subsumption)
 reso_sg::Eq a=>Fr a->SGr a
 reso_sg f = subsume_sg (fsg f) (res f)
 

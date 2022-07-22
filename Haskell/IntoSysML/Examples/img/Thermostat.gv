@@ -1,0 +1,56 @@
+digraph {
+compound=true;
+rankdir=LR;
+label=Thermostat;
+labelloc=t;
+OnOff [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Enumeration»<br/>OnOff</td></tr><tr><td align="left">– on<br align="left"/>
+– off<br align="left"/>
+</td> </tr></table>>];
+Temp [shape=plain,fillcolor="#99FFFF",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«ValueType»<br/>Temp⟹Real</td> </tr> <tr> <td align="left">
+unit = "C"</td> </tr></table>>];
+HeatingSt [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Enumeration»<br/>HeatingSt</td></tr><tr><td align="left">– heating<br align="left"/>
+– idle<br align="left"/>
+</td> </tr></table>>];
+Time [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>Time</td> </tr><tr> <td align="left">
+hour : 0..23<br/>
+minute : 0..59</td> </tr></table>>];
+Date [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>Date</td> </tr><tr> <td align="left">
+day : 1..31<br/>
+month : 1..12<br/>
+year : Int</td> </tr></table>>];
+Thermostat_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«System»<br/>Thermostat</td> </tr><tr> <td>
+<I>ports</I><br/>
+in t1 : Temp<br align="left"/>in si : OnOff<br align="left"/>in ti1 : Time<br align="left"/>in d1 : Date<br align="left"/></td> </tr></table>>];Heating_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Component»<br/>Heating</td> </tr> <tr> <td align="left">
+kind = subsystem<br align="left"/>phenomena = continuous<br align="left"/>
+<I>variables</I><br/>
+hst : HeatingSt<br align="left"/>
+s : OnOff<br align="left"/>
+dt : Temp = 20.0<br align="left"/>
+ct : Temp<br align="left"/>
+<I>ports</I><br/>
+in s4 : OnOff<br align="left"/>in t4 : Temp<br align="left"/></td> </tr></table>>];
+Controls_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Component»<br/>Controls</td> </tr> <tr> <td align="left">
+kind = subsystem<br align="left"/>phenomena = continuous<br align="left"/>
+<I>variables</I><br/>
+ct : Time<br align="left"/>
+cd : Date<br align="left"/>
+<I>ports</I><br/>
+out s3 : OnOff→s2<br align="left"/>out t3 : Temp→t2<br align="left"/>in s2 : OnOff<br align="left"/>in t2 : Temp<br align="left"/>in ti1 : Time<br align="left"/>in d2 : Date<br align="left"/></td> </tr></table>>];
+Thermostat_Block->Heating_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
+Thermostat_Block->Controls_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
+}

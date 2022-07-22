@@ -36,6 +36,7 @@ check_fragments = do
     (nm_f5, f5)<-load_fr_def def_path "F_ASD5.fr"
     (nm_f6, f6)<-load_fr_def def_path "F_ASD6.fr"
     (nm_f7, f7)<-load_fr_def def_path "F_ASD7.fr"
+    (nm_f8, f8)<-load_fr_def def_path "F_ASD8.fr"
     (nm_fcd1, fcd1)<-load_fr_def def_path "F_CD1.fr"
     check_report_wf nm_af (Just Total) af True
     check_report_wf nm_fb1 (Just Partial) fb1 True
@@ -47,6 +48,7 @@ check_fragments = do
     check_report_wf nm_f5 (Just Partial) f5 True
     check_report_wf nm_f6 (Just Partial) f6 True
     check_report_wf nm_f7 (Just Partial) f7 True
+    check_report_wf nm_f8 (Just Partial) f8 True
     check_report_wf nm_fcd1 (Just Partial) fcd1 True
 
 check_morphisms = do
@@ -61,6 +63,7 @@ check_morphisms = do
     (nm_f5, f5)<-load_fr_def def_path "F_ASD5.fr"
     (nm_f6, f6)<-load_fr_def def_path "F_ASD6.fr"
     (nm_f7, f7)<-load_fr_def def_path "F_ASD7.fr"
+    (nm_f8, f8)<-load_fr_def def_path "F_ASD8.fr"
     (nm_fcd1, fcd1)<-load_fr_def def_path "F_CD1.fr"
     --(nm_f8, f8)<-load_fr_def def_path "F_ASD8.fr"
     --check_report_wf nm_af (Just Total) af True
@@ -76,6 +79,7 @@ check_morphisms = do
     (nm_m5, m5)<-load_morphism_def def_path "F_ASD5.gm"
     (nm_m6, m6)<-load_morphism_def def_path "F_ASD6.gm"
     (nm_m7, m7)<-load_morphism_def def_path "F_ASD7.gm"
+    (nm_m8, m8)<-load_morphism_def def_path "F_ASD8.gm"
     (nm_mcd1, mcd1)<-load_morphism_def def_path "F_CD1.gm"
     --(nm_m8, m8)<-load_morphism_def def_path "F_ASD8.gm"
     check_morphism ("Morphism '" ++ nm_mb1 ++ "' (Partial)") (Just PartialM) fb1 mb1 af True
@@ -87,10 +91,10 @@ check_morphisms = do
     check_morphism ("Morphism '" ++ nm_m5 ++ "' (Partial)") (Just PartialM) f5 m5 af True
     check_morphism ("Morphism '" ++ nm_m6 ++ "' (Partial)") (Just PartialM) f6 m6 af True
     check_morphism ("Morphism '" ++ nm_m7 ++ "' (Partial)") (Just PartialM) f7 m7 af True
+    check_morphism ("Morphism '" ++ nm_m8 ++ "' (Partial)") (Just PartialM) f8 m8 af True
     check_morphism ("Morphism '" ++ nm_mcd1 ++ "' (Partial)") (Just PartialM) fcd1 mcd1 af True
     --check_morphism ("Morphism '" ++ nm_m8 ++ "' (Partial)") (Just PartialM) f8 m8 af True
     
-
 do_main = do
     amdl<-load_mdl_def def_path "IntoSysML_AAD_MM"
     cmdl<-load_mdl_def def_path "IntoSysML_ASD_MM"
@@ -105,7 +109,7 @@ do_main = do
     check_report_wf "IntoSysML_CD_MM" (Just Total) cmdl2 True
     check_morphism "Refinement of 'IntoSysML_ASD_MM' by 'IntoSysML_AAD_MM'" (Just TotalM) cmdl rms amdl True
     --check_morphism "Refinement of 'IntoSysML_ASD_CD_MM' by 'IntoSysML_AAD_MM'" (Just TotalM) cmdl2 rms2 amdl True
-    check_morphism "Refinement of 'IntoSysML_CD_MM' by 'IntoSysML_AAD_MM'" (Just PartialM) cmdl2 rms2 amdl True
+    check_morphism "Refinement of 'IntoSysML_CD_MM' by 'IntoSysML_AAD_MM'" (Just TotalM) cmdl2 rms2 amdl True
 
 main = do
     option_main_save do_main saveDrawings

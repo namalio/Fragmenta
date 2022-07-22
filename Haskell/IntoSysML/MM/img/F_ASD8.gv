@@ -1,0 +1,22 @@
+digraph {graph[label=F_ASD8,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_ASD8{style=dashed;label=F_ASD8;
+"PStructureDiagram"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StructureDiagram<br/>(P)>];
+"PSystem"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<System<br/>(P)>];
+"PComposition2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition2<br/>(P)>];
+"PBElement"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<BElement<br/>(P)>];
+"PAPIPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<APIPort<br/>(P)>];
+"PInterface"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Interface<br/>(P)>];
+
+"PStructureDiagram"->"PSystem"[label="HasSystem:HasBlocks ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"PComposition2"->"PSystem"[label="Composition_tgt_sys:Composition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PComposition2"->"PBElement"[label="Composition_src_elem:Composition_src ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PAPIPort"->"PInterface"[label="API_type:TypedName_type ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+
+}
+
+
+
+
+
+
+}

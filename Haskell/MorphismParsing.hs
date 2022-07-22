@@ -2,6 +2,7 @@ module MorphismParsing (loadMorphism) where
 
 import Relations
 import Grs
+import Gr_Cls
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many)
 import The_Nil

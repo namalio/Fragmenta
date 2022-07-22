@@ -1,18 +1,26 @@
 Morphism M_F_ASD7 {
 	nodes {
-		ConfigurationDiagram->ArchitectureDiagram
-		PNamed4->Manner
-		PComposition3->Connector
-		Connector->Connector
-		PValueType3->VType
-		PFlowPort2->Part
-		PBlock3->Part
-		CDElement->PElement
+		PComposition->Connector
+		PBlock2->Part
+		Mult->Feature
+		MultCompSrc->Feature
+		optional->Feature
+		compulsory->Feature
+		MultSingle->Feature
+		MultRange->Feature
+		MultVal->Feature
+		Nat->Feature
+		MultValNum->Feature
+		MultValMany->Feature
 	}
 	edges {
-		Connector_ftype->Has
-		Connector_src->Connector_src
-		Connector_tgt->Connector_tgt
-		ConsistsOf->ConsistsOf
+		Composition_src->Connector_src
+		Composition_tgt->Connector_tgt
+		Composition_srcM->Has
+		Composition_tgtM->Has
+		MultSingle_val->Has
+		MultRange_ub->Has
+		MultRange_lb->Has
+		MultValNum_n->Has
 	}
 }

@@ -1,0 +1,78 @@
+digraph {
+compound=true;
+rankdir=LR;
+label=Cash_Machine;
+labelloc=t;
+OkFail [shape=plain,fillcolor="#FCDC0D",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Enumeration»<br/>OkFail</td></tr><tr><td align="left">– ok<br align="left"/>
+– fail<br align="left"/>
+</td> </tr></table>>];
+CardNo [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>CardNo</td> </tr></table>>];
+Date [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>Date</td> </tr><tr> <td align="left">
+day : 1..31<br/>
+month : 1..12<br/>
+year : Int</td> </tr></table>>];
+Name [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>Name</td> </tr></table>>];
+PIN [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>PIN</td> </tr></table>>];
+Bank [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>Bank</td> </tr></table>>];
+TelephoneNo [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>TelephoneNo</td> </tr></table>>];
+BillRefNo [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>BillRefNo</td> </tr></table>>];
+CardInfo [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>CardInfo</td> </tr><tr> <td align="left">
+cNo : CardNo<br/>
+validDt : Date<br/>
+holder : Name<br/>
+bank : Bank<br/>
+pin : PIN</td> </tr></table>>];
+BillInfo [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>BillInfo</td> </tr><tr> <td align="left">
+ref : BillRefNo<br/>
+am : Int</td> </tr></table>>];
+Options [shape=plain,fillcolor="#FCDC0D",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Enumeration»<br/>Options</td></tr><tr><td align="left">– withdraw<br align="left"/>
+– balance<br align="left"/>
+– payBill<br align="left"/>
+– topUp<br align="left"/>
+– returnCard<br align="left"/>
+</td> </tr></table>>];
+MobilePhoneOperator [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>MobilePhoneOperator</td> </tr></table>>];
+TopUpInfo [shape=plain,fillcolor="#FFD5A3",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«ValueType»<br/>TopUpInfo</td> </tr><tr> <td align="left">
+op : MobilePhoneOperator<br/>
+pNo : TelephoneNo<br/>
+am : Int</td> </tr></table>>];
+CardReaderMsgs [shape=plain,fillcolor="#FCDC0D",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Enumeration»<br/>CardReaderMsgs</td></tr><tr><td align="left">– cardIn<br align="left"/>
+– cardCollected<br align="left"/>
+– collectTimeout<br align="left"/>
+</td> </tr></table>>];
+BankCmds [shape=plain,fillcolor="#FCF1A6",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Interface»<br/>BankCmds</td> </tr><tr> <td align="left">
+withdraw(cNo : CardNo, am : Int) : OkFail<br align="left"/>
+</td></tr></table>>];
+CashMachineSys_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«System»<br/>CashMachineSys</td> </tr></table>>];}

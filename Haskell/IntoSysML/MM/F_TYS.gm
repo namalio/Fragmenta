@@ -7,6 +7,7 @@ Morphism M_F_TYS {
      	PNat->Feature
      	PInt->Feature
      	PInterval->Feature
+     	AType->Manner
 	}
 	edges {
 		PInterval_lb->Has

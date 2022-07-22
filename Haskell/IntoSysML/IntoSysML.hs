@@ -4,8 +4,9 @@
 -- Description: Handler module of Into SysML
 -- Author: Nuno Amálio
 --------------------------
-module IntoSysML.IntoSysML(ASD, load_asm_mmi, gName, gASDName, gASDBlocks, gASDVTypes, gASDComps, gBlocFPs, 
-  gCVars, gCKind, gCPKind, gPropVTy, gVKind, gOFPDeps, gEnumLs)
+module IntoSysML.IntoSysML(ASD, load_asd_mmi, gName, gASDName, gASDBlocks, gASDVTypes, gASDComps, gBlocPs, 
+   gCVars, gCKind, gCPKind, gTypedNameTy, gInitialisableExp, gVKind, gOFPDeps, gEnumLs, gDTypePTy, gUTypeUnit, gStrtTypeFields, 
+   gCompSrc, gCompTgt, gCompSrcM, gCompTgtM, gMultSMVal, gMultRLb, gMultRUb, gMultValNumN, gInterfaceOps, gOpParams, gOpReturn)
 where
 
 import Gr_Cls
@@ -48,13 +49,14 @@ load_asd_mmi def_path = do
   return (cons_mm_info cmm amm rm (fsg . reso_m $ cmm))
 
 -- Gives the relation of an edge in a ASD
-consRelOfEdge asd e = foldr (\e r->(appl (src asd) e, appl (tgt asd) e):r) [] (es_of_ety stc $ show_asd_mm_e e)
+consRelOfEdge asd e = foldr (\e r->(appl (src asd) e, appl (tgt asd) e):r) [] (es_of_ety asd . show_asd_mm_e $ e)
 
 -- Gets name of some named node
-gName asd n = appl (consRelOfEdge stc ASD_MM_ENamed_name) n
+gName asd n = appl (consRelOfEdge asd ASD_MM_ENamed_name) n
 
 -- Gets name of given ASD
-gASDName asd = gName asd "StructureDiagram_"
+gRoot asd = appl (inv . fV . ty $ asd) "StructureDiagram"
+gASDName asd = (gName asd) . gRoot $ asd
 
 -- Gets name of given statechart 
 --gStCName stc = appl (consRelOfEdge stc CMM_ENamed_name) "StCModel_"
@@ -70,35 +72,81 @@ asd_ns_of_nty sg_mm asd nt = ns_of_ntys asd sg_mm [show_asd_mm_n nt]
 --gDescs stc id = img (consRelOfEdge stc CMM_EHasDesc) [id]
 
 -- Gets blocks
-gASDBlocks asd = img (consRelOfEdge asd ASD_MM_EHasBlocks) ["StructureDiagram_"]
+gASDBlocks asd = img (consRelOfEdge asd ASD_MM_EHasBlocks) [gRoot asd]
+
 -- Gets value types
-gASDVTypes asd = img (consRelOfEdge asd ASD_MM_EHasVTypes) ["StructureDiagram_"]
+gASDVTypes asd = img (consRelOfEdge asd ASD_MM_EHasVTypes) [gRoot asd]
+
 -- Gets compositions
-gASDComps asd = img (consRelOfEdge asd ASD_MM_EHasCompositions) ["StructureDiagram_"]
+gASDComps asd = img (consRelOfEdge asd ASD_MM_EHasCompositions) [gRoot asd]
 
 -- Gets ports of a block
-gBlocFPs asd bl = appl (consRelOfEdge asd ASD_MM_EBlock_fports) bl
+gBlocPs asd bl = img (consRelOfEdge asd ASD_MM_EBlock_ports) [bl]
 
 -- Gets variables  of a component
-gCVars asc c = appl (consRelOfEdge asd ASD_MM_EComponent_vars) c
+gCVars asd c = img (consRelOfEdge asd ASD_MM_EComponent_vars) [c]
+
 -- Gets a component's kind
 gCKind asd c = appl (consRelOfEdge asd ASD_MM_EComponent_kind) c
 
 -- Gets a compound's phenomena kind
 gCPKind asd c = appl (consRelOfEdge asd ASD_MM_ECompound_phenomena) c
 
--- Gets value type of a property
-gPropVTy asd p = appl (consRelOfEdge asd ASD_MM_EProperty_type) p
--- Gets property's initialisation
-gPropExp asd p = appl (consRelOfEdge asd ASD_MM_EProperty_init) p
+-- Gets type of a typed name
+gTypedNameTy asd tn = appl (consRelOfEdge asd ASD_MM_ETypedName_type) tn
+
+-- Gets ITN's initialisation
+gInitialisableExp asd itn = applM (consRelOfEdge asd ASD_MM_EInitialisable_init) itn
+
 -- Gets variable's kind
 gVKind asd v = appl (consRelOfEdge asd ASD_MM_EVariable_kind) v
 
 -- Gets dependencies of an outflow port
-gOFPDeps asd fp = appl (consRelOfEdge asd ASD_MM_EOutFlowPort_depends) fp
+gOFPDeps asd fp = img (consRelOfEdge asd ASD_MM_EOutFlowPort_depends) [fp]
 
--- Gets the literals of an enumeration
+-- Gets literals of an enumeration
 gEnumLs asd e = img (consRelOfEdge asd ASD_MM_EHasLiterals) [e]
+
+-- Gets primitive type of a derived type (DTYpe)
+gDTypePTy asd dt = appl (consRelOfEdge asd ASD_MM_EDType_base) dt
+
+-- Gets unit of a union type (UType)
+gUTypeUnit asd ut = appl (consRelOfEdge asd ASD_MM_EUnitType_unit) ut
+
+-- Gets fields of a structural type
+gStrtTypeFields asd st = img (consRelOfEdge asd ASD_MM_EStrtType_fields) [st]
+
+-- Gets operations of an interface
+gInterfaceOps asd i = img (consRelOfEdge asd ASD_MM_EInterface_ops) [i]
+
+-- Gets the parameter of an operation
+gOpParams asd op = img (consRelOfEdge asd ASD_MM_EOperation_params) [op]
+
+gOpReturn asd op = appl (consRelOfEdge asd ASD_MM_EOperation_return) op
+
+-- Gets source of a composition
+gCompSrc asd c = appl (consRelOfEdge asd ASD_MM_EComposition_src) c
+
+-- Gets target of a composition
+gCompTgt asd c = appl (consRelOfEdge asd ASD_MM_EComposition_tgt) c
+
+-- Gets source multiplicity
+gCompSrcM asd c = appl (consRelOfEdge asd ASD_MM_EComposition_srcM) c
+
+-- Gets target multiplicity
+gCompTgtM asd c = appl (consRelOfEdge asd ASD_MM_EComposition_tgtM) c
+
+-- Gets the multiplicity value of a single multiplicity
+gMultSMVal asd m = appl (consRelOfEdge asd ASD_MM_EMultSingle_val) m
+
+-- Gets the lower bound of a range multiplicity
+gMultRLb asd mr = appl (consRelOfEdge asd ASD_MM_EMultRange_lb) mr
+
+-- Gets the upper bound of a range multiplicity
+gMultRUb asd mr = appl (consRelOfEdge asd ASD_MM_EMultRange_ub) mr
+
+-- Gets the number of a multiplicity value number
+gMultValNumN asd mv = appl (consRelOfEdge asd ASD_MM_EMultValNum_n) mv
 
 --isMutableStatewInner sg_mm stc s = s `elem` (stc_ns_of_nty sg_mm stc CMM_MutableState) && (isSomething $ gDescs stc s)
 

@@ -1,26 +1,15 @@
-Morphism M_F_ASD5 {
+Morphism M_F_ASD4 {
 	nodes {
-		PComposition->Connector
-		PBlock2->Part
-		Mult->Feature
-		MultCompSrc->Feature
-		optional->Feature
-		compulsory->Feature
-		MultSingle->Feature
-		MultRange->Feature
-		MultVal->Feature
-		Nat->Feature
-		MultValNum->Feature
-		MultValMany->Feature
+		PValueType2->VType
+		PAType3->Manner
+		PNamed4->Manner
+		PField2->Part
+		Interface->VType
+		Operation->Feature
 	}
 	edges {
-		Composition_src->Connector_src
-		Composition_tgt->Connector_tgt
-		Composition_srcM->Has
-		Composition_tgtM->Has
-		MultSingle_val->Has
-		MultRange_ub->Has
-		MultRange_lb->Has
-		MultValNum_n->Has
+		Interface_ops->Has
+		Operation_params->Has
+		Operation_return->Has
 	}
 }

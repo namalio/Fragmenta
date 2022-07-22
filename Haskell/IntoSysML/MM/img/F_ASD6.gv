@@ -1,16 +1,35 @@
 digraph {graph[label=F_ASD6,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
-"PStructureDiagram"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StructureDiagram<br/>(P)>];
-"PSystem"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<System<br/>(P)>];
-"PComposition2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition2<br/>(P)>];
-"PBElement"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<BElement<br/>(P)>];
+"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
+"PBlock"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block<br/>(P)>];
+"PPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Port<br/>(P)>];
+"PVariable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Variable<br/>(P)>];
+"BElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElement"];
+"cyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
+"subsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
+"physical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
+"ComponentKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="ComponentKind\l(enum)"];
+"discrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
+"continuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
+"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
+"PhenomenaKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="PhenomenaKind\l(enum)"];
 
-"PStructureDiagram"->"PSystem"[label="HasSystem:HasBlocks ▼",dir=none,taillabel="",headlabel="",style=dotted];
-"PComposition2"->"PSystem"[label="Composition_tgt_sys:Composition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"PComposition2"->"PBElement"[label="Composition_src_elem:Composition_src ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"System"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
+"PBlock"->"PPort"[label="Block_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Component"->"PVariable"[label="Component_vars",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Compound"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"BElement"->"Component"[arrowhead=onormal,arrowsize=2.0];
+"cyber"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"subsystem"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"physical"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"Component"->"ComponentKind"[label="Component_kind",arrowhead=vee,headlabel="",arrowsize=.5];
+"discrete"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"continuous"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"PhenomenaKind"[label="Compound_phenomena",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
-
 
 
 

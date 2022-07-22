@@ -1,6 +1,6 @@
 Morphism M_F_ASD3 {
 	nodes {
-		PValueType2->VType
+		PValueType->VType
 		PPType->Feature
 		DType->VType
 		UnitType->VType
@@ -9,7 +9,7 @@ Morphism M_F_ASD3 {
 		StrtType->VType
 		PName->Feature
 		PNamed3->Manner
-		PField->Part
+		PFieldI->Part
 	}
 	edges {
 		DType_base->Has

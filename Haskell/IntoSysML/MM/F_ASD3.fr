@@ -1,28 +1,28 @@
 fragment F_ASD3 {
   SG SG_ASD3 {
-    proxy PValueType2
+    proxy PValueType
     proxy PNamed3
     proxy PPType
     proxy PName
-    proxy PField
+    proxy PFieldI
     node DType
     node UnitType
     relu DType->PPType[DType_base]
-    inh DType->PValueType2
+    inh DType->PValueType
     inh UnitType->DType
     relu UnitType->PName[UnitType_unit]
     node Enumeration
     node Literal
     node StrtType
     compu Enumeration->Literal[HasLiterals]:*
-    inh Enumeration->PValueType2
-    inh StrtType->PValueType2
+    inh Enumeration->PValueType
+    inh StrtType->PValueType
     inh Literal->PNamed3
-    compu StrtType->PField[StrtType_fields]:*
+    compu StrtType->PFieldI[StrtType_fields]:*
   }
-    ref PValueType2->ValueType
+    ref PValueType->ValueType
     ref PNamed3->Named
-    ref PField->Field
+    ref PFieldI->FieldI
     ref PPType->PType
     ref PName->Name
 }

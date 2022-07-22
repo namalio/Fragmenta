@@ -45,13 +45,15 @@ complyGFG m = all (\p->is_ref_ok m p) (nsP . fsg . mufs $ m)
 errs_complyGFG m = if complyGFG m then nile else cons_se ("The following proxies are not complying with the referencing of the model's GFG: " ++ (showElems' ps))
     where ps = filter (not . is_ref_ok m)(nsP . fsg . mufs $ m)
 
-is_wf_mdl m = is_wf (Nothing) (mgfg m)  && fun_total' (mfd m) (ns . mgfg $ m) && disj_fs (ran_of . mfd $ m)
+is_wf_mdl m = is_wf (Nothing) (mgfg m)  && fun_total' (mfd m) (ns . mgfg $ m) && (disj_fs . ran_of . mfd $ m)
     && is_wf (Just Total) (mufs m) && complyGFG m
+
+rep_elems m = ran_of . mfd $ m
 
 errs_wf_mdl id m = 
     let err1 = check_wf id (Nothing) (mgfg m) in
     let err2 = if fun_total' (mfd m) (ns . mgfg $ m) then nile else cons_et "Not all GFG fragment nodes have a corresponding fragment." [check_fun_total' (mfd m) (ns . mgfg $ m)] in
-    let err3 = if disj_fs (ran_of . mfd $ m) then nile else cons_se "The fragments are not disjoint" in
+    let err3 = if disj_fs . ran_of . mfd $ m then nile else cons_se ("The fragments are not disjoint; the following elements are repeated:" ++ (showElems' . reps_of_fs . ran_of . mfd $ m)) in
     let err4 = check_wf id (Just Total) (mufs m) in
     let err5 = errs_complyGFG m in
     [err1, err2, err3, err4, err5]

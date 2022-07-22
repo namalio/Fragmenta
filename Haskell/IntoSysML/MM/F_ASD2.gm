@@ -1,22 +1,20 @@
 Morphism M_F_ASD2 {
 	nodes {
 		PNamed2->Manner
-		PValueType->VType
+		PAType2->Manner
 		Exp->Feature
-		Property->Part
+		TypedName->Manner
+		Initialisable->Manner
 		Field->Part
+		FieldI->Part
 		Variable->Part
 		VariableKind->Feature
 		var->Feature
 		parameter->Feature
-		FlowPort->Part
-		InFlowPort->Part
-		OutFlowPort->Part
 	}
 	edges {
 		Variable_kind->Has
-		Property_init->Has
-		Property_type->Has
-		OutFlowPort_depends->Has
+		Initialisable_init->Has
+		TypedName_type->Has
 	}
 }

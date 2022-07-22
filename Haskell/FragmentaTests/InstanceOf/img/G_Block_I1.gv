@@ -1,0 +1,9 @@
+digraph {graph[label=G_Block_I1,labelloc=tl,labelfontsize=12];
+"B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : Block"];
+"P1"[shape=box,fillcolor=lightskyblue1,style = filled,label="P1 : Port"];
+"B2"[shape=box,fillcolor=lightskyblue1,style = filled,label="B2 : Block"];
+"P2"[shape=box,fillcolor=lightskyblue1,style = filled,label="P2 : Port"];
+
+"B1"->"P1"[label="B1_P1 :EBlock_ports▼",arrowhead=vee];
+"B2"->"P2"[label="B2_P2 :EBlock_ports▼",arrowhead=vee];
+}

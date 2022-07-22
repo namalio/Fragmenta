@@ -1,13 +1,24 @@
 Morphism M_F_ASD6 {
 	nodes {
-		PStructureDiagram->ArchitectureDiagram
-		PComposition2->Connector
-		PSystem->Part
-		PBElement->Part
+		PBlock->Part
+		System->Part
+		Component->Part
+		PPort->Part
+		PVariable->Part
+		BElement->Part
+		Compound->Part
+		ComponentKind->Feature
+		cyber->Feature
+		subsystem->Feature
+		physical->Feature
+		PhenomenaKind->Feature
+		discrete->Feature
+		continuous->Feature
 	}
 	edges {
-		HasSystem->ConsistsOf
-		Composition_tgt_sys->Connector_tgt
-		Composition_src_elem->Connector_src
+		Block_ports->Has
+		Component_vars->Has
+		Component_kind->Has
+		Compound_phenomena->Has
 	}
 }

@@ -5,21 +5,21 @@ subgraph cluster_F_ASD3{style=dashed;label=F_ASD3;
 "UnitType"[shape=record,fillcolor=lightskyblue1,style = filled,label="UnitType"];
 "PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
 "Enumeration"[shape=record,fillcolor=lightskyblue1,style = filled,label="Enumeration"];
-"PValueType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType2<br/>(P)>];
+"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
 "Literal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Literal"];
 "PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
 "StrtType"[shape=record,fillcolor=lightskyblue1,style = filled,label="StrtType"];
-"PField"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Field<br/>(P)>];
+"PFieldI"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FieldI<br/>(P)>];
 
 "DType"->"PPType"[label="DType_base",arrowhead=vee,headlabel="",arrowsize=.5];
-"DType"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
+"DType"->"PValueType"[arrowhead=onormal,arrowsize=2.0];
 "UnitType"->"DType"[arrowhead=onormal,arrowsize=2.0];
 "UnitType"->"PName"[label="UnitType_unit",arrowhead=vee,headlabel="",arrowsize=.5];
 "Enumeration"->"Literal"[label="HasLiterals",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"Enumeration"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
-"StrtType"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
+"Enumeration"->"PValueType"[arrowhead=onormal,arrowsize=2.0];
+"StrtType"->"PValueType"[arrowhead=onormal,arrowsize=2.0];
 "Literal"->"PNamed3"[arrowhead=onormal,arrowsize=2.0];
-"StrtType"->"PField"[label="StrtType_fields",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"StrtType"->"PFieldI"[label="StrtType_fields",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 
 }
 

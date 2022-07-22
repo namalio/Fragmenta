@@ -5,13 +5,13 @@ Morphism M_F_CD1 {
 		CompositionI->Connector
 		BlockI->Part
 		Connector->Connector
-		Port->Part
+		PortI->Part
 		VTypeRef->VType
 	}
 	edges {
-		compositions->ConsistsOf
-		blocks->ConsistsOf
-		connectors->ConsistsOf
+		HasCompositions->ConsistsOf
+		HasBlocks->ConsistsOf
+		HasConnectors->ConsistsOf
 		Connector_src->Connector_src
 		Connector_tgt->Connector_tgt
 		CompositionI_src->Connector_src

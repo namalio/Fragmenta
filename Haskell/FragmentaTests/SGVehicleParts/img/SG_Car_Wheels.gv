@@ -2,5 +2,5 @@ digraph {graph[label=SG_Car_Wheels,labelloc=tl,labelfontsize=12];
 "Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
 "Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
 
-"Car"->"Wheel"[label="HasWheels▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="4"];
+"Car"->"Wheel"[label="HasWheels",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="4"];
 }

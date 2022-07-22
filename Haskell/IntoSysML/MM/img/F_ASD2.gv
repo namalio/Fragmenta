@@ -3,28 +3,25 @@ subgraph cluster_F_ASD2{style=dashed;label=F_ASD2;
 "var"[shape=cds,fillcolor="#FFF2CC",style = filled,label="var"];
 "parameter"[shape=cds,fillcolor="#FFF2CC",style = filled,label="parameter"];
 "VariableKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="VariableKind\l(enum)"];
-"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
+"PAType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType2<br/>(P)>];
 "Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
 "PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
 "Field"[shape=record,fillcolor=lightskyblue1,style = filled,label="Field"];
+"TypedName"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TypedName</I><br/>(V)}>];
+"FieldI"[shape=record,fillcolor=lightskyblue1,style = filled,label="FieldI"];
 "Variable"[shape=record,fillcolor=lightskyblue1,style = filled,label="Variable"];
-"Property"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Property</I><br/>(A)}>];
-"FlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>FlowPort</I><br/>(A)}>];
-"OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
-"InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
+"Initialisable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Initialisable</I><br/>(V)}>];
 
 "var"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
 "parameter"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
 "Variable"->"VariableKind"[label="Variable_kind",arrowhead=vee,headlabel="",arrowsize=.5];
-"Property"->"PValueType"[label="Property_type",arrowhead=vee,headlabel="",arrowsize=.5];
-"Property"->"Exp"[label="Property_init",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Property"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
-"Field"->"Property"[arrowhead=onormal,arrowsize=2.0];
-"FlowPort"->"Property"[arrowhead=onormal,arrowsize=2.0];
-"Variable"->"Property"[arrowhead=onormal,arrowsize=2.0];
-"InFlowPort"->"FlowPort"[arrowhead=onormal,arrowsize=2.0];
-"OutFlowPort"->"FlowPort"[arrowhead=onormal,arrowsize=2.0];
-"OutFlowPort"->"InFlowPort"[label="OutFlowPort_depends",arrowhead=vee,headlabel="*",arrowsize=.5];
+"TypedName"->"PAType2"[label="TypedName_type",arrowhead=vee,headlabel="",arrowsize=.5];
+"Initialisable"->"Exp"[label="Initialisable_init",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"TypedName"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
+"Field"->"TypedName"[arrowhead=onormal,arrowsize=2.0];
+"Initialisable"->"TypedName"[arrowhead=onormal,arrowsize=2.0];
+"FieldI"->"Initialisable"[arrowhead=onormal,arrowsize=2.0];
+"Variable"->"Initialisable"[arrowhead=onormal,arrowsize=2.0];
 
 }
 

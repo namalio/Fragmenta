@@ -1,0 +1,12 @@
+digraph {graph[label=G_Conf_I2,labelloc=tl,labelfontsize=12];
+"IB1"[shape=box,fillcolor=lightskyblue1,style = filled,label="IB1 : BlockI"];
+"IB2"[shape=box,fillcolor=lightskyblue1,style = filled,label="IB2 : BlockI"];
+"IP1"[shape=box,fillcolor=lightskyblue1,style = filled,label="IP1 : PortI"];
+"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Connection"];
+"IP2"[shape=box,fillcolor=lightskyblue1,style = filled,label="IP2 : PortI"];
+
+"IB1"->"IP2"[label="IB1_IP2 :EBlockI_ports▼",arrowhead=vee];
+"IB2"->"IP1"[label="IB2_IP1 :EBlockI_ports▼",arrowhead=vee];
+"C1"->"IP1"[label="C1_IP1 :EConnection_src▼",arrowhead=vee];
+"C1"->"IP2"[label="C1_IP2 :EConnection_tgt▼",arrowhead=vee];
+}

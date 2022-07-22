@@ -2,6 +2,7 @@ fragment F_ASD1 {
   SG SG_ASD1 {
     node StructureDiagram
     proxy PNamed
+    proxy PAType
     nodea Block
     nodea ValueType
     node Composition
@@ -11,6 +12,8 @@ fragment F_ASD1 {
     inh StructureDiagram->PNamed
     inh Block->PNamed
     inh ValueType->PNamed
+    inh ValueType->PAType
   }
   ref PNamed->Named
+  ref PAType->AType
 }

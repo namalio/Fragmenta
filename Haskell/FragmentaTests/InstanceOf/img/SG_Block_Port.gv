@@ -1,0 +1,6 @@
+digraph {graph[label=SG_Block_Port,labelloc=tl,labelfontsize=12];
+"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label="Block"];
+"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label="Port"];
+
+"Block"->"Port"[label="Block_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+}

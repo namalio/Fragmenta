@@ -1,28 +1,19 @@
 fragment F_ASD5 {
   SG SG_ASD5 {
-    proxy PComposition
-    proxy PBlock2
-    relu PComposition->PBlock2[Composition_src]
-    relu PComposition->PBlock2[Composition_tgt]
-    nodea Mult
-    enum MultCompSrc: optional, compulsory
-    compu PComposition->MultCompSrc[Composition_srcM]
-    compu PComposition->Mult[Composition_tgtM]
-    node MultSingle
-    node MultRange
-    node Nat
-    inh MultSingle->Mult
-    inh MultRange->Mult
-    nodea MultVal
-    node MultValNum
-    node MultValMany
-    inh MultValNum->MultVal
-    inh MultValMany->MultVal
-    relu MultRange->Nat[MultRange_lb]
-    relu MultValNum->Nat[MultValNum_n]
-    relu MultSingle->MultVal[MultSingle_val]
-    relu MultRange->MultVal[MultRange_ub]
+    proxy PAType3
+    proxy PValueType2
+    proxy PField2
+    proxy PNamed4
+    node Interface
+    node Operation
+    inh Interface->PValueType2
+    inh Operation->PNamed4
+    compu Interface->Operation[Interface_ops]:*
+    relu Operation->PAType3[Operation_return]
+    relu Operation->PField2[Operation_params]:*
   }
-    ref PBlock2->Block
-    ref PComposition->Composition
+    ref PValueType2->ValueType
+    ref PAType3->AType
+    ref PNamed4->Named
+    ref PField2->Field
 }

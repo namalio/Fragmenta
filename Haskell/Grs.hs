@@ -7,7 +7,7 @@
 
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Grs (Gr, GrM, TK(..), MK(..), isKTotal, ns_g, es_g, src_g, tgt_g, cons_g, empty_g, cons_gm, empty_gm, fV, 
+module Grs (Gr, TK(..), MK(..), isKTotal, ns_g, es_g, src_g, tgt_g, cons_g, empty_g, cons_gm, empty_gm, fV, 
    fE, restrict, restrictNs, subtractNs, adjacent, successors, predecessors, getAdjacent, relOfG, 
    esIncident, esConnect, acyclicG, 
    disj_gs, union_g, union_gs, union_gm, gid, ogm, union_gms, is_wf_gm_g, subsume_g, invertg) 

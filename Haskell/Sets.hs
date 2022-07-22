@@ -1,4 +1,4 @@
-module Sets (subseteq, seteq, diff, union, gunion, no_dups, intersec, gintersec, insert, disjoint) where
+module Sets (subseteq, seteq, diff, union, gunion, dups, no_dups, intersec, gintersec, insert, disjoint) where
 
 subseteq s1 s2 = all (\x -> x `elem` s2) s1
 

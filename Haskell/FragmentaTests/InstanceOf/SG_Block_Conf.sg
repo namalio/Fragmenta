@@ -1,0 +1,8 @@
+SG SG_Block_Conf {
+   node BlockI
+   node PortI
+   compu BlockI->PortI[BlockI_ports]:*
+   node Connection
+   relu Connection->PortI[Connection_src]:1
+   relu Connection->PortI[Connection_tgt]:1
+}

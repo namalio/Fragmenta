@@ -5,7 +5,5 @@ Morphism M_CW_VP {
 	}
 	edges {
 	   HasWheels->HasParts
-       HWs_1->HasParts
-       HWs_2->HasParts
 	}
 }

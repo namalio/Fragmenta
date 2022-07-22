@@ -4,9 +4,10 @@ subgraph cluster_F_TYS{style=dashed;label=F_TYS;
 "PReal"[shape=record,fillcolor=lightskyblue1,style = filled,label="PReal"];
 "PBool"[shape=record,fillcolor=lightskyblue1,style = filled,label="PBool"];
 "PString"[shape=record,fillcolor=lightskyblue1,style = filled,label="PString"];
-"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
 "PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
 "PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
+"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
+"AType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>AType</I><br/>(A)}>];
 
 "PNat"->"PInt"[arrowhead=onormal,arrowsize=2.0];
 "PInt"->"PType"[arrowhead=onormal,arrowsize=2.0];
@@ -16,6 +17,7 @@ subgraph cluster_F_TYS{style=dashed;label=F_TYS;
 "PString"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PInterval"->"PInt"[label="PInterval_lb",arrowhead=vee,headlabel="",arrowsize=.5];
 "PInterval"->"PInt"[label="PInterval_ub",arrowhead=vee,headlabel="",arrowsize=.5];
+"PType"->"AType"[arrowhead=onormal,arrowsize=2.0];
 
 }
 }

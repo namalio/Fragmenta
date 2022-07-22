@@ -17,7 +17,6 @@ import Relations
 import The_Nil
 import MyMaybe
 import GrswT
-import ParseUtils
 import IntoSysML.ASD_MM_Names
 import SimpleFuns
 import CommonParsing
@@ -25,54 +24,38 @@ import ParseUtils
 import IntoSysML.ASDCommon
 
 
--- A mulplicity value is either a natural number or many ('*') 
-data MultVal = MultN Int | MMany
-   deriving(Eq, Show) 
-
-data Mult =  MultS MultVal | MultR Int MultVal
-   deriving(Eq, Show) 
-
-data MultCompSrc = Optional | Compulsory
-   deriving(Eq, Show, Read) 
-
 --
 -- A block component comprises a kind, a list of flow ports and a list of variables
-data BComponent = BComponent ComponentKind [FlowPort] [Variable] 
+data BComponent = BComponent ComponentKind [Port] [Variable] 
    deriving(Eq, Show) 
 
 -- A Block is either a system, a compound, or a block element
-data Block = BSystem Name [FlowPort] 
+data Block = BSystem Name [Port] 
    | BCompound Name PhenomenaKind BComponent
    | BElement Name BComponent
    deriving(Eq, Show) 
 
 -- A composition has a source and target block and a source and a target multiplicity
---data Composition = Composition Block Block Mult Mult
+--
 
  -- An ASD element is either a value type definition, a block definition or a composition
 data ASDElem = ElemVT VTypeDef 
    | ElemB Block 
-   | ElemC Name Name MultCompSrc Mult -- A composition has a source and target block (two names) and a source and a target multiplicity
+   | ElemC Composition -- A composition has a source and target block (two names) and a source and a target multiplicity
    deriving(Eq, Show)
 
 -- An ASD comprises a name followed by a number of elements
 data ASD = ASD Name [ASDElem]
    deriving(Eq, Show)
 
--- Gets flow ports of a component
-gCFps (BComponent _ fps _) = fps
+-- Gets ports of a component
+gCFps (BComponent _ ps _) = ps
 
 -- Gets variables of a component
 gCVs (BComponent _ _ vs) = vs
 
 -- Gets component kind
 gCK (BComponent ck _ _) = ck
-
--- Functions to retrieve components of a composition
-gSrc (ElemC s _ _ _) = s
-gTgt (ElemC _ t _ _) = t
-gSrcM (ElemC _ _ sm _) = sm
-gTgtM (ElemC _ _ _ tm) = tm
 
 gVTNm (VTypeEnum nm _) = nm
 gVTNm (VTypeStrt nm _) = nm
@@ -92,7 +75,7 @@ gBlockMTy (BElement nm _) = ASD_MM_BElement
 -- gElemNm: gets name of an ASD element
 gElemNm (ElemVT vt) = gVTNm vt
 gElemNm (ElemB b) = gBlockNm b
-gElemNm (ElemC nm1 nm2 _ _ ) = "C" ++ nm1 ++ "_" ++ nm2
+gElemNm (ElemC c) = "C" ++ (gSrc c) ++ "_" ++ (gTgt c)
 
 -- getStates desc = foldr (\e es-> if isState e then (getSt e):es else es) [] (gElems desc)
 -- getTransitions desc = foldr (\e es-> if isTransition e then (getT e):es else es) [] (gElems desc)
@@ -129,31 +112,64 @@ parse_init_exp = do
    skipSpaces
    return (iexp)
 
-parse_prop_info :: ReadP (Name, Name, Exp)
-parse_prop_info = do
+parse_ptype :: ReadP PType
+parse_ptype = do
+  pt <- parse_pinterval  <|> parse_pint <|> parse_pnat <|> parse_preal <|> parse_pbool <|> parse_pstring 
+  return pt
+
+parse_atype_pty :: ReadP AType
+parse_atype_pty= do
+   pt <- parse_ptype 
+   return (ATypeP pt)
+
+parse_atype_tyid :: ReadP AType
+parse_atype_tyid = do
+   ty_id <- parse_id
+   return (ATypeId ty_id)
+
+parse_atype::ReadP AType
+parse_atype = do
+   aty<-parse_atype_pty <|> parse_atype_tyid
+   return aty
+
+parse_TN_pair :: ReadP (Name, AType)
+parse_TN_pair = do
   nm<-parse_id 
   skipSpaces
-  vty<-parse_id
+  vty<-parse_atype
+  skipSpaces
+  return (nm, vty)
+
+parse_TN_triple :: ReadP (Name, AType, Exp)
+parse_TN_triple = do
+  (nm, vty)<-parse_TN_pair 
   skipSpaces
   iexp<-parse_init_exp <++ return ""
+  skipSpaces
   return (nm, vty, iexp)
 
-parse_property :: ReadP Property
-parse_property = do
-  string "property"
+parse_TN :: ReadP TypedName
+parse_TN = do
+  string "typed"
   skipSpaces
-  (nm, vty, iexp) <-parse_prop_info
+  (nm, vty)<-parse_TN_pair
   skipSpaces
-  return (Property nm vty iexp)
+  return (TypedName nm vty)
+
+parse_ITN :: ReadP Initialisable
+parse_ITN = do
+  (nm, vty, iexp) <-parse_TN_triple
+  skipSpaces
+  return (Initialisable nm vty iexp)
 
 parse_var :: ReadP Variable
 parse_var = do
   skipSpaces
-  (nm, vty, iexp) <-parse_prop_info
+  itn <-parse_ITN
   skipSpaces
   vk<-string "Var" <|> string "Parameter" 
   skipSpaces
-  return (Variable (Property nm vty iexp) (read vk))
+  return (Variable itn (read vk))
 
 parse_vstrt :: ReadP VTypeDef
 parse_vstrt = do
@@ -163,9 +179,9 @@ parse_vstrt = do
   skipSpaces
   char '{'
   skipSpaces
-  ps<-manyTill parse_property (char '}')
+  ts<-manyTill parse_ITN (char '}')
   skipSpaces
-  return (VTypeStrt nm ps)
+  return (VTypeStrt nm $ foldl (\fs itn->(FieldI itn):fs) [] ts)
 
 parse_pint :: ReadP PType
 parse_pint = do
@@ -180,7 +196,7 @@ parse_pnat = do
 parse_preal :: ReadP PType
 parse_preal = do
    string "Real"
-   return (PNat)
+   return (PReal)
 
 parse_pbool :: ReadP PType
 parse_pbool = do
@@ -201,11 +217,6 @@ parse_pinterval = do
   n2<-parse_number
   skipSpaces
   return (PInterval (read n1) (read n2))
-
-parse_ptype :: ReadP PType
-parse_ptype = do
-  pt <- parse_pinterval   <|> parse_pint <|> parse_pnat <|> parse_preal <|> parse_pbool <|> parse_pstring 
-  return pt
 
 parse_dtype :: ReadP VTypeDef
 parse_dtype = do
@@ -229,17 +240,43 @@ parse_utype = do
    skipSpaces
    return (UType nm pt idu)
 
+parse_operation :: ReadP Operation
+parse_operation = do
+   string "operation"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   aty<-parse_atype
+   skipSpaces
+   char '{'
+   skipSpaces
+   ps<-manyTill parse_TN_pair (char '}') 
+   skipSpaces
+   return (Operation nm (foldl (\tns (nm, ty)->(TypedName nm ty):tns) [] ps) aty)
+
+parse_interface :: ReadP VTypeDef
+parse_interface = do
+   string "interface"
+   skipSpaces
+   nm<-parse_id 
+   skipSpaces
+   char '{'
+   skipSpaces
+   os<-manyTill parse_operation (char '}')
+   skipSpaces
+   return (Interface nm os)
+
 parse_vtype :: ReadP ASDElem
 parse_vtype = do
-  vt <-parse_vstrt <|> parse_dtype <|> parse_utype <|> parse_venum
+  vt <-parse_vstrt <|> parse_dtype <|> parse_utype <|> parse_venum <|> parse_interface
   return (ElemVT vt)
 
-parse_inner_prop_info :: ReadP Property
+parse_inner_prop_info :: ReadP Initialisable
 parse_inner_prop_info = do
-   (nm, vty, iexp) <-parse_prop_info
-   return (Property nm vty iexp)
+   (nm, vty, iexp) <-parse_TN_triple
+   return (Initialisable nm vty iexp)
 
-parse_infport :: ReadP FlowPort
+parse_infport :: ReadP Port
 parse_infport = do
   string "in"
   skipSpaces
@@ -248,7 +285,7 @@ parse_infport = do
   return (InFlowPort p)
 
 
-parse_outfport :: ReadP FlowPort
+parse_outfport :: ReadP Port
 parse_outfport = do
   string "out"
   skipSpaces
@@ -260,18 +297,36 @@ parse_outfport = do
   skipSpaces
   return (OutFlowPort p ds)
 
-parse_fport :: ReadP FlowPort
-parse_fport = do
-  fp<- parse_infport <|> parse_outfport
+parse_apiport_requires :: ReadP APIPortKind
+parse_apiport_requires = do
+  string "requires"
+  return Requires
+
+parse_apiport_provides :: ReadP APIPortKind
+parse_apiport_provides = do
+  string "provides"
+  return Provides
+
+parse_apiport :: ReadP Port
+parse_apiport = do
+  pk<-parse_apiport_requires <|> parse_apiport_provides
+  skipSpaces
+  p<-parse_inner_prop_info
+  skipSpaces
+  return (APIPort p pk)
+
+parse_port :: ReadP Port
+parse_port = do
+  fp<- parse_infport <|> parse_outfport <|> parse_apiport
   return fp
 
-parse_fports :: ReadP [FlowPort]
-parse_fports = do
+parse_ports :: ReadP [Port]
+parse_ports = do
    string "ports"
    skipSpaces
    char '{'
    skipSpaces
-   fps<-manyTill parse_fport (char '}')
+   fps<-manyTill parse_port (char '}')
    skipSpaces
    return fps
 
@@ -291,7 +346,7 @@ parse_bsys = do
    skipSpaces
    nm<-parse_id 
    skipSpaces
-   fps<-parse_fports <++ return []
+   fps<-parse_ports <++ return []
    skipSpaces
    return (BSystem nm fps)
 
@@ -306,7 +361,7 @@ parse_bcomponent = do
   skipSpaces
   vs<-parse_vars  <++ return []
   skipSpaces
-  fps<-parse_fports <++ return []
+  fps<-parse_ports <++ return []
   skipSpaces
   return (BComponent (read $ capitalise_fst sck) fps vs)
 
@@ -395,7 +450,7 @@ parse_composition = do
    skipSpaces
    tgtM<-parse_mult
    skipSpaces
-   return (ElemC b1 b2 srcM tgtM)
+   return (ElemC (Composition b1 b2 srcM tgtM))
 
 parse_asd_elem :: ReadP ASDElem
 parse_asd_elem = do
@@ -410,7 +465,7 @@ loadASDFrFile fn = do
     let asd = parseMaybe parse_ASD contents
     return asd
 
-labelOfRoot = "StructureDiagram_"
+rootId nm = nm ++ "_StructureDiagram"
 
 
 
@@ -420,8 +475,8 @@ mk_nm_info_q snm nm = ((nm, show_asd_mm_n ASD_MM_Name), ("ENmOf"++snm, show_asd_
 
 -- Root quadruple of GwT to be constructed
 gwt_rootQ nm  = 
-   let ns_m = [(labelOfRoot, show_asd_mm_n ASD_MM_StructureDiagram)] in 
-   (mk_nm_info_q labelOfRoot nm) `combineQwInsert` (ns_m, [], [], [])
+   let ns_m = [(rootId nm, show_asd_mm_n ASD_MM_StructureDiagram)] in 
+   (mk_nm_info_q (rootId nm) nm) `combineQwInsert` (ns_m, [], [], [])
 
 -- Gets the node and edge type for an element
 --gNETyForElem (ElemVT _) = (ASD_MM_ValueType, ASD_MM_EHasVTypes)
@@ -432,9 +487,9 @@ gwt_rootQ nm  =
 vtyId nm = nm  ++ "_VT"
 
 -- Identifier of an element in a graph
-elemId e@(ElemVT _) = vtyId (gElemNm e) 
-elemId e@(ElemB _) = blockId $ gElemNm e
-elemId e@(ElemC _ _ _ _) = (gElemNm e) ++ "_Composition"
+elemId e@(ElemVT _) = vtyId . gElemNm $ e 
+elemId e@(ElemB _) = blockId . gElemNm $ e
+elemId e@(ElemC _) = (gElemNm e) ++ "_Composition"
 
 -- builds name of an edge from a node
 mkenm_frn n = "E"++n
@@ -442,13 +497,16 @@ mkenm_frn n = "E"++n
 ptId (PInterval n1 n2) = "PInterval" ++ "_" ++ (show n1) ++ "_" ++ (show n2) ++ "_PTy"
 ptId pt = (show pt) ++ "_PTy"
 
--- Identifier of a property node in a graph
-varId nm = nm++ "_Var"
-propId nm ASD_MM_Variable = varId nm
-propId nm _               = nm ++ "_Prop"
+atyId (ATypeP pt) = ptId pt
+atyId (ATypeId id) = vtyId id
 
--- Identifier of a block node in a graph
-blockId nm = nm ++ "_Block"
+-- Identifiers in a graph
+varId cnm nm = cnm ++ "_" ++ nm ++ "_Var"
+tnId cnm nm = cnm ++ "_" ++ nm ++ "_TN"
+vtnId cnm nm ASD_MM_Variable = varId cnm nm
+vtnId cnm nm _ = tnId cnm nm
+
+opId cnm nm = cnm ++ "_" ++ nm ++ "_Op"
 
 -- Identifier of an expression node in a graph
 expId e = e++ ":Exp"
@@ -458,48 +516,83 @@ literalId enm vnm = enm ++ "_" ++ vnm ++ "_L"
 
 gwt_ns_es_ptype pt@(PInterval n1 n2) = 
    let pt_nm = ptId pt in
-   let ns_m = [(pt_nm, 
-              show_asd_mm_n ASD_MM_PInterval), (show PInt, show_asd_mm_n ASD_MM_PInt)] in
+   let ns_m = [(pt_nm, show_asd_mm_n ASD_MM_PInterval)] in
    let es_m = ([(mkenm_frn $ pt_nm ++ "_lb", show_asd_mm_e ASD_MM_EPInterval_lb), 
                (mkenm_frn $ pt_nm ++ "_ub", show_asd_mm_e ASD_MM_EPInterval_ub)],
                [(mkenm_frn $ pt_nm ++ "_lb", pt_nm), (mkenm_frn $ pt_nm ++ "_ub", pt_nm)],
                [(mkenm_frn $ pt_nm ++ "_lb", ptId PInt), (mkenm_frn $ pt_nm ++ "_ub", ptId PInt)]) in
-   makeQFrTFst ns_m es_m
+   makeQFrTFst ns_m es_m `combineQwUnion` gwt_ns_es_ptype (PInt)
 
 gwt_ns_es_ptype pt =  
   let pt_nm = ptId pt in
-  let str = fst $ splitAtStr "_PTy" pt_nm in
-  let ns_m = [(pt_nm ++ "_" ++ str, show_asd_mm_n $ read_asd_mm $ fst $ splitAtStr "_PTy" pt_nm)] in
+  let ns_m = [(pt_nm, show_asd_mm_n . read_asd_mm . show $ pt)] in
   (ns_m, [], [], [])
 
 --
--- Builds what is required for a propery, either a variable, a field or a flow port
-gwt_property (Property nm nty ie) n_mm_ty = 
-   let nnm = propId nm n_mm_ty in
-   let enm_i = mkenm_frn $ nnm ++ "_init" in
+-- Builds what is required for a typed name (TN), either a variable, a field or a flow port
+gwt_TN cnm (TypedName nm nty) n_mm_ty = 
+   let nnm = vtnId cnm nm n_mm_ty in
    let enm_t = mkenm_frn $ nnm ++ "_type" in
-   let ns_m = (nnm, show_asd_mm_n n_mm_ty):(if null ie then [] else [(expId ie, show_asd_mm_n ASD_MM_Exp)]) in
-   let es_m = ((enm_t, show_asd_mm_e ASD_MM_EProperty_type):(if null ie then [] else [(enm_i, show_asd_mm_e ASD_MM_EProperty_init)]), 
-                (enm_t, nnm):(if null ie then [] else [(enm_i, nnm)]), 
-                (enm_t, vtyId nty):(if null ie then [] else [(enm_i, expId ie)])) in
-   let names_q = (mk_nm_info_q nnm nm) `combineQwInsert` nilQl in
+   let nty_id = atyId nty in 
+   let ns_m = [(nnm, show_asd_mm_n n_mm_ty)] in
+   let es_m = ([(enm_t, show_asd_mm_e ASD_MM_ETypedName_type)], 
+                [(enm_t, nnm)], [(enm_t, nty_id)]) in
+   let q = if is_ATy_a_Pty nty then gwt_ns_es_ptype (gATyPTy nty) else nilQl in
+   let names_q = (mk_nm_info_q nnm nm) `combineQwInsert` q in
    names_q `combineQwUnion` (makeQFrTFst ns_m es_m)
 
+--
+-- Builds what is required for an ITN, either a variable, a field or a flow port
+gwt_ITN cnm (Initialisable nm nty ie) n_mm_ty = 
+   let nnm = vtnId cnm nm n_mm_ty in
+   let iq = gwt_TN cnm (TypedName nm nty) n_mm_ty in
+   let enm_i = mkenm_frn $ nnm ++ "_init" in
+   let nty_id = atyId nty in 
+   let ns_m = if null ie then [] else [(expId ie, show_asd_mm_n ASD_MM_Exp)] in
+   let es_m = (if null ie then [] else [(enm_i, show_asd_mm_e ASD_MM_EInitialisable_init)], 
+                if null ie then [] else [(enm_i, nnm)], 
+                if null ie then [] else [(enm_i, expId ie)]) in
+   (makeQFrTFst ns_m es_m) `combineQwUnion` iq
+
+gwt_Port cnm po@(InFlowPort itn) = gwt_ITN cnm itn (gPoMTy po)
+gwt_Port cnm po@(OutFlowPort itn deps) = 
+  let iqs = gwt_ITN cnm itn (gPoMTy po) in
+  let enm d = mkenm_frn $ cnm ++ "_" ++ (gITNNm itn) ++ "_depends_" ++ d in
+  let es_m = foldl (\t d->((enm d, show_asd_mm_e ASD_MM_EOutFlowPort_depends), 
+                          (enm d, vtnId cnm (gITNNm itn) $ gPoMTy po), 
+                          (enm d, tnId cnm d)) `combineTwInsert` t) ([], [], []) deps in
+  (makeQFrTFst [] es_m) `combineQwUnion` iqs
+
+gwt_Port cnm po@(APIPort itn k) = 
+   let iq = gwt_ITN cnm itn (gPoMTy po) in
+   let enm_k = mkenm_frn $ cnm ++ "_" ++ (gITNNm itn) ++ "_kind" in
+   let ns_m = [(show k, show_asd_mm_n $ read_asd_mm . lower_fst . show $ k)] in
+   let pid = (tnId cnm) . gITNNm $ itn in
+   let es_m = ([(enm_k, show_asd_mm_e ASD_MM_EAPIPort_kind)], [(enm_k, pid)], [(enm_k, show k)]) in
+   (makeQFrTFst ns_m es_m) `combineQwUnion` iq
+
+-- Builds what is required for a field
+gwt_field cnm tn  =
+   let iq = gwt_TN cnm tn ASD_MM_Field in
+   iq
+
 -- Builds what is required for a variable
-gwt_variable (Variable p vk)  =
-  let iq =  gwt_property p ASD_MM_Variable in
+gwt_variable cnm (Variable itn vk)  =
+  let iq =  gwt_ITN cnm itn ASD_MM_Variable in
   let ns_m = [(show vk, show_asd_mm_n $ read_asd_mm . lower_fst . show $ vk)] in
-  let enm_k = mkenm_frn $ (varId $ gPNm p) ++ "_kind" in
-  let es_m = ([(enm_k, show_asd_mm_e ASD_MM_EVariable_kind)], [(enm_k, varId $ gPNm p)], [(enm_k, show vk)]) in
+  let vid = (varId cnm) . gITNNm $ itn in
+  let enm_k = mkenm_frn $ vid ++ "_kind" in
+  let es_m = ([(enm_k, show_asd_mm_e ASD_MM_EVariable_kind)], [(enm_k, vid)], [(enm_k, show vk)]) in
   (makeQFrTFst ns_m es_m) `combineQwUnion` iq
 
--- Flow ports of a block 
-gwt_Ports nm_bl fps = 
-  let iqs = foldl (\qs fp->(gwt_property (gFPPr fp) (gFPMTy fp)) `combineQwUnion` qs) nilQl fps in 
-  let enm_l k = mkenm_frn $ nm_bl ++ "_fports" ++ (show k) in
-  let es_m = foldl (\esml p->((enm_l ((length . fst_T $ esml) +1), show_asd_mm_e ASD_MM_EBlock_fports), 
-                             (enm_l ((length . fst_T $ esml) + 1), nm_bl), (enm_l ((length . fst_T $ esml) +1), gFPNm p)) 
-                             `combineTwInsert` esml) ([], [], []) fps in
+-- Ports of a block 
+gwt_Ports nm_bl ps = 
+  let iqs = foldl (\qs p->(gwt_Port nm_bl p) `combineQwUnion` qs) nilQl ps in 
+  let enm_l k = mkenm_frn $ nm_bl ++ "_ports" ++ (show k) in
+  let es_m = foldl (\esml p->((enm_l ((length . fst_T $ esml) +1), show_asd_mm_e ASD_MM_EBlock_ports), 
+                             (enm_l ((length . fst_T $ esml) + 1), nm_bl), 
+                             (enm_l ((length . fst_T $ esml) +1), tnId nm_bl $ gPoNm p)) 
+                             `combineTwInsert` esml) ([], [], []) ps in
   (makeQFrTFst [] es_m) `combineQwUnion` iqs
 
 -- A block
@@ -511,14 +604,17 @@ gwt_Block nmb bl_mty fps =
   (mk_nm_info_q nnm nmb) `combineQwInsert` ((makeQFrTFst ns_m es_m) `combineQwUnion` (gwt_Ports nnm fps))
 
 -- A component
-gwt_Component nm c = 
-  let iqs = gwt_Block nm ASD_MM_BElement (gCFps c) in
-  -- variables
-  let iqs' = foldl (\qs v->(gwt_variable v) `combineQwUnion` qs) iqs (gCVs c) in
-  let ns_m = [(show . gCK $ c, show_asd_mm_n $ read_asd_mm . lower_fst  . show . gCK $ c)] in
-  let enm_k = mkenm_frn $ (blockId nm) ++ "_kind" in
-  let es_m = ([(enm_k, show_asd_mm_e ASD_MM_EVariable_kind)], [(enm_k, blockId nm)], [(enm_k, show . gCK $ c)]) in
-  (makeQFrTFst ns_m es_m) `combineQwUnion` iqs'
+gwt_Component nm c bl_mty = 
+   let iqs = gwt_Block nm bl_mty (gCFps c) in
+   let iqs' = foldl (\qs v->(gwt_variable nm v) `combineQwUnion` qs) iqs $ gCVs c in
+   let ns_m = [(show . gCK $ c, show_asd_mm_n $ read_asd_mm . lower_fst  . show . gCK $ c)] in
+   let enm_k = mkenm_frn $ (blockId nm) ++ "_kind" in
+   let enm_v v = mkenm_frn $ (blockId nm) ++ "_" ++ ((varId nm) . gITNNm . gVarITN $ v) in
+   let es_m = ([(enm_k, show_asd_mm_e ASD_MM_EComponent_kind)] , [(enm_k, blockId nm)], [(enm_k, show . gCK $ c)]) in
+   let es_m' = foldl (\vs v->((enm_v v, show_asd_mm_e ASD_MM_EComponent_vars), (enm_v v, blockId nm), 
+                (enm_v v, (varId nm) . gITNNm . gVarITN $ v)) 
+               `combineTwInsert` vs) es_m (gCVs c) in
+  (makeQFrTFst ns_m es_m') `combineQwUnion` iqs'
 
 mvalId (MultN n) = "MultN_" ++ (show n)
 mvalId (MMany) = "Mult*" 
@@ -550,37 +646,59 @@ gwt_mult m@(MultR mvs mvt) =
   makeQFrTFst ns_m es_m `combineQwUnion` (gwt_mult_val mvt)
 
 
-gwt_Elem (ElemVT (DType nm pt)) = 
-  let gnm = vtyId nm in
-  let q0 = gwt_ns_es_ptype pt in
-  let ns_m = [(gnm, show_asd_mm_n ASD_MM_DType)]  in 
-  let es_m = ([(mkenm_frn $ gnm ++ "_base", show_asd_mm_e ASD_MM_EDType_base)],
-              [(mkenm_frn $ gnm ++ "_base", gnm)],
-              [(mkenm_frn $ gnm ++ "_base", ptId pt)]) in
-  (makeQFrTFst ns_m es_m) `combineQwUnion` q0
+gwt_Has rnm tnm mty =
+  let enm = mkenm_frn $ rnm ++ "_" ++ tnm in
+  let ns_m = [] in
+  let es_m = ([(enm, show_asd_mm_e mty)],
+              [(enm, rnm)],
+              [(enm, tnm)]) in
+  (makeQFrTFst ns_m es_m) `combineQwUnion` nilQl
 
-gwt_Elem (ElemVT (UType nm pt unm)) = 
-  let gnm = vtyId nm in
-  let q0 = gwt_ns_es_ptype pt in
-  let ns_m = [(gnm, show_asd_mm_n ASD_MM_UnitType)]  in 
-  let es_m = ([(mkenm_frn $ gnm ++ "_base", show_asd_mm_e ASD_MM_EDType_base),
-              (mkenm_frn $ gnm ++ "_unit", show_asd_mm_e ASD_MM_EUnitType_unit)],
-              [(mkenm_frn $ gnm ++ "_base", gnm), (mkenm_frn $ gnm ++ "_unit", gnm)],
-              [(mkenm_frn $ gnm ++ "_base", ptId pt), (mkenm_frn $ gnm ++ "_unit", unm)]) in
-  makeQFrTFst ns_m es_m `combineQwUnion` q0
+gwt_operation inm (Operation nm ps aty) = 
+  let nnm = opId inm nm in
+  let q = foldl (\ql f->(gwt_field inm f) `combineQwUnion` ql) nilQl ps in 
+  let ns_m = [(nnm, show_asd_mm_n ASD_MM_Operation)] in
+  let enm_ps k = mkenm_frn $ nnm ++ "_params_" ++ (show k) in
+  let enm_ret = mkenm_frn $ nnm ++ "_return" in
+  let tq = if is_ATy_a_Pty aty then gwt_ns_es_ptype (gATyPTy aty) else nilQl in
+  let es_m_0 = foldl(\ts p->((enm_ps $ (length . fst_T $ ts) + 1, show_asd_mm_e ASD_MM_EOperation_params), 
+               (enm_ps $ (length . fst_T $ ts) + 1, nnm), 
+               (enm_ps $ (length . fst_T $ ts) + 1, tnId inm $ gTNNm p)) `combineTwInsert` ts) ([], [], []) ps in
+  let es_m = ((enm_ret, show_asd_mm_e ASD_MM_EOperation_return), (enm_ret, nnm), (enm_ret, atyId aty)) `combineTwInsert` es_m_0 in
+  (makeQFrTFst ns_m es_m) `combineQwUnion` ((mk_nm_info_q nnm nm) `combineQwInsert` q)
 
-gwt_Elem (ElemVT (VTypeStrt nm ps)) = 
+
+gwt_Elem rnm (ElemVT (DType nm pt)) = 
+  let nnm = vtyId nm in
+  let q0 = gwt_ns_es_ptype pt in
+  let ns_m = [(nnm, show_asd_mm_n ASD_MM_DType)]  in 
+  let es_m = ([(mkenm_frn $ nnm ++ "_base", show_asd_mm_e ASD_MM_EDType_base)],
+              [(mkenm_frn $ nnm ++ "_base", nnm)],
+              [(mkenm_frn $ nnm ++ "_base", ptId pt)]) in
+  (mk_nm_info_q nnm nm) `combineQwInsert` (((makeQFrTFst ns_m es_m) `combineQwUnion` q0) `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasVTypes))
+
+gwt_Elem rnm (ElemVT (UType nm pt unm)) = 
+  let nnm = vtyId nm in
+  let q0 = gwt_ns_es_ptype pt in
+  let ns_m = [(nnm, show_asd_mm_n ASD_MM_UnitType), (unm, show_asd_mm_n ASD_MM_Name)]  in 
+  let es_m = ([(mkenm_frn $ nnm ++ "_base_", show_asd_mm_e ASD_MM_EDType_base),
+              (mkenm_frn $ nnm ++ "_unit_", show_asd_mm_e ASD_MM_EUnitType_unit)],
+              [(mkenm_frn $ nnm ++ "_base_", nnm), (mkenm_frn $ nnm ++ "_unit_", nnm)],
+              [(mkenm_frn $ nnm ++ "_base_", ptId pt), (mkenm_frn $ nnm ++ "_unit_", unm)]) in
+  (mk_nm_info_q nnm nm) `combineQwInsert` ((makeQFrTFst ns_m es_m `combineQwUnion` q0) `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasVTypes))
+
+gwt_Elem rnm (ElemVT (VTypeStrt nm ps)) = 
   let nnm = vtyId nm in
   -- build graph portion for properties
-  let qps = foldr (\p q->(gwt_property p ASD_MM_Property) `combineQwUnion` q) nilQl ps in
-  let enm_f k = mkenm_frn $ nnm ++ "_fields" ++ (show k) in
+  let qps = foldl (\q (FieldI itn)->(gwt_ITN nm itn ASD_MM_FieldI) `combineQwUnion` q) nilQl ps in
+  let enm_f k = mkenm_frn $ nnm ++ "_fields_" ++ (show k) in
   let ns_m = [(nnm, show_asd_mm_n ASD_MM_StrtType)] in
-  let es_m = (foldr (\p t->((enm_f (length . fst_T $ t), show_asd_mm_e ASD_MM_EStrtType_fields), 
-                            (enm_f (length . fst_T $ t), nnm), (enm_f (length . fst_T $ t), gPNm p)) 
-                             `combineTwInsert` t) ([], [], []) ps) in
-  (mk_nm_info_q nnm nm) `combineQwInsert` (makeQFrTFst ns_m es_m `combineQwUnion` qps)
+  let es_m = foldl (\t (FieldI itn)->((enm_f $ (length . fst_T $ t) + 1, show_asd_mm_e ASD_MM_EStrtType_fields), 
+                            (enm_f $ (length . fst_T $ t) + 1, nnm), (enm_f $ (length . fst_T $ t) + 1, (tnId nm) . gITNNm $ itn)) 
+                             `combineTwInsert` t) ([], [], []) ps in
+  (mk_nm_info_q nnm nm) `combineQwInsert` (makeQFrTFst ns_m es_m `combineQwUnion` (qps `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasVTypes)))
 
-gwt_Elem (ElemVT (VTypeEnum nm ls)) = 
+gwt_Elem rnm (ElemVT (VTypeEnum nm ls)) = 
    let nnm = vtyId nm in
    let qls = foldr (\l q->((mk_nm_info_q (literalId nm l) l) 
                    `combineQwInsert` ((makeQFrTFst [(literalId nm l, show_asd_mm_n ASD_MM_Literal)] ([], [], [])) 
@@ -590,38 +708,48 @@ gwt_Elem (ElemVT (VTypeEnum nm ls)) =
    let es_m = foldr (\l t->((enm_l (length . fst_T $ t), show_asd_mm_e ASD_MM_EHasLiterals), 
                             (enm_l (length . fst_T $ t), nnm), (enm_l (length . fst_T $ t), literalId nm l)) 
                              `combineTwInsert` t) ([], [], []) ls in
-   (makeQFrTFst ns_m es_m) `combineQwUnion` qls
+   (mk_nm_info_q nnm nm) `combineQwInsert` ((makeQFrTFst ns_m es_m) `combineQwUnion` (qls `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasVTypes)))
+
+gwt_Elem rnm (ElemVT (Interface nm ops)) =
+   let nnm = vtyId nm in
+   let ns_m = [(nnm, show_asd_mm_n ASD_MM_Interface)] in
+   let enm k =  mkenm_frn $ nnm ++ "_ops_" ++ (show k) in
+   let iq = foldl (\qs op->(gwt_operation nm op) `combineQwUnion` qs) nilQl ops in
+   let es_m = foldl (\lts op->((enm $ (length . fst_T $ lts) + 1, show_asd_mm_e ASD_MM_EInterface_ops), 
+                     (enm $ (length . fst_T $ lts) + 1, nnm), (enm $ (length . fst_T $ lts) + 1, opId nm $ gOpNm op)) `combineTwInsert` lts) ([], [], []) ops in 
+    (mk_nm_info_q nnm nm) `combineQwInsert` (((makeQFrTFst ns_m es_m) `combineQwUnion` iq) `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasVTypes))
 
 -- Compositions
-gwt_Elem e@(ElemC nms nmt ms mt) =
+gwt_Elem rnm e@(ElemC c) =
   let nnm = elemId e in 
-  let ns_m = [(nnm, show_asd_mm_n ASD_MM_Composition), (show ms, show_asd_mm_n $ read_asd_mm . lower_fst . show $ ms)] in 
-  let enm_s = mkenm_frn $ nms ++ "_src" in
-  let enm_t = mkenm_frn $ nmt ++ "_tgt" in
-  let enm_sm = mkenm_frn $ nms ++ "_srcM" in
-  let enm_tm = mkenm_frn $ nmt ++ "_tgtM" in
+  let ns_m = [(nnm, show_asd_mm_n ASD_MM_Composition), (show $ gSrcM c, show_asd_mm_n $ read_asd_mm . lower_fst . show . gSrcM $ c)] in 
+  let enm_s = mkenm_frn $ (gSrc c) ++ "_" ++ (gTgt c) ++ "_src" in
+  let enm_t = mkenm_frn $ (gSrc c) ++ "_" ++ (gTgt c) ++ "_tgt" in
+  let enm_sm = mkenm_frn $ (gSrc c) ++ "_" ++ (gTgt c) ++ "_srcM" in
+  let enm_tm = mkenm_frn $ (gSrc c) ++ "_" ++ (gTgt c) ++ "_tgtM" in
   let es_m = ([(enm_s, show_asd_mm_e ASD_MM_EComposition_src), (enm_t, show_asd_mm_e ASD_MM_EComposition_tgt),
                (enm_sm, show_asd_mm_e ASD_MM_EComposition_srcM), (enm_tm, show_asd_mm_e ASD_MM_EComposition_tgtM)],
-              [(enm_s, nms), (enm_t, nmt), (enm_sm, nms), (enm_tm, nmt)], 
-              [(enm_s, blockId nms), (enm_t, blockId nmt), (enm_sm, show ms), (enm_tm, multId mt)]) in
-  makeQFrTFst ns_m es_m `combineQwUnion` (gwt_mult mt)
+              [(enm_s, nnm), (enm_t, nnm), (enm_sm, nnm), (enm_tm, nnm)], 
+              [(enm_s, blockId . gSrc $ c), (enm_t, blockId . gTgt $ c), (enm_sm, show . gSrcM $ c), (enm_tm, multId . gTgtM $ c)]) in
+  makeQFrTFst ns_m es_m `combineQwUnion` ((gwt_mult . gTgtM $ c) `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasCompositions))
 
 -- Blocks/Systems
-gwt_Elem (ElemB (BSystem nm fps)) = gwt_Block nm ASD_MM_System fps
+gwt_Elem rnm (ElemB (BSystem nm fps)) = 
+  (gwt_Block nm ASD_MM_System fps) `combineQwUnion` (gwt_Has rnm (blockId nm) ASD_MM_EHasBlocks)
 
 -- Blocks/Elements
-gwt_Elem (ElemB (BElement nm c)) =
-  let iqs = gwt_Component nm c in
-  iqs
+gwt_Elem rnm (ElemB (BElement nm c)) =
+   let iqs = gwt_Component nm c ASD_MM_BElement in
+   iqs `combineQwUnion` (gwt_Has rnm (blockId nm) ASD_MM_EHasBlocks)
 
 -- Blocks/Elements
-gwt_Elem (ElemB (BCompound nm pk c)) =
-  let iqs = gwt_Component nm c in
+gwt_Elem rnm (ElemB (BCompound nm pk c)) =
+  let iqs = gwt_Component nm c ASD_MM_Compound in
   let nnm = blockId nm in
   let ns_m = [(show pk, show_asd_mm_n . read_asd_mm . lower_fst  . show  $ pk)] in
   let enm_p = mkenm_frn $ nnm ++ "_phenomena" in
   let es_m = ([(enm_p, show_asd_mm_e ASD_MM_ECompound_phenomena)], [(enm_p, nnm)], [(enm_p, show pk)]) in
-  (makeQFrTFst ns_m es_m) `combineQwUnion` iqs
+  (makeQFrTFst ns_m es_m) `combineQwUnion` (iqs `combineQwUnion` (gwt_Has rnm nnm ASD_MM_EHasBlocks))
 
 
 -- consGwT_elem rnm elem = 
@@ -634,12 +762,12 @@ gwt_Elem (ElemB (BCompound nm pk c)) =
 --   let names_q = (mk_nm_info_q enm (gElemNm elem)) `combineQwInsert` nilQl in
 --   names_q `combineQwUnion` (makeQFrTFst ns_m_i es_m_i) `combineQwUnion` (gwT_InnerElem elem)
 
-gwt_elems es  = foldr(\e q->(gwt_Elem e) `combineQwAppend` q) nilQl es
+gwt_elems rnm es = foldr(\e q->(gwt_Elem rnm e) `combineQwUnion` q) nilQl es
 
 -- Constructs the graph with typing for given ASD model
 gwt_asd (ASD nm es)  = 
    -- initial set of nodes with type mapping
-   let (ns_m, es_m, src_m, tgt_m) = (gwt_rootQ nm) `combineQwAppend` (gwt_elems es) in
+   let (ns_m, es_m, src_m, tgt_m) = (gwt_rootQ nm) `combineQwUnion` (gwt_elems (rootId nm) es) in
    let asd_g = cons_g (map fst ns_m) (map fst es_m) src_m tgt_m in
    cons_gwt asd_g (cons_gm (ns_m) (es_m))
 
@@ -662,9 +790,9 @@ test3 = readP_to_S parse_ptype "Int"
 test4 = readP_to_S parse_ptype "Interval 5 6"
 test5a = readP_to_S parse_venum "enum OpenClosed : open closed\n"
 test5b = readP_to_S (manyTill parse_spc_id eof) "open closed"
-test6a = readP_to_S parse_prop_info "v1 OpenClosed \"closed\""
-test6b = readP_to_S parse_fport "out v1 OpenClosed \"closed\" {}"
-test6c = readP_to_S parse_fport "in v2 OpenClosed"
+test6a = readP_to_S parse_ITN  "v1 OpenClosed \"closed\""
+test6b = readP_to_S parse_port "out v1 OpenClosed \"closed\" {}"
+test6c = readP_to_S parse_port "in v2 OpenClosed"
 test7 = do
    asd<-loadASDFrFile (def_path ++ "three_water_tanks.asd")
    putStrLn $ show asd

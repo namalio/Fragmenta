@@ -1,10 +1,10 @@
 digraph {graph[label=SG_Person_Vehicle_Ic,labelloc=tl,labelfontsize=12];
-"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Person</I><br/>(A)}>];
-"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
-"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
-"Motorcycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorcycle"];
 "Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
 "Customer"[shape=record,fillcolor=lightskyblue1,style = filled,label="Customer"];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Person</I><br/>(A)}>];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Motorcycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorcycle"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
 
 "Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
 "Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];

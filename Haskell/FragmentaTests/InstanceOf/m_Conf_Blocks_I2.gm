@@ -1,0 +1,12 @@
+Morphism M_Conf_Blocks_I2 {
+	nodes {
+	   IB1->B1
+	   IB2->B2
+	   IP1->P1
+	   IP2->P2
+	}
+	edges {
+	   IB1_IP2->B1_P1
+	   IB2_IP1->B2_P2
+	}
+}

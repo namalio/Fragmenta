@@ -5,6 +5,7 @@ Morphism M_F_ASD1 {
      	Block->Part
      	Composition->Connector
      	ValueType->VType
+     	PAType->Manner
 	}
 	edges {
 	   HasBlocks->ConsistsOf

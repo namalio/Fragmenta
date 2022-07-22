@@ -1,0 +1,11 @@
+Morphism M_PVI_To_PV {
+   nodes {
+      Person->Person
+	  Employee->Person
+      Vehicle->Vehicle
+      Car->Vehicle
+	}
+	edges {
+	   Owns->Owns
+	}
+}

@@ -1,6 +1,0 @@
-digraph {graph[label=SG_Vehicle_Parts,labelloc=tl,labelfontsize=12];
-"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
-"Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part"];
-
-"Vehicle"->"Part"[label="HasParts▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-}

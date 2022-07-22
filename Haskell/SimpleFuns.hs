@@ -1,6 +1,6 @@
 module SimpleFuns(swap, pair_up, kth, equalLs, quicksort, fst_T, snd_T, thd_T, fst_Q, mapT, applyPToP, allButLast, 
     toIdxC, combineTwAppend, combineTwInsert, combineQwInsert, combineQwAppend, combineQwUnion, 
-    makeQFrTFst, nilQl) where
+    makeQFrTFst, nilQl,  gapp, replace) where
 
 import Sets
 
@@ -63,6 +63,13 @@ toIdxC::Eq a=>[a]->[(a, Int)]
 toIdxC xs = toIdxC' xs 0
     where  toIdxC' [] _ = []
            toIdxC' (x:xs) k = (x, k):toIdxC' xs (k+1)
+
+gapp ls = foldr (++) [] ls
+
+replace x y [] = []
+replace x y (z:zs) 
+   | x == z    = y:(replace x y zs)
+   | otherwise = z:(replace x y zs)
 
 test1 = combineTwInsert (1, 2, 3) ([2, 3], [4, 5], [6, 7])
 test2 = combineQwInsert (1, 2, 3, 4) ([2, 3], [4, 5], [6, 7], [8, 9])

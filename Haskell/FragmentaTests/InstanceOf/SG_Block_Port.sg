@@ -1,0 +1,5 @@
+SG SG_Block_Port {
+   node Block
+   node Port
+   compu Block->Port[Block_ports]:*
+}

@@ -1,0 +1,8 @@
+GrwT G_Block_I1 {
+   node B1 : Block
+   node B2 : Block
+   node P1 : Port
+   node P2 : Port
+   edge B1->P1 : Block_ports
+   edge B2->P2 : Block_ports
+}

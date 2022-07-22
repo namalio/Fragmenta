@@ -1,24 +1,19 @@
 fragment F_ASD4 {
   SG SG_ASD4 {
-    proxy PBlock
-    proxy PFlowPort
-    proxy PVariable
-    node System
-    nodea Component
-    inh System->PBlock
-    inh Component->PBlock
-    compu PBlock->PFlowPort[Block_fports]:*
-    compu Component->PVariable[Component_vars]:*
-    node Compound
-    node BElement
-    inh Compound->Component
-    inh BElement->Component
-    enum ComponentKind: cyber, subsystem, physical
-    relu Component->ComponentKind[Component_kind]
-    enum PhenomenaKind: discrete, continuous
-    relu Compound->PhenomenaKind[Compound_phenomena]
+    proxy PInitialisable
+    nodea Port
+    nodea FlowPort
+    node APIPort
+    node InFlowPort
+    node OutFlowPort
+    enum APIPortKind: requires, provides
+    relu APIPort->APIPortKind[APIPort_kind]
+    inh Port->PInitialisable
+    inh FlowPort->Port
+    inh APIPort->Port
+    inh InFlowPort->FlowPort
+    inh OutFlowPort->FlowPort
+    relu OutFlowPort->InFlowPort[OutFlowPort_depends]:*
   }
-    ref PBlock->Block
-    ref PFlowPort->FlowPort
-    ref PVariable->Variable
+    ref PInitialisable->Initialisable
 }

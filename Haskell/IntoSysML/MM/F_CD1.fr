@@ -5,19 +5,18 @@ fragment F_CD1 {
     node CompositionI
     node BlockI
     node Connector
-    node Port
+    node PortI
     node VTypeRef
     inh ConfigurationDiagram->PNamed
-    compu ConfigurationDiagram->CompositionI[compositions]
-    compu ConfigurationDiagram->BlockI[blocks]
-    compu ConfigurationDiagram->Connector[connectors]
-    relu Connector->Port[Connector_src]
-    relu Connector->Port[Connector_tgt]
+    compu ConfigurationDiagram->CompositionI[HasCompositions]
+    compu ConfigurationDiagram->BlockI[HasBlocks]
+    compu ConfigurationDiagram->Connector[HasConnectors]
+    relu Connector->PortI[Connector_src]
+    relu Connector->PortI[Connector_tgt]
     relu Connector->VTypeRef[Connector_ftype]
-    compu BlockI->Port[BlockI_ports]
+    compu BlockI->PortI[BlockI_ports]
     relu CompositionI->BlockI[CompositionI_src]
     relu CompositionI->BlockI[CompositionI_tgt]
-    inh VTypeRef->PNamed
   }
   ref PNamed->Named
 }

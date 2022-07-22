@@ -144,15 +144,10 @@ inh_ntys_ok sg = all (inh_nty_ok sg) (inh sg)
 acyclicI::Eq a =>SGr a->Bool
 acyclicI = acyclicG . inhG
 
--- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
-inhMinus sg = relOfG $ subtractNs (inhG sg) (nsV sg)
-isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg) 
-
 -- Checks whether the inheritance hierarchy complies with required restrictions
 inh_ok::Eq a =>SGr a->Bool
 inh_ok sg = inh_ntys_ok sg 
    && acyclicI sg
-   && isInhTree sg
 
 -- Checks whether an optional node is involved in non-compulsory relations
 nodeopt_ok::Eq a =>SGr a->a->Bool
@@ -193,9 +188,13 @@ derivedOk sg = (ran_of $ derb sg) `subseteq` esA sg
    && all (\e->(appl (src sg) e, appl ((src sg) `bcomp` (derb sg)) e ) `elem` (inhst sg) 
       && (appl (tgt sg) e, appl ((tgt sg) `bcomp` (derb sg)) e ) `elem` (inhst sg)) (esD sg)
 
+-- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
+inhMinus sg = relOfG $ subtractNs (inhG sg) (nsV sg)
+isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg) 
+
 -- Condition for total SGs
 is_wf_tsg::Eq a =>SGr a->Bool
-is_wf_tsg sg = is_wf_sg sg && etherealInherited sg && derivedOk sg
+is_wf_tsg sg = is_wf_sg sg && etherealInherited sg && derivedOk sg && isInhTree sg
 
 check_mult_etys_ok sg = 
    if mult_etys_ok sg then nile else cons_se $ "The following edges have incorrect multiplicities:"++ (showElems' err_es)
