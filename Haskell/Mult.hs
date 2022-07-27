@@ -70,7 +70,7 @@ instance Ord Mult where
 
 -- Predicate 'allowedm' (∝) 
 allowedm (Erel Dbi) (_, _) = True
-allowedm (Eder) (_, _) = True
+allowedm (Erefm) (_, _) = True
 allowedm (Ecomp Duni) (Sm (Val 1), _) = True
 allowedm (Erel Duni) (m1, _) = isMultMany m1
 allowedm (Ecomp Dbi) (m1, _) = isMultOpt m1

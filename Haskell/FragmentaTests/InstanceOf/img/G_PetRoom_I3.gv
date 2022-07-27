@@ -1,0 +1,9 @@
+digraph {graph[label=G_PetRoom_I3,labelloc=tl,labelfontsize=12];
+"PR1"[shape=box,fillcolor=lightskyblue1,style = filled,label="PR1 : PetRoom"];
+"Fi"[shape=box,fillcolor=lightskyblue1,style = filled,label="Fi : Cat"];
+"dog"[shape=box,fillcolor=lightskyblue1,style = filled,label="dog : dog"];
+
+"PR1"->"Fi"[label="PR1_Fi :EHosts▼",arrowhead=vee];
+"PR1"->"dog"[label="PR1_dog :EPetRoom_kind▼",arrowhead=vee];
+"Fi"->"dog"[label="Fi_dog :ETiedTo▼",arrowhead=vee];
+}

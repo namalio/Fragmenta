@@ -1,0 +1,17 @@
+digraph {graph[label=SG_Block_Conf_Ty,labelloc=tl,labelfontsize=12];
+"BlockI"[shape=record,fillcolor=lightskyblue1,style = filled,label="BlockI"];
+"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label="Block"];
+"PortI"[shape=record,fillcolor=lightskyblue1,style = filled,label="PortI"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label="Port"];
+"Type"[shape=record,fillcolor=lightskyblue1,style = filled,label="Type"];
+
+"Block"->"Port"[label="Block_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"BlockI"->"PortI"[label="BlockI_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Connector"->"PortI"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"PortI"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"BlockI"->"Block"[label="BlockI_instOf",arrowhead=vee,headlabel="",arrowsize=.5];
+"PortI"->"Port"[label="PortI_instOf",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Type"[label="Connector_type",arrowhead=vee,headlabel="",arrowsize=.5];
+"Port"->"Type"[label="Port_type",arrowhead=vee,headlabel="",arrowsize=.5];
+}

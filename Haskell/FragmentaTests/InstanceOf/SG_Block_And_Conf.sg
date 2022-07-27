@@ -1,0 +1,13 @@
+SG SG_Block_And_Conf {
+   node Block
+   node Port
+   node BlockI
+   node PortI
+   node Connector
+   compu Block->Port[Block_ports]:*
+   compu BlockI->PortI[BlockI_ports]:*
+   relu Connector->PortI[Connector_src]:1
+   relu Connector->PortI[Connector_tgt]:1
+   relu BlockI->Block[BlockI_instOf]:1
+   relu PortI->Port[PortI_instOf]:1
+}

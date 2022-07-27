@@ -22,7 +22,7 @@ check_report_wf id otk g b = do
    let errs = check_wf id otk g 
    report_errs id errs b
 
-check_morphism::(Eq a, Show a, GM_CHK g g')=>String->Maybe MK->g a->GrM a->g' a->Bool->IO()
+check_morphism::(Eq a, Eq b, Show a, Show b, GM_CHK g g')=>String->Maybe MK->g a b->GrM a b->g' a b->Bool->IO()
 check_morphism id omk gs m gt b = do 
    let errs = check_wf_gm id omk (gs, m, gt) 
    report_errs id errs b

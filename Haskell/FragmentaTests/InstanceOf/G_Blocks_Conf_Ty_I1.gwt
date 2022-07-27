@@ -1,0 +1,25 @@
+GrwT G_Blocks_Conf_Ty_I1 {
+   node B1 : Block
+   node B2 : Block
+   node P1 : Port
+   node P2 : Port
+   node T : Type
+   edge B1->P1 : Block_ports
+   edge B2->P2 : Block_ports
+   edge P1->T : Port_type
+   edge P2->T : Port_type
+   node IB1 : BlockI
+   node IB2 : BlockI
+   node IP1 : PortI
+   node IP2 : PortI
+   edge IB1->IP1 : BlockI_ports
+   edge IB2->IP2 : BlockI_ports
+   edge IB1->B1 : BlockI_instOf
+   edge IB2->B2 : BlockI_instOf
+   node C1 : Connector
+   edge C1->IP1 : Connector_src
+   edge C1->IP2 : Connector_tgt
+   edge IP1->P1 : PortI_instOf
+   edge IP2->P2 : PortI_instOf
+   edge C1->T : Connector_type
+}

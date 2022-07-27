@@ -29,7 +29,7 @@ ls_of_node_names (SGDrawing ns es) = map node_name ns
 
 consEdge sg e = 
    let et = appl (ety sg) e in
-   SGEdge e et (toMaybeFrLs $ img (srcm sg) [e]) (toMaybeFrLs $ img (tgtm sg) [e]) (appl (src sg) e) (appl (tgt sg) e) (if et == Eder then appl (derb sg) e else "")
+   SGEdge e et (toMaybeFrLs $ img (srcm sg) [e]) (toMaybeFrLs $ img (tgtm sg) [e]) (appl (src sg) e) (appl (tgt sg) e) (if et == Eder then appl (eb sg) e else "")
 consEdges sg = foldr (\e es'->(consEdge sg e):es') [] (es sg)
 
 consNode sg n = SGNode n (appl (nty sg) n) []

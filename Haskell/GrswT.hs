@@ -12,9 +12,9 @@ import Grs
 import Gr_Cls
 import ErrorAnalysis
 
-data GrwT a = GrwT {
-    g_ :: Gr a
-    , t_ :: GrM a
+data GrwT a b = GrwT {
+    g_ :: Gr a b
+    , t_ :: GrM a b
     } deriving(Eq, Show) 
 
 cons_gwt g t = GrwT  {g_ = g, t_ = t}

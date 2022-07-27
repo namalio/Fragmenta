@@ -19,11 +19,11 @@ import Relations
 import ErrorAnalysis 
 import Utils
 
-data Gr a = Gr {
+data Gr a b = Gr {
    ns_ :: [a], 
-   es_ ::  [a],
-   src_ :: [(a, a)],
-   tgt_ :: [(a, a)]} 
+   es_ ::  [b],
+   src_ :: [(b, a)],
+   tgt_ :: [(b, a)]} 
    deriving(Eq, Show) 
 
 -- constructor
@@ -45,11 +45,11 @@ instance GR Gr where
    tgt = tgt_g
    empty = empty_g
 
-is_wf_g:: (Eq a, GR g) => g a -> Bool
+is_wf_g:: (Eq a, Eq b, GR g) => g a b-> Bool
 is_wf_g g = fun_total (src g) (es g) (ns g) && fun_total (tgt g) (es g) (ns g)
 
 
-errors_wf_g:: (GR g, Eq a, Show a) => g a -> [ErrorTree]
+errors_wf_g:: (GR g, Eq a, Eq b, Show a, Show b) => g a b-> [ErrorTree]
 errors_wf_g g =
    let errs1 = if fun_total (src g) (es g) (ns g) then nile else cons_et ("Function 'src' is ill defined.") [check_fun_total (src g) (es g) (ns g)] in
    let errs2 = if fun_total (tgt g) (es g) (ns g) then nile else cons_et ("Function 'tgt' is ill defined.") [check_fun_total (tgt g) (es g) (ns g)] in
@@ -121,7 +121,7 @@ relOfG g = foldr (\e r-> (appl (src g) e, appl (tgt g) e):r) [] (es g)
 
 
 -- checks whether a graph is acyclic
-acyclicG::(Eq a, GR g) => g a->Bool
+acyclicG::(Eq a, Eq b, GR g) => g a b->Bool
 acyclicG = acyclic . relOfG 
 
 -- Total function check on 'fV'
@@ -134,7 +134,7 @@ fun_total_fE (gs, m, gt) = fun_total (fE m) (es gs) (es gt)
 morphism_gm_commutes_src (gs, m, gt) = ((fV m) `bcomp` (src gs))  `seteq` ((src gt) `bcomp` (fE m) ) 
 morphism_gm_commutes_tgt (gs, m, gt) = ((fV m) `bcomp` (tgt gs))  `seteq` ((tgt gt) `bcomp` (fE m) ) 
 
-is_wf_gm_g:: (Eq a, GR g) => (g a, GrM a, g a) -> Bool
+is_wf_gm_g:: (Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
 is_wf_gm_g (gs, m, gt) = fun_total_fV (gs, m, gt) && fun_total_fE (gs, m, gt)
    && morphism_gm_commutes_src (gs, m, gt)
    && morphism_gm_commutes_tgt (gs, m, gt)
@@ -160,7 +160,7 @@ instance GM_CHK Gr Gr where
 --      then putStrLn $ "Graph " ++ g_id ++ " is well forfEd" 
 --      else putStrLn $ "Graph " ++ g_id ++ " is not well-forfEd. " ++ (show errs) 
 
-errors_gm_g:: (GR g, Eq a, Show a) => (g a, GrM a, g a) -> [ErrorTree]
+errors_gm_g:: (GR g, Eq a, Eq b, Show a, Show b) => (g a b, GrM a b, g a b) -> [ErrorTree]
 errors_gm_g (gs, m, gt) =
    let err1 = if fun_total_fV (gs, m, gt) then nile else cons_et "Function 'fV' is ill defined." [check_fun_total (fV m) (ns gs) (ns gt)] in
    let err2 = if fun_total_fE (gs, m, gt) then nile else cons_et "Function 'fE' is ill defined." [check_fun_total (fE m) (es gs) (es gt)] in
@@ -168,7 +168,7 @@ errors_gm_g (gs, m, gt) =
    let err4 = if morphism_gm_commutes_tgt (gs, m, gt) then nile else cons_se "Problems in the commuting of the target functions" in
    [err1,err2,err3,err4]
 
-check_wf_gm_g:: (GR g, Eq a, Show a) => String-> (g a, GrM a, g a) -> ErrorTree
+check_wf_gm_g:: (GR g, Eq a, Eq b, Show a, Show b) => String-> (g a b, GrM a b, g a b) -> ErrorTree
 check_wf_gm_g nm (gs, gm, gt) = 
    check_wf_of (gs, gm, gt) nm (is_wf_gm_g) (errors_gm_g)
 

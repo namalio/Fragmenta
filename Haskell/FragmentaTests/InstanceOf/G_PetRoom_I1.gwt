@@ -1,0 +1,8 @@
+GrwT G_PetRoom_I1 {
+   node PR1 : PetRoom
+   node Fi : Cat
+   node cat : cat
+   edge PR1->Fi : Hosts
+   edge PR1->cat : PetRoom_kind
+   edge Fi->cat : SuitedTo
+}

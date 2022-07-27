@@ -1,0 +1,23 @@
+SG SG_PetRoom {
+   node PetRoom
+   nodea Pet
+   nodea Mammal
+   nodea Reptile
+   node Dog
+   node Cat
+   node Gecko
+   node Chamaeleon
+   inh Mammal->Pet
+   inh Reptile->Pet
+   inh Dog->Mammal
+   inh Cat->Mammal
+   inh Gecko->Reptile
+   inh Chamaeleon->Reptile
+   enum RoomFor : cat, dog, reptile
+   relu PetRoom->RoomFor[PetRoom_kind]
+   rel PetRoom->Pet[Hosts]:0..1,*
+   relu Pet->RoomFor[SuitedTo]
+   derived Dog->dog[SuitedTo_1:SuitedTo]:*,1
+   derived Cat->cat[SuitedTo_2:SuitedTo]:*,1
+   derived Reptile->reptile[SuitedTo_3:SuitedTo]:*,1
+}

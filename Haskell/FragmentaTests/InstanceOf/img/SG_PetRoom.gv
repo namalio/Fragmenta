@@ -1,0 +1,30 @@
+digraph {graph[label=SG_PetRoom,labelloc=tl,labelfontsize=12];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
+"Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
+"Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
+"PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
+"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Pet</I><br/>(A)}>];
+"RoomFor"[shape=record,fillcolor="#FFCCFF",style = filled,label="RoomFor\l(enum)"];
+"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
+"dog"[shape=cds,fillcolor="#FFF2CC",style = filled,label="dog"];
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"cat"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cat"];
+"Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
+"reptile"[shape=cds,fillcolor="#FFF2CC",style = filled,label="reptile"];
+
+"Mammal"->"Pet"[arrowhead=onormal,arrowsize=2.0];
+"Reptile"->"Pet"[arrowhead=onormal,arrowsize=2.0];
+"Dog"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"cat"->"RoomFor"[arrowhead=onormal,arrowsize=2.0];
+"dog"->"RoomFor"[arrowhead=onormal,arrowsize=2.0];
+"reptile"->"RoomFor"[arrowhead=onormal,arrowsize=2.0];
+"PetRoom"->"RoomFor"[label="PetRoom_kind",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetRoom"->"Pet"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
+"Pet"->"RoomFor"[label="TiedTo",arrowhead=vee,headlabel="",arrowsize=.5];
+"Dog"->"dog"[label="TiedTo_1:TiedTo ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"Cat"->"cat"[label="TiedTo_2:TiedTo ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"Reptile"->"reptile"[label="TiedTo_3:TiedTo ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+}

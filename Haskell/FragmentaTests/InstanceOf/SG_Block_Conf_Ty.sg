@@ -1,0 +1,16 @@
+SG SG_Block_Conf_Ty {
+   node Block
+   node Port
+   node BlockI
+   node PortI
+   node Connector
+   node Type
+   compu Block->Port[Block_ports]:*
+   compu BlockI->PortI[BlockI_ports]:*
+   relu Connector->PortI[Connector_src]:1
+   relu Connector->PortI[Connector_tgt]:1
+   relu BlockI->Block[BlockI_instOf]:1
+   relu PortI->Port[PortI_instOf]:1
+   relu Connector->Type[Connector_type]:1
+   relu Port->Type[Port_type]:1
+}

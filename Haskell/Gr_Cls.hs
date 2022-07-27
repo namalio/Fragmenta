@@ -14,23 +14,23 @@ isKTotal t = t == Total
 data MK = WeakM | PartialM | TotalM deriving (Eq, Show)
 
 class GR g where
-   ns ::  Eq a =>g a-> [a]
-   es ::  Eq a =>g a-> [a]
-   src::  Eq a =>g a-> [(a, a)]
-   tgt::  Eq a =>g a-> [(a, a)]
-   esId:: Eq a =>g a-> [a]
-   empty:: Eq a => g a
+   ns ::  (Eq a, Eq b) =>g a b-> [a]
+   es ::  (Eq a, Eq b) =>g a b-> [b]
+   src::  (Eq a, Eq b) =>g a b-> [(b, a)]
+   tgt::  (Eq a, Eq b) =>g a b-> [(b, a)]
+   esId:: (Eq a, Eq b) =>g a b-> [b]
+   empty:: (Eq a, Eq b) => g a b
    esId g = filter (\e-> appl (src g) e == appl (tgt g) e)(es g)
 
 class GRM gm where
-   fV :: Eq a=> gm a->[(a, a)]
-   fE :: Eq a=> gm a->[(a, a)]
+   fV :: (Eq a, Eq b)=> gm a b->[(a, a)]
+   fE :: (Eq a, Eq b)=> gm a b->[(b, b)]
 
 class G_WF_CHK g where
-   is_wf::Eq a => (Maybe TK)->g a -> Bool
-   check_wf::(Eq a, Show a) => String->(Maybe TK)->g a -> ErrorTree
+   is_wf::(Eq a, Eq b) => (Maybe TK)->g a b-> Bool
+   check_wf::(Eq a, Eq b, Show a, Show b) => String->(Maybe TK)->g a b-> ErrorTree
 
-data GrM a = GrM {mV_ :: [(a, a)], mE_:: [(a, a)]} deriving(Eq, Show) 
+data GrM a b = GrM {mV_ :: [(a, a)], mE_:: [(b, b)]} deriving(Eq, Show) 
 
 cons_gm vf ef = GrM {mV_ = vf, mE_ = ef}
 empty_gm = cons_gm [] [] 
@@ -49,12 +49,12 @@ instance GRM GrM where
    fE = fE_gm
 
 class GM_CHK g g' where
-   is_wf_gm::(Eq a)=>(Maybe MK)->(g a, GrM a, g' a)->Bool 
-   check_wf_gm::(Eq a, Show a) => String->(Maybe MK)->(g a, GrM a, g' a)->ErrorTree
+   is_wf_gm::(Eq a, Eq b)=>(Maybe MK)->(g a b, GrM a b, g' a b)->Bool 
+   check_wf_gm::(Eq a, Eq b, Show a, Show b) => String->(Maybe MK)->(g a b, GrM a b, g' a b)->ErrorTree
 
 class GM_CHK' g g' where
-   is_wf_gm'::(Eq a)=>(Maybe MK)->(g a, g' a)->Bool 
-   check_wf_gm'::(Eq a, Show a) => String->(Maybe MK)->(g a, g' a)->ErrorTree
+   is_wf_gm'::(Eq a, Eq b)=>(Maybe MK)->(g a b, g' a b)->Bool 
+   check_wf_gm'::(Eq a, Eq b, Show a, Show b) => String->(Maybe MK)->(g a b, g' a b)->ErrorTree
 
 -- data GrMSs a = GrMSs {fV_ :: [(a, a)], fE_:: [(a, Int, a)]} deriving(Eq, Show) 
 -- cons_gmss fv fe = GrMSs {fV_ = fv, fE_ = fe}

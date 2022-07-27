@@ -1,0 +1,22 @@
+digraph {graph[label=G_Blocks_Conf_I1,labelloc=tl,labelfontsize=12];
+"IB1"[shape=box,fillcolor=lightskyblue1,style = filled,label="IB1 : BlockI"];
+"B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : Block"];
+"IB2"[shape=box,fillcolor=lightskyblue1,style = filled,label="IB2 : BlockI"];
+"B2"[shape=box,fillcolor=lightskyblue1,style = filled,label="B2 : Block"];
+"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Connector"];
+"IP1"[shape=box,fillcolor=lightskyblue1,style = filled,label="IP1 : PortI"];
+"P1"[shape=box,fillcolor=lightskyblue1,style = filled,label="P1 : Port"];
+"IP2"[shape=box,fillcolor=lightskyblue1,style = filled,label="IP2 : PortI"];
+"P2"[shape=box,fillcolor=lightskyblue1,style = filled,label="P2 : Port"];
+
+"B1"->"P1"[label="B1_P1 :EBlock_ports▼",arrowhead=vee];
+"B2"->"P2"[label="B2_P2 :EBlock_ports▼",arrowhead=vee];
+"IB1"->"IP1"[label="IB1_IP1 :EBlockI_ports▼",arrowhead=vee];
+"IB2"->"IP2"[label="IB2_IP2 :EBlockI_ports▼",arrowhead=vee];
+"IB1"->"B1"[label="IB1_B1 :EBlockI_instOf▼",arrowhead=vee];
+"IB2"->"B2"[label="IB2_B2 :EBlockI_instOf▼",arrowhead=vee];
+"C1"->"IP1"[label="C1_IP1 :EConnector_src▼",arrowhead=vee];
+"C1"->"IP2"[label="C1_IP2 :EConnector_tgt▼",arrowhead=vee];
+"IP1"->"P1"[label="IP1_P1 :EPortI_instOf▼",arrowhead=vee];
+"IP2"->"P2"[label="IP2_P2 :EPortI_instOf▼",arrowhead=vee];
+}
