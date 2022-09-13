@@ -1,13 +1,30 @@
 fragment F_PW4 {
   SG SG_PW4 {
+    node PetHotel
+    node HotelGroup
+    proxy PNamed
+    proxy PLocatable
+    proxy PPetRoom
+    proxy PHotelRoom
     proxy PPHCard
-    proxy PMammalHotel
-    node Nat
+    node Facility
     node PHCardId
+    node Nat
+    rel PetHotel->HotelGroup[PartOfGroup]:*;0..1
+    compu PetHotel->PPHCard[PetHotel_lcards]:*
+    compu PetHotel->Facility[PetHotel_facilities]:*
+    compu PetHotel->PPetRoom[PetHotel_rooms]:*
     relu PPHCard->Nat[PHCard_points]
     relu PPHCard->PHCardId[PHCard_id]
-    compu PMammalHotel->PPHCard[MammalHotel_lcards]:*
+    inh PetHotel->PNamed
+    inh PetHotel->PLocatable
+    inh HotelGroup->PNamed
+    inh HotelGroup->PLocatable
+    inh Facility->PHotelRoom
   }
+  ref PNamed->Named
+  ref PLocatable->Locatable
+  ref PPetRoom->PetRoom
+  ref PHotelRoom->HotelRoom
   ref PPHCard->PHCard
-  ref PMammalHotel->MammalHotel
 }

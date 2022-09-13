@@ -1,21 +1,15 @@
 digraph {graph[label=F_PW5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW5{style=dashed;label=F_PW5;
-"PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
-"EnsuiteRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnsuiteRoom"];
-"PPetRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom<br/>(P)>];
-"Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
-"Grooming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Grooming"];
-"PFacility"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Facility<br/>(P)>];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
+"PMammalHotel"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<MammalHotel<br/>(P)>];
+"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
 
-"PPetRoom"->"PNat"[label="PetRoom_capacity▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"Toilet"->"PPetRoom"[label="Serves▼",dir=none,taillabel="*",headlabel="1..*"];
-"Toilet"->"PPetRoom"[label="serves_1:Serves ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
-"EnsuiteRoom"->"PPetRoom"[arrowhead=onormal,arrowsize=2.0];
-"Toilet"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
-"Grooming"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
+"PPHCard"->"Nat"[label="PHCard_points",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"PHCardId"[label="PHCard_id",arrowhead=vee,headlabel="",arrowsize=.5];
+"PMammalHotel"->"PPHCard"[label="MammalHotel_lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 
 }
-
 
 
 }

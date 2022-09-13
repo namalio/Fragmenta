@@ -6,9 +6,9 @@
 -----------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module SGrs(SGr, is_wf_sg, is_wf_sgz, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, eb, empty_sg, nsTys, nsP, nsO, esTys, esA, esI, esW, 
+module SGrs(SGr, is_wf_sg, is_wf_sgz, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, pe, ds, empty_sg, nsTys, nsP, nsO, esTys, esA, esI, esW, 
    esC, srcst, tgtst, inh, inhst, disj_sgs, union_sg, union_sgs, subsume_sg, sg_refinesz, errs_sg_refinesz, tsg_refinesz, 
-   errs_tsg_refinesz, ns_of_ntys, es_of_ety, totaliseForDer)  
+   errs_tsg_refinesz, ns_of_ntys, es_of_ety)  
 where
 
 import Sets
@@ -23,6 +23,7 @@ import Mult
 import MyMaybe
 import GrswT
 import Path_Expressions
+import The_Nil
 
 -- Structural graphs (SGs)
 data SGr a b = SGr {
@@ -89,25 +90,29 @@ esA = (flip esTys) [et d | et<-[Ecomp, Erel], d<-[Dbi, Duni]]
 esW::(Eq a, Eq b)=>SGr a b->[b]
 esW = (flip esTys) [Ewander]
 
--- Gets the refined multiplicity edges
-esR::(Eq a, Eq b)=>SGr a b->[b]
-esR = (flip esTys) [Erefm]
+-- Gets the derived edges
+esD::(Eq a, Eq b)=>SGr a b->[b]
+esD = (flip esTys) [Eder]
 
 -- Gets the path edges
 esP::(Eq a, Eq b)=>SGr a b->[b]
 esP = (flip esTys) [Epath]
 
--- Gets the dependency edges
-esD::(Eq a, Eq b)=>SGr a b->[b]
-esD = (flip esTys) [Edep]
+-- Gets the path path dependency edges
+esPD::(Eq a, Eq b)=>SGr a b->[b]
+esPD = (flip esTys) [Epdep]
 
 -- Gets the constraint edges
 esCnt::(Eq a, Eq b)=>SGr a b->[b]
-esCnt sg = (esR sg) `union` (esP sg)
+esCnt sg = (esD sg) `union` (esP sg)
 
--- Gets connection edges (association + wander + refined multiplicty)
+-- Gets connection edges (association + wander)
 esC::(Eq a, Eq b)=>SGr a b->[b]
-esC sg = (esA sg) `union` (esW sg) `union` esR sg
+esC sg = (esA sg) `union` (esW sg)
+
+-- Gets multiplicity edges (connection + refined multiplicty)
+esM::(Eq a, Eq b)=>SGr a b->[b]
+esM sg = (esC sg) `union` esD sg
 
 -- Gets multiplicity edges (connection + derived)
 -- esM::Eq a=>SGr a->[a]
@@ -125,7 +130,7 @@ inhst::(Eq a, Eq b)=>SGr a b->[(a, a)]
 inhst sg = rtrancl_on (inh sg) (ns sg)
 
 -- totalises 'srcm' by providing multiplicities of uni-directional composition and relation edges
-srcma sg = (srcm sg) `override` ((esTys sg [Ecomp Duni] `cross` [msole_k 1]) `override` (esTys sg [Erel Duni] `cross` [msole_many]))
+srcma sg = (srcm sg) `override` ((esTys sg [Ecomp Duni] `cross` [[msole_k 1]]) `override` (esTys sg [Erel Duni] `cross` [[msole_many]]))
 
 -- src relation which takes wander edges into account
 srcr::(Eq a, Eq b)=>SGr a b->[(b, a)]
@@ -151,7 +156,7 @@ edge_mult_ok::(Eq a, Eq b)=>SGr a b->b->Bool
 edge_mult_ok sg e = (appl (ety sg) e) `allowedm` (appl (srcma sg) e, appl (tgtm sg) e)
 
 mult_etys_ok::(Eq a, Eq b)=>SGr a b->Bool
-mult_etys_ok sg = all (\e->edge_mult_ok sg e) (esC sg)
+mult_etys_ok sg = all (\e->edge_mult_ok sg e) $ esM sg
 
 -- Inheritance relation between pair of nodes complies with the inheritance restrictions of their types
 inh_nty_ok sg (v, v') = (appl(nty sg) v) < (appl(nty sg) v')
@@ -163,8 +168,7 @@ acyclicI = acyclicG . inhG
 
 -- Checks whether the inheritance hierarchy complies with required restrictions
 inh_ok::(Eq a, Eq b)=>SGr a b->Bool
-inh_ok sg = inh_ntys_ok sg 
-   && acyclicI sg
+inh_ok sg = inh_ntys_ok sg && acyclicI sg
 
 -- Checks whether an optional node is involved in non-compulsory relations
 nodeopt_ok::(Eq a, Eq b)=>SGr a b->a->Bool
@@ -200,12 +204,12 @@ etherealInherited::(Eq a, Eq b)=>SGr a b->Bool
 etherealInherited sg = (nsEther sg) `subseteq` (ran_of $ inh sg)
 
 -- WF conditions of derived edges which apply to total SGs
-refMultOk::(Eq a, Eq b)=>SGr a b->Bool
-refMultOk sg = all (\e->(appl (src sg) e, srcPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg) 
-      && (appl (tgt sg) e, tgtPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg)) (esR sg)
+derMultOk::(Eq a, Eq b)=>SGr a b->Bool
+derMultOk sg = all (\e->(appl (src sg) e, srcPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg) 
+      && (appl (tgt sg) e, tgtPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg)) (esD sg)
 
 esCnts_ok::(Eq a, Eq b)=>SGr a b->Bool
-esCnts_ok sg = refMultOk sg 
+esCnts_ok sg = derMultOk sg 
    && all (\e ->okPE (restrict (g_sg sg) $ esA sg) (srcst sg) (tgtst sg) (appl (pe sg) e)) (esCnt sg) 
    
 
@@ -219,7 +223,7 @@ is_wf_tsg sg = is_wf_sg sg && etherealInherited sg && esCnts_ok sg && isInhTree 
 
 check_mult_etys_ok sg = 
    if mult_etys_ok sg then nile else cons_se $ "The following edges have incorrect multiplicities:"++ (showElems' err_es)
-   where err_es = foldr (\e es->if edge_mult_ok sg e then es else (e:es)) [] (esC sg)
+   where err_es = foldr (\e es->if edge_mult_ok sg e then es else (e:es)) [] (esM sg)
 
 check_optsVoluntary::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
 check_optsVoluntary sg = 
@@ -366,7 +370,7 @@ is_wf_gm_common (gs, m, gt) =
 -- checks whether a morphisms between SGs is well-formed
 is_wf_sgm::(Eq a, Eq b) => (SGr a b, GrM a b,  SGr a b) -> Bool
 is_wf_sgm (sgs, m, sgt) = is_wf_gm_common (sgs, m, sgt)
-   && fun_total (fE m) (esC sgs) (esC sgt)
+   && fun_total (fE m) (esM sgs) (esM sgt)
    && morphism_sgm_commutes_src (sgs, m, sgt)
    && morphism_sgm_commutes_tgt (sgs, m, sgt)
    && ihh_sgm_ok (sgs, m, sgt)
@@ -392,9 +396,9 @@ check_wf_sgm::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> GrM a b->SGr a b->
 check_wf_sgm nm sgs gm sgt = check_wf_of (sgs, gm, sgt) nm (is_wf_sgm) (errors_wf_sgm)
 
 -- Totalises a morphism for the derived edges
-totaliseForDer m sg = cons_gm (fV m) ((mktotal_in (dres (eb sg) (esD sg)) (esC sg)) `rcomp` (fE m))
+-- totaliseForDer m sg = cons_gm (fV m) ((mktotal_in (dres (eb sg) (esD sg)) (esC sg)) `rcomp` (fE m))
 
-commute_gm_src::(Eq a, Eq b, Show a, Show b) => (GrwT a b, SGr a b) ->([(a, a)], [(a, a)])
+commute_gm_src::(Eq a, Eq b) => (GrwT a b, SGr a b) ->([(b, a)], [(b, a)])
 commute_gm_src (gwt, sg) = 
    let lhs = (fV gwt) `bcomp` (src gwt) in  
    let rhs = (srcst sg) `bcomp` (fE  gwt) in
@@ -406,7 +410,7 @@ morphism_gm_commutes_src (gwt, sg) =
    let (lhs, rhs) = commute_gm_src (gwt, sg) in
    lhs  `subseteq` rhs
 
-commute_gm_tgt::(Eq a, Eq b) => (GrwT a b, SGr a b) ->([(a, a)], [(b, b)])
+commute_gm_tgt::(Eq a, Eq b) => (GrwT a b, SGr a b) ->([(b, a)], [(b, a)])
 commute_gm_tgt (gwt, sg) = 
    let lhs = (fV gwt) `bcomp` (tgt gwt) in  
    let rhs = (tgtst sg) `bcomp` (fE gwt) in
@@ -435,54 +439,32 @@ errors_gwt_sg (gwt, sg) =
 check_wf_gwt_sg nm gwt sg = check_wf_of (gwt, sg) nm (is_wf_gwt_sg) (errors_gwt_sg)
 
 -- Gets instance nodes of a set of meta-nodes, which are obtained via the given morphism
-insOf::(Eq a,  Eq b, GRM gm)=>gm a b->SGr a b->[a]->[a]
-insOf m sg mns = img (inv . fV $ m) (img (inv . inhst $ sg) mns)
+ins::(Eq a,  Eq b, GRM gm)=>gm a b->SGr a b->[a]->[a]
+ins m sg mns = img (inv . fV $ m) (img (inv . inhst $ sg) mns)
 
 -- Gets instance edges of set of meta-edges using the given morphism
-iesOf::(Eq a,  Eq b, GRM gm)=>gm a b->[b]->[b]
-iesOf m mes = img (inv . fE $ m) mes
+ies::(Eq a,  Eq b, GRM gm)=>gm a b->[b]->[b]
+ies m mes = img (inv . fE $ m) mes
 
 -- Builds instance graph restricted to the instances of a set of meta-edges
 igRMEs::(Eq a, Eq b)=>GrwT a b->[b]->Gr a b
-igRMEs gwt mes = (gOf gwt) `restrict` (iesOf (ty gwt) mes)
+igRMEs gwt mes = (gOf gwt) `restrict` (ies (ty gwt) mes)
 
 -- Builds instance graph restricted to the instances of set of meta-nodes and -edges
 igRMNsEs::(Eq a, Eq b)=>GrwT a b->SGr a b->[a]->[b]->Gr a b
-igRMNsEs gwt sg mns mes = (igRMEs gwt mes) `restrictNs` (insOf (ty gwt) sg mns)
+igRMNsEs gwt sg mns mes = (igRMEs gwt mes) `restrictNs` (ins (ty gwt) sg mns)
 
--- Checks that 'abstract' and 'enum' mEtamodel nodes have no direct nodes in instance graph
-no_instances_of_abstract_tnodes m sgt = null (img (inv $ fV m) $ nsTys sgt [Nabst, Nenum])
-
--- Checks whether an edge is instantiated invertedly, which is permitted for wander edges
-inverted_ie gwt sg e = applM ((tgt sg) `bcomp` (fE . ty $ gwt)) e == applM ((fV . ty $ gwt) `bcomp` (src sg)) e
-
--- Gets the instance graph restricted to a wander edge
-gOfwei gwt sg e = 
-   let g' = gOf gwt in
-   if inverted_ie gwt sg e then invertg g' else g'
-
--- Gets the instance graph restricted to a set of wander edges
-gOfweis gwt sg [] = empty_g
-gOfweis gwt sg (e:es) = gOfwei gwt sg e `union_g` gOfweis gwt sg es
-
--- Gets an instance graph restricted to a meta-edge
-igRMEsW::(Eq a, Eq b)=>GrwT a b->SGr a b->b->Gr a b
-igRMEsW gwt sg me 
-   | me `elem` esD sg = igRMNsEs gwt sg [appl (src sg) me, appl (tgt sg) me] [appl (eb sg) me]
-   | me `elem` esW sg =  gOfweis gwt sg (img (inv $ (fE . ty $ gwt)) [me])
-   | otherwise = igRMEs gwt [me]
-
--- SG multiplicity refinement
-sgs_mult_leq sgc m sga e  = appl (srcma sgc) e <= appl ((srcma sga) `bcomp` (fE m)) e
-sg_refines_m (sgc, m) sga = all (\e-> sgs_mult_leq sgc m sga e) ((esC sgc) `diff` (esD sgc))
+-- SG multiplicity refinement (leq == '<=')
+sgs_mult_leq sgc m sga e  = appl (srcma sgc) e `m_leq` appl ((srcma sga) `bcomp` (fE m)) e
+sg_refines_m (sgc, m) sga = all (\e-> sgs_mult_leq sgc m sga e) $ esM sgc
 
 -- SG refinement of edge types
 sgs_ety_leq sgc m sga e  = appl (ety sgc) e <= appl ((ety sga) `bcomp` (fE m)) e
-sg_refines_ety (sgc, m) sga = all (\e-> sgs_ety_leq sgc m sga e) (esC sgc)
+sg_refines_ety (sgc, m) sga = all (\e-> sgs_ety_leq sgc m sga e) $ esC sgc
 
 -- SG refinement of node types
 sgs_nty_leq sgc m sga n  = appl (nty sgc) n <= appl ((nty sga) `bcomp` (fV m)) n
-sg_refines_nty (sgc, m) sga = all (\n-> sgs_nty_leq sgc m sga n) (ns sgc)
+sg_refines_nty (sgc, m) sga = all (\n-> sgs_nty_leq sgc m sga n) $ ns sgc
 
 -- SG refinement conditions
 sg_refinesz (sgc, m) sga = (sgc, m) `sg_refines_nty` sga && (sgc, m) `sg_refines_ety`  sga 
@@ -490,8 +472,8 @@ sg_refinesz (sgc, m) sga = (sgc, m) `sg_refines_nty` sga && (sgc, m) `sg_refines
 
 -- SG refinement 
 sg_refines (sgc, m) sga = 
-   let m' = totaliseForDer m sgc  in 
-   is_wf_sgm (sgc, m', sga) &&  (sgc, m') `sg_refinesz` sga
+   --let m' = totaliseForDer m sgc  in 
+   is_wf_sgm (sgc, m, sga) &&  (sgc, m) `sg_refinesz` sga
 
 -- Error checking
 check_sg_refines_m (sgc, m) sga = 
@@ -514,9 +496,9 @@ errs_sg_refinesz (sgc, m) sga =
 
 -- errors of SG refinement
 errs_sg_refines id (sgc, m, sga) = 
-   let m' = totaliseForDer m sgc in 
-   let err1 = check_wf_sgm id sgc m' sga in
-   let errs2 = errs_sg_refinesz (sgc, m') sga in
+   --let m' = totaliseForDer m sgc in 
+   let err1 = check_wf_sgm id sgc m sga in
+   let errs2 = errs_sg_refinesz (sgc, m) sga in
    (err1:errs2)
 
 check_sg_refines id (sgc, m) sga = check_wf_of (sgc, m, sga) id (sg_refines') (errs_sg_refines id)
@@ -533,9 +515,9 @@ tsg_refines_aes (sgc, m) sga = all (\me->(sga, me) `okRefinedIn` (sgc, m)) (esA 
 -- Checks if the instance relation is refined correctly
 okRefinedIn::(Eq a, Eq b)=>(SGr a b, b)->(SGr a b, GrM a b)->Bool
 okRefinedIn (sga, me) (sgc, m) = 
-   let r = (inhst sgc) `rcomp` (relOfG $ igRMEsW (cons_gwt (g_sg sgc) m) sga me) `rcomp` (inv . inhst $ sgc) in
-   let s = (insOf m sga $ img (src sga) [me]) `diff`  (nsEther sgc `diff` dom_of r) in
-   let t = (insOf m sga $ img (tgt sga) [me]) `diff` (nsEther sgc `diff` ran_of r) in
+   let r = (inhst sgc) `rcomp` (relOfG $ igRMEs (cons_gwt (g_sg sgc) m) [me]) `rcomp` (inv . inhst $ sgc) in
+   let s = (ins m sga $ img (src sga) [me]) `diff`  (nsEther sgc `diff` dom_of r) in
+   let t = (ins m sga $ img (tgt sga) [me]) `diff` (nsEther sgc `diff` ran_of r) in
    (relation r s t) && (not . null $ r) 
 
 -- Total SG refinement conditions
@@ -546,8 +528,8 @@ tsg_refinesz (sgc, m) sga =
 -- Total SG refinement
 tsg_refines::(Eq a, Eq b)=>(SGr a b, GrM a b)->SGr a b->Bool
 tsg_refines (sgc, m) sga = 
-   let m' = totaliseForDer m sgc in 
-   is_wf_sgm (sgc, m', sga) && (sgc, m') `tsg_refinesz` sga 
+   --let m' = totaliseForDer m sgc in 
+   is_wf_sgm (sgc, m, sga) && (sgc, m) `tsg_refinesz` sga 
 
 -- Errors checking
 -- errors of SG refinement of abstract nodes
@@ -572,6 +554,30 @@ check_tsg_refines id (sgc, m) sga =
    let err1 = check_wf_sgm id sgc m sga in
    let errs2 = errs_tsg_refinesz (sgc, m) sga in
    if (sgc, m) `tsg_refines` sga then nile else cons_et "Errors in total SG refinement" (err1:errs2)
+
+
+-- Checks that 'abstract' and 'enum' mEtamodel nodes have no direct nodes in instance graph
+no_instances_of_abstract_tnodes m sgt = null (img (inv $ fV m) $ nsTys sgt [Nabst, Nenum])
+
+-- Checks whether an edge is instantiated invertedly, which is permitted for wander edges
+inverted_ie gwt sg e = applM ((tgt sg) `bcomp` (fE . ty $ gwt)) e == applM ((fV . ty $ gwt) `bcomp` (src sg)) e
+
+-- Gets the instance graph restricted to a wander edge
+gOfwei gwt sg e = 
+   let g' = gOf gwt in
+   if inverted_ie gwt sg e then invertg g' else g'
+
+-- Gets instance graph restricted to a set of wander edges
+gOfweis gwt sg []     = empty_g
+gOfweis gwt sg (e:es) = gOfwei gwt sg e `union_g` gOfweis gwt sg es
+
+-- Gets an instance graph restricted to a meta-edge
+--igRMEsW::(Eq a, Eq b)=>GrwT a b->SGr a b->b->Gr a b
+--igRMEsW gwt sg me 
+--   | me `elem` esD sg = igRMNsEs gwt sg [appl (src sg) me, appl (tgt sg) me] [appl (eb sg) me]
+--   | me `elem` esW sg =  gOfweis gwt sg (img (inv $ (fE . ty $ gwt)) [me])
+--   | otherwise = igRMEs gwt [me]
+
 
 is_wf_sgm'::(Eq a, Eq b)=>Maybe MK->(SGr a b, GrM a b, SGr a b)->Bool
 is_wf_sgm' Nothing = is_wf_sgm
@@ -602,31 +608,75 @@ check_ty_complies_pns gwt sg =
    if gwt `ty_complies_pns` sg then nile else cons_et "Parts are being shared by compounds:" [check_inj r]
 
 -- Instances of ethereal nodes are not allowed
-insEther gwt sg = img ((inv. fV) $ gwt) (nsEther sg)
-ty_complies_fi::(Eq a, Eq b, Show a, Show b)=>GrwT a b->SGr a b->Bool
+insEther gwt sg = img ((inv . fV) $ gwt) $ nsEther sg
+ty_complies_fi::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
 ty_complies_fi gwt sg = null $ insEther gwt sg
 
 check_ty_complies_fi gwt sg = 
    if ty_complies_fi gwt sg then nile else cons_se $ "Error! There are the following ethereal nodes instances:" ++ (showElems' (insEther gwt sg))
 
+
+-- Builds a relation from a path expression
+rPEA gwt sg (Edg e) = relOfG $ restrict gwt [e]
+rPEA gwt sg (Inv e) = inv . relOfG $ restrict gwt [e]
+
+rPE gwt sg (At pea) = rPEA gwt sg pea
+rPE gwt sg (Dres v pea) = dres (rPEA gwt sg pea) $ ins gwt sg [v]
+rPE gwt sg (Rres pea v) = rres (rPEA gwt sg pea) $ ins gwt sg [v]
+rPE gwt sg (SCmp pe1 pe2) = (rPE gwt sg pe1) `rcomp` (rPE gwt sg pe2)
+
+ape sg e = if e `elem` esCnt sg then appl (pe sg) e else At (Edg e) 
+
+multComp m1 m2
+   | isMultMany m1 || isMultMany m2       = [msole_many]
+   | isMultVal_k m1 0 || isMultVal_k m2 0 = [msole_k 0]
+   | isMultVal_k m1 1 = m2
+   | isMultVal_k m2 1 = m1
+   | isMultOpt m1 = (msole_k 0):m2
+   | isMultOpt m2 = (msole_k 0):m1
+   | isMultRange m1 && isMultRange m2 = [(the m1) `mult_mr` (the m2)]
+   | isMultEither m2 = multComp m1 [head m2] `union` multComp m1 (tail m2)
+   | isMultEither m1 = multComp [head m1] m2 `union` multComp (tail m1) m2
+
+
+-- gives source multiplicity of path expression atom
+smPEA sg (Edg e) = appl (srcma sg) e
+smPEA sg (Inv e) = appl (tgtm sg) e
+
+-- gives source multiplicity of path expression 
+smPE sg (At pea) = smPEA sg pea
+smPE sg (Dres v pea) = smPEA sg pea
+smPE sg (Rres pea v) = smPEA sg pea
+smPE sg (SCmp pe1 pe2) = multComp (smPE sg pe1)  (smPE sg pe2)
+
+-- gives target multiplicity of path expression atom
+tmPEA sg (Edg e) = appl (tgtm sg) e
+tmPEA sg (Inv e) = appl (srcma sg) e
+
+-- gives target multiplicity of path expression 
+tmPE sg (At pea) = tmPEA sg pea
+tmPE sg (Dres v pea) = tmPEA sg pea
+tmPE sg (Rres pea v) = tmPEA sg pea
+tmPE sg (SCmp pe1 pe2) = multComp (tmPE sg pe1)  (tmPE sg pe2)
+
 -- Checks whether the appropriate instances of a SG comply to the meta-edges's multiplicity constraints
 me_mult_ok::(Eq a, Eq b)=>SGr a b->b->GrwT a b->Bool
 me_mult_ok sg me gwt = 
-   let r = relOfG $ igRMEsW gwt sg me in
-   let s = insOf gwt sg $ img (src sg) [me] in
-   let t = insOf gwt sg $ img (tgt sg) [me] in
-   multOk r s t (appl (srcma sg) me) (appl (tgtm sg) me)
+   let r = rPE gwt sg $ ape sg me in
+   let s = ins gwt sg $ img (srcst sg) [me] in
+   let t = ins gwt sg $ img (tgtst sg) [me] in
+   multOk r s t (smPE sg $ ape sg me) (tmPE sg $ ape sg me)
 
 check_me_mult_ok::(Eq a, Eq b, Show a, Show b)=>SGr a b->b->GrwT a b->ErrorTree
 check_me_mult_ok sg me gwt = 
-   let r = relOfG $ igRMEsW gwt sg me in
-   let s = insOf gwt sg $ img (src sg) [me] in
-   let t = insOf gwt sg $ img (tgt sg) [me] in
-   check_multOk me r s t (appl (srcma sg) me) (appl (tgtm sg) me)
+   let r = rPE gwt sg $ ape sg me in
+   let s = ins gwt sg $ img (srcst sg) [me] in
+   let t = ins gwt sg $ img (tgtst sg) [me] in
+   check_multOk me r s t (smPE sg $ ape sg me) (tmPE sg $ ape sg me)
 
 -- Multiplicity compliance of all connection and derived edges
 ty_complies_mult::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
-ty_complies_mult gwt sg = all (\me->me_mult_ok sg me gwt) (esC sg `union` esA sg)
+ty_complies_mult gwt sg = all (\me->me_mult_ok sg me gwt) $ esM sg
 
 check_ty_complies_mult gwt sg = 
    if ty_complies_mult gwt sg then nile else cons_et "Multiplicity constraints breached in instance model." errs

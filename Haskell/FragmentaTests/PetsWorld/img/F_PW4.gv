@@ -1,15 +1,32 @@
 digraph {graph[label=F_PW4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW4{style=dashed;label=F_PW4;
+"PPetRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom<br/>(P)>];
 "Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
-"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
-"PMammalHotel"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<MammalHotel<br/>(P)>];
 "PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
+"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
+"PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"HotelGroup"[shape=record,fillcolor=lightskyblue1,style = filled,label="HotelGroup"];
+"PLocatable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Locatable<br/>(P)>];
+"Facility"[shape=record,fillcolor=lightskyblue1,style = filled,label="Facility"];
+"PHotelRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelRoom<br/>(P)>];
 
-"PPHCard"->"Nat"[label="PHCard_points▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"PPHCard"->"PHCardId"[label="PHCard_id▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"PMammalHotel"->"PPHCard"[label="MammalHotel_lcards▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetHotel"->"HotelGroup"[label="PartOfGroup▼",dir=none,taillabel="*",headlabel="0..1"];
+"PetHotel"->"PPHCard"[label="PetHotel_lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetHotel"->"Facility"[label="PetHotel_facilities",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetHotel"->"PPetRoom"[label="PetHotel_rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PPHCard"->"Nat"[label="PHCard_points",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"PHCardId"[label="PHCard_id",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetHotel"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"PetHotel"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
+"HotelGroup"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"HotelGroup"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
+"Facility"->"PHotelRoom"[arrowhead=onormal,arrowsize=2.0];
 
 }
+
+
+
 
 
 }

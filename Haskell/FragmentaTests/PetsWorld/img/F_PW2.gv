@@ -1,23 +1,22 @@
 digraph {graph[label=F_PW2,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW2{style=dashed;label=F_PW2;
-"starving"[shape=cds,fillcolor="#FFF2CC",style = filled,label="starving"];
-"hungry"[shape=cds,fillcolor="#FFF2CC",style = filled,label="hungry"];
-"fed"[shape=cds,fillcolor="#FFF2CC",style = filled,label="fed"];
-"full"[shape=cds,fillcolor="#FFF2CC",style = filled,label="full"];
-"HungryStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="HungryStatus\l(enum)"];
+"disadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
+"PetStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="PetStatus\l(enum)"];
 "PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
 "Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
 "Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
-"Mammal"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Mammal</I><br/>(V)}>];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
 "Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
 "Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
-"Reptile"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Reptile</I><br/>(V)}>];
+"Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
+"privileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
+"middleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
+"Advantaged"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Advantaged</I><br/>(V)}>];
 
-"starving"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
-"hungry"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
-"fed"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
-"full"->"HungryStatus"[arrowhead=onormal,arrowsize=2.0];
-"PPet"->"HungryStatus"[label="Pet_hstatus▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"privileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"middleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"disadvantaged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"PPet"->"PetStatus"[label="Pet_status",arrowhead=vee,headlabel="",arrowsize=.5];
 "Dog"->"PPet"[arrowhead=onormal,arrowsize=2.0];
 "Cat"->"PPet"[arrowhead=onormal,arrowsize=2.0];
 "Chamaeleon"->"PPet"[arrowhead=onormal,arrowsize=2.0];
@@ -26,6 +25,8 @@ subgraph cluster_F_PW2{style=dashed;label=F_PW2;
 "Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 "Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
 "Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"privileged"->"Advantaged"[arrowhead=onormal,arrowsize=2.0];
+"middleclass"->"Advantaged"[arrowhead=onormal,arrowsize=2.0];
 
 }
 

@@ -1,27 +1,24 @@
 fragment F_PW3 {
   SG SG_PW3 {
-    proxy PNamed
-    proxy PLocatable
-    node MammalHotel
-    proxy PMammal
+    proxy PPet2
+    proxy PDog
+    proxy PReptile
+    proxy PCat
     node PetRoom
     node RoomId
-    virtual WRoomId
-    nodea Facility
-    node HotelGroup
-    compu MammalHotel->PetRoom[MammalHotel_rooms]:*
-    compu MammalHotel->Facility[MammalHotel_facilities]:*
-    rel PetRoom->PMammal[Hosts]:0..1,*
-    relu WRoomId->RoomId[Room_id]
-    inh MammalHotel->PNamed
-    inh MammalHotel->PLocatable
-    inh PetRoom->WRoomId
-    inh Facility->WRoomId
-    inh HotelGroup->PNamed
-    inh HotelGroup->PLocatable
-    rel MammalHotel->HotelGroup[PartOfGroup]:*,0..1
+    virtual HotelRoom
+    enum HotelZone: dogs, reptiles, cats
+    rel PetRoom->PPet2[Hosts]:0..1;*
+    relu PPet2->HotelZone[SuitedFor]
+    relu HotelRoom->RoomId[HotelRoom_id]
+    relu HotelRoom->HotelZone[HotelRoom_zone]
+    derived PDog->dogs[S1 <-> SuitedFor]:*;1
+    derived PReptile->reptiles[S2 <-> SuitedFor]:*;1
+    derived PCat->cats[S3 <-> SuitedFor]:*;1
+    inh PetRoom->HotelRoom
   }
-  ref PMammal->Mammal
-  ref PNamed->Named
-  ref PLocatable->Locatable
+  ref PPet2->Pet
+  ref PDog->Dog
+  ref PReptile->Reptile
+  ref PCat->Cat
 }

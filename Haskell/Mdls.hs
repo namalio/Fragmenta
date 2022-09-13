@@ -19,9 +19,9 @@ import ErrorAnalysis
 import Utils
 import ShowUtils
 
-data Mdl a = Mdl {
-    gfg_ :: GFGr a,
-    fd_ :: [(a, Fr a)]
+data Mdl a b = Mdl {
+    gfg_ :: GFGr a b,
+    fd_ :: [(a, Fr a b)]
 } deriving (Eq, Show)
 
 mgfg Mdl {gfg_ = gfg, fd_ = _} = gfg
@@ -29,14 +29,14 @@ mfd Mdl {gfg_ = _, fd_ = fd} = fd
 
 cons_mdl gfg fd = Mdl {gfg_ = gfg, fd_ = fd} 
 
-mufs::Eq a=>Mdl a->Fr a
+mufs::(Eq a, Eq b)=>Mdl a b->Fr a b
 mufs = union_fs . ran_of . mfd
 
 from' n ((gf, f):mf) 
    | n `elem` (ns .fsg $ f) = gf
    | otherwise = from' n mf
 
-from::Eq a=>Mdl a->a->a
+from::(Eq a, Eq b)=>Mdl a b->a->a
 from m n = from' n (mfd m)
 
 is_ref_ok m p = (from m p, from m (appl (refs (mufs m)) p)) `elem` (refsOf . mgfg $ m)
@@ -50,14 +50,17 @@ is_wf_mdl m = is_wf (Nothing) (mgfg m)  && fun_total' (mfd m) (ns . mgfg $ m) &&
 
 rep_elems m = ran_of . mfd $ m
 
+errs_wf_mdl ::(Eq a, Eq b, Show a, Show b)=>String->Mdl a b->[ErrorTree]
 errs_wf_mdl id m = 
     let err1 = check_wf id (Nothing) (mgfg m) in
     let err2 = if fun_total' (mfd m) (ns . mgfg $ m) then nile else cons_et "Not all GFG fragment nodes have a corresponding fragment." [check_fun_total' (mfd m) (ns . mgfg $ m)] in
-    let err3 = if disj_fs . ran_of . mfd $ m then nile else cons_se ("The fragments are not disjoint; the following elements are repeated:" ++ (showElems' . reps_of_fs . ran_of . mfd $ m)) in
-    let err4 = check_wf id (Just Total) (mufs m) in
-    let err5 = errs_complyGFG m in
-    [err1, err2, err3, err4, err5]
+    let err3 = if disj_fs . ran_of . mfd $ m then nile else cons_se ("The fragments are not disjoint; the following nodes are repeated:" ++ (showElems' . rep_ns_of_fs . ran_of . mfd $ m)) in
+    let err4 = if disj_fs . ran_of . mfd $ m then nile else cons_se ("The fragments are not disjoint; the following edges are repeated:" ++ (showElems' . rep_es_of_fs . ran_of . mfd $ m)) in
+    let err5 = check_wf id (Just Total) (mufs m) in
+    let err6 = errs_complyGFG m in
+    [err1, err2, err3, err4, err5,err6]
 
+check_wf_mdl::(Eq a, Eq b, Show a, Show b)=>String->Mdl a b->ErrorTree
 check_wf_mdl nm m = check_wf_of m nm is_wf_mdl (errs_wf_mdl nm)
 
 is_wf_f' _ = is_wf_mdl
@@ -68,7 +71,7 @@ instance G_WF_CHK Mdl where
    is_wf = is_wf_f'
    check_wf = check_wf_f'
 
-reso_m::Eq a=>Mdl a->Fr a
+reso_m::(Eq a, Eq b)=>Mdl a b->Fr a b
 reso_m = reso_f . mufs
 
 -- Checks that a morphism between models is well-formed 
@@ -107,10 +110,10 @@ instance GM_CHK Mdl Mdl where
    is_wf_gm = is_wf_mgm'
    check_wf_gm = check_wf_mgm'
 
-ty_compliesm::Eq a=>GrwT a->Mdl a->Bool
+ty_compliesm::(Eq a, Eq b)=>GrwT a b->Mdl a b->Bool
 ty_compliesm gwt mdl = is_wf_gm' (Just PartialM) (gwt, mufs mdl) 
 
-check_ty_compliesm::(Eq a, Show a)=>String->GrwT a->Mdl a->ErrorTree
+check_ty_compliesm::(Eq a, Eq b, Show a, Show b)=>String->GrwT a b->Mdl a b->ErrorTree
 check_ty_compliesm id gwt mdl = check_wf_gm' id (Just PartialM) (gwt,  mufs mdl)
 
 is_wf_ty Nothing (gwt, mdl)         = is_wf_gm' Nothing (gwt, mufs mdl)

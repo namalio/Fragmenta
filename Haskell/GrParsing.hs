@@ -18,14 +18,14 @@ data GDef = GDef String [GElem]
 gd_name (GDef nm _) = nm
 
 
-extract_elem::GElem->Gr String
+extract_elem::GElem->Gr String String
 extract_elem (ElemN n) = cons_g [n] [] [] [] 
 extract_elem (ElemE e s t) = 
    let e' = nm_of_edge e s t in 
    cons_g [s, t] [e'] [(e', s)] [(e', t)]
    where nm_of_edge enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
 
-extract_g::[GElem]->Gr String
+extract_g::[GElem]->Gr String String
 extract_g es = foldl (\g e-> g `union_g` (extract_elem e)) empty_g es
 
 --extract_sg ((ElemN (NodeDef n nty)):es) = (cons_sg (cons_g [n] [] [] []) [(n, nty)] [] [] []) `union_sg` (extract_sg es)
@@ -38,7 +38,7 @@ extract_g es = foldl (\g e-> g `union_g` (extract_elem e)) empty_g es
 --         nm_of_edge _ enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
 --extract_sg ((ElemClE (ClEnum s v)):es) = 
 
-cons_g_fr_gd::GDef->Gr String
+cons_g_fr_gd::GDef->Gr String String
 cons_g_fr_gd (GDef _ elems ) = extract_g elems
 
 parse_g_node::ReadP GElem
@@ -103,7 +103,7 @@ test_g = "Graph A_B {\n"
    ++ "}"
 
 
-loadGraph :: FilePath -> IO (Maybe (String, (Gr String)))
+loadGraph :: FilePath -> IO (Maybe (String, (Gr String String)))
 loadGraph fn = do
    g_def<-loadGDefFrFile fn
    --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))

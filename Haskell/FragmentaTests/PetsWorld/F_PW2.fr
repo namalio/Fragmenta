@@ -5,10 +5,10 @@ fragment F_PW2 {
     node Cat
     node Chamaeleon
     node Gecko
-    virtual Mammal
-    virtual Reptile
-    enum HungryStatus: starving, hungry, fed, full
-    relu PPet->HungryStatus[Pet_hstatus]
+    nodea Mammal
+    nodea Reptile
+    enum PetStatus: privileged, middleclass, disadvantaged
+    relu PPet->PetStatus[Pet_status]
     inh Dog->PPet
     inh Cat->PPet
     inh Chamaeleon->PPet
@@ -17,6 +17,9 @@ fragment F_PW2 {
     inh Cat->Mammal
     inh Chamaeleon->Reptile
     inh Gecko->Reptile
+    virtual Advantaged
+    inh privileged->Advantaged
+    inh middleclass->Advantaged
   }
   ref PPet->Pet
 }

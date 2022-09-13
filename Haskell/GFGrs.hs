@@ -14,9 +14,9 @@ import Sets
 import ErrorAnalysis 
 import Utils
 
-newtype GFGr a = GFGr {gOf :: Gr a} deriving (Eq, Show)
+newtype GFGr a b = GFGr {gOf :: Gr a b} deriving (Eq, Show)
 
-cons_gfg::Eq a=> [a]->[a]->[(a, a)]->[(a, a)]->GFGr a
+cons_gfg::(Eq a, Eq b)=> [a]->[b]->[(b, a)]->[(b, a)]->GFGr a b
 cons_gfg ns es s t = GFGr (cons_g ns es s t)
 
 instance GR GFGr where
@@ -27,13 +27,13 @@ instance GR GFGr where
    empty = cons_gfg [] [] [] []
 
 -- the refsOf
-refsOf::Eq a => GFGr a->[(a, a)]
+refsOf::(Eq a, Eq b)=> GFGr a b->[(a, a)]
 refsOf = (trancl . relOfG . gOf)
 
-is_wf_gfg:: Eq a => GFGr a -> Bool
+is_wf_gfg:: (Eq a, Eq b) => GFGr a b -> Bool
 is_wf_gfg gfg = is_wf Nothing (gOf gfg) && acyclicG (restrict gfg $ (es gfg) `diff` (esId gfg))
 
-errors_wf_gfg::(Eq a, Show a) => String->GFGr a -> [ErrorTree]
+errors_wf_gfg::(Eq a, Eq b, Show a, Show b) => String->GFGr a b -> [ErrorTree]
 errors_wf_gfg id gfg =
     let err1 = check_wf id Nothing (gOf gfg) in
     let err2 = if acyclicG (restrict gfg $ (es gfg) `diff` (esId gfg)) then nile else cons_se "The GFG has cycles." in

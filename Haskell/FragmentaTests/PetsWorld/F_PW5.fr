@@ -1,19 +1,13 @@
-fragment F_PW5 {
-  SG SG_PW5 {
-    proxy PFacility
-    proxy PPetRoom
-    node EnsuiteRoom
-    proxy PNat
-    node Toilet
-    node Grooming
-    relu PPetRoom->PNat[PetRoom_capacity]
-    rel Toilet->PPetRoom[Serves]:*,1..*
-    derived Toilet->PPetRoom[serves_1:Serves]:0..1,1
-    inh EnsuiteRoom->PPetRoom
-    inh Toilet->PFacility
-    inh Grooming->PFacility
+fragment F_PW4 {
+  SG SG_PW4 {
+    proxy PPHCard
+    proxy PMammalHotel
+    node Nat
+    node PHCardId
+    relu PPHCard->Nat[PHCard_points]
+    relu PPHCard->PHCardId[PHCard_id]
+    compu PMammalHotel->PPHCard[MammalHotel_lcards]:*
   }
-  ref PFacility->Facility
-  ref PPetRoom->PetRoom
-  ref PNat->Nat
+  ref PPHCard->PHCard
+  ref PMammalHotel->MammalHotel
 }

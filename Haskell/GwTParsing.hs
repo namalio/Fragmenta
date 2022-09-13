@@ -25,17 +25,17 @@ data GwTDef = GwTDef String [GwTElem]
 
 gwtd_name (GwTDef nm _) = nm
 
-extract_elem::GwTElem->GrwT String
+extract_elem::GwTElem->GrwT String String
 extract_elem (ElemN n nty) = cons_gwt (cons_g [n] [] [] []) (cons_gm [(n, nty)] [])
 extract_elem (ElemE e s t ety) = 
    let e' = nm_of_edge e s t in 
    cons_gwt (cons_g [s, t] [e'] [(e', s)] [(e', t)]) (cons_gm [] [(e', "E"++ety)])
    where nm_of_edge enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
 
-extract_gwt::[GwTElem]->GrwT String
+extract_gwt::[GwTElem]->GrwT String String
 extract_gwt es = foldl (\g e-> g `union_gwt` (extract_elem e)) empty_gwt es
 
-cons_gwt_fr_gd::GwTDef->GrwT String
+cons_gwt_fr_gd::GwTDef->GrwT String String
 cons_gwt_fr_gd (GwTDef _ elems ) = extract_gwt elems
 
 parse_gwt_node::ReadP GwTElem
@@ -108,7 +108,7 @@ test_gwt = "GrwT A_B {\n"
    ++ "}"
 
 
-loadGwT:: FilePath -> IO (Maybe (String, (GrwT String)))
+loadGwT:: FilePath -> IO (Maybe (String, (GrwT String String)))
 loadGwT fn = do
    g_def<-loadGwTDefFrFile fn
    --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))

@@ -1,4 +1,4 @@
-module ErrorAnalysis(ErrorTree, nile, is_nil, cons_et, cons_se, err_prepend, add_to_err, check_surj, check_inj, check_fun', check_fun, 
+module ErrorAnalysis(ErrorTree, nile, is_nil, cons_et, cons_se, err_prepend, concat_ets, add_to_err, check_surj, check_inj, check_fun', check_fun, 
   check_fun_inj, check_total, check_fun_bij, check_fun_total, check_fun_total_seq, check_fun_total', check_pfun, check_fun_pinj, show_err, check_subseteq, 
   check_seteq, check_relation) where
 
@@ -21,6 +21,12 @@ cons_et s es = Error s es
 
 -- Builds an error without nesting
 cons_se s = Error s []
+
+-- concatenates two ets with a string giving precedence to nil
+concat_ets s NilE NilE = nile
+concat_ets _ et NilE  = et
+concat_ets _ NilE et  = et
+concat_ets s et1 et2   = cons_et s [et1, et2]
 
 -- Prepends a string to the error string
 err_prepend _ NilE = NilE

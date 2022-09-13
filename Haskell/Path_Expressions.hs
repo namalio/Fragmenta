@@ -5,16 +5,16 @@
 -- Author: Nuno Amálio
 ---------------------
 
-module Path_Expressions (PE(..), srcPE, tgtPE, okPE) where
+module Path_Expressions (PEA(..), PE(..), srcPE, tgtPE, okPE) where
 
 import Sets
 import Gr_Cls
 import Relations
 import Grs
 
-data PEA v e = Edg e | Inv e 
+data PEA e = Edg e | Inv e 
    deriving (Eq, Show)
-data PE v e = At (PEA v e) | Dres v (PEA v e) | Rres (PEA v e) v | SCmp (PE v e) (PE v e) 
+data PE v e = At (PEA e) | Dres v (PEA e) | Rres (PEA e) v | SCmp (PE v e) (PE v e) 
    deriving (Eq, Show)
 
 --esPEA :: (Eq a, Eq b) => PEA a b -> [b]
@@ -27,7 +27,7 @@ data PE v e = At (PEA v e) | Dres v (PEA v e) | Rres (PEA v e) v | SCmp (PE v e)
 --esPE (Rres pea _) = esPEA pea
 --esPE (SCmp pe1 pe2) = (esPE pe1) `union` (esPE pe2)
 
-srcPEA :: (Eq a, Eq b, GR g) => g a b->PEA a b -> a
+srcPEA :: (Eq a, Eq b, GR g) => g a b->PEA b -> a
 srcPEA g (Edg e) = appl (src g) e
 srcPEA g (Inv e) = appl (tgt g) e
 
@@ -37,7 +37,7 @@ srcPE g (Dres _ pea) = srcPEA g pea
 srcPE g (Rres pea _) = srcPEA g pea
 srcPE g (SCmp pe1 _) = srcPE g pe1
 
-tgtPEA :: (Eq a, Eq b, GR g) => g a b->PEA a b -> a
+tgtPEA :: (Eq a, Eq b, GR g) => g a b->PEA b -> a
 tgtPEA g (Edg e) = appl (tgt g) e
 tgtPEA g (Inv e) = appl (src g) e
 

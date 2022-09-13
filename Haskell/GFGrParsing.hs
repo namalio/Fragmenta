@@ -24,7 +24,7 @@ data GFGDef = GFGDef String [GFGElem]
 gfgd_name (GFGDef nm _) = nm
 
 -- Constructs a GFG from a set of nodes and a relation between nodes
-cons_gfg'::([String], [(String, String)])->GFGr String
+cons_gfg'::([String], [(String, String)])->GFGr String String
 cons_gfg' (ns, r_refs) =
     let e_nm ns nt =  "E" ++ (show ns) ++ "_" ++ (show nt) in
     let combine ns nt (es, s, t) = ((e_nm ns nt):es, (e_nm ns nt, ns):s, (e_nm ns nt, nt):t) in
@@ -36,7 +36,7 @@ extract es = foldr (\e ap-> combine e ap) ([], []) es
    where combine (GFGN n_nm) (ns, r)  =  (n_nm:ns, r)
          combine (GFGR n_s n_t) (ns, r)  =  (ns, (n_s, n_t):r)
 
-cons_gfg_fr_d::GFGDef->GFGr String
+cons_gfg_fr_d::GFGDef->GFGr String String
 cons_gfg_fr_d (GFGDef _ elems ) = cons_gfg' . extract $ elems
 
 parse_gfg_node::ReadP GFGElem
@@ -86,7 +86,7 @@ test_gfg = "GFG A_B{\n"
    ++ "}"
 
 
-loadGFG:: FilePath -> IO (Maybe (String, (GFGr String)))
+loadGFG:: FilePath -> IO (Maybe (String, (GFGr String String)))
 loadGFG fn = do
     g_def<-loadGFGDefFrFile fn
     --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))

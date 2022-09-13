@@ -6,7 +6,7 @@
 ---------------------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Frs(Fr, srcR, tgtR, esR, fsg, cons_f, union_f, disj_fs, reps_of_fs, refs, union_fs, reso_f, mres) where
+module Frs(Fr, srcR, tgtR, esR, fsg, cons_f, union_f, disj_fs, rep_ns_of_fs, rep_es_of_fs, refs, union_fs, reso_f, mres) where
 
 import Gr_Cls
 import Grs
@@ -19,11 +19,11 @@ import GrswT
 import ShowUtils
 import SimpleFuns
 
-data Fr a = Fr {
-   sg_ :: (SGr a), 
-   esr_ :: [a],
-   sr_  :: [(a, a)],
-   tr_ :: [(a, a)]
+data Fr a b = Fr {
+   sg_ :: (SGr a b), 
+   esr_ :: [b],
+   sr_  :: [(b, a)],
+   tr_ :: [(b, a)]
 } deriving (Eq, Show)
 
 -- Gets fragmet's SG
@@ -42,43 +42,43 @@ cons_f sg es s t = Fr {sg_ = sg, esr_ = es, sr_ = s, tr_ = t}
 empty_f = cons_f (empty_sg) [] [] []
 
 -- Gets the local edges of a fragment (exclude reference edges)
-fLEs::Eq a=>Fr a->[a]
+fLEs::(Eq a, Eq b)=>Fr a b->[b]
 fLEs = es . fsg 
 
 -- Gets all edges of a fragment (includes reference edges)
-fEs::Eq a=>Fr a->[a]
+fEs::(Eq a, Eq b)=>Fr a b->[b]
 fEs f = fLEs f `union` esR f
 
-fEsC::Eq a=>Fr a->[a]
+fEsC::(Eq a, Eq b)=>Fr a b->[b]
 fEsC = esC . fsg
 
 -- Gets all local nodes of a fragment (excludes foreign references)
-fLNs::Eq a=>Fr a->[a]
+fLNs::(Eq a, Eq b)=>Fr a b->[a]
 fLNs = ns . fsg 
 
 -- Gets all reference of a fragment (all references of proxies, including foreign ones)
-fRNs::Eq a=>Fr a->[a]
+fRNs::(Eq a, Eq b)=>Fr a b->[a]
 fRNs = ran_of . tgtR
 
 -- Gets all nodes involved in a fragment, including including foreign references
-fNs::Eq a=>Fr a->[a]
+fNs::(Eq a, Eq b)=>Fr a b->[a]
 fNs f = (fLNs f) `union` (fRNs f)
 
 -- Source function which caters to all edges including reference edges
-srcF::Eq a=>Fr a->[(a, a)]
+srcF::(Eq a, Eq b)=>Fr a b->[(b, a)]
 srcF f = (src . fsg $ f) `union` (srcR f)
 
 -- Target function which caters to all edges including reference edges
-tgtF::Eq a=>Fr a->[(a, a)]
+tgtF::(Eq a, Eq b)=>Fr a b->[(b, a)]
 tgtF f = (tgt . fsg $ f) `union` (tgtR f)
 
 -- Gets references graph
-refsG::Eq a=>Fr a->Gr a
+refsG::(Eq a, Eq b)=>Fr a b->Gr a b
 refsG f = cons_g ns' (esR f) (srcR f) (tgtR f)
     where ns' = (nsP . fsg $ f) `union` fRNs f
 
 -- The references function obtained from the references graph
-refs::Eq a=>Fr a->[(a, a)]
+refs::(Eq a, Eq b)=>Fr a b->[(a, a)]
 refs = relOfG . refsG 
 
 -- union of fragments operator
@@ -90,23 +90,29 @@ union_fs fs = foldr (\f ufs->f `union_f` ufs) empty_f fs
 -- Checks whether fragments are disjoint
 disj_fs fs = disjoint (map fLNs fs) && disjoint (map fEs fs) 
 
--- Gets the repeated elements of fragments
-reps_of_fs fs = (dups . gapp $ (map fLNs) fs) ++ (dups . gapp $ map fEs fs)
+-- Gets the repeated nodes of fragments
+rep_ns_of_fs::(Eq a, Eq b)=>[Fr a b]->[a]
+rep_ns_of_fs fs = dups . gapp $ (map fLNs) fs
+
+-- Gets the repeated edges of fragments
+rep_es_of_fs::(Eq a, Eq b)=>[Fr a b]->[b]
+rep_es_of_fs fs = dups . gapp $ (map fEs) fs
+-- ++ (dups . gapp $ map fEs fs)
 
 -- Resolution function, which restricts range of references function to the local nodes (those can that can be resolved locally)
-res::Eq a=>Fr a->[(a, a)]
+res::(Eq a, Eq b)=>Fr a b->[(a, a)]
 res f = rres (refs f) (fLNs f)
 
 -- Yields resolved SG (◉ operator, subsumption)
-reso_sg::Eq a=>Fr a->SGr a
+reso_sg::(Eq a, Eq b)=>Fr a b->SGr a b
 reso_sg f = subsume_sg (fsg f) (res f)
 
--- The new reference edges of the resolved fragment, which removes those reference edges that are resolved
-rEsR::Eq a=>Fr a->[a]
+-- Gives reference edges of the resolved fragment, which removes those reference edges that are resolved
+rEsR::(Eq a, Eq b)=>Fr a b->[b]
 rEsR f = dom_of (rsub (srcR f) $ dom_of (res f))
 
 -- Gives resolved fragment (◉ operator)
-reso_f::Eq a=>Fr a->Fr a
+reso_f::(Eq a, Eq b)=>Fr a b->Fr a b
 reso_f f = cons_f (reso_sg f) es' (dres (srcR f) es') (dres (tgtR f) es')
     where es' = rEsR f
 
@@ -131,7 +137,7 @@ oneway f1 f2 = f1 `refs_in` f2 && (not $ f2 `refs_in` f1)
 refsLocal f = fRNs f `subseteq` fLNs f
 is_wf_tf f = is_wfa_f f && refsLocal f && is_wf (Just Total) (reso_sg f)
 
-errors_frz::(Eq a, Show a)=>String->Fr a -> [ErrorTree]
+errors_frz::(Eq a, Eq b, Show a, Show b)=>String->Fr a b -> [ErrorTree]
 errors_frz nm f =
     let err1 = check_wf ("SG (" ++ nm ++ ")") (Just Partial) (fsg f) in
     let err2 = if disjoint [(fLEs f), esR f] then nile else cons_se "Sets of SG edges and reference edges are not disjoint" in 
@@ -140,13 +146,13 @@ errors_frz nm f =
     let err4 = if fun_total' (tgtR f) (esR f) then nile else cons_et "Function 'tgtR' is not total" [check_fun_total' (tgtR f) (esR f)] in
     [err1, err2, err3, err4]
 
-errors_fra::(Eq a, Show a)=>String->Fr a -> [ErrorTree]
+errors_fra::(Eq a, Eq b, Show a, Show b)=>String->Fr a b -> [ErrorTree]
 errors_fra nm f = 
     let errs1 = errors_frz nm f in
     let err2 = if acyclicG (refsG f) then nile else cons_se "The fragment's references contains cycles" in
     errs1 ++ [err2]
 
-errors_fr::(Eq a, Show a)=>String->Fr a -> [ErrorTree]
+errors_fr::(Eq a, Eq b, Show a, Show b)=>String->Fr a b -> [ErrorTree]
 errors_fr nm f = 
     let errs1 = errors_fra nm f in
     let err2 = check_wf ("Resolved SG (" ++ nm ++ ")") (Just Partial) (reso_sg f) in
@@ -154,7 +160,7 @@ errors_fr nm f =
 
 check_wf_f nm f = check_wf_of f nm is_wf_f (errors_fr nm)
 
-errors_tfr::(Eq a, Show a)=>String->Fr a -> [ErrorTree]
+errors_tfr::(Eq a, Eq b, Show a, Show b)=>String->Fr a b -> [ErrorTree]
 errors_tfr nm f = 
     let errs1 = errors_fra nm f in
     let err2 = if refsLocal f then nile else cons_se $ "Not all references are local: " ++ (showElems' (diff (fRNs f) (fLNs f))) in
@@ -229,13 +235,13 @@ instance GM_CHK Fr Fr where
    is_wf_gm = is_wf_fgm'
    check_wf_gm = check_wf_fgm'
 
-ty_compliesf::Eq a=>GrwT a->Fr a->Bool
+ty_compliesf::(Eq a, Eq b)=>GrwT a b->Fr a b->Bool
 ty_compliesf gwt f = is_wf_gm' (Just PartialM) (gwt,  reso_sg f)
 
-check_ty_compliesf::(Eq a, Show a)=>String->GrwT a->Fr a->ErrorTree
+check_ty_compliesf::(Eq a, Eq b, Show a, Show b)=>String->GrwT a b->Fr a b->ErrorTree
 check_ty_compliesf id gwt f = check_wf_gm' id (Just PartialM) (gwt,  reso_sg f)
 
-is_wf_ty::(Eq a)=>(Maybe MK)->(GrwT a, Fr a)->Bool
+is_wf_ty::(Eq a, Eq b)=>(Maybe MK)->(GrwT a b, Fr a b)->Bool
 is_wf_ty Nothing (gwt, f)         = is_wf_gm' Nothing (gwt, reso_sg f)
 is_wf_ty (Just WeakM) (gwt, f)    = is_wf_gm' (Just WeakM) (gwt,  reso_sg f) 
 is_wf_ty (Just PartialM) (gwt, f) = gwt `ty_compliesf` f

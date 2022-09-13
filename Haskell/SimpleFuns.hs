@@ -1,6 +1,6 @@
-module SimpleFuns(swap, pair_up, kth, equalLs, quicksort, fst_T, snd_T, thd_T, fst_Q, mapT, applyPToP, allButLast, 
+module SimpleFuns(swap, pair_up, kth, equalLs, quicksort, fst_T, snd_T, thd_T, fst_Q, mapT, applyPToP, butLast, 
     toIdxC, combineTwAppend, combineTwInsert, combineQwInsert, combineQwAppend, combineQwUnion, 
-    makeQFrTFst, nilQl,  gapp, replace) where
+    makeQFrTFst, nilQl,  gapp, replace, unique) where
 
 import Sets
 
@@ -57,7 +57,7 @@ quicksort (x:xs) =
 
 applyPToP (f, g)(x, y)= (f x, g y) 
 
-allButLast l = take ((length l) - 1) l
+butLast l = take ((length l) - 1) l
 
 toIdxC::Eq a=>[a]->[(a, Int)]
 toIdxC xs = toIdxC' xs 0
@@ -70,6 +70,10 @@ replace x y [] = []
 replace x y (z:zs) 
    | x == z    = y:(replace x y zs)
    | otherwise = z:(replace x y zs)
+
+-- Checks whether a list has unique values
+unique [] = True
+unique (x:xs) = if x `elem` xs then False else unique xs
 
 test1 = combineTwInsert (1, 2, 3) ([2, 3], [4, 5], [6, 7])
 test2 = combineQwInsert (1, 2, 3, 4) ([2, 3], [4, 5], [6, 7], [8, 9])

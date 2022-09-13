@@ -13,8 +13,8 @@ fragment F_PW1 {
     relu Locatable->Country[Locatable_country]
     relu Locatable->City[Locatable_city]
     relu Pet->Date[Pet_dob]
-    rel PetOwner->Pet[Owns]:1,*
-    rel PetOwner->PHCard[Holds]:1,*
+    rel PetOwner->Pet[Owns]:1;*
+    rel PetOwner->PHCard[Holds]:1;*
     inh Pet->Named
     inh PetOwner->Named
     inh PetOwner->Locatable

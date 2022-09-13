@@ -22,7 +22,7 @@ data MorphismDef = MorphismDef String [NodeMapping] [EdgeMapping]
 morphD_name::MorphismDef->String
 morphD_name (MorphismDef nm _ _) = nm
 
-cons_morph_md::MorphismDef->GrM String
+cons_morph_md::MorphismDef->GrM String String
 cons_morph_md (MorphismDef _ nms ems) = cons_gm (extract_node_pairs nms) (extract_edge_pairs ems)
 
 extract_pair_fr_nm::NodeMapping->(String, String)
@@ -102,7 +102,7 @@ loadMorphDefFrFile fn = do
     let m = parseMaybe parse_morphism contents
     return m
 
-loadMorphism :: FilePath -> IO (Maybe (String, (GrM String)))
+loadMorphism :: FilePath -> IO (Maybe (String, (GrM String String)))
 loadMorphism fn = do
    m_def<-loadMorphDefFrFile fn
    --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))

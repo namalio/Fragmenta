@@ -31,7 +31,7 @@ import Relations
 data GKind = Graph | SG | GwT | Fr | GFG
     deriving (Eq, Show)
 
-type PossibleG a = Either (Gr a) (Either (SGr a) (Either (GrwT a) (Either (Fr a) (GFGr a))))
+type PossibleG a b = Either (Gr a b) (Either (SGr a b) (Either (GrwT a b) (Either (Fr a b) (GFGr a b))))
 --    deriving (Eq, Show)
 
 wrapG g = Left g
@@ -132,7 +132,7 @@ draw_def dpath ipath fnm = do
         let (nm, pg) = the $ d
         draw_to_file ipath nm pg
 
-draw_to_file::String->String->PossibleG String->IO()
+draw_to_file::String->String->PossibleG String String->IO()
 draw_to_file path nm pg = do
     case (pg_kind pg) of
         Graph->saveGDrawing path nm $ unwrapG pg
