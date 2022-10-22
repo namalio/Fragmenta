@@ -94,17 +94,13 @@ esW = (flip esTys) [Ewander]
 esD::(Eq a, Eq b)=>SGr a b->[b]
 esD = (flip esTys) [Eder]
 
--- Gets the path edges
-esP::(Eq a, Eq b)=>SGr a b->[b]
-esP = (flip esTys) [Epath]
-
--- Gets the path path dependency edges
-esPD::(Eq a, Eq b)=>SGr a b->[b]
-esPD = (flip esTys) [Epdep]
+-- Gets path edges
+esPa::(Eq a, Eq b)=>SGr a b->[b]
+esPa = (flip esTys) [Epath]
 
 -- Gets the constraint edges
 esCnt::(Eq a, Eq b)=>SGr a b->[b]
-esCnt sg = (esD sg) `union` (esP sg)
+esCnt sg = (esD sg) `union` (esPa sg)
 
 -- Gets connection edges (association + wander)
 esC::(Eq a, Eq b)=>SGr a b->[b]
@@ -113,6 +109,10 @@ esC sg = (esA sg) `union` (esW sg)
 -- Gets multiplicity edges (connection + refined multiplicty)
 esM::(Eq a, Eq b)=>SGr a b->[b]
 esM sg = (esC sg) `union` esD sg
+
+-- Gets relation between path nodes as defined by path dependency edges
+--ds::(Eq a, Eq b)=>SGr a b->[(a, a)]
+--ds sg = (inv $ dres (src sg) (esPD sg)) `rcomp` (dres (tgt sg) (esPD sg))
 
 -- Gets multiplicity edges (connection + derived)
 -- esM::Eq a=>SGr a->[a]
@@ -192,9 +192,9 @@ is_wf_sgz sg = is_wf Nothing (g_sg sg)
 is_wf_sg::(Eq a, Eq b)=>SGr a b->Bool
 is_wf_sg sg = is_wf_sgz sg
    && mults_wf (ran_of $ srcm sg) && mults_wf (ran_of $ tgtm sg) 
-   && fun_total' (srcma sg) (esC sg) && fun_total' (tgtm sg) (esC sg)
+   && fun_total' (srcma sg) (esM sg) && fun_total' (tgtm sg) (esM sg)
    && (dom_of . pe $ sg) `seteq` esCnt sg
-   && relation (ds sg) (esP sg) (esP sg)
+   && antireflexive_on (ds sg) (esPa sg) 
    && mult_etys_ok sg 
    && optsVoluntary sg 
    && inh_ok sg 
@@ -204,22 +204,42 @@ etherealInherited::(Eq a, Eq b)=>SGr a b->Bool
 etherealInherited sg = (nsEther sg) `subseteq` (ran_of $ inh sg)
 
 -- WF conditions of derived edges which apply to total SGs
-derMultOk::(Eq a, Eq b)=>SGr a b->Bool
-derMultOk sg = all (\e->(appl (src sg) e, srcPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg) 
-      && (appl (tgt sg) e, tgtPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg)) (esD sg)
+srcDerEOk sg e = (appl (src sg) e, srcPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg) 
+tgtDerEOk sg e = (appl (tgt sg) e, tgtPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg)
+derEOk::(Eq a, Eq b)=>SGr a b->b->Bool
+derEOk sg e = srcDerEOk sg e && tgtDerEOk sg e
+derOk::(Eq a, Eq b)=>SGr a b->Bool
+derOk sg = all (\e->derEOk sg e) (esD sg)
 
-esCnts_ok::(Eq a, Eq b)=>SGr a b->Bool
-esCnts_ok sg = derMultOk sg 
-   && all (\e ->okPE (restrict (g_sg sg) $ esA sg) (srcst sg) (tgtst sg) (appl (pe sg) e)) (esCnt sg) 
+okPEASrc sg v (Edg e) = (e, v) `elem` (srcst sg)
+okPEASrc sg v (Inv e) = (e, v) `elem` (tgtst sg)
+
+okPEATgt sg v (Edg e) = (e, v) `elem` (tgtst sg)
+okPEATgt sg v (Inv e) = (e, v) `elem` (srcst sg)
+
+okPEA sg (Edg e) = e `elem` (es sg)
+okPEA sg (Inv e) = e `elem` (es sg)
+
+okPE sg (At pea) = okPEA sg pea
+okPE sg (Dres v pea) = okPEA sg pea && okPEASrc sg v pea
+okPE sg (Rres pea v) = okPEA sg pea && okPEATgt sg v pea
+okPE sg (SCmp pe1 pe2) = 
+   let g = restrict (g_sg sg) $ esA sg in
+   okPE sg pe1 && okPE sg pe2 && (tgtPE g pe1, srcPE g pe2) `elem` ((inhst sg) `union` (inv . inhst $ sg))
+
+esCntOk sg e = okPE sg (appl (pe sg) e)
+esCntsOk::(Eq a, Eq b)=>SGr a b->Bool
+esCntsOk sg = derOk sg && all (\e ->esCntOk sg e) (esCnt sg) 
    
 
 -- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
 inhMinus sg = relOfG $ subtractNs (inhG sg) (nsV sg)
 isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg) 
 
--- Condition for total SGs
+-- WF of total SGs
 is_wf_tsg::(Eq a, Eq b)=>SGr a b->Bool
-is_wf_tsg sg = is_wf_sg sg && etherealInherited sg && esCnts_ok sg && isInhTree sg
+is_wf_tsg sg = is_wf_sg sg && etherealInherited sg 
+   && esCntsOk sg && isInhTree sg 
 
 check_mult_etys_ok sg = 
    if mult_etys_ok sg then nile else cons_se $ "The following edges have incorrect multiplicities:"++ (showElems' err_es)
@@ -234,8 +254,7 @@ check_inh_ok::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
 check_inh_ok sg = 
    let errs1 = if inh_ntys_ok sg then nile else cons_se $ "The following inheritance pairs are not compliant with the node type restrictions:" ++ (showElems' err_inh_pairs) in
    let errs2 = if acyclicI sg then nile else cons_se "The inheritance hierarchy has cycles." in
-   let errs3 = if isInhTree sg then nile else err_prepend "The inheritance hierarchy without virtual nodes is not a tree. " (check_pfun (inhMinus sg) (ns sg) (ns sg)) in
-   if inh_ok sg then nile else cons_et "Errors in the inheritance hierarchy." [errs1, errs2, errs3]
+   if inh_ok sg then nile else cons_et "Errors in the inheritance hierarchy." [errs1, errs2]
    where err_inh_pairs = filter (not . (inh_nty_ok sg)) (inh sg)
 
 -- Handles errors related to multiplicity 
@@ -259,8 +278,8 @@ errors_sg sg =
    let err3 = err_prepend "Function 'ety' is not total. " $ check_fun_total (ety sg) (es sg) (sgety_set) in
    let err4 = if mults_wf (ran_of $ srcm sg) then nile else cons_se "Well-formedness errors in edge source multiplicities." in
    let err5 = if mults_wf (ran_of $ tgtm sg) then nile else cons_se "Well-formedness errors in edge target multiplicities." in
-   let err6 = err_prepend "Source multplicity function is not total. " $ check_fun_total' (srcma sg) (esC sg) in
-   let err7 = err_prepend "Target multplicity function is not total. " $ check_fun_total' (tgtm sg) (esC sg) in
+   let err6 = err_prepend "Source multplicity function is not total. " $ check_fun_total' (srcma sg) (esM sg) in
+   let err7 = err_prepend "Target multplicity function is not total. " $ check_fun_total' (tgtm sg) (esM sg) in
    let err8 = check_mult_etys_ok sg in
    let err9 = check_optsVoluntary sg in
    let err10 = check_inh_ok sg in
@@ -270,15 +289,36 @@ check_wf_sg::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
 check_wf_sg nm sg = check_wf_of sg nm is_wf_sg errors_sg
 
 check_etherealInherited sg = 
-   if etherealInherited sg then nile else cons_se $ "The following ethereal nodes are not inherited:"++ (showElems' ens_n_inh)
+   if etherealInherited sg then nile else cons_se $ "The following ethereal nodes are not inherited: " ++ (showElems' ens_n_inh)
    where isInherited n = n `elem` (ran_of $ inh sg)
          ens_n_inh = filter (not . isInherited)(nsEther sg) 
+
+check_isInhTree sg = 
+   let msg1 = "The inheritance is not single." in
+   let msg2 = "The inheritance hierarchy without virtual nodes is not a tree. " in
+   if isInhTree sg then nile else cons_et msg1 [err_prepend msg2 $ check_pfun (inhMinus sg) (ns sg) (ns sg)]
+
+check_derOk::(Eq a, Eq b, Show a, Show b)=>SGr a b-> ErrorTree
+check_derOk sg = 
+   let msg_src e = "The source of edge " ++ (show e) ++ " is invalid." in
+   let msg_tgt e = "The target of edge " ++ (show e) ++ " is invalid." in
+   let cons_ems_src e = if (not $ srcDerEOk sg e) then [msg_src e] else [] in
+   let cons_ems_tgt e = if (not $ tgtDerEOk sg e) then [msg_tgt e] else [] in
+   let des_bad = foldr (\e ms->(cons_ems_src e) ++ (cons_ems_tgt e) ++ ms) [] (esD sg) in
+   if derOk sg then nile else cons_se $ "Errors with derived edges: " ++ (showElems' des_bad)
+
+check_esCntsOk sg = 
+   if esCntsOk sg then nile else cons_se $ "Errors with the following constraint edges: " ++ (showElems' esCnts_nOk) ++ (show $ srcst sg) ++ (show $ tgtst sg)
+   where esCnts_nOk = filter (not . (esCntOk sg)) (esCnt sg) 
 
 errors_tsg::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
 errors_tsg sg = 
    let err1 = check_wf "SG" Nothing sg in
-   let err2 = check_etherealInherited sg in
-   [err1] ++ [err2]
+   let err2 = check_isInhTree sg in
+   let err3 = check_etherealInherited sg in
+   let err4 = check_derOk sg in
+   let err5 = check_esCntsOk sg in 
+   [err1] ++ [err2, err3, err4, err5]
 
 check_wf_tsg::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
 check_wf_tsg nm sg = check_wf_of sg nm is_wf_tsg errors_tsg
@@ -306,7 +346,7 @@ union_sg sg1 sg2 =
    let u_tgtm = (tgtm sg1) `union` (tgtm sg2) in
    let u_pe = (pe sg1) `union` (pe sg2) in
    let u_ds = (ds sg1) `union` (ds sg2) in
-   cons_sg ug u_nty u_ety u_srcm u_tgtm u_pe u_ds 
+   cons_sg ug u_nty u_ety u_srcm u_tgtm u_pe u_ds
 
 union_sgs sgs = 
    cons_sg (union_gs $ map g_sg sgs) (gunion $ map nty sgs) (gunion $ map ety sgs) (gunion $ map srcm sgs) (gunion $ map tgtm sgs) (gunion $ map pe sgs) (gunion $ map ds sgs)
@@ -314,7 +354,7 @@ union_sgs sgs =
 -- SG subsumption
 subsume_sg :: (Eq a, Eq b)=>SGr a b-> [(a, a)] -> SGr a b
 subsume_sg sg sub 
-   | pfun sub (nsP sg) (ns sg) = cons_sg s_g (dsub (nty sg) ((dom_of sub) `diff` (ran_of sub))) (ety sg) (srcm sg) (tgtm sg) (pe sg) (ds sg)
+   | pfun sub (nsP sg) (ns sg) = cons_sg s_g (dsub (nty sg) ((dom_of sub) `diff` (ran_of sub))) (ety sg) (srcm sg) (tgtm sg) (pe sg) (ds sg) 
    | otherwise = sg
    where s_g = subsume_g (g_sg sg) sub 
 
@@ -370,7 +410,7 @@ is_wf_gm_common (gs, m, gt) =
 -- checks whether a morphisms between SGs is well-formed
 is_wf_sgm::(Eq a, Eq b) => (SGr a b, GrM a b,  SGr a b) -> Bool
 is_wf_sgm (sgs, m, sgt) = is_wf_gm_common (sgs, m, sgt)
-   && fun_total (fE m) (esM sgs) (esM sgt)
+   && fun_total (fE m) (esC sgs) (esC sgt)
    && morphism_sgm_commutes_src (sgs, m, sgt)
    && morphism_sgm_commutes_tgt (sgs, m, sgt)
    && ihh_sgm_ok (sgs, m, sgt)
@@ -456,7 +496,7 @@ igRMNsEs gwt sg mns mes = (igRMEs gwt mes) `restrictNs` (ins (ty gwt) sg mns)
 
 -- SG multiplicity refinement (leq == '<=')
 sgs_mult_leq sgc m sga e  = appl (srcma sgc) e `m_leq` appl ((srcma sga) `bcomp` (fE m)) e
-sg_refines_m (sgc, m) sga = all (\e-> sgs_mult_leq sgc m sga e) $ esM sgc
+sg_refines_m (sgc, m) sga = all (\e-> sgs_mult_leq sgc m sga e) $ esC sgc
 
 -- SG refinement of edge types
 sgs_ety_leq sgc m sga e  = appl (ety sgc) e <= appl ((ety sga) `bcomp` (fE m)) e
@@ -528,7 +568,6 @@ tsg_refinesz (sgc, m) sga =
 -- Total SG refinement
 tsg_refines::(Eq a, Eq b)=>(SGr a b, GrM a b)->SGr a b->Bool
 tsg_refines (sgc, m) sga = 
-   --let m' = totaliseForDer m sgc in 
    is_wf_sgm (sgc, m, sga) && (sgc, m) `tsg_refinesz` sga 
 
 -- Errors checking

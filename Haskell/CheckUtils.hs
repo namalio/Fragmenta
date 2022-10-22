@@ -36,30 +36,3 @@ show_typing_msg errs =
       then putStrLn "The PC is well-typed."
       else putStrLn $ "The PC is ill-typed:\n" ++ (show_err errs) 
 
---check_instance_morphism_strong id om gwt sg b = do
---   let errs = check_wf_gm' id (Just PartialM) (gwt, sg) 
---   report_errs id errs b
-
---check_report_f_wf id f m b = 
---   let errs = check_wf_fr f m id in
---   if null errs
---      then putStrLn $ "Fragment " ++ id ++ " is well formed (" ++ (evalExpectation b True) ++ ")"
---      else putStrLn $ "(" ++ (evalExpectation b False) ++ ") " ++ (transToStr errs ".")
-
---check_f_morphism id gm fs ft m b  = 
---   let errs = check_wf_gm_frs gm fs ft m id in
---   if null errs 
---      then putStrLn $ id ++ " is well formed (" ++ (evalExpectation b True) ++ ")"
---      else putStr $ "(" ++ (evalExpectation b False) ++ ")" ++ (transToStr errs ".")
-
---check_f_typing id gm fs ft m b = 
---   let errs = check_wf_ty_frs gm fs ft id m in
---   if null errs
---      then putStrLn $ id ++ " is well typed (" ++ (evalExpectation b True) ++ ")"
---      else putStr $ "(" ++ (evalExpectation b False) ++ ")" ++ (transToStr errs ".")
-
---check_f_typing_ref id gm fs ft b = 
---   let errs = check_wf_ty_frs_ref gm fs ft id in
---   if null errs
---      then putStrLn $ id ++ " is well typed (" ++ (evalExpectation b True) ++ ")"
---      else putStr $ "(" ++ (evalExpectation b False) ++ ")" ++ (transToStr errs ".")

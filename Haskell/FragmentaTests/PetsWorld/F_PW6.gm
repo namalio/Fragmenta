@@ -1,15 +1,9 @@
-Morphism F_PW5 {
+Morphism F_PW6 {
 	nodes {
-     PPetRoom->Room
-		 PFacility->Other
-		 Toilet->Other
-		 Grooming->Other
-     PNat->Other
-		 EnsuiteRoom->Room
+       PPetRoom3->Room
+	   PEnsuiteRoom->Room
+	   Pdisadvantaged->Other
+	   Pprivileged->Other
   }
-  edges {
-    PetRoom_capacity->AnyRel
-		Serves->AnyRel
-		serves_1->AnyRel
-  }
+  edges {}
 }

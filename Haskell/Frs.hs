@@ -99,7 +99,7 @@ rep_es_of_fs::(Eq a, Eq b)=>[Fr a b]->[b]
 rep_es_of_fs fs = dups . gapp $ (map fEs) fs
 -- ++ (dups . gapp $ map fEs fs)
 
--- Resolution function, which restricts range of references function to the local nodes (those can that can be resolved locally)
+-- Resolution function, which restricts range of references function to the local nodes (those that can be resolved locally)
 res::(Eq a, Eq b)=>Fr a b->[(a, a)]
 res f = rres (refs f) (fLNs f)
 
@@ -117,8 +117,8 @@ reso_f f = cons_f (reso_sg f) es' (dres (srcR f) es') (dres (tgtR f) es')
     where es' = rEsR f
 
 -- Base well-formedness predicate
-is_wfz_f f = is_wf Nothing (fsg f) && disjoint [(fLEs f), esR f] 
-    && fun_bij (srcR f) (esR f) (nsP .fsg $ f) && fun_total' (tgtR f) (esR f) 
+is_wfz_f f = is_wf Nothing (fsg f) && disjoint [fLEs f, esR f] 
+    && fun_bij (srcR f) (esR f) (nsP . fsg $ f) && fun_total' (tgtR f) (esR f) 
     && disjoint [ran_of . tgtR $ f, nsO . fsg $ f]
 
 -- Base well-formedness with acyclicity
@@ -171,7 +171,7 @@ check_wf_tf nm f = check_wf_of f nm is_wf_tf (errors_tfr nm)
 
 is_wf_f' Nothing = is_wfz_f
 is_wf_f' (Just Total) = is_wf_tf
-is_wf_f' _ = is_wf_f
+is_wf_f' (Just Partial) = is_wf_f
 
 check_wf_f' id (Just Total) = check_wf_tf id
 check_wf_f' id _            = check_wf_f id  

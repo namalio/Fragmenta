@@ -3,20 +3,19 @@ Morphism F_PW4 {
      PNamed->Manner
      PLocatable->Manner
      PetHotel->Hotel
-     PetStatus->Other
      PPHCard->Other
-     PPetHotel->Hotel
      Nat->Other
      PHCardId->Other
      PPetRoom->Room
-	   Facility->Other
+	 Facility->Room
+     PHotelRoom->Room
      HotelGroup->Other
   }
   edges {
     PetHotel_rooms->Hotel_rooms
     PetHotel_lcards->AnyRel
-	  PetHotel_facilities->AnyRel
-    PHCard_points->AnyRel
+	PetHotel_facilities->AnyRel
+    PHCard_id->AnyRel
     PHCard_points->AnyRel
     PartOfGroup->AnyRel
   }

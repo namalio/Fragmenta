@@ -9,17 +9,12 @@ fragment F_PW2 {
     nodea Reptile
     enum PetStatus: privileged, middleclass, disadvantaged
     relu PPet->PetStatus[Pet_status]
-    inh Dog->PPet
-    inh Cat->PPet
-    inh Chamaeleon->PPet
-    inh Gecko->PPet
+    inh Mammal->PPet
+    inh Reptile->PPet
     inh Dog->Mammal
     inh Cat->Mammal
     inh Chamaeleon->Reptile
     inh Gecko->Reptile
-    virtual Advantaged
-    inh privileged->Advantaged
-    inh middleclass->Advantaged
   }
   ref PPet->Pet
 }

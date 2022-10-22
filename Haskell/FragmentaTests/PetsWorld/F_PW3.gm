@@ -1,7 +1,7 @@
 Morphism F_PW3 {
-	nodes {
+  nodes {
      HotelZone->Other
-     HotelRoom->Manner
+     HotelRoom->Room
      RoomId->Other
      PetRoom->Room
      PPet2->Guest
@@ -14,7 +14,6 @@ Morphism F_PW3 {
   }
   edges {
     Hosts->Hosts
-    SuitedFor->AnyRel
     HotelRoom_zone->AnyRel
     HotelRoom_id->AnyRel
   }

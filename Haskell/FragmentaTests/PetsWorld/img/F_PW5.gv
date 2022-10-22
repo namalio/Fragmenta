@@ -1,15 +1,32 @@
 digraph {graph[label=F_PW5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW5{style=dashed;label=F_PW5;
-"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
-"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
-"PMammalHotel"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<MammalHotel<br/>(P)>];
-"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
+"PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
+"Grooming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Grooming"];
+"PFacility"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Facility<br/>(P)>];
+"PPetRoom2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom2<br/>(P)>];
+"EnsuiteRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnsuiteRoom"];
+"Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
+"PHotelZone"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelZone<br/>(P)>];
 
-"PPHCard"->"Nat"[label="PHCard_points",arrowhead=vee,headlabel="",arrowsize=.5];
-"PPHCard"->"PHCardId"[label="PHCard_id",arrowhead=vee,headlabel="",arrowsize=.5];
-"PMammalHotel"->"PPHCard"[label="MammalHotel_lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PPetRoom2"->"PNat"[label="PetRoom_capacity",arrowhead=vee,headlabel="",arrowsize=.5];
+"EnsuiteRoom"->"PPetRoom2"[arrowhead=onormal,arrowsize=2.0];
+"Toilet"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
+"Grooming"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
+"Toilet"->"PPetRoom2"[label="Serves▼",dir=none,taillabel="1..*",headlabel="*"];
+"Toilet"->"EnsuiteRoom"[label="Serves1: EServes ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
+"N_THZ1"[shape=none,label="N_THZ1 ➝ EServes ⨾ EHotelRoom_zone"];
+"N_THZ1"->"Toilet"[arrowhead=dot,style=dotted];
+"N_THZ1"->"PHotelZone"[arrowhead=vee,style=dotted];
+
+"N_THZ2"[shape=none,label="N_THZ2 ➝ EHotelRoom_zone"];
+"N_THZ2"->"Toilet"[arrowhead=dot,style=dotted];
+"N_THZ2"->"PHotelZone"[arrowhead=vee,style=dotted];
+
+"N_THZ1"->"N_THZ2"[arrowhead=normal,style=dashed, label = "="];
 
 }
+
+
 
 
 }

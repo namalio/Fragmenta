@@ -12,10 +12,10 @@ Morphism F_PW1 {
 	}
 	edges {
 	   Named_name->AnyRel
-		 Locatable_city->AnyRel
-		 Locatable_country->AnyRel
-     Pet_dob->AnyRel
-     Owns->AnyRel
-     Holds->AnyRel
+	   Locatable_city->AnyRel
+	   Locatable_country->AnyRel
+       Pet_dob->AnyRel
+       Owns->AnyRel
+       Holds->AnyRel
 	}
 }

@@ -5,8 +5,10 @@ GFG PetsWorld_C {
   fragment F_PW3
   fragment F_PW4
   fragment F_PW5
+  fragment F_PW6
   F_PW2 references F_PW1
   F_PW3 references F_PW2
   F_PW4 references F_PW3
   F_PW5 references F_PW4
+  F_PW6 references F_PW5
 }

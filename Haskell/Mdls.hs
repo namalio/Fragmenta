@@ -45,8 +45,9 @@ complyGFG m = all (\p->is_ref_ok m p) (nsP . fsg . mufs $ m)
 errs_complyGFG m = if complyGFG m then nile else cons_se ("The following proxies are not complying with the referencing of the model's GFG: " ++ (showElems' ps))
     where ps = filter (not . is_ref_ok m)(nsP . fsg . mufs $ m)
 
-is_wf_mdl m = is_wf (Nothing) (mgfg m)  && fun_total' (mfd m) (ns . mgfg $ m) && (disj_fs . ran_of . mfd $ m)
-    && is_wf (Just Total) (mufs m) && complyGFG m
+is_wf_mdl m = is_wf (Nothing) (mgfg m)  
+   && fun_total' (mfd m) (ns . mgfg $ m) && (disj_fs . ran_of . mfd $ m)
+   && is_wf (Just Total) (mufs m) && complyGFG m
 
 rep_elems m = ran_of . mfd $ m
 

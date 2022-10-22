@@ -1,5 +1,5 @@
 Morphism F_PW2 {
-	nodes {
+  nodes {
     PPet->Guest
     Dog->Guest
     Cat->Guest
@@ -7,13 +7,12 @@ Morphism F_PW2 {
     Gecko->Guest
     Mammal->Guest
     Reptile->Guest
-    HungryStatus->Other
-    starving->Other
-    hungry->Other
-    fed->Other
-    full->Other
+    PetStatus->Other
+    privileged->Other
+    middleclass->Other
+    disadvantaged->Other
   }
   edges {
-    Pet_hstatus->AnyRel
+    Pet_status->AnyRel
   }
 }

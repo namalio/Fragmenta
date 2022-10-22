@@ -8,7 +8,7 @@ subgraph cluster_F_AH{style=dashed;label=F_AH;
 
 "Room"->"Guest"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
 "Hotel"->"Room"[label="Hotel_rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"Manner"->"Other"[label="AnyRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Manner"->"Manner"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
 "Room"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Hotel"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Guest"->"Manner"[arrowhead=onormal,arrowsize=2.0];

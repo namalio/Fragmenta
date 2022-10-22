@@ -1,6 +1,6 @@
 module Relations (dom_of, ran_of, img, inv, dres, rres, dsub, rsub, override, id_on, rcomp, bcomp, functional, 
     total, fun_total, fun_total_seq, pfun, fun_total', fun_pinj, fun_inj, fun_bij, inj_surj_fun, injective, 
-    relation, cl_override, mktotal_in, appl, find_monces, acyclic, trancl, rtrancl_on, antireflexive, cross, 
+    relation, cl_override, mktotal_in, appl, find_monces, acyclic, trancl, rtrancl_on, antireflexive, antireflexive_on, cross, 
     flatten, tree) where
 
 import SimpleFuns
@@ -85,7 +85,7 @@ fun_bij r xs ys = fun_total r xs ys && injective r && surjective r ys
 
 -- Checks that a relation is anti-reflexive
 antireflexive r = all (\(x,y)-> x /= y) r
-
+antireflexive_on r xs = relation r xs xs && antireflexive r
 
 -- transitive closure
 trancl r = let r' = r `union` (r `rcomp` r) in if seteq r' r then r else trancl r'

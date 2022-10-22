@@ -1,12 +1,15 @@
-Morphism F_PW4 {
+Morphism F_PW5 {
 	nodes {
-     PPHCard->Other
-     PMammalHotel->Hotel
-     Nat->Other
-     PHCardId->Other
+     EnsuiteRoom->Room
+     PPetRoom2->Room
+     Toilet->Room
+     Grooming->Room
+     PFacility->Room
+     PNat->Other
+     PHotelZone->Other
   }
   edges {
-    PHCard_points->AnyRel
-    PHCard_id->AnyRel
+    PetRoom_capacity->AnyRel
+    Serves->AnyRel
   }
 }

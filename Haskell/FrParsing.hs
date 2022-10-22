@@ -18,7 +18,6 @@ import The_Nil
 -- Edge definition: optional name, source and a target nodes (Strings), edge type, two optional multiplicities, an optional path expression
 data EdgeDef = EdgeDef String String String SGETy Mult Mult (Maybe (PE String String)) 
    deriving(Eq, Show)
--- Edge dependency: an edge is dependent on another
 data EdgeDep = EdgeDep String String
    deriving(Eq, Show)
 -- A Node has a name and a type
@@ -27,7 +26,7 @@ data NodeDef = NodeDef String SGNTy
 -- Enumeration cluster: a name and associated values
 data ClEnum = ClEnum String [String]
    deriving(Eq, Show)
-data SGElem = ElemN NodeDef | ElemE EdgeDef  | ElemClE ClEnum | ElemED EdgeDep
+data SGElem = ElemN NodeDef | ElemE EdgeDef | ElemD EdgeDep | ElemClE ClEnum 
    deriving(Eq, Show)
 data SGDef = SGDef String [SGElem] 
    deriving(Eq, Show)
@@ -64,11 +63,12 @@ extract_elem (ElemE (EdgeDef e s t ety m1 m2 pe)) =
    cons_sg (cons_g [s, t] [e'] [(e', s)] [(e', t)]) [] [(e', ety)] sm tm pei []
    where nm_of_edge Einh _ s t = "EI" ++ s ++ "_" ++ t
          nm_of_edge _ enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
+extract_elem (ElemD (EdgeDep se te)) =  cons_sg empty_g [] [] [] [] [] [(nm_e se, nm_e te)]
+   where nm_e e = "E"++ e
 extract_elem (ElemClE (ClEnum ne vs)) = 
    let f_nty = (ne, Nenum):(map (\v->(v, Nval)) vs) in
    let f_ety = (map (\v->("EI"++v, Einh)) vs) in
    cons_sg (cons_g (ne:vs) (map (\v->"EI"++v) vs) (map (\v->("EI"++v, v)) vs) (map (\v->("EI"++v, ne)) vs)) f_nty f_ety [] [] [] []
-extract_elem (ElemED (EdgeDep e1 e2)) = cons_sg (empty_g) [] [] [] [] [] [("E"++e1, "E"++e2)]
 
 extract_sg::[SGElem]->SGr String String
 extract_sg es = foldl (\sg e-> sg `union_sg` (extract_elem e)) empty_sg es
@@ -192,20 +192,20 @@ parse_mult = do
 
 parse_edge_info::ReadP(String, String, String)
 parse_edge_info = do
-   sn<-parse_id 
+   s<-parse_id 
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   t<-parse_id
    skipSpaces
    enm<-parse_edge_name
    skipSpaces
-   return (sn, tn, enm)
+   return (s, t, enm)
 
 
 parse_rel_::SGETy->ReadP EdgeDef
 parse_rel_ ek = do
-   (sn, tn, enm)<-parse_edge_info
+   (s, t, e)<-parse_edge_info
    char ':'
    skipSpaces
    m1<-parse_mult
@@ -214,7 +214,7 @@ parse_rel_ ek = do
    skipSpaces
    m2<-parse_mult
    skipSpaces
-   return (EdgeDef enm sn tn ek m1 m2 Nothing)
+   return (EdgeDef e s t ek m1 m2 Nothing)
 
 parse_rel::ReadP EdgeDef
 parse_rel = do
@@ -232,10 +232,10 @@ parse_opt_mult = do
 
 parse_rel_uni::SGETy->ReadP EdgeDef
 parse_rel_uni ety = do
-   (sn, tn, enm)<-parse_edge_info
+   (s, t, e)<-parse_edge_info
    m<-parse_opt_mult <++ return ([Sm $ Val 1])
    skipSpaces
-   return (EdgeDef enm sn tn ety [] m Nothing)
+   return (EdgeDef e s t ety [] m Nothing)
 
 parse_relu::ReadP EdgeDef
 parse_relu = do
@@ -248,20 +248,20 @@ parse_wander::ReadP EdgeDef
 parse_wander = do
    string "wander"
    skipSpaces
-   (sn, tn, enm)<-parse_edge_info
-   return (EdgeDef enm sn tn Ewander [msole_many] [msole_many] Nothing)
+   (s, t, e)<-parse_edge_info
+   return (EdgeDef e s t Ewander [msole_many] [msole_many] Nothing)
 
 
 parse_PEA_nrml::ReadP (PEA String)
 parse_PEA_nrml = do
    rn<-parse_id -- parses names of relation
-   return (Edg rn)
+   return (Edg $ "E" ++ rn)
 
 parse_PEA_inv::ReadP (PEA String)
 parse_PEA_inv = do
    rn<-parse_id -- parses names of relation
    char '~'
-   return (Inv rn)   
+   return (Inv $ "E" ++ rn)   
 
 parse_PEA::ReadP (PEA String)
 parse_PEA = do
@@ -278,7 +278,7 @@ parse_PE_Dres::ReadP (PE String String)
 parse_PE_Dres = do
    s<-parse_id -- parses names of restricting set
    skipSpaces
-   string "<:"
+   string "◁"
    skipSpaces
    pea<-parse_PEA -- parses names of relation
    skipSpaces
@@ -288,26 +288,37 @@ parse_PE_Rres::ReadP (PE String String)
 parse_PE_Rres = do
    pea<-parse_PEA -- parses names of relation
    skipSpaces
-   string ":>"
+   string "▷"
+   skipSpaces
    s<-parse_id -- parses names of restricting set
    skipSpaces
    return (Rres pea s)   
 
+parse_PE_Smpl::ReadP (PE String String)
+parse_PE_Smpl= do
+   pe <- parse_PE_At  <|> parse_PE_Dres  <|> parse_PE_Rres 
+   return pe
+
 parse_PE_Scmp::ReadP (PE String String)
 parse_PE_Scmp = do
-   pe1<-parse_PE -- parses path expression
+   pe1<-parse_PE_Smpl -- parses path expression
    skipSpaces
    string "⨾"
    skipSpaces
-   pe2<-parse_PE -- parses path expression
+   pe2<-parse_PEa -- parses path expression
    skipSpaces
    return (SCmp pe1 pe2)
+
+parse_PEa::ReadP (PE String String)
+parse_PEa = do
+   pe <- parse_PE_Smpl <|> parse_PE_Scmp
+   return pe
 
 parse_PE::ReadP (PE String String)
 parse_PE = do
    string "<->"
    skipSpaces
-   pe <- parse_PE_At <|> parse_PE_Dres <|> parse_PE_Rres <|> parse_PE_Scmp
+   pe <- parse_PEa
    return pe
 
 --parse_dedge_info::ReadP(String, String, String, String)
@@ -334,15 +345,15 @@ parse_der::ReadP EdgeDef
 parse_der = do
    string "derived"
    skipSpaces
-   sn<-parse_id 
+   s<-parse_id 
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   t<-parse_id
    skipSpaces
    char '['
    skipSpaces
-   enm<-parse_id
+   e<-parse_id
    skipSpaces
    pe<-parse_PE
    skipSpaces
@@ -356,30 +367,27 @@ parse_der = do
    skipSpaces
    m2<-parse_mult
    skipSpaces
-   return (EdgeDef enm sn tn Eder m1 m2 (Just pe))
+   return (EdgeDef e s t Eder m1 m2 (Just pe))
 
 parse_path::ReadP EdgeDef
 parse_path = do
    string "path"
    skipSpaces
-   sn<-parse_id 
+   s<-parse_id 
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   t<-parse_id
    skipSpaces
    char '['
    skipSpaces
-   enm<-parse_id
-   skipSpaces
-   string "->"
+   e<-parse_id
    skipSpaces
    pe<-parse_PE
    skipSpaces
    char ']'
    skipSpaces
-   return (EdgeDef enm sn tn Epath [] [] (Just pe))
-
+   return (EdgeDef e s t Epath [] [] (Just pe))
 
 parse_compu::ReadP EdgeDef
 parse_compu = do
@@ -409,9 +417,8 @@ parse_inh = do
 
 parse_sg_edge::ReadP EdgeDef
 parse_sg_edge = do
-   e <- parse_rel <|> parse_relu  <|> parse_wander  <|> parse_comp  <|> parse_compu  <|> parse_inh <|> parse_der <|> parse_path
+   e <- parse_rel <|> parse_relu  <|> parse_wander  <|> parse_comp  <|> parse_compu  <|> parse_inh <|> parse_der <|> parse_path 
    return e
-
 
 end_of_sep_term::ReadP ()
 end_of_sep_term = do
@@ -431,12 +438,13 @@ parse_enum = do
    skipSpaces
    return (ClEnum nm vals)
 
-
 parse_edge_dep::ReadP EdgeDep
 parse_edge_dep = do
    string "dependency"
    skipSpaces
    edg1<-parse_id
+   skipSpaces
+   string "->"
    skipSpaces
    edg2<-parse_id
    skipSpaces
@@ -460,7 +468,7 @@ parse_sg_enumE = do
 parse_sg_ED::ReadP SGElem
 parse_sg_ED = do
    e<-parse_edge_dep
-   return (ElemED e)
+   return (ElemD e)
 
 parse_sg_elem::ReadP SGElem
 parse_sg_elem = do
@@ -561,7 +569,12 @@ test2 = do
 
 test3 = readP_to_S parse_rel "rel Pet->POther[AnyRel1]: *,*"
 test4 = readP_to_S parse_mult "4"
-test5 = readP_to_S parse_PE "<-> HasWheels"
+test5a = readP_to_S parse_PE "<-> Serves"
+test5b = readP_to_S parse_PE "<-> Serves~"
+test5c = readP_to_S parse_PE "<-> Serves⨾ HotelRoom_zone"
+test5d = readP_to_S parse_PE "<-> Serves⨾ HotelRoom_zone~"
+test5e = readP_to_S parse_PE "<-> Serves~⨾ HotelRoom_zone"
+test5f = readP_to_S parse_PE "<-> Hosts ▷ Reptile⨾ Pet_status"
 test6 = readP_to_S parse_der "derived Car->Wheel[HasWheels_1 <-> HasWheels]: 1,4"
 test7 = readP_to_S parse_sg test_sg
 

@@ -5,7 +5,7 @@
 -- Author: Nuno Amálio
 ---------------------
 
-module Path_Expressions (PEA(..), PE(..), srcPE, tgtPE, okPE) where
+module Path_Expressions (PEA(..), PE(..), srcPE, tgtPE) where
 
 import Sets
 import Gr_Cls
@@ -47,17 +47,5 @@ tgtPE g (Dres _ pea) = tgtPEA g pea
 tgtPE g (Rres pea _) = tgtPEA g pea
 tgtPE g (SCmp _ pe2) = tgtPE g pe2
 
-okPEASrc srcr _ v (Edg e) = (e, v) `elem` srcr
-okPEASrc _ tgtr v (Inv e) = (e, v) `elem` tgtr
 
-okPEATgt _ tgtr v (Edg e) = (e, v) `elem` tgtr
-okPEATgt srcr _ v (Inv e) = (e, v) `elem` srcr
-
-okPEA g (Edg e) = e `elem` (es g)
-okPEA g (Inv e) = e `elem` (es g)
-
-okE g _ _ (At pea) = okPEA g pea
-okPE g srcr tgtr (Dres v pea) = okPEA g pea && okPEASrc srcr tgtr v pea
-okPE g srcr tgtr (Rres pea v) = okPEA g pea && okPEATgt srcr tgtr v pea
-okPE g srcr tgtr (SCmp pe1 pe2) = okPE g srcr tgtr pe1 && okPE g srcr tgtr pe2 && tgtPE g pe1 == srcPE g pe2
 

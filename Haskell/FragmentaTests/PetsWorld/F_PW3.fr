@@ -9,12 +9,11 @@ fragment F_PW3 {
     virtual HotelRoom
     enum HotelZone: dogs, reptiles, cats
     rel PetRoom->PPet2[Hosts]:0..1;*
-    relu PPet2->HotelZone[SuitedFor]
     relu HotelRoom->RoomId[HotelRoom_id]
     relu HotelRoom->HotelZone[HotelRoom_zone]
-    derived PDog->dogs[S1 <-> SuitedFor]:*;1
-    derived PReptile->reptiles[S2 <-> SuitedFor]:*;1
-    derived PCat->cats[S3 <-> SuitedFor]:*;1
+    derived PDog->dogs[S1 <-> Hosts~⨾HotelRoom_zone]:*;1
+    derived PReptile->reptiles[S2 <-> Hosts~⨾HotelRoom_zone]:*;1
+    derived PCat->cats[S3 <-> Hosts~⨾HotelRoom_zone]:*;1
     inh PetRoom->HotelRoom
   }
   ref PPet2->Pet
