@@ -1,20 +1,20 @@
 Morphism F_PW1 {
 	nodes {
-		 Name->Other
-		 Named->Manner
-	   PetOwner->Other
+	 Name->Other
+	 Named->Manner
+	 PetOwner->Other
      Pet->Guest
      PHCard->Other
-		 Locatable->Manner
+	 Locatable->Manner
      Country->Other
      City->Other
      Date->Other
 	}
 	edges {
-	   Named_name->AnyRel
-	   Locatable_city->AnyRel
-	   Locatable_country->AnyRel
-       Pet_dob->AnyRel
+	   name->AnyRel
+	   city->AnyRel
+	   country->AnyRel
+       dob->AnyRel
        Owns->AnyRel
        Holds->AnyRel
 	}

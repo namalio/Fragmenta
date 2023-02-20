@@ -11,9 +11,9 @@ fragment F_PW4 {
     node PHCardId
     node Nat
     rel PetHotel->HotelGroup[PartOfGroup]:*;0..1
-    compu PetHotel->PPHCard[PetHotel_lcards]:*
-    compu PetHotel->Facility[PetHotel_facilities]:*
-    compu PetHotel->PPetRoom[PetHotel_rooms]:*
+    compu PetHotel->PPHCard[lcards]:*
+    compu PetHotel->Facility[facilities]:*
+    compu PetHotel->PPetRoom[rooms]:*
     relu PPHCard->Nat[PHCard_points]
     relu PPHCard->PHCardId[PHCard_id]
     inh PetHotel->PNamed

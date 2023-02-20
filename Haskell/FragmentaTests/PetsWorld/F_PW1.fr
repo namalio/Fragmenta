@@ -9,10 +9,10 @@ fragment F_PW1 {
     node Country
     node City
     node PHCard
-    relu Named->Name[Named_name]
-    relu Locatable->Country[Locatable_country]
-    relu Locatable->City[Locatable_city]
-    relu Pet->Date[Pet_dob]
+    relu Named->Name[name]
+    relu Locatable->Country[country]
+    relu Locatable->City[city]
+    relu Pet->Date[dob]
     rel PetOwner->Pet[Owns]:1;*
     rel PetOwner->PHCard[Holds]:1;*
     inh Pet->Named

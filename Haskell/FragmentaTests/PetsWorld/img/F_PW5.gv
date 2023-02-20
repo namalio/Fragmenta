@@ -8,17 +8,17 @@ subgraph cluster_F_PW5{style=dashed;label=F_PW5;
 "Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
 "PHotelZone"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelZone<br/>(P)>];
 
-"PPetRoom2"->"PNat"[label="PetRoom_capacity",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPetRoom2"->"PNat"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
 "EnsuiteRoom"->"PPetRoom2"[arrowhead=onormal,arrowsize=2.0];
 "Toilet"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
 "Grooming"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
 "Toilet"->"PPetRoom2"[label="Serves▼",dir=none,taillabel="1..*",headlabel="*"];
 "Toilet"->"EnsuiteRoom"[label="Serves1: EServes ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
-"N_THZ1"[shape=none,label="N_THZ1 ➝ EServes ⨾ EHotelRoom_zone"];
+"N_THZ1"[shape=none,label="N_THZ1 ➝ EServes ⨾ Ezone"];
 "N_THZ1"->"Toilet"[arrowhead=dot,style=dotted];
 "N_THZ1"->"PHotelZone"[arrowhead=vee,style=dotted];
 
-"N_THZ2"[shape=none,label="N_THZ2 ➝ EHotelRoom_zone"];
+"N_THZ2"[shape=none,label="N_THZ2 ➝ Ezone"];
 "N_THZ2"->"Toilet"[arrowhead=dot,style=dotted];
 "N_THZ2"->"PHotelZone"[arrowhead=vee,style=dotted];
 

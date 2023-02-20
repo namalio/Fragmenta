@@ -15,7 +15,7 @@ subgraph cluster_F_PW2{style=dashed;label=F_PW2;
 "privileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
 "middleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
 "disadvantaged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
-"PPet"->"PetStatus"[label="Pet_status",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPet"->"PetStatus"[label="pstatus",arrowhead=vee,headlabel="",arrowsize=.5];
 "Mammal"->"PPet"[arrowhead=onormal,arrowsize=2.0];
 "Reptile"->"PPet"[arrowhead=onormal,arrowsize=2.0];
 "Dog"->"Mammal"[arrowhead=onormal,arrowsize=2.0];

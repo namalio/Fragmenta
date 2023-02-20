@@ -25,7 +25,7 @@ consNode n nty = GwTNode n nty
 consNodes gwt = foldr (\n ns'->(consNode n (appl (fV gwt) n)):ns') [] (ns gwt)
 consGwTDrawingDesc gwt = GwTDrawing (consNodes gwt) (consEdges gwt)
 
-wrEdgeSettings nm ety = "[" ++ (wrEdgeSettings' (tail nm) ety) ++ "];"
+wrEdgeSettings nm ety = "[" ++ (wrEdgeSettings' (tail nm) (tail ety)) ++ "];"
 wrEdgeSettings' enm ety = "label=\""++enm++ " :" ++ ety ++ "▼\",arrowhead=vee"
 wrEdge (GwTEdge nm s t ety) = "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ (wrEdgeSettings nm ety)
 wrEdges es  = foldr (\e es'-> (wrEdge e)++ "\n" ++es') "" es 

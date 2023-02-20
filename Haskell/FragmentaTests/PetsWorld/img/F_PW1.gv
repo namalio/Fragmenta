@@ -10,10 +10,10 @@ subgraph cluster_F_PW1{style=dashed;label=F_PW1;
 "PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
 "Locatable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Locatable</I><br/>(V)}>];
 
-"Named"->"Name"[label="Named_name",arrowhead=vee,headlabel="",arrowsize=.5];
-"Locatable"->"Country"[label="Locatable_country",arrowhead=vee,headlabel="",arrowsize=.5];
-"Locatable"->"City"[label="Locatable_city",arrowhead=vee,headlabel="",arrowsize=.5];
-"Pet"->"Date"[label="Pet_dob",arrowhead=vee,headlabel="",arrowsize=.5];
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Locatable"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
+"Locatable"->"City"[label="city",arrowhead=vee,headlabel="",arrowsize=.5];
+"Pet"->"Date"[label="dob",arrowhead=vee,headlabel="",arrowsize=.5];
 "PetOwner"->"Pet"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
 "PetOwner"->"PHCard"[label="Holds▼",dir=none,taillabel="",headlabel="*"];
 "Pet"->"Named"[arrowhead=onormal,arrowsize=2.0];

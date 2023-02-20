@@ -12,9 +12,9 @@ Morphism F_PW4 {
      HotelGroup->Other
   }
   edges {
-    PetHotel_rooms->Hotel_rooms
-    PetHotel_lcards->AnyRel
-	PetHotel_facilities->AnyRel
+    rooms->Hotel_rooms
+    lcards->AnyRel
+	facilities->AnyRel
     PHCard_id->AnyRel
     PHCard_points->AnyRel
     PartOfGroup->AnyRel

@@ -8,7 +8,7 @@ fragment F_PW2 {
     nodea Mammal
     nodea Reptile
     enum PetStatus: privileged, middleclass, disadvantaged
-    relu PPet->PetStatus[Pet_status]
+    relu PPet->PetStatus[pstatus]
     inh Mammal->PPet
     inh Reptile->PPet
     inh Dog->Mammal

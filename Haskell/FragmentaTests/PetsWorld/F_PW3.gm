@@ -14,7 +14,7 @@ Morphism F_PW3 {
   }
   edges {
     Hosts->Hosts
-    HotelRoom_zone->AnyRel
-    HotelRoom_id->AnyRel
+    zone->AnyRel
+    roomid->AnyRel
   }
 }

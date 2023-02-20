@@ -13,6 +13,6 @@ Morphism F_PW2 {
     disadvantaged->Other
   }
   edges {
-    Pet_status->AnyRel
+    pstatus->AnyRel
   }
 }

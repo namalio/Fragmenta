@@ -7,14 +7,14 @@ fragment F_PW5 {
     node EnsuiteRoom
     node Toilet
     node Grooming
-    relu PPetRoom2->PNat[PetRoom_capacity]
+    relu PPetRoom2->PNat[rcapacity]
     inh EnsuiteRoom->PPetRoom2
     inh Toilet->PFacility
     inh Grooming->PFacility
     rel Toilet->PPetRoom2[Serves]:1..*;*
     derived Toilet->EnsuiteRoom[Serves1 <-> Serves]:1;0..1
-    path Toilet->PHotelZone[THZ1 <-> Serves⨾HotelRoom_zone]
-    path Toilet->PHotelZone[THZ2 <-> HotelRoom_zone]
+    path Toilet->PHotelZone[THZ1 <-> Serves⨾zone]
+    path Toilet->PHotelZone[THZ2 <-> zone]
     dependency THZ1->THZ2
   }
   ref PNat->Nat

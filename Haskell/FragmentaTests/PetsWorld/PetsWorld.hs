@@ -1,10 +1,10 @@
 
-------------------
+---------------------------
 -- Project: PCs/Fragmenta
 -- Module: 'PetsWorld'
 -- Description: Module dedicated to the pets world example given in the Fragmenta paper.
 -- Author: Nuno Amálio
------------------
+--------------------------
 module PetsWorldTest where
 
 import Gr_Cls
@@ -25,11 +25,16 @@ img_path = "FragmentaTests/PetsWorld/img/"
 saveDrawings = do
    draw_mdl def_path img_path "M_AHW"
    draw_mdl def_path img_path "M_PW"
+   draw_def def_path img_path "PWI1.gwt"
 
-do_main = do 
+load_mdl = do
    amdl<-load_mdl_def def_path "M_AHW"
    cmdl<-load_mdl_def def_path "M_PW"
    rms<-load_rm_cmdl_def def_path "M_PW"
+   return (amdl, cmdl, rms)
+
+do_main = do 
+   (amdl, cmdl, rms)<- load_mdl 
    check_report_wf "M_AHW" (Just Total) amdl True
    --putStrLn . show $  (pe . fsg . mufs $ cmdl)
    --putStrLn . show $  (esD . fsg . mufs $ cmdl)
@@ -69,6 +74,15 @@ check_fs_and_ms = do
    check_morphism ("Morphism '" ++ nm_m4 ++ "' (Partial)") (Just PartialM) f4 m4 af True
    check_morphism ("Morphism '" ++ nm_m5 ++ "' (Partial)") (Just PartialM) f5 m5 af True
    check_morphism ("Morphism '" ++ nm_m6 ++ "' (Partial)") (Just PartialM) f6 m6 af True
+
+check_instances = do 
+   (amdl, cmdl, rms)<- load_mdl 
+   (nm_g1, gwt1)<-load_gwt_def def_path "PWI1.gwt"
+   check_report_wf nm_g1 (Just Total) gwt1 True
+   check_ty_morphism (nm_g1 ++ " (Weak)") (Just WeakM) gwt1 cmdl True
+   check_ty_morphism (nm_g1 ++ " (Total)") (Just TotalM) gwt1 cmdl True
+   --putStrLn $ show gwt1
+   --check_ty_morphism (nm_g1 ++ " (Total)") (Just TotalM) gwt1 cmdl False
 
 
 main = do

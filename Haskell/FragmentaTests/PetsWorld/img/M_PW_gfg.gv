@@ -1,4 +1,4 @@
-digraph {graph[label=M_PW_gfg,labelloc=tl,labelfontsize=12,rankdir="LR"];
+digraph {graph[label=M_PW_gfg,labelloc=tl,labelfontsize=12];
 "F_PW1"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW1"];
 "F_PW2"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW2"];
 "F_PW3"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW3"];
