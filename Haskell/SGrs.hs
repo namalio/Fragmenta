@@ -1,9 +1,9 @@
-------------------
+--------------------------------------
 -- Project: PCs/Fragmenta
 -- Module: 'SGrs'
--- Description: Module dedicated to Fragmenta's structural graphs (SGs)
+-- Description: Fragmenta's structural graphs (SGs)
 -- Author: Nuno Amálio
------------------
+-------------------------------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module SGrs(SGr, is_wf_sg, is_wf_sgz, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm, pe, ds, empty_sg, nsTys, nsP, nsO, esTys, esA, esI, esW, 
@@ -11,7 +11,7 @@ module SGrs(SGr, is_wf_sg, is_wf_sgz, inhG, cons_sg, g_sg, nty, ety, srcm, tgtm,
    errs_tsg_refinesz, ns_of_ntys, es_of_ety)  
 where
 
-import Sets
+import Sets ( diff, gunion, intersec, seteq, subseteq, union )
 import Relations
 import Gr_Cls
 import Grs
@@ -27,7 +27,7 @@ import The_Nil
 
 -- Structural graphs (SGs)
 data SGr a b = SGr {
-   g_sg_ :: (Gr a b)
+   g_sg_ :: Gr a b
    , nty_ :: [(a, SGNTy)]
    , ety_ :: [(b, SGETy)]
    , srcm_ :: [(b, Mult)]
@@ -36,8 +36,11 @@ data SGr a b = SGr {
    , d_ :: [(b, b)]
 } deriving (Show, Eq)
 
+g_sg :: SGr a b -> Gr a b
 g_sg SGr {g_sg_ = g, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _} = g
+nty :: SGr a b -> [(a, SGNTy)]
 nty SGr {g_sg_ = _, nty_ = nt, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _} = nt
+ety :: SGr a b -> [(b, SGETy)]
 ety SGr {g_sg_ = _, nty_ = _, ety_ = et, srcm_ = _, tgtm_ = _, p_ = _, d_ = _} = et
 srcm SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = sm, tgtm_ = _, p_ = _, d_ = _} = sm
 tgtm SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = tm, p_ = _, d_ = _} = tm
@@ -106,7 +109,7 @@ esCnt sg = (esD sg) `union` (esPa sg)
 esC::(Eq a, Eq b)=>SGr a b->[b]
 esC sg = (esA sg) `union` (esW sg)
 
--- Gets multiplicity edges (connection + refined multiplicty)
+-- Gets multiplicity edges (connection + derived)
 esM::(Eq a, Eq b)=>SGr a b->[b]
 esM sg = (esC sg) `union` esD sg
 
