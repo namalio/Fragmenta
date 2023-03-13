@@ -1,5 +1,5 @@
 SG SG_Employee_Car {
    node Employee
    node Car
-   rel Employee->Car[Owns]:1,*
+   rel Employee->Car[Owns]:1;*
 }

@@ -20,8 +20,8 @@ def_path = "FragmentaTests/SGTests/"
 img_path = "FragmentaTests/SGTests/img/"
 
 
--- Example used in the PCs paper with morphisms m_1..m3 (Fig. 6c and 6d)
--- just checks that the SG morphisms are valid
+-- Example used in PCs paper with morphisms m_1..m3 (Fig. 6c and 6d)
+-- just checks that SGs and morphisms are valid
 do_test1 = do
    (nm1, sg1)<-load_sg_def def_path "SG_Person_Vehicle_Other.sg"
    (nm2, sg2)<-load_sg_def def_path "SG_Person_Vehicle_I.sg"
@@ -30,6 +30,7 @@ do_test1 = do
    (nm_m2, m2)<-load_morphism_def def_path "m_EC_To_PVO.gm"
    (nm_m3, m3)<-load_morphism_def def_path "m_Employee_Car.gm"
    (nm_m4, m4)<-load_morphism_def def_path "m_Employee_Car_Inv.gm"
+   putStrLn "Test 1:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Total) sg2 True
    check_report_wf nm3 (Just Total) sg3 True
@@ -51,6 +52,7 @@ do_test1a = do
    (nm_m2, m2)<-load_morphism_def def_path "m_EC_To_PVO.gm"
    (nm_m3, m3)<-load_morphism_def def_path "m_Employee_Car.gm"
    (nm_m4, m4)<-load_morphism_def def_path "m_Employee_Carb.gm"
+   putStrLn "Test 1a:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Total) sg2 True
    check_report_wf nm3 (Just Total) sg3 True
@@ -112,6 +114,7 @@ do_test2 = do
    (nm3, sg3)<-load_sg_def def_path "SG_PVI.sg"
    (nm_m1, m1)<-load_morphism_def def_path "m_PGC.gm"
    (nm_m2, m2)<-load_morphism_def def_path "m_PVI.gm"
+   putStrLn "Test 2:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Partial) sg2 True
    check_report_wf nm3 (Just Partial) sg3 True
@@ -165,10 +168,11 @@ do_test3 = do
    (nm_m1, m1)<-load_morphism_def def_path "m_Person_Vehicle_I.gm"
    (nm_m2, m2)<-load_morphism_def def_path "m_Person_Vehicle_2_I.gm"
    (nm_m3, m3)<-load_morphism_def def_path "m_Person_Vehicle_2_Ib.gm"
+   putStrLn "Test 3:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Total) sg2 True
    check_morphism (nm_m1 ++ " (Total)") (Just TotalM) sg2 m1 sg1 True
-   check_morphism (nm_m2 ++ " (Total)") (Just TotalM) sg1 m2 sg2 True
+   check_morphism (nm_m2 ++ " (Total)") (Just TotalM) sg1 m2 sg2 False
    check_morphism (nm_m3 ++ " (Weak)") (Just WeakM) sg1 m3 sg2 True
    check_morphism (nm_m3 ++ " (Partial)") (Just PartialM) sg1 m3 sg2 True
    check_morphism (nm_m3 ++ " (Total)") (Just TotalM) sg1 m3 sg2 False
@@ -185,7 +189,7 @@ do_main = do
    --do_test_7
 
 saveDrawings = do
-   draw_def def_path img_path "SG_Person_Vehicle_Any.sg"
+   draw_def def_path img_path "SG_Person_Vehicle_Other.sg"
    draw_def def_path img_path "SG_Employee_Car.sg"
    draw_def def_path img_path "SG_Person_Vehicle_I.sg"
    draw_def def_path img_path "SG_Person_Vehicle_Ib.sg"

@@ -1,17 +1,17 @@
 digraph {graph[label=Carlos_Joana3,labelloc=tl,labelfontsize=12];
-"Carlos"[shape=box,fillcolor=lightskyblue1,style = filled,label="Carlos : Employee"];
 "Joana"[shape=box,fillcolor=lightskyblue1,style = filled,label="Joana : Employee"];
-"Corsa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Corsa : Car"];
-"Panda"[shape=box,fillcolor=lightskyblue1,style = filled,label="Panda : Car"];
 "Lisboa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Lisboa : City"];
+"Carlos"[shape=box,fillcolor=lightskyblue1,style = filled,label="Carlos : Employee"];
 "Birmingham"[shape=box,fillcolor=lightskyblue1,style = filled,label="Birmingham : City"];
-"plnoC"[shape=box,fillcolor=lightskyblue1,style = filled,label="plnoC : PlateNo"];
+"Panda"[shape=box,fillcolor=lightskyblue1,style = filled,label="Panda : Car"];
 "plnoP"[shape=box,fillcolor=lightskyblue1,style = filled,label="plnoP : PlateNo"];
+"Corsa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Corsa : Car"];
+"plnoC"[shape=box,fillcolor=lightskyblue1,style = filled,label="plnoC : PlateNo"];
 
-"Carlos"->"Corsa"[label="Carlos_Corsa :EOwns▼",arrowhead=vee];
-"Joana"->"Panda"[label="Joana_Panda :EOwns▼",arrowhead=vee];
-"Joana"->"Lisboa"[label="Joana_Lisboa :EEmployee_lives▼",arrowhead=vee];
-"Carlos"->"Birmingham"[label="Carlos_Birmingham :EEmployee_lives▼",arrowhead=vee];
-"Panda"->"plnoP"[label="Panda_plnoP :EVehicle_plateNo▼",arrowhead=vee];
-"Corsa"->"plnoC"[label="Corsa_plnoC :EVehicle_plateNo▼",arrowhead=vee];
+"Joana"->"Panda"[label="Joana_Panda :Owns▼",arrowhead=vee];
+"Joana"->"Lisboa"[label="Joana_Lisboa :Person_lives▼",arrowhead=vee];
+"Carlos"->"Corsa"[label="Carlos_Corsa :Owns▼",arrowhead=vee];
+"Carlos"->"Birmingham"[label="Carlos_Birmingham :Person_lives▼",arrowhead=vee];
+"Panda"->"plnoP"[label="Panda_plnoP :Vehicle_plateNo▼",arrowhead=vee];
+"Corsa"->"plnoC"[label="Corsa_plnoC :Vehicle_plateNo▼",arrowhead=vee];
 }

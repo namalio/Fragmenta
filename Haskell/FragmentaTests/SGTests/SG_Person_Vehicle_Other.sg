@@ -1,7 +1,7 @@
 SG SG_Person_Vehicle_Other {
    node Person
    node Vehicle
-   rel Person->Vehicle[Owns]:1,*
+   rel Person->Vehicle[Owns]:1;*
    virtual Manner
    inh Person->Manner
    inh Vehicle->Manner

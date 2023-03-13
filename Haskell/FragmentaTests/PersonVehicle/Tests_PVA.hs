@@ -12,12 +12,12 @@ import Utils
 import CheckUtils
 import LoadCheckDraw
 
-def_path = "Tests/PersonVehicle/"
-img_path = "Tests/PersonVehicle/img/"
+def_path = "FragmentaTests/PersonVehicle/"
+img_path = "FragmentaTests/PersonVehicle/img/"
 
 saveDrawings= do
-    draw_mdl def_path img_path "m_person-vehicle-any"
-    draw_mdl def_path img_path "m_person-vehicle-inh"
+    draw_mdl def_path img_path "m_person_vehicle_any"
+    draw_mdl def_path img_path "m_person_vehicle_inh"
     --(nm_f1, f1)<-load_fr_def def_path "F_PV.fr"
     --(nm_f2, f2)<-load_fr_def def_path "F_PVA.fr"
     --(nm_f3, f3)<-load_fr_def def_path "F_PVI.fr"
@@ -45,13 +45,13 @@ saveDrawings= do
     
 
 do_test_1 = do
-    mdl<-load_mdl_def def_path "m_person-vehicle-any"
+    mdl<-load_mdl_def def_path "m_person_vehicle_any"
     check_report_wf "M_PVA" (Just Total) mdl True
     check_report_wf "M_PVA_UF " (Just Total) (mufs mdl) True
     check_report_wf "◉ M_PVA" (Just Total) (reso_m mdl) True
 
 do_test_2 = do
-    mdl<-load_mdl_def def_path "m_person-vehicle-inh"
+    mdl<-load_mdl_def def_path "m_person_vehicle_inh"
     check_report_wf "M_PVI" (Just Total) mdl True
     check_report_wf "M_PVI_UF " (Just Total) (mufs mdl) True
     check_report_wf "◉ M_PVI" (Just Total) (reso_m mdl) True
@@ -82,8 +82,8 @@ do_test_4 = do
     check_morphism (nm_m5 ++ " morphism (Total)") (Just TotalM) f6 m5 uft True
 
 do_test_5 = do
-    amdl<-load_mdl_def def_path "m_person-vehicle-any"
-    cmdl<-load_mdl_def def_path "m_person-vehicle-inh"
+    amdl<-load_mdl_def def_path "m_person_vehicle_any"
+    cmdl<-load_mdl_def def_path "m_person_vehicle_inh"
     (nm_m1, m1)<-load_morphism_def def_path "m_PVI_PV.gm"
     (nm_m2, m2)<-load_morphism_def def_path "m_PC_PVA.gm"
     (nm_m3, m3)<-load_morphism_def def_path "m_V_PVA.gm"
@@ -100,7 +100,7 @@ do_test_6 = do
     check_ty_morphism (nm_gwt2 ++ " typing morphism (Strong)") (Just TotalM) gwt2 f6 True
 
 do_test_7 = do
-    mdl<-load_mdl_def def_path "m_person-vehicle-inh"
+    mdl<-load_mdl_def def_path "m_person_vehicle_inh"
     (nm_gwt, gwt) <- load_gwt_def def_path "carlos_joana3.gwt"
     check_report_wf "M_PVI" (Just Total) mdl True
     check_ty_morphism (nm_gwt ++ " typing morphism (Strong)") (Just TotalM) gwt mdl True

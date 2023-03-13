@@ -2,7 +2,7 @@ fragment F_PV {
     SG F_PV {
        proxy PPerson
        proxy PVehicle
-       rel PPerson->PVehicle[Owns]:1,*
+       rel PPerson->PVehicle[Owns]:1;*
     }
     ref PPerson->Person
     ref PVehicle->Vehicle

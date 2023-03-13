@@ -5,7 +5,7 @@ SG SG_Person_Vehicle_Ic {
    node Motorcycle
    node Employee
    node Customer
-   rel Person->Vehicle[Owns]:1,*
+   rel Person->Vehicle[Owns]:1;*
    inh Employee->Person
    inh Customer->Person
    inh Car->Vehicle

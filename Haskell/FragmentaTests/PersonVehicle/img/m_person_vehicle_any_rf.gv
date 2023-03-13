@@ -1,0 +1,12 @@
+digraph {graph[label=m_person_vehicle_any_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_m_person_vehicle_any_rf{style=dashed;label=m_person_vehicle_any_rf;
+"Any"[shape=record,fillcolor="#CCFFFF",style ="filled,dotted",label=<Any<br/>(O)>];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"Person"->"Any"[label="AnyPersonRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Vehicle"->"Any"[label="AnyVehicleRel▼▲",dir=none,taillabel="*",headlabel="*"];
+
+}
+}

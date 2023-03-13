@@ -11,5 +11,5 @@ SG SG_PVI {
    inh Car->Motor
    node PlateNo
    relu Motor->PlateNo[Motor_plateNo]
-   rel PPerson->Vehicle[Owns]:1,*
+   rel PPerson->Vehicle[Owns]:1;*
 }

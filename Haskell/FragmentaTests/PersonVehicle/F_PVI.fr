@@ -6,7 +6,7 @@ fragment F_PVI {
        node Vehicle
        inh Employee->PPerson
        inh Car->Vehicle
-       rel PPerson->Vehicle[Owns]:1,*
+       rel PPerson->Vehicle[Owns]:1;*
     }
     ref PPerson->Person
 }
