@@ -552,7 +552,7 @@ loadSG fn = do
    --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))
    osg <- if isNil sg_def 
       then do
-         putStrLn "SG definition could not be parsed"
+         putStrLn $ "SG definition of file " ++ (show fn) ++ " could not be parsed"
          return (Nothing)
       else do
          let sgd = the sg_def

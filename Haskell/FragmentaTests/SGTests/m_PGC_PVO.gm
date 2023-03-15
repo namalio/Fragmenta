@@ -1,4 +1,4 @@
-Morphism M_PGC_To_PVA {
+Morphism M_PGC_To_PVO {
    nodes {
       Person->Person
       Gender->Other

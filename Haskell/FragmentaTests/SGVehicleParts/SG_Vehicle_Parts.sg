@@ -2,6 +2,6 @@ SG SG_Vehicle_Parts {
    node Vehicle
    virtual Composite
    node Part
-   comp Composite->Part[HasParts]:0..1,*
+   comp Composite->Part[HasParts]:0..1;*
    inh Vehicle->Composite
 }

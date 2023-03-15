@@ -6,8 +6,8 @@ digraph {graph[label=Bicyle_Car_I2,labelloc=tl,labelfontsize=12];
 "C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Car"];
 "WR"[shape=box,fillcolor=lightskyblue1,style = filled,label="WR : Wheel"];
 
-"B1"->"WF"[label="B1_WF :ESPair_fst▼",arrowhead=vee];
-"B1"->"WB"[label="B1_WB :ESPair_snd▼",arrowhead=vee];
-"C1"->"WL"[label="C1_WL :ESPair_fst▼",arrowhead=vee];
-"C1"->"WR"[label="C1_WR :ESPair_snd▼",arrowhead=vee];
+"B1"->"WF"[label="B1_WF :SPair_fst▼",arrowhead=vee];
+"B1"->"WB"[label="B1_WB :SPair_snd▼",arrowhead=vee];
+"C1"->"WL"[label="C1_WL :SPair_fst▼",arrowhead=vee];
+"C1"->"WR"[label="C1_WR :SPair_snd▼",arrowhead=vee];
 }

@@ -1,6 +1,8 @@
-Morphism M_Person_Vehicle_2_Ib {
+Morphism M_PV_EC {
 	nodes {
+	   Employee->Employee
 	   Person->Employee
+	   Car->Car
 	   Vehicle->Car
 	}
 	edges {

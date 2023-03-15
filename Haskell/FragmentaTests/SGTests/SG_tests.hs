@@ -20,48 +20,50 @@ def_path = "FragmentaTests/SGTests/"
 img_path = "FragmentaTests/SGTests/img/"
 
 
--- Example used in PCs paper with morphisms m_1..m3 (Fig. 6c and 6d)
+-- Example used in PCs paper with morphisms m_1..m4 (Fig. 6a and 6b)
 -- just checks that SGs and morphisms are valid
 do_test1 = do
-   (nm1, sg1)<-load_sg_def def_path "SG_Person_Vehicle_Other.sg"
-   (nm2, sg2)<-load_sg_def def_path "SG_Person_Vehicle_I.sg"
-   (nm3, sg3)<-load_sg_def def_path "SG_Employee_Car.sg"
-   (nm_m1, m1)<-load_morphism_def def_path "m_PVI_To_PVO.gm"
+   (nm1, sg1)<-load_sg_def def_path "SG_PVO.sg"
+   (nm2, sg2)<-load_sg_def def_path "SG_PV.sg"
+   (nm3, sg3)<-load_sg_def def_path "SG_EC.sg"
+   (nm_m1, m1)<-load_morphism_def def_path "m_PV_To_PVO.gm"
    (nm_m2, m2)<-load_morphism_def def_path "m_EC_To_PVO.gm"
-   (nm_m3, m3)<-load_morphism_def def_path "m_Employee_Car.gm"
-   (nm_m4, m4)<-load_morphism_def def_path "m_Employee_Car_Inv.gm"
+   (nm_m3, m3)<-load_morphism_def def_path "m_EC_PV.gm"
+   (nm_m4, m4)<-load_morphism_def def_path "m_PV_EC.gm"
    putStrLn "Test 1:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Total) sg2 True
    check_report_wf nm3 (Just Total) sg3 True
    check_morphism (nm_m1 ++ ": " ++ nm2 ++ "->" ++ nm1 ++ " (Weak, morphism)") (Just WeakM) sg2 m1 sg1 True
    check_morphism (nm_m2 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Weak, morphism)") (Just WeakM) sg3 m2 sg1 True
-   check_morphism (nm_m2 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Weak, morphism)") (Just WeakM) sg3 m3 sg2 True
+   check_morphism (nm_m3 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Weak, morphism)") (Just WeakM) sg3 m3 sg2 True
    check_morphism (nm_m4 ++ ": " ++ nm2 ++ "->" ++ nm3 ++ " (Weak, morphism)") (Just WeakM) sg2 m4 sg3 True
-   check_morphism (nm_m1 ++ ": " ++ nm2 ++ "->" ++ nm1 ++ " (Total, refinement)") (Just TotalM) sg2 m1 sg1 True
-   check_morphism (nm_m2 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Total, refinement)") (Just TotalM) sg3 m2 sg1 True
-   check_morphism (nm_m3 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Partial, refinement)") (Just PartialM) sg3 m3 sg2 True
-   check_morphism (nm_m4 ++ ": " ++ nm2 ++ "->" ++ nm3 ++ " Total, refinement)") (Just TotalM) sg2 m4 sg3 True
+   check_morphism (nm_m1 ++ ": " ++ nm2 ++ "->" ++ nm1 ++ " (Total refinement)") (Just TotalM) sg2 m1 sg1 True
+   check_morphism (nm_m2 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Total refinement)") (Just TotalM) sg3 m2 sg1 True
+   check_morphism (nm_m3 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Partial refinement)") (Just PartialM) sg3 m3 sg2 True
+   check_morphism (nm_m3 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Total refinement)") (Just TotalM) sg3 m3 sg2 False
+   check_morphism (nm_m4 ++ ": " ++ nm2 ++ "->" ++ nm3 ++ " (Total refinement)") (Just TotalM) sg2 m4 sg3 True
 
--- A variation of the previous example in which all refinements are total because PVI includes abstract nodes
+-- Above the total refinement from 'SG_EC' to 'SG_PV' is not total as there are normal nodes out of the morphism
+-- A variation of the previous example in which all refinements are total because PV includes abstract nodes
 do_test1a = do 
-   (nm1, sg1)<-load_sg_def def_path "SG_Person_Vehicle_Other.sg"
-   (nm2, sg2)<-load_sg_def def_path "SG_Person_Vehicle_Ib.sg"
-   (nm3, sg3)<-load_sg_def def_path "SG_Employee_Car.sg"
-   (nm_m1, m1)<-load_morphism_def def_path "m_PVI_To_PVO.gm"
+   (nm1, sg1)<-load_sg_def def_path "SG_PVO.sg"
+   (nm2, sg2)<-load_sg_def def_path "SG_PVb.sg"
+   (nm3, sg3)<-load_sg_def def_path "SG_EC.sg"
+   (nm_m1, m1)<-load_morphism_def def_path "m_PV_To_PVO.gm"
    (nm_m2, m2)<-load_morphism_def def_path "m_EC_To_PVO.gm"
-   (nm_m3, m3)<-load_morphism_def def_path "m_Employee_Car.gm"
-   (nm_m4, m4)<-load_morphism_def def_path "m_Employee_Carb.gm"
+   (nm_m3, m3)<-load_morphism_def def_path "m_EC_PV.gm"
+   (nm_m4, m4)<-load_morphism_def def_path "m_PV_EC.gm"
    putStrLn "Test 1a:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Total) sg2 True
    check_report_wf nm3 (Just Total) sg3 True
    check_morphism (nm_m1 ++ ": " ++ nm2 ++ "->" ++ nm1 ++ " (Weak, morphism)") (Just WeakM) sg2 m1 sg1 True
-   check_morphism (nm_m2 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Weak, morphism)") (Just WeakM) sg3 m3 sg2 True
-   check_morphism (nm_m4 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Weak, morphism)") (Just WeakM) sg3 m4 sg2 False
+   check_morphism (nm_m2 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Weak, morphism)") (Just WeakM) sg3 m2 sg1 True
+   check_morphism (nm_m4 ++ ": " ++ nm2 ++ "->" ++ nm3 ++ " (Weak, morphism)") (Just WeakM) sg2 m4 sg3 True
    check_morphism (nm_m1 ++ ": " ++ nm2 ++ "->" ++ nm1 ++ " (Total, refinement)") (Just TotalM) sg2 m1 sg1 True
    check_morphism (nm_m3 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Total, refinement)") (Just TotalM) sg3 m3 sg2 True
-   check_morphism (nm_m4 ++ ": " ++ nm3 ++ "->" ++ nm2 ++ " (Total, refinement)") (Just TotalM) sg3 m4 sg2 False
+   check_morphism (nm_m4 ++ ": " ++ nm2 ++ "->" ++ nm3 ++ " (Total, refinement)") (Just TotalM) sg2 m4 sg3 True
 
 
 
@@ -108,12 +110,14 @@ do_test1a = do
 --   check_morphism (nm_m3 ++ ": " ++ nm2 ++ "->" ++ nm1 ++ " (Total)") (Just TotalM) sg2 m3 sg1 True
 --   check_morphism (nm_m4 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Total)") (Just TotalM) sg3 m4 sg1 True
 
+-- Example used in PCs paper 
+-- Morphisms from the two SGs of Fig. 6c into Fig. 6a
 do_test2 = do
-   (nm1, sg1)<-load_sg_def def_path "SG_Person_Vehicle_Other.sg"
+   (nm1, sg1)<-load_sg_def def_path "SG_PVO.sg"
    (nm2, sg2)<-load_sg_def def_path "SG_PGC.sg"
    (nm3, sg3)<-load_sg_def def_path "SG_PVI.sg"
-   (nm_m1, m1)<-load_morphism_def def_path "m_PGC.gm"
-   (nm_m2, m2)<-load_morphism_def def_path "m_PVI.gm"
+   (nm_m1, m1)<-load_morphism_def def_path "m_PGC_PVO.gm"
+   (nm_m2, m2)<-load_morphism_def def_path "m_PVI_PVO.gm"
    putStrLn "Test 2:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Partial) sg2 True
@@ -163,22 +167,21 @@ do_test2 = do
 --   check_morphism (nm_m1 ++ ": " ++ nm1 ++ " -> " ++ nm2 ++ " (Total)") (Just TotalM) sg1 m1 sg2 False
 
 do_test3 = do
-   (nm1, sg1)<-load_sg_def def_path "SG_Person_Vehicle.sg"
-   (nm2, sg2)<-load_sg_def def_path "SG_Person_Vehicle_Ic.sg"
-   (nm_m1, m1)<-load_morphism_def def_path "m_Person_Vehicle_I.gm"
-   (nm_m2, m2)<-load_morphism_def def_path "m_Person_Vehicle_2_I.gm"
-   (nm_m3, m3)<-load_morphism_def def_path "m_Person_Vehicle_2_Ib.gm"
+   (nm1, sg1)<-load_sg_def def_path "SG_PVa.sg"
+   (nm2, sg2)<-load_sg_def def_path "SG_PVIc.sg"
+   (nm3, sg3)<-load_sg_def def_path "SG_EC.sg"
+   (nm_m1, m1)<-load_morphism_def def_path "m_PVIc_PV.gm"
+   (nm_m2, m2)<-load_morphism_def def_path "m_PVa_PVIc.gm"
+   (nm_m3, m3)<-load_morphism_def def_path "m_PVa_EC.gm"
    putStrLn "Test 3:"
    check_report_wf nm1 (Just Total) sg1 True
    check_report_wf nm2 (Just Total) sg2 True
    check_morphism (nm_m1 ++ " (Total)") (Just TotalM) sg2 m1 sg1 True
    check_morphism (nm_m2 ++ " (Total)") (Just TotalM) sg1 m2 sg2 False
-   check_morphism (nm_m3 ++ " (Weak)") (Just WeakM) sg1 m3 sg2 True
+   check_morphism (nm_m3 ++ " (Weak)") (Just WeakM) sg1 m3 sg3 True
    check_morphism (nm_m3 ++ " (Partial)") (Just PartialM) sg1 m3 sg2 True
-   check_morphism (nm_m3 ++ " (Total)") (Just TotalM) sg1 m3 sg2 False
+   check_morphism (nm_m3 ++ " (Total)") (Just TotalM) sg1 m3 sg3 True
 
-
---The first morphism should not be a refinement morphism because the concrete model (in that case SG_1) looses things out.
 do_main = do
    do_test1
    do_test2
@@ -189,14 +192,15 @@ do_main = do
    --do_test_7
 
 saveDrawings = do
-   draw_def def_path img_path "SG_Person_Vehicle_Other.sg"
-   draw_def def_path img_path "SG_Employee_Car.sg"
-   draw_def def_path img_path "SG_Person_Vehicle_I.sg"
-   draw_def def_path img_path "SG_Person_Vehicle_Ib.sg"
-   draw_def def_path img_path "SG_Person_Vehicle_Ic.sg"
-   draw_def def_path img_path "SG_Person_Vehicle.sg"
+   draw_def def_path img_path "SG_PVO.sg"
+   draw_def def_path img_path "SG_EC.sg"
+   --draw_def def_path img_path "SG_PVIb.sg"
+   --draw_def def_path img_path "SG_PVIc.sg"
+   draw_def def_path img_path "SG_PVa.sg"
+   draw_def def_path img_path "SG_PV.sg"
    draw_def def_path img_path "SG_PGC.sg"
    draw_def def_path img_path "SG_PVI.sg"
+   draw_def def_path img_path "SG_PVIc.sg"
 
 main = do
    option_main_save do_main saveDrawings

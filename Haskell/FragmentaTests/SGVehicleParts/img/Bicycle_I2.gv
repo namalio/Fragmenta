@@ -3,6 +3,6 @@ digraph {graph[label=Bicycle_I2,labelloc=tl,labelfontsize=12];
 "B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : Bicycle"];
 "WB"[shape=box,fillcolor=lightskyblue1,style = filled,label="WB : Y"];
 
-"B1"->"WF"[label="B1_WF :ESPair_fst▼",arrowhead=vee];
-"B1"->"WB"[label="B1_WB :ESPair_snd▼",arrowhead=vee];
+"B1"->"WF"[label="B1_WF :SPair_fst▼",arrowhead=vee];
+"B1"->"WB"[label="B1_WB :SPair_snd▼",arrowhead=vee];
 }

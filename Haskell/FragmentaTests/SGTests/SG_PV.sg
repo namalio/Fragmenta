@@ -1,4 +1,4 @@
-SG SG_Person_Vehicle_I {
+SG SG_PV {
    node Person
    node Vehicle
    node Car

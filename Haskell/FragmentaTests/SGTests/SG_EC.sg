@@ -1,4 +1,4 @@
-SG SG_Employee_Car {
+SG SG_EC {
    node Employee
    node Car
    rel Employee->Car[Owns]:1;*

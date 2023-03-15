@@ -1,4 +1,4 @@
-Morphism M_PVI_To_PV {
+Morphism M_PV_To_PVO {
    nodes {
       Person->Person
 	  Employee->Person

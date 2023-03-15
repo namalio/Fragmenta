@@ -1,4 +1,4 @@
-Morphism M_Employee_Car {
+Morphism M_EC_PV {
 	nodes {
 	   Employee->Employee
 	   Car->Car
