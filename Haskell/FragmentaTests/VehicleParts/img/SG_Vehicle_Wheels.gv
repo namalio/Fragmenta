@@ -1,0 +1,12 @@
+digraph {graph[label=SG_Vehicle_Wheels,labelloc=tl,labelfontsize=12];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"ThreeWheeler"[shape=record,fillcolor=lightskyblue1,style = filled,label="ThreeWheeler"];
+"Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
+
+"Vehicle"->"Wheel"[label="HasWheels",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"ThreeWheeler"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Wheel"[label="HWs_1: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+}

@@ -1,0 +1,6 @@
+digraph {graph[label=SG_EC,labelloc=tl,labelfontsize=12];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+
+"Employee"->"Car"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+}

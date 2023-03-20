@@ -1,0 +1,20 @@
+GrwT Car_Wheels_I1b {
+   node C1 : Vehicle
+   node C2 : Vehicle
+   node W1a : Part
+   node W1b : Part
+   node W1c : Part
+   node W1d : Part
+   node W2a : Part
+   node W2b : Part
+   node W2c : Part
+   node W2d : Part
+   edge C1->W1a : HasParts
+   edge C1->W1b : HasParts
+   edge C1->W1c : HasParts
+   edge C1->W1d : HasParts
+   edge C2->W2a : HasParts
+   edge C2->W2b : HasParts
+   edge C2->W2c : HasParts
+   edge C2->W2d : HasParts
+}

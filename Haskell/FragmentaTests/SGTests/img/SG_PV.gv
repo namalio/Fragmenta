@@ -1,0 +1,10 @@
+digraph {graph[label=SG_PV,labelloc=tl,labelfontsize=12];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+}

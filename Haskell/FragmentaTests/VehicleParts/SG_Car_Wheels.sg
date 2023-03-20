@@ -1,0 +1,5 @@
+SG SG_Car_Wheels {
+   node Car
+   node Wheel
+   compu Car->Wheel[HasWheels]:4
+}

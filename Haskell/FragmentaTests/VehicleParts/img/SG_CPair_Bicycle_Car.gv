@@ -1,0 +1,22 @@
+digraph {graph[label=SG_CPair_Bicycle_Car,labelloc=tl,labelfontsize=12];
+"CPair"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>CPair</I><br/>(V)}>];
+"X"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>X</I><br/>(V)}>];
+"Y"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Y</I><br/>(V)}>];
+"Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
+"Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"SideMirror"[shape=record,fillcolor=lightskyblue1,style = filled,label="SideMirror"];
+
+"CPair"->"X"[label="CPair_fst▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
+"CPair"->"Y"[label="CPair_snd▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
+"Bicycle"->"CPair"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"CPair"[arrowhead=onormal,arrowsize=2.0];
+"Wheel"->"X"[arrowhead=onormal,arrowsize=2.0];
+"Wheel"->"Y"[arrowhead=onormal,arrowsize=2.0];
+"SideMirror"->"X"[arrowhead=onormal,arrowsize=2.0];
+"SideMirror"->"Y"[arrowhead=onormal,arrowsize=2.0];
+"Bicycle"->"Wheel"[label="Bi_f: ECPair_fst ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Bicycle"->"Wheel"[label="Bi_b: ECPair_snd ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Car"->"SideMirror"[label="Car_l: ECPair_fst ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Car"->"SideMirror"[label="Car_r: ECPair_snd ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+}

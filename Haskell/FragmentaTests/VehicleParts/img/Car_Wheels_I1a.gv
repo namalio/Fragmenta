@@ -1,0 +1,21 @@
+digraph {graph[label=Car_Wheels_I1a,labelloc=tl,labelfontsize=12];
+"W1a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1a : Wheel"];
+"W1b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1b : Wheel"];
+"W1c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1c : Wheel"];
+"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Car"];
+"W1d"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1d : Wheel"];
+"W2a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2a : Wheel"];
+"W2b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2b : Wheel"];
+"W2c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2c : Wheel"];
+"C2"[shape=box,fillcolor=lightskyblue1,style = filled,label="C2 : Car"];
+"W2d"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2d : Wheel"];
+
+"C1"->"W1a"[label="C1_W1a :HasWheels▼",arrowhead=vee];
+"C1"->"W1b"[label="C1_W1b :HasWheels▼",arrowhead=vee];
+"C1"->"W1c"[label="C1_W1c :HasWheels▼",arrowhead=vee];
+"C1"->"W1d"[label="C1_W1d :HasWheels▼",arrowhead=vee];
+"C2"->"W2a"[label="C2_W2a :HasWheels▼",arrowhead=vee];
+"C2"->"W2b"[label="C2_W2b :HasWheels▼",arrowhead=vee];
+"C2"->"W2c"[label="C2_W2c :HasWheels▼",arrowhead=vee];
+"C2"->"W2d"[label="C2_W2d :HasWheels▼",arrowhead=vee];
+}

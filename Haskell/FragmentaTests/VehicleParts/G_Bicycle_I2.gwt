@@ -1,0 +1,7 @@
+GrwT Bicycle_I2 {
+   node B1 : Bicycle
+   node WF : X
+   node WB : Y
+   edge B1->WF : CPair_fst
+   edge B1->WB : CPair_snd
+}

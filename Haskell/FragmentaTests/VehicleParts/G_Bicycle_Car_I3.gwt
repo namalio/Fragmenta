@@ -1,0 +1,15 @@
+GrwT Bicyle_Car_I3 {
+   node B1 : Bicycle
+   node WF : Wheel
+   node WB : Wheel
+   edge B1->WF : CPair_fst
+   edge B1->WB : CPair_snd
+   node B2 : Bicycle
+   edge B2->WF : CPair_fst
+   edge B2->WB : CPair_snd
+   node C1 : Car
+   node LM : SideMirror
+   node RM : SideMirror
+   edge C1->LM : CPair_fst
+   edge C1->RM : CPair_snd
+}

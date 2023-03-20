@@ -1,0 +1,14 @@
+SG SG_Pair_Bicycle {
+   virtual CPair
+   virtual X
+   virtual Y
+   comp CPair->X[CPair_fst]:0..1;*
+   comp CPair->Y[CPair_snd]:0..1;*
+   node Wheel
+   node Bicycle
+   inh Bicycle->CPair
+   inh Wheel->X
+   inh Wheel->Y
+   derived Bicycle->Wheel[Bi_f<->CPair_fst]:0..1;1
+   derived Bicycle->Wheel[Bi_b<->CPair_snd]:0..1;1
+}
