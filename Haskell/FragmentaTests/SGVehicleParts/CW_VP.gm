@@ -1,9 +1,0 @@
-Morphism M_CW_VP {
-	nodes {
-	   Car->Vehicle
-	   Wheel->Part
-	}
-	edges {
-	   HasWheels->HasParts
-	}
-}

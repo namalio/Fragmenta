@@ -1,9 +1,9 @@
 digraph {graph[label=G_11,labelloc=tl,labelfontsize=12];
 "A1"[shape=box,fillcolor=lightskyblue1,style = filled,label="A1 : A"];
-"B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : B"];
 "C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : C"];
+"B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : B"];
 "C2"[shape=box,fillcolor=lightskyblue1,style = filled,label="C2 : C"];
 
-"A1"->"C1"[label="A1_C1 :EComp1▼",arrowhead=vee];
-"B1"->"C2"[label="B1_C2 :EComp2▼",arrowhead=vee];
+"A1"->"C1"[label="A1_C1 :Comp1▼",arrowhead=vee];
+"B1"->"C2"[label="B1_C2 :Comp2▼",arrowhead=vee];
 }

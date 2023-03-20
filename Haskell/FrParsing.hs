@@ -12,7 +12,7 @@ import MyMaybe
 import CommonParsing
 import SGElemTys
 import Mult
-import Path_Expressions
+import PathExpressions
 import The_Nil
 
 -- Edge definition: optional name, source and a target nodes (Strings), edge type, two optional multiplicities, an optional path expression

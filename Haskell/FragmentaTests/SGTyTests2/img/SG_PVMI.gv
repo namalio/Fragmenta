@@ -1,11 +1,11 @@
 digraph {graph[label=SG_PVMI,labelloc=tl,labelfontsize=12];
+"Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Motorcycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorcycle"];
 "Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
-"Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
-"Motorcycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorcycle"];
-"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
-"Motor"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Motor</I><br/>(V)}>];
 "MotorInsurance"[shape=record,fillcolor=lightskyblue1,style = filled,label="MotorInsurance"];
+"Motor"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Motor</I><br/>(V)}>];
 
 "Bicycle"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
 "Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];

@@ -1,10 +1,10 @@
 digraph {graph[label=G_2,labelloc=tl,labelfontsize=12];
+"A3"[shape=box,fillcolor=lightskyblue1,style = filled,label="A3 : A"];
+"B2"[shape=box,fillcolor=lightskyblue1,style = filled,label="B2 : B"];
 "A1"[shape=box,fillcolor=lightskyblue1,style = filled,label="A1 : A"];
 "A2"[shape=box,fillcolor=lightskyblue1,style = filled,label="A2 : A"];
-"A3"[shape=box,fillcolor=lightskyblue1,style = filled,label="A3 : A"];
 "B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : B"];
-"B2"[shape=box,fillcolor=lightskyblue1,style = filled,label="B2 : B"];
 
-"A1"->"B1"[label="A1_B1 :EAssoc▼",arrowhead=vee];
-"A2"->"B1"[label="A2_B1 :EAssoc▼",arrowhead=vee];
+"A1"->"B1"[label="A1_B1 :Assoc▼",arrowhead=vee];
+"A2"->"B1"[label="A2_B1 :Assoc▼",arrowhead=vee];
 }

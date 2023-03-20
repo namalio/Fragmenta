@@ -1,5 +1,5 @@
 SG SG_MM3 {
    node A
    node B
-   comp A->B[Comp]:0..1,2
+   comp A->B[Comp]:0..1;2
 }

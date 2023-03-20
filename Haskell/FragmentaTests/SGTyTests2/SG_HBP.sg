@@ -2,6 +2,6 @@ SG SG_HBP {
    node House
    node Bridge
    node Pillar
-   comp House->Pillar[HMadeUp]:0..1,1..*
-   comp Bridge->Pillar[BMadeUp]:0..1,1..*
+   comp House->Pillar[HMadeUp]:0..1;1..*
+   comp Bridge->Pillar[BMadeUp]:0..1;1..*
 }

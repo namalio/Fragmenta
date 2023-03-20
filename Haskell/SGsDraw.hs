@@ -7,7 +7,7 @@ import Relations
 import MyMaybe
 import SGElemTys
 import Mult
-import Path_Expressions
+import PathExpressions
 
 data DrawPartKind = StandAlone | PartOf
    deriving(Eq, Show) 

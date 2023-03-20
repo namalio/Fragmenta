@@ -1,9 +1,9 @@
 digraph {graph[label=G_3,labelloc=tl,labelfontsize=12];
 "Carlos"[shape=box,fillcolor=lightskyblue1,style = filled,label="Carlos : Employee"];
-"Joana"[shape=box,fillcolor=lightskyblue1,style = filled,label="Joana : Employee"];
 "Corsa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Corsa : Car"];
+"Joana"[shape=box,fillcolor=lightskyblue1,style = filled,label="Joana : Employee"];
 "Panda"[shape=box,fillcolor=lightskyblue1,style = filled,label="Panda : Vehicle"];
 
-"Carlos"->"Corsa"[label="Carlos_Corsa :EOwns▼",arrowhead=vee];
-"Joana"->"Panda"[label="Joana_Panda :EOwns▼",arrowhead=vee];
+"Carlos"->"Corsa"[label="Carlos_Corsa :Owns▼",arrowhead=vee];
+"Joana"->"Panda"[label="Joana_Panda :Owns▼",arrowhead=vee];
 }

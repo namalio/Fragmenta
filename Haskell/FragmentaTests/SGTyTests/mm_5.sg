@@ -2,6 +2,6 @@ SG SG_MM5 {
    node A
    node B
    node C
-   rel A->C[Comp1]:0..1,*
-   rel B->C[Comp2]:0..1,*
+   rel A->C[Comp1]:0..1;*
+   rel B->C[Comp2]:0..1;*
 }

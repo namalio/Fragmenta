@@ -2,5 +2,5 @@ digraph {graph[label=G_1,labelloc=tl,labelfontsize=12];
 "Carlos"[shape=box,fillcolor=lightskyblue1,style = filled,label="Carlos : Employee"];
 "Corsa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Corsa : Car"];
 
-"Carlos"->"Corsa"[label="Carlos_Corsa :EOwns▼",arrowhead=vee];
+"Carlos"->"Corsa"[label="Carlos_Corsa :Owns▼",arrowhead=vee];
 }

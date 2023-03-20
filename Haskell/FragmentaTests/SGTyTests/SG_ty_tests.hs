@@ -1,6 +1,6 @@
 ------------------
 -- Project: PCs/Fragmenta
--- Module: 'Sg_ty_tests'
+-- Module: 'SG_ty_tests'
 -- Description: Test which focus on the typing of graphs by SGs
 -- Author: Nuno Amálio
 -----------------
@@ -16,8 +16,8 @@ import Utils
 
 
 
-def_path = "Tests/SGTyTests/"
-img_path = "Tests/SGTyTests/img/"
+def_path = "FragmentaTests/SGTyTests/"
+img_path = "FragmentaTests/SGTyTests/img/"
 
 saveDrawings = do
    draw_def def_path img_path "mm_1.sg"
@@ -51,24 +51,29 @@ saveDrawings = do
 
 do_test1 = do
    (nmw, sgw)<-load_sg_def def_path "mm_1.sg"
+   putStrLn "Test 1"
    check_report_wf nmw (Just Total) sgw False
 
 do_test2 = do
    (nmw, sgw)<-load_sg_def def_path "mm_2.sg"
    (nm_g1, gwt1)<-load_gwt_def def_path "g_1.gwt"
    (nm_g2, gwt2)<-load_gwt_def def_path "g_2.gwt"
+   putStrLn "Test 2"
    check_report_wf nmw (Just Total) sgw True
    check_report_wf nm_g1 (Just Total) gwt1 True
    check_report_wf nm_g2 (Just Total) gwt2 True
    check_ty_morphism (nm_g1 ++ " morphism (Total)") (Just TotalM) gwt1 sgw True
    check_ty_morphism (nm_g2 ++ " morphism (Weak)") (Just WeakM) gwt2 sgw True
    check_ty_morphism (nm_g2 ++ " morphism (Total)") (Just TotalM) gwt2 sgw False
+   --putStrLn $ show $ ape sgw "EAssoc"
+   --putStrLn $ show $ rPE gwt1 sgw $ ape sgw "EAssoc"
 
 do_test3 = do
    (nmw, sgw)<-load_sg_def def_path "mm_3.sg"
    (nm_g1, gwt1)<-load_gwt_def def_path "g_3.gwt"
    (nm_g2, gwt2)<-load_gwt_def def_path "g_4.gwt"
    (nm_g3, gwt3)<-load_gwt_def def_path "g_5.gwt"
+   putStrLn "Test 3"
    check_report_wf nmw (Just Total) sgw True
    check_report_wf nm_g1 (Just Total) gwt1 True
    check_report_wf nm_g2 (Just Total) gwt2 True
@@ -83,6 +88,7 @@ do_test4 = do
    (nm_g2, gwt2)<-load_gwt_def def_path "g_7.gwt"
    (nm_g3, gwt3)<-load_gwt_def def_path "g_8.gwt"
    (nm_g4, gwt4)<-load_gwt_def def_path "g_9.gwt"
+   putStrLn "Test 4"
    check_report_wf nmw (Just Total) sgw True
    check_report_wf nm_g1 (Just Total) gwt1 True
    check_report_wf nm_g2 (Just Total) gwt2 True
@@ -97,6 +103,7 @@ do_test5 = do
    (nmw, sgw)<-load_sg_def def_path "mm_5.sg"
    (nm_g1, gwt1)<-load_gwt_def def_path "g_10.gwt"
    (nm_g2, gwt2)<-load_gwt_def def_path "g_11.gwt"
+   putStrLn "Test 5"
    check_report_wf nmw (Just Total) sgw True
    check_report_wf nm_g1 (Just Total) gwt1 True
    check_report_wf nm_g2 (Just Total) gwt2 True
@@ -109,7 +116,6 @@ do_main = do
    do_test3
    do_test4
    do_test5
-   do_test6
 
 main = do
    option_main_save do_main saveDrawings

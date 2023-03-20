@@ -11,6 +11,6 @@ SG SG_PVMI {
    inh Car->Motor
    inh Motorcycle->Motor
    node MotorInsurance
-   rel Person->Vehicle[Owns]:1,*
-   rel MotorInsurance->Motor[Insures]:0..1,1
+   rel Person->Vehicle[Owns]:1;*
+   rel MotorInsurance->Motor[Insures]:0..1;1
 }

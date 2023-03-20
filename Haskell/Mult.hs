@@ -19,7 +19,9 @@ data MultVal = Val Int | Many
    deriving (Eq, Show)
 
 -- 'MultVal' constructors
+mval :: Int -> MultVal
 mval k = Val k
+mmany :: MultVal
 mmany = Many
 
 -- The mutliplicity compound
@@ -98,13 +100,16 @@ isMultOpt [m] = m == mopt
 isMultOpt _ = False
 
 -- Checks whether  m is a range or bounded multiplicity
+isMultRange :: [MultC] -> Bool
 isMultRange [Sm (Val k)] = k > 1
 isMultRange [m@(Rm lb ub)] = lb >= 0 && (mval 2) <= ub && multcwf m
 isMultRange _ = False
 
 -- Unique, non-empty, individually well-formed and no manys allowed if more than one multiplicity in set
+multwf :: [MultC] -> Bool
 multwf ms = unique ms && length ms > 0 && all (\m->multcwf m) ms && ((length ms) > 1) `implies` (all (\m->not . isMultMany $ [m]) ms)
 
+isMultEither :: [MultC] -> Bool
 isMultEither ms = multwf ms && (length ms) > 1
 
 -- Predicate 'allowedm' (∝) 
@@ -117,6 +122,7 @@ allowedm Ewander (m1, m2)    = isMultMany m1 && isMultMany m2
 allowedm _ _                 = False
 
 
+rbounded :: (Foldable t, Eq a1) => [(a1, a2)] -> t a1 -> MultC -> Bool
 rbounded r s m = all (\x->length(img r [x]) `compliesm` m)  s
 eitherbounded r s ms = all (\x->length(img r [x]) `eitherm` ms)  s
 
@@ -173,9 +179,14 @@ say_multc (Rm lb ub) = say_mv (mval lb) ++ ".." ++ (say_mv ub)
 say_mult [m] = say_multc m
 say_mult ms = butLast (foldr (\m say->say ++ say_multc m ++ ",") "{" ms) ++ "}"
 
+multc_err_msg :: Show a => a -> [MultC] -> [MultC] -> [Char]
 multc_err_msg me m1 m2 = (say_mult m1) ++ " to " ++ (say_mult m2) ++ " multiplicity constraint  of meta-edge " ++ (show me) ++ " is unsatisfied."
 
-check_rbounded r s m = if rbounded r s m then nile else cons_se "Relation not within multiplicity bounds"
+check_rbounded :: (Eq a1, Show a1, Show a2) => [(a1, a2)] -> [a1] -> MultC -> ErrorTree
+check_rbounded r s m = 
+   if rbounded r s m then nile else cons_se "Relation not within multiplicity bounds" 
+
+check_eitherbounded :: (Foldable t, Eq a1) => [(a1, a2)] -> t a1 -> [MultC] -> ErrorTree
 check_eitherbounded r s m = if eitherbounded r s m then nile else cons_se "Relation not within multiplicity bounds"
 
 check_multOk::(Eq a, Show a, Eq b, Show b)=>b->[(a, a)]->[a]->[a]->Mult->Mult->ErrorTree
@@ -225,6 +236,7 @@ check_multOk me r s t m1 m2
         if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_rbounded r s $ head m2, check_rbounded (inv r) t $ head m1]
     | all isMultEither [m1, m2] = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_eitherbounded r s m2, check_eitherbounded (inv r) t m1]
 
+mult_err_msg :: Show a => a -> String
 mult_err_msg me = "Multiplicity errors in " ++ (show me)
 
 

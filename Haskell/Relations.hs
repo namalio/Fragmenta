@@ -3,20 +3,24 @@ module Relations (dom_of, ran_of, img, inv, dres, rres, dsub, rsub, override, id
     relation, cl_override, mktotal_in, appl, find_monces, acyclic, trancl, rtrancl_on, antireflexive, antireflexive_on, cross, 
     flatten, tree) where
 
-import SimpleFuns
+import SimpleFuns ( pair_up, swap )
 import Sets
-
+dom_of :: [(a, b)] -> [a]
 dom_of r = map fst r
+ran_of :: [(a, b)] -> [b]
 ran_of r = map snd r
 
 --inverts a relation (as a list of pairs)
+inv :: [(a, b)] -> [(b, a)]
 inv r = map swap r
 
 --domain restriction
-dres r xs = filter ((\x -> elem x xs) . fst) r
+dres :: (Foldable t, Eq a) => [(a, b)] -> t a -> [(a, b)]
+dres r xs = filter ((`elem` xs) . fst) r
 
 --range restriction
-rres r ys = filter ((\x -> elem x ys) . snd) r
+rres :: (Foldable t, Eq b) => [(a, b)] -> t b -> [(a, b)]
+rres r ys = filter ((`elem` ys) . snd) r
 
 -- domain subtraction
 dsub r xs = filter ((\x -> not $ x `elem` xs) . fst) r

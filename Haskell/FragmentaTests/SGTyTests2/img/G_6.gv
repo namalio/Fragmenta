@@ -1,11 +1,11 @@
 digraph {graph[label=G_6,labelloc=tl,labelfontsize=12];
-"H"[shape=box,fillcolor=lightskyblue1,style = filled,label="H : House"];
-"B"[shape=box,fillcolor=lightskyblue1,style = filled,label="B : Bridge"];
-"P1"[shape=box,fillcolor=lightskyblue1,style = filled,label="P1 : Pillar"];
-"P2"[shape=box,fillcolor=lightskyblue1,style = filled,label="P2 : Pillar"];
 "P3"[shape=box,fillcolor=lightskyblue1,style = filled,label="P3 : Pillar"];
+"H"[shape=box,fillcolor=lightskyblue1,style = filled,label="H : House"];
+"P1"[shape=box,fillcolor=lightskyblue1,style = filled,label="P1 : Pillar"];
+"B"[shape=box,fillcolor=lightskyblue1,style = filled,label="B : Bridge"];
+"P2"[shape=box,fillcolor=lightskyblue1,style = filled,label="P2 : Pillar"];
 
-"H"->"P1"[label="H_P1 :EHMadeUp▼",arrowhead=vee];
-"B"->"P1"[label="B_P1 :EBMadeUp▼",arrowhead=vee];
-"B"->"P2"[label="B_P2 :EBMadeUp▼",arrowhead=vee];
+"H"->"P1"[label="H_P1 :HMadeUp▼",arrowhead=vee];
+"B"->"P1"[label="B_P1 :BMadeUp▼",arrowhead=vee];
+"B"->"P2"[label="B_P2 :BMadeUp▼",arrowhead=vee];
 }
