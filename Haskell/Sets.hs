@@ -1,9 +1,12 @@
 module Sets (subseteq, seteq, diff, union, gunion, dups, no_dups, intersec, gintersec, insert, disjoint) where
 
-subseteq s1 s2 = all (\x -> x `elem` s2) s1
+subseteq :: (Foldable t1, Foldable t2, Eq a) => t1 a -> t2 a -> Bool
+subseteq s1 s2 = all (`elem` s2) s1
 
+seteq :: (Foldable t2, Foldable t1, Eq a) => t2 a -> t1 a -> Bool
 seteq l1 l2 = (subseteq l1 l2) && (subseteq l2 l1) 
 
+diff :: Eq a => [a] -> [a] -> [a]
 diff [] b = []
 diff a [] = a
 diff (x:xs) b 
@@ -11,14 +14,17 @@ diff (x:xs) b
   | otherwise  = x:(diff xs b)
 
 -- inserts only if not in the list
+insert :: Eq a => a -> [a] -> [a]
 insert e l 
    | e `elem` l = l
    | otherwise = e:l
 
-union sa sb = foldr (insert) [] (sa++sb)
+union :: Eq a => [a] -> [a] -> [a]
+union sa sb = foldr insert [] (sa++sb)
 
 -- generalised union
-gunion ss = foldr (union) [] ss
+gunion :: (Foldable t, Eq a) => t [a] -> [a]
+gunion ss = foldr union [] ss
 
 -- removes duplicates
 no_dups [] = []
