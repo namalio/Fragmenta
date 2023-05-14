@@ -11,10 +11,12 @@ import Relations
 import Grs
 import GrswT
 import Text.ParserCombinators.ReadP
-import Control.Applicative hiding (many)
-import The_Nil
+import Control.Applicative hiding (many, empty)
+import TheNil
 import MyMaybe
 import CommonParsing
+import Sets ( singles, set )
+import Gr_Cls
 
 -- A node element has a name and a type
 -- An edge definition has an optional name, a source and a target node (Strings), and a type (another string)
@@ -26,14 +28,14 @@ data GwTDef = GwTDef String [GwTElem]
 gwtd_name (GwTDef nm _) = nm
 
 extract_elem::GwTElem->GrwT String String
-extract_elem (ElemN n nty) = cons_gwt (cons_g [n] [] [] []) (cons_gm [(n, nty)] [])
+extract_elem (ElemN n nty) = consGWT (consG (singles n) nil nil nil) (consGM (singles (n, nty)) nil)
 extract_elem (ElemE e s t ety) = 
    let e' = nm_of_edge e s t in 
-   cons_gwt (cons_g [s, t] [e'] [(e', s)] [(e', t)]) (cons_gm [] [(e', "E"++ety)])
+   consGWT (consG (set [s, t]) (singles e') (singles (e', s)) (singles (e', t))) (consGM nil (singles (e', "E"++ety)))
    where nm_of_edge enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
 
 extract_gwt::[GwTElem]->GrwT String String
-extract_gwt es = foldl (\g e-> g `union_gwt` (extract_elem e)) empty_gwt es
+extract_gwt es = foldl (\g e-> g `unionGWT` (extract_elem e)) empty es
 
 cons_gwt_fr_gd::GwTDef->GrwT String String
 cons_gwt_fr_gd (GwTDef _ elems ) = extract_gwt elems

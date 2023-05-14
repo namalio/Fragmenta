@@ -2,12 +2,13 @@ module SGsDraw(SGDrawing(..),is_so,DrawPartKind(..),consSGDrawingDesc, wrSGGraph
 
 import Gr_Cls
 import Grs
-import SGrs
+import SGrs ( nty, ety, srcm, tgtm, pe, ds )
 import Relations
 import MyMaybe
 import SGElemTys
 import Mult
 import PathExpressions
+import Sets
 
 data DrawPartKind = StandAlone | PartOf
    deriving(Eq, Show) 
@@ -46,16 +47,20 @@ wrNode (SGNode nm Nprxy _) = "\"" ++ nm++ "\"" ++ "[shape=box,fillcolor=lightgra
 wrNode (SGNode nm Nopt _) =  "\"" ++ nm ++ "\"" ++"[shape=record,fillcolor=\"#CCFFFF\",style =\"filled,dotted\",label=<"++nm++"<br/>(O)>];"
 --wrNode (SGNode nm Npath _) =  "\"" ++ nm++ "\"" ++ "[shape=box,style =\"filled,dashed\",label=\""++nm++"\"];"
 wrNode (SGNode nm _ _) =  "\"" ++ nm ++ "\"" ++"[shape=record,fillcolor=lightskyblue1,style = filled,label=\""++nm++"\"];"
+wrNodes :: Foldable t => t SGNode -> String
 wrNodes ns  = foldr (\n ns'-> (wrNode n)++ "\n" ++ns') "" ns
 
+wrMUV :: MultVal -> Bool -> String
 wrMUV Many _ = "*"
 wrMUV (Val n) b = if n == 1 then if b then "1" else "" else show n
 
+wrMultS :: MultC -> String
 wrMultS (Rm n sm)  = (show n) ++ ".." ++ (wrMUV sm True)
 wrMultS (Sm sm) = (wrMUV sm) False
 
-wrMult [m] = wrMultS m
-wrMult (m:ms) = (wrMultS m) ++ "," ++ (wrMult ms)
+wrMult ::Mult -> String
+wrMult (m `Set` EmptyS) = wrMultS m
+wrMult (m `Set` ms) = (wrMultS m) ++ if ms == EmptyS then "" else  "," ++ (wrMult ms)
 
 wrPEA (Edg e) = e
 wrPEA (Inv e) = "~" ++ e
@@ -69,6 +74,7 @@ wrEdgeSettings _ et@(Einh) m1 m2 pe = "[" ++ (wrEdgeSettings' "" et m1 m2 pe) ++
 wrEdgeSettings nm et m1 m2 pe = "[" ++ (wrEdgeSettings' (tail nm) et m1 m2 pe) ++ "];"
 
 --wrEdgeSettings' _ (Epdep) _ _ _ = "arrowhead=normal,arrowtail=normal,style=dotted"
+wrEdgeSettings' :: [Char] -> SGETy -> Mult -> Mult -> PE String String -> String
 wrEdgeSettings' _ (Einh) _ _ _ = "arrowhead=onormal,arrowsize=2.0"
 wrEdgeSettings' enm (Eder) m1 m2 pe = "label=\""++enm++": " ++ (wrPE pe) ++ " ▼\",dir=none,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\",style=dotted"
 --wrEdgeSettings' enm (Epath) _ _ pe = "label=\""++enm++":" ++ (wrPE pe) ++ " ▼\",dir=none,style=dotted"
@@ -78,7 +84,7 @@ wrEdgeSettings' enm (Ecomp Duni) _ m _ = "label=\""++enm++"\",arrowhead=vee,arro
 wrEdgeSettings' enm (Erel Dbi) m1 m2 _ = "label=\""++enm++"▼\",dir=none,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\""
 wrEdgeSettings' enm (Erel Duni) _ m _ = "label=\""++enm++"\",arrowhead=vee,headlabel=\""++ (wrMult m) ++"\",arrowsize=.5"
 --wrEdgeSettings' enm (Erel Kseq) (Just m1) (Just m2) = "label=\""++enm++"▼\",arrowhead=veeodiamond,taillabel=\""++ (wrMult m1) ++"\",headlabel=\"sequence "++ (wrMult m2) ++"\""
-wrEdgeSettings' enm (Ewander) m1 m2 _ = "label=\""++enm++"▼▲\",dir=none,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\""
+--wrEdgeSettings' enm (Ewander) m1 m2 _ = "label=\""++enm++"▼▲\",dir=none,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\""
 --wrEdgeSettings' enm (Eseq) (Just m1) (Just m2) = "label=\""++enm++"\",arrowhead=normalodiamond,taillabel=\""++ (wrMult m1) ++"\",headlabel=\"sequence "++ (wrMult m2) ++"  \""
 --wrEdgeSettings' enm (Eval) _ _ = "arrowhead=normal,arrowsize=2.0,label=\""++enm++"\",dir=none"
 

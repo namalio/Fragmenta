@@ -35,11 +35,11 @@ subgraph cluster_F_Person_Vehicle_Motor{style=dashed;label=F_Person_Vehicle_Moto
 "Motorbike"->"TwoWheeler"[arrowhead=onormal,arrowsize=2.0];
 "Car"->"FourWheeler"[arrowhead=onormal,arrowsize=2.0];
 "Motortrike"->"ThreeWheeler"[arrowhead=onormal,arrowsize=2.0];
-"Motor"->"PlateNo"[label="Motor_plateNo▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"Wheeled"->"Wheel"[label="HasWheels▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
-"TwoWheeler"->"Wheel"[label="HWs_1:HasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
-"ThreeWheeler"->"Wheel"[label="HWs_2:HasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
-"FourWheeler"->"Wheel"[label="HWs_3:HasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+"Motor"->"PlateNo"[label="Motor_plateNo",arrowhead=vee,headlabel="",arrowsize=.5];
+"Wheeled"->"Wheel"[label="HasWheels",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"TwoWheeler"->"Wheel"[label="HWs_1: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"FourWheeler"->"Wheel"[label="HWs_3: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
 
 }
 "PVehicle"->"Vehicle"[arrowhead=normalnormal];

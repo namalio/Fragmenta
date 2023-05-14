@@ -230,7 +230,7 @@ saveDrawings = do
    forM_ [1..10] (\k->draw_def def_path img_path $ "mm_" ++ (show k) ++ ".sg")
 
 do_test1 = do
-   (nm_amm_1, sg_amm_1)<-load_sg_def def_path "amm_1.sg"
+   (nm_amm_1, sg_amm_1)<-loadSG def_path "amm_1.sg"
    sgs<-forM [1..5] (\k->do 
          p<-load_sg_def def_path $ "mm_" ++ (show k) ++ ".sg"
          return p)

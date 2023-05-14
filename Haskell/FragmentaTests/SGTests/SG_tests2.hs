@@ -9,42 +9,69 @@ import Grs
 import CheckUtils
 import System.Environment
 import Control.Monad(when)
-import FrParsing
 import MyMaybe
 import LoadCheckDraw
-import Utils
+import Utils ( option_main_save )
+import Gr_Cls
 
-def_path = "Tests/SGTests/"
-img_path = "Tests/SGTests/img/"
+def_path = "FragmentaTests/SGTests/"
+img_path = "FragmentaTests/SGTests/img/"
 
-saveGraphs = do
+
+-- The wander example was modified because wander edges were taken out of the theory. 
+-- Wander edges are expressed using the virtual node pattern
+saveDrawings :: IO ()
+saveDrawings = do
    draw_def def_path img_path "Wander_exmp.sg"
    draw_def def_path img_path "Simple_Exmp.sg"
+   draw_def def_path img_path "Simple_Exmp2.sg"
 
 
-do_test1 = do
-   (nmw, sgw)<-load_sg_def def_path "Wander_Exmp.sg"
-   (nm1, sg_c1)<-load_sg_def def_path "SG_Employee_Car.sg"
-   (nm_m1, m1)<-load_morphism_def def_path "m_Wander_Exmp1.gm"
+test1 :: IO ()
+test1 = do
+   (nmw, sgw)<-loadSG def_path "Wander_Exmp.sg"
+   (nm1, sg_c1)<-loadSG def_path "SG_EC.sg"
+   (nm_m1, m1)<-loadM def_path "m_Wander_Exmp1.gm"
    check_report_wf nmw (Just Total) sgw True
    check_report_wf nm1 (Just Total) sg_c1 True
-   check_morphism nm_m1 (Just WeakM) sg_c1 m1 sgw True
-   check_morphism nm_m1 (Just TotalM) sg_c1 m1 sgw True
+   check_morphism (nm_m1 ++ " WeakM") (Just WeakM) sg_c1 m1 sgw True
+   check_morphism (nm_m1 ++ " TotalM") (Just TotalM) sg_c1 m1 sgw True
 
-do_test2 = do
-   (nms, sg_s)<-load_sg_def def_path "Simple_Exmp.sg"
-   (nm1, sg_c1)<-load_sg_def def_path "SG_Employee_Car.sg"
-   (nm_m1, m1)<-load_morphism_def def_path "m_Wander_Exmp2.gm"
+test2 :: IO ()
+test2 = do
+   (nms, sg_s)<-loadSG def_path "Simple_Exmp.sg"
+   (nm1, sg_c1)<-loadSG def_path "SG_EC.sg"
+   (nm_m1, m1)<-loadM def_path "m_Wander_Exmp2.gm"
    check_report_wf nms (Just Total) sg_s True
    check_report_wf nm1 (Just Total) sg_c1 True
    check_morphism nm_m1 (Just WeakM) sg_s m1 sg_c1 True
 
-do_main = do
-   do_test1
-   do_test2
+test3 :: IO ()
+test3 = do
+   (nmw, sgw)<-loadSG def_path "Wander_Exmp.sg"
+   (nms, sgs)<-loadSG def_path "Simple_Exmp.sg"
+   (nms2, sgs2)<-loadSG def_path "Simple_Exmp2.sg"
+   (nm_m1, m1)<-loadM def_path "m_Wander_Exmp3.gm"
+   (nm_m2, m2)<-loadM def_path "m_Wander_Exmp4.gm"
+   check_report_wf nmw (Just Total) sgw True
+   check_report_wf nms (Just Total) sgs True
+   check_report_wf nms2 (Just Total) sgs2 True
+   check_morphism (nm_m1 ++ " WeakM") (Just WeakM) sgs m1 sgw True
+   check_morphism (nm_m1 ++ " TotalM") (Just TotalM) sgs m1 sgw True
+   check_morphism (nm_m1 ++ " WeakM") (Just WeakM) sgs m1 sgw True
+   check_morphism (nm_m1 ++ " TotalM") (Just TotalM) sgs m1 sgw True
+   check_morphism (nm_m2 ++ " WeakM") (Just WeakM) sgs2 m2 sgw True
+   check_morphism (nm_m2 ++ " TotalM") (Just TotalM) sgs2 m2 sgw True
 
+do_main :: IO ()
+do_main = do
+   test1
+   test2
+   test3
+
+main :: IO ()
 main = do
-   option_main_save do_main saveGraphs
+   option_main_save do_main saveDrawings
 
 --do_test3 = do
 --   osg_w<-loadSG "Tests/Wander_Exmp.sg"

@@ -9,7 +9,7 @@ module PathExpressions (PEA(..), PE(..), srcPE, tgtPE, rsrcPE, rtgtPE) where
 
 import Sets
 import Gr_Cls
-import Relations
+import Relations ( appl )
 import Grs
 
 data PEA e = Edg e | Inv e 

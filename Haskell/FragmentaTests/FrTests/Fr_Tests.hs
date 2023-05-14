@@ -7,18 +7,20 @@
 
 import Gr_Cls
 import Frs
-import Utils
+import Utils ( option_main_save )
 import CheckUtils
 import LoadCheckDraw
 
 -- Based on the Example given on the Models 2015 paper
-def_path = "Tests/FrTests/"
-img_path = "Tests/FrTests/img/"
+def_path = "FragmentaTests/FrTests/"
+img_path = "FragmentaTests/FrTests/img/"
 
+saveDrawings :: IO ()
 saveDrawings = do
    draw_def def_path img_path "F_ECC.fr"
    draw_def def_path img_path "F_PVI.fr"
 
+do_main :: IO ()
 do_main = do
    (nm_f1, f1)<-load_fr_def def_path "F_ECC.fr"
    (nm_f2, f2)<-load_fr_def def_path "F_PVI.fr"
@@ -31,6 +33,7 @@ do_main = do
    check_morphism (nm_m2++ " morphism (Weak)") (Just WeakM) f2 m2 f1 True
    check_morphism (nm_m1++ " refinement morphism (Total)") (Just TotalM) f2 m2 f1 True
 
+main :: IO ()
 main = do
    option_main_save do_main saveDrawings
 

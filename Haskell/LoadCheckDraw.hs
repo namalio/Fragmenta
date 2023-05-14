@@ -1,12 +1,12 @@
 
-module LoadCheckDraw(load_def, draw_to_file, wrapSG, wrapG, unwrapG, unwrapSG, unwrapSGWithinP, draw_def, draw_mdl, load_sg_def,
-    load_g_def, load_gwt_def, load_fr_def, load_morphism_def, load_gfg_def, load_mdl_def, load_rm_cmdl_def, saveSGDrawing, saveFrDrawing, 
+module LoadCheckDraw(load_def, draw_to_file, wrapSG, wrapG, unwrapG, unwrapSG, unwrapSGWithinP, draw_def, draw_mdl, loadSG,
+    loadG, loadGwT, load_fr_def, loadM, load_gfg_def, load_mdl_def, load_rm_cmdl_def, saveSGDrawing, saveFrDrawing, 
     saveGDrawing, saveGwTDrawing, saveGFGDrawing, saveDrawingWithMdlFrs) 
 where
 
 import Gr_Cls
 import GrParsing
-import GwTParsing
+import qualified GwTParsing as GwtP (loadGwT)
 import GFGrParsing
 import GrsDraw
 import SGsDraw
@@ -19,9 +19,9 @@ import Frs
 import GrswT
 import SGrs
 import ParseUtils
-import The_Nil
+import TheNil
 import MyMaybe
-import FrParsing
+import qualified FrParsing as FP (loadSG, loadFragment)
 import Control.Monad(forM, forM_, when)
 import MorphismParsing
 import MdlDraw
@@ -78,23 +78,26 @@ def_kind fnm =
 load_def path fnm = do
     d<-case (def_kind fnm) of
         Graph -> load_gen path fnm loadGraph wrapG
-        SG -> load_gen path fnm loadSG wrapSG
-        GwT -> load_gen path fnm loadGwT wrapGwT
-        Fr -> load_gen path fnm loadFragment wrapFr
+        SG -> load_gen path fnm FP.loadSG wrapSG
+        GwT -> load_gen path fnm GwtP.loadGwT wrapGwT
+        Fr -> load_gen path fnm FP.loadFragment wrapFr
         GFG -> load_gen path fnm loadGFG wrapGFG
     return d
 
-load_sg_def path fnm = do 
+loadSG::FilePath->String->IO(String, SGr String String)
+loadSG path fnm = do 
     d<- load_def path fnm
     let (nm, sg) = unwrapSGWithinP d
     return (nm, sg)
 
-load_g_def path fnm = do 
+loadG :: FilePath -> String -> IO (String, Gr String String)
+loadG path fnm = do 
     d<- load_def path fnm
     let (nm, g) = unwrapGWithinP d
     return (nm, g)
 
-load_gwt_def path fnm = do 
+loadGwT :: FilePath ->String -> IO (String, GrwT String String)
+loadGwT path fnm = do 
     d<- load_def path fnm
     let (nm, g) = unwrapGwTWithinP d
     return (nm, g)
@@ -113,16 +116,17 @@ load_mdl_def path nm = do
     fd <- forM (ns gfg) (\fn-> do
         (_, f)<-load_fr_def path (fn ++ ".fr")
         return (fn, f))
-    return $ cons_mdl gfg fd
+    return $ consMdl gfg fd
 
 load_rm_cmdl_def path nm = do 
     (_, gfg)<-load_gfg_def path (nm ++ ".gfg")
     mds <- forM (ns gfg) (\fn-> do
-        (_,m)<-load_morphism_def path (fn ++ ".gm")
+        (_,m)<-loadM path (fn ++ ".gm")
         return m)
-    return $ union_gms mds
+    return $ unionGMs mds
 
-load_morphism_def path fnm = do
+loadM :: String -> String -> IO (String, GrM String String)
+loadM path fnm = do
     om1<-loadMorphism $ path ++ fnm
     return (the om1)
 

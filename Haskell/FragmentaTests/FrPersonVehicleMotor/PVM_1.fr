@@ -6,7 +6,7 @@ fragment F_PVM_1 {
     node Employee
     node Customer
     node PlateNo
-    rel Person->Vehicle[Owns]:1,*
+    rel Person->Vehicle[Owns]:1;*
     relu Motor->PlateNo[Motor_plateNo]
     inh Employee->Person
     inh Customer->Person

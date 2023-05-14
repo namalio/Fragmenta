@@ -8,5 +8,5 @@ digraph {graph[label=SG_PVO,labelloc=tl,labelfontsize=12];
 "Person"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Vehicle"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Other"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Manner"->"Other"[label="OtherRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Manner"->"Other"[label="OtherRel▼",dir=none,taillabel="*",headlabel="*"];
 }

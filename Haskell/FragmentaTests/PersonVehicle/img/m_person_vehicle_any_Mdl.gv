@@ -9,12 +9,15 @@ subgraph cluster_F_PV{style=dashed;label=F_PV;
 
 
 subgraph cluster_F_PVA{style=dashed;label=F_PVA;
-"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Any"[shape=record,fillcolor="#CCFFFF",style ="filled,dotted",label=<Any<br/>(O)>];
 
-"Person"->"Any"[label="AnyPersonRel▼▲",dir=none,taillabel="*",headlabel="*"];
-"Vehicle"->"Any"[label="AnyVehicleRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Person"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Vehicle"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Any"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Person"->"Any"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
 
 }
 }

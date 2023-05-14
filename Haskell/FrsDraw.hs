@@ -10,6 +10,7 @@ data FrDrawing = FrDrawing String SGDrawing [FrEdge] deriving(Show)
 
 consEdge f e = FrREdge e (appl (srcR f) e) (appl (tgtR f) e)
 consEdges f = foldr (\e es'->(consEdge f e):es') [] (esR f)
+consFrDrawingDesc :: String -> Fr String String -> FrDrawing
 consFrDrawingDesc nm f = FrDrawing nm (consSGDrawingDesc $ fsg f) (consEdges f)
 
 

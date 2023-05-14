@@ -5,8 +5,11 @@ fragment F_PW6 {
     proxy Pdisadvantaged
     proxy Pprivileged
     proxy Preptiles
+    proxy Pmiddleclass
     derived PPetRoom3->Pdisadvantaged[PRA <-> Hosts ▷ Reptile⨾ pstatus]:0;0
-    derived PEnsuiteRoom->Pprivileged[PRP <-> Hosts ⨾ pstatus]:0..1;1
+    derived PEnsuiteRoom->Pprivileged[ERP <-> Hosts ⨾ pstatus]:0..1;0..2
+    derived PEnsuiteRoom->Pmiddleclass[ERNMC <-> Hosts ⨾ pstatus]:0;0
+    derived PEnsuiteRoom->Pdisadvantaged[ERND <-> Hosts ⨾ pstatus]:0;0
     derived PEnsuiteRoom->Preptiles[ERNR <-> zone]:0;0
   }
   ref PPetRoom3->PetRoom
@@ -14,4 +17,5 @@ fragment F_PW6 {
   ref Pdisadvantaged->disadvantaged
   ref Pprivileged->privileged
   ref Preptiles->reptiles
+  ref Pmiddleclass->middleclass
 }

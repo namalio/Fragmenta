@@ -18,7 +18,7 @@ subgraph cluster_PersonVehicleMotor_rf{style=dashed;label=PersonVehicleMotor_rf;
 "FourWheeler"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>FourWheeler</I><br/>(V)}>];
 
 "Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
-"Motor"->"PlateNo"[label="Motor_plateNo▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Motor"->"PlateNo"[label="Motor_plateNo",arrowhead=vee,headlabel="",arrowsize=.5];
 "Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
 "Customer"->"Person"[arrowhead=onormal,arrowsize=2.0];
 "Motor"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
@@ -35,10 +35,10 @@ subgraph cluster_PersonVehicleMotor_rf{style=dashed;label=PersonVehicleMotor_rf;
 "TwoWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
 "ThreeWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
 "FourWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
-"Wheeled"->"Wheel"[label="HasWheels▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
-"TwoWheeler"->"Wheel"[label="HWs_1:HasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
-"ThreeWheeler"->"Wheel"[label="HWs_2:HasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
-"FourWheeler"->"Wheel"[label="HWs_3:HasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+"Wheeled"->"Wheel"[label="HasWheels",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"TwoWheeler"->"Wheel"[label="HWs_1: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"FourWheeler"->"Wheel"[label="HWs_3: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
 
 }
 }

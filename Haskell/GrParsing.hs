@@ -1,12 +1,14 @@
 module GrParsing (loadGraph) where
 
 import Relations
-import Grs
+import Sets ( singles, set )
+import Grs ( consG, Gr, unionG )
 import Text.ParserCombinators.ReadP
-import Control.Applicative hiding (many)
-import The_Nil
+import Control.Applicative hiding (many,empty)
+import TheNil
 import MyMaybe
 import CommonParsing
+import Gr_Cls
 
 -- A Node has a name 
 -- An edge definition has an optional name, a source and a target node (Strings)
@@ -19,14 +21,14 @@ gd_name (GDef nm _) = nm
 
 
 extract_elem::GElem->Gr String String
-extract_elem (ElemN n) = cons_g [n] [] [] [] 
+extract_elem (ElemN n) = consG (singles n) nil nil nil
 extract_elem (ElemE e s t) = 
    let e' = nm_of_edge e s t in 
-   cons_g [s, t] [e'] [(e', s)] [(e', t)]
+   consG (set [s, t]) (singles e') (singles (e', s)) (singles (e', t))
    where nm_of_edge enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
 
 extract_g::[GElem]->Gr String String
-extract_g es = foldl (\g e-> g `union_g` (extract_elem e)) empty_g es
+extract_g = foldl (\g e-> g `unionG` (extract_elem e)) empty
 
 --extract_sg ((ElemN (NodeDef n nty)):es) = (cons_sg (cons_g [n] [] [] []) [(n, nty)] [] [] []) `union_sg` (extract_sg es)
 --extract_sg ((ElemE (EdgeDef e s t ety om1 om2)):es) = 

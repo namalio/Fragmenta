@@ -1,121 +1,147 @@
-module ErrorAnalysis(ErrorTree, nile, is_nil, cons_et, cons_se, err_prepend, concat_ets, add_to_err, check_surj, check_inj, check_fun', check_fun, 
-  check_fun_inj, check_total, check_fun_bij, check_fun_total, check_fun_total_seq, check_fun_total', check_pfun, check_fun_pinj, show_err, check_subseteq, 
-  check_seteq, check_relation) where
+module ErrorAnalysis(ErrorTree, nile, is_nil, consET, consSET, err_prepend, concat_ets, add_to_err, reportS, reportI, reportF', reportF, 
+  reportFI, reportRT, reportFB, reportFT, report_fun_total_seq, reportFT', reportPF, reportFPI, showErr, reportSSEq, 
+  reportSEq, reportR) where
 
 import Relations
-import Sets 
+import Sets ( sminus, gunion, Set ) 
 import ShowUtils
 import SimpleFuns
-import The_Nil
 
 data ErrorTree = NilE | Error String [ErrorTree]
     deriving (Eq, Show)
- 
+
 -- The 'null' error
+nile :: ErrorTree
 nile = NilE
 
+is_nil :: ErrorTree -> Bool
 is_nil et = et == NilE 
 
 -- Builds an error with nesting
-cons_et s es = Error s es
+consET :: String -> [ErrorTree] -> ErrorTree
+consET = Error
 
 -- Builds an error without nesting
-cons_se s = Error s []
+consSET :: String -> ErrorTree
+consSET s = consET s []
 
 -- concatenates two ets with a string giving precedence to nil
+concat_ets :: String -> ErrorTree -> ErrorTree -> ErrorTree
 concat_ets s NilE NilE = nile
-concat_ets _ et NilE  = et
-concat_ets _ NilE et  = et
-concat_ets s et1 et2   = cons_et s [et1, et2]
+concat_ets _ et NilE   = et
+concat_ets _ NilE et   = et
+concat_ets s et1 et2   = consET s [et1, et2]
 
 -- Prepends a string to the error string
+err_prepend :: String -> ErrorTree -> ErrorTree
 err_prepend _ NilE = NilE
 err_prepend s (Error s' ets) = Error (s++s') ets
 
+add_to_err::ErrorTree ->[ErrorTree]->ErrorTree
 add_to_err NilE [] = NilE
 add_to_err NilE (e:es) = add_to_err e es
 add_to_err (Error s es) es' = (Error s $ es++es')
 
 -- shows the error message
-show_errs [] =  ""
-show_errs (e:errs) = wr_err (show_err e) ++ (show_errs errs)
+showErrs :: [ErrorTree] -> String
+showErrs [] =  ""
+showErrs (e:errs) = wr_err (showErr e) ++ (showErrs errs)
     where wr_err es = if null es then "" else "\n\t" ++ es
 
-show_err NilE = ""
-show_err (Error s errs) = s ++ show_errs errs
+showErr :: ErrorTree -> String
+showErr NilE = ""
+showErr (Error s errs) = s ++ showErrs errs
 
--- Finds error with a surjection 
-check_surj f ys = 
+-- Reports possible surjection errors 
+reportS :: (Eq b, Show b) => Rel a b -> Set b -> ErrorTree
+reportS f ys = 
     let emsg = "Errors in surjection. The following elements are not mapped to: " in
-    if ys `seteq` ran_of f then nile else cons_se $ emsg ++ (showElems' (diff ys $ ran_of f))
+    if surjective f ys then nile else consSET $ emsg ++ (showElems' (ys `sminus` (ran_of f)))
 
 -- Finds error with a function
-check_fun' msg f =
+reportF'::(Eq a,Eq b, Show a, Show b)=>String->Rel a b->ErrorTree
+reportF' msg f =
     let emsg = msg ++ " More than one mapping for the elements: " in
     let emsg2 = ". Function is: " in
     let xs_monce = find_monces f in
-    if functional f then nile else cons_se $ emsg ++ (showElems' xs_monce) ++ emsg2 ++ (showElems' f)
+    if functional f then nile else consSET $ emsg ++ (showElems' xs_monce) ++ emsg2 ++ (showElems' f)
 
-check_fun f = check_fun' "Errors in function." f
+reportF::(Eq a,Eq b, Show a, Show b)=>Rel a b->ErrorTree
+reportF f = reportF' "Errors in function." f
 
 -- Finds error with an injection
-check_inj f = check_fun' "Errors in injection." (inv f) 
+reportI::(Eq a,Eq b,Show a, Show b)=>Rel a b->ErrorTree
+reportI f = reportF' "Errors in injection." (inv f) 
 
-check_fun_bij f xs ys = 
-  if fun_bij f xs ys then nile else cons_et "Errors in bijection." [check_fun_total f xs ys, check_inj f, check_surj f ys]
+-- Finds error with an bijection
+reportFB::(Eq a,Eq b,Show a, Show b)=>Rel a b->Set a->Set b->ErrorTree
+reportFB f xs ys = 
+  if fun_bij f xs ys then nile else consET "Errors in bijection." les
+  where les = [reportFT f xs ys, reportI f, reportS f ys]
 
-check_fun_inj f xs ys = 
-  if fun_inj f xs ys then nile else cons_et "Errors in total injection." [check_fun_total f xs ys, check_inj f]
+-- Reports on a total injection
+reportFI::(Eq a,Eq b,Show a, Show b)=>Rel a b->Set a->Set b->ErrorTree
+reportFI f xs ys = 
+  if fun_inj f xs ys then nile else consET "Errors in total injection." [reportFT f xs ys, reportI f]
 
 -- Errors related to totality 
-check_total f xs = 
-   let es_diff = diff xs (dom_of f) in
-   let es_diff2 = diff (dom_of f) xs in
-   let errs2 = if null es_diff then nile else cons_se ("No mapping for elements: " ++ (showElems' es_diff)) in
-   let errs3 = if null es_diff2 then nile else cons_se ("The following shouldn't be mapped: " ++ (showElems' es_diff2)) in
-   if total f xs then nile else cons_et "The totality constraint is unsatisfied. " [errs2, errs3]
+reportRT::(Eq a, Show a)=>Rel a b->Set a->ErrorTree
+reportRT f xs = 
+   let es_diff = xs `sminus` (dom_of f) in
+   let es_diff2 = (dom_of f) `sminus` xs in
+   let errs2 = if null es_diff then nile else consSET ("No mapping for elements: " ++ (showElems' es_diff)) in
+   let errs3 = if null es_diff2 then nile else consSET ("The following shouldn't be mapped: " ++ (showElems' es_diff2)) in
+   if total f xs then nile else consET "The totality constraint is unsatisfied. " [errs2, errs3]
 
 -- Errors related to a relation
-errs_relation r xs ys = [check_subseteq (dom_of r) xs, check_subseteq (ran_of r) ys]
+errsR r xs ys = [reportSSEq (dom_of r) xs, reportSSEq (ran_of r) ys]
 
-check_relation r xs ys = 
-  if relation r xs ys then nile else cons_et "Errors with domain and range." (errs_relation r xs ys)
+reportR r xs ys = 
+  if relation r xs ys then nile else consET "Errors with domain and range." (errsR r xs ys)
 
 -- Errors related to a total function with respect to a set of domain elements
-errs_fun_total f xs =
-    let err1 = check_total f xs in
-    let err2 = check_fun f in
+errsFT::(Eq a, Eq b, Show a, Show b)=>Rel a b->Set a->ErrorTree
+errsFT f xs =
+    let err1 = reportRT f xs in
+    let err2 = reportF f in
     add_to_err err1 [err2]
 
-check_fun_total' f xs =
-   let err = errs_fun_total f xs in
+-- Reports a total function
+reportFT'::(Eq a, Eq b, Show a, Show b)=>Rel a b->Set a->ErrorTree
+reportFT' f xs =
+   let err = errsFT f xs in
    if fun_total' f xs then nile else err
 
--- Checking of a total function given a set of domain and range elements
-check_fun_total f xs ys =
-   let err1 = errs_fun_total f xs in
-   let ns_diff = (ran_of f) `diff` ys in
-   let errs2 = if ((ran_of f) `subseteq` ys) then nile else cons_se $ "The following are targets but they shouldn't: " ++ (showElems' ns_diff) in
+-- reporting of a total function given a set of domain and range elements
+reportFT::(Eq a, Eq b, Show a, Show b)=>Rel a b->Set a->Set b->ErrorTree
+reportFT f xs ys =
+   let err1 = errsFT f xs in
+   let ns_diff = (ran_of f) `sminus` ys in
+   let errs2 = if ((ran_of f) <= ys) then nile else consSET $ "The following are targets but they shouldn't: " ++ (showElems' ns_diff) in
    add_to_err err1 [errs2]
 
--- Checking of a total function given a set of domain and range elements
-check_fun_total_seq f xs ys =
-   let err1 = errs_fun_total f xs in
-   let ns_diff = (gunion . ran_of $ f) `diff` ys in
-   let errs2 = if (null ns_diff) then nile else cons_se $ "The following are targets but they shouldn't: " ++ (showElems' ns_diff) in
+-- reporting of a total function given a set of domain and range elements
+report_fun_total_seq f xs ys =
+   let err1 = errsFT f xs in
+   let ns_diff = (gunion . ran_of $ f) `sminus` ys in
+   let errs2 = if (null ns_diff) then nile else consSET $ "The following are targets but they shouldn't: " ++ (showElems' ns_diff) in
    add_to_err err1 [errs2]
 
-check_pfun f xs ys =
-    if pfun f xs ys then nile else cons_et "Errors in partial function" $ (errs_relation f xs ys) ++ [check_fun f]
+-- reports on a partial function
+reportPF :: (Eq a, Eq b, Show a, Show b) =>Rel a b -> Set a -> Set b -> ErrorTree
+reportPF f xs ys =
+    if pfun f xs ys then nile else consET "Errors in partial function" $ (errsR f xs ys) ++ [reportF f]
 
-check_fun_pinj f xs ys = 
-    if pfun f xs ys then nile else cons_et "Errors in partial injection" $ (errs_relation f xs ys) ++ [check_inj f]
+-- Reports on a partial injection
+reportFPI :: (Eq a, Eq b, Show a, Show b) =>Rel a b -> Set a -> Set b -> ErrorTree
+reportFPI f xs ys = 
+    if pfun f xs ys then nile else consET "Errors in partial injection" $ (errsR f xs ys) ++ [reportI f]
 
 -- Errors related to a subset constraint
-check_subseteq r1 r2 =
-   if r1 `subseteq` r2 then nile else cons_se $ "The following are not included: " ++ (showElems' $ diff r1 r2)
+reportSSEq r1 r2 =
+   if r1 <= r2 then nile else consSET $ "The following are not included: " ++ (showElems' $ r1 `sminus` r2)
 
-check_seteq r1 r2 =
-    let err1 = check_subseteq r1 r2 in
-    let err2 = check_subseteq r1 r2 in
-    if r1 `seteq` r2 then nile else cons_et "The sets are unequal." [err1, err2]
+reportSEq r1 r2 =
+    let err1 = reportSSEq r1 r2 in
+    let err2 = reportSSEq r1 r2 in
+    if r1 == r2 then nile else consET "The sets are unequal." [err1, err2]

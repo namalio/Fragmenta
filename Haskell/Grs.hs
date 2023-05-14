@@ -7,117 +7,131 @@
 
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Grs (Gr, TK(..), MK(..), isKTotal, ns_g, es_g, src_g, tgt_g, cons_g, empty_g, cons_gm, empty_gm, fV, 
-   fE, restrict, restrictNs, subtractNs, adjacent, successors, predecessors, getAdjacent, relOfG, 
-   esIncident, esConnect, acyclicG, 
-   disj_gs, union_g, union_gs, union_gm, gid, ogm, union_gms, is_wf_gm_g, subsume_g, invertg) 
+module Grs (Gr, TK(..), MK(..), isKTotal, consG, consGM, emptyGM, fV, 
+   fE, restrict, restrictNs, subtractNs, adjacent, successors, predecessors, adjacentNs, relOfG, 
+   esIncident, esConnect, acyclicG, nsIncident,
+   disjGs, unionG, unionGs, unionGM, gid, ogm, unionGMs, subsumeG, invertG) 
 where
 
 import Gr_Cls
-import Sets
+import Sets ( sminus, disjoint, intersec, union, Set, intoSet, singles, filterS )
 import Relations
-import ErrorAnalysis 
-import Utils
+import ErrorAnalysis
+    ( reportFT, consET, consSET, nile, ErrorTree ) 
+import Utils (reportWF)
+import TheNil
 
 data Gr a b = Gr {
-   ns_ :: [a], 
-   es_ ::  [b],
-   src_ :: [(b, a)],
-   tgt_ :: [(b, a)]} 
+   ns_ :: Set a, 
+   es_ ::  Set b,
+   src_ :: Rel b a,
+   tgt_ :: Rel b a} 
    deriving(Eq, Show) 
 
 -- constructor
-cons_g ns' es' s t =  Gr {ns_ = ns', es_ = es', src_ = s, tgt_ = t}
+consG :: Set a -> Set b -> Rel b a -> Rel b a -> Gr a b
+consG ns' es' s t =  Gr {ns_ = ns', es_ = es', src_ = s, tgt_ = t}
 
 -- projection functions
-ns_g Gr {ns_ = ns', es_ = _, src_ = _, tgt_ = _} = ns'
-es_g Gr {ns_ = _, es_ = es', src_ = _, tgt_ = _} = es'
-src_g Gr {ns_ = _, es_ = _, src_ = s, tgt_ = _} = s
-tgt_g Gr {ns_ = _, es_ = _, src_ = _, tgt_ = t} = t
-
--- empty element
-empty_g = cons_g [] [] [] []
+--nsG :: Gr a b -> [a]
+--nsG Gr {ns_ = ns', es_ = _, src_ = _, tgt_ = _} = ns'
+--esG :: Gr a b -> [b]
+--esG Gr {ns_ = _, es_ = es', src_ = _, tgt_ = _} = es'
+--src_g :: Gr a b -> [(b, a)]
+--src_g Gr {ns_ = _, es_ = _, src_ = s, tgt_ = _} = s
+--tgt_g :: Gr a b -> [(b, a)]
+--tgt_g Gr {ns_ = _, es_ = _, src_ = _, tgt_ = t} = t
 
 instance GR Gr where
-   ns = ns_g
-   es = es_g
-   src = src_g
-   tgt = tgt_g
-   empty = empty_g
+   ns :: Gr a b -> Set a
+   ns Gr {ns_ = ns', es_ = _, src_ = _, tgt_ = _} = ns'
+   es :: Gr a b -> Set b
+   es Gr {ns_ = _, es_ = es', src_ = _, tgt_ = _} = es'
+   src :: Gr a b -> Rel b a
+   src Gr {ns_ = _, es_ = _, src_ = s, tgt_ = _} = s
+   tgt :: Gr a b -> Rel b a
+   tgt Gr {ns_ = _, es_ = _, src_ = _, tgt_ = t} = t
+   empty :: Gr a b
+   empty = consG nil nil nil nil
 
-is_wf_g:: (Eq a, Eq b, GR g) => g a b-> Bool
-is_wf_g g = fun_total (src g) (es g) (ns g) && fun_total (tgt g) (es g) (ns g)
+wfG:: (Eq a, Eq b, GR g) => g a b-> Bool
+wfG g = fun_total (src g) (es g) (ns g) && fun_total (tgt g) (es g) (ns g)
 
-
-errors_wf_g:: (GR g, Eq a, Eq b, Show a, Show b) => g a b-> [ErrorTree]
-errors_wf_g g =
-   let errs1 = if fun_total (src g) (es g) (ns g) then nile else cons_et ("Function 'src' is ill defined.") [check_fun_total (src g) (es g) (ns g)] in
-   let errs2 = if fun_total (tgt g) (es g) (ns g) then nile else cons_et ("Function 'tgt' is ill defined.") [check_fun_total (tgt g) (es g) (ns g)] in
+errorsG:: (GR g, Eq a, Eq b, Show a, Show b) => g a b-> [ErrorTree]
+errorsG g =
+   let errs1 = if fun_total (src g) (es g) (ns g) then nile else consET ("Function 'src' is ill defined.") [reportFT (src g) (es g) (ns g)] in
+   let errs2 = if fun_total (tgt g) (es g) (ns g) then nile else consET ("Function 'tgt' is ill defined.") [reportFT (tgt g) (es g) (ns g)] in
    [errs1, errs2]
 
-check_wf_g id g = check_wf_of g id (is_wf_g) errors_wf_g
+reportG id g = reportWF g id wfG errorsG
 
--- Gives the nodes of a graph involved in a set of edges
-rns g le = no_dups $ union (ran_of (dres (src g)  le))  (ran_of (dres (tgt g)  le))
+-- Nodes of a graph connected a set of edges, either as source or target nodes
+nsIncident :: (Foldable t, Eq a, Eq b, GR g) => g a b -> t b -> Set a
+nsIncident g le = ran_of (dres (src g)  le) `union` ran_of (dres (tgt g)  le)
 
 -- Incident edges of a set of nodes
+esIncident :: (Foldable t, Eq a, Eq b, GR g) => g a b -> t a -> Set b
 esIncident g vs = img (inv $ src g) vs `union` img (inv $ tgt g) vs
 
 -- Connection edges of a set of nodes
+esConnect :: (Foldable t, Eq a, Eq b, GR g) => g a b -> t a -> Set b
 esConnect g vs = img (inv $ src g) vs `intersec` img (inv $ tgt g) vs
 
 -- Restricts a graph to a given set of edges
-restrict g le = 
-   let es' = (es g) `intersec` le in
-   let s = dres (src g) le in
-   let t = dres (tgt g) le in
-   cons_g (rns g le) es' s t
+restrict :: (GR g, Eq b, Eq a) => g a b -> Set b -> Gr a b
+restrict g as = 
+   let es' = es g `intersec` as in
+   let s = dres (src g) as in
+   let t = dres (tgt g) as in
+   consG (nsIncident g as) es' s t
 
--- Restricts a graph to given nodes
+-- Restricts a graph to a given set of nodes
+restrictNs :: (GR g, Eq b, Eq a) => g a b -> Set a -> Gr a b
 restrictNs g vs = 
-   let ns' = (ns g) `intersec` vs in
+   let ns' = ns g `intersec` vs in
    let es' = esConnect g vs in
    let s = dres (src g) es' in
    let t = dres (tgt g) es' in
-   cons_g ns' es' s t
+   consG ns' es' s t
 
 -- Subtracts nodes from a graph 
+subtractNs :: (GR g, Eq b, Eq a) => g a b -> Set a -> Gr a b
 subtractNs g vs = 
-   let ns' = (ns g) `diff` vs in
-   let es' = (es g) `diff` esIncident g vs in
+   let ns' = (ns g) `sminus` vs in
+   let es' = (es g) `sminus` esIncident g vs in
    let s = dsub (src g) (esIncident g vs) in
    let t = dsub (tgt g) (esIncident g vs) in
-   cons_g ns' es' s t
+   consG ns' es' s t
 
--- Replaces nodes in a graph according to a substitution mapping
--- NOT SURE IT IS NEEDED
---replace g subst = 
---   let ns' = ns g `union` (ran_of subst) in
---   let s = (src g) `rcomp` ((id_on . ran_of . src $ g) `override` subst) in
---   let t = (tgt g) `rcomp` ((id_on . ran_of . tgt $ g) `override` subst) in
---   cons_g ns' (es g) s t
 
 --function that yields the map of a source function
 --esId_g g = filter (\e-> appl (src g) e == appl (tgt g) e)(es g)
 
 -- Gives all successor nodes of a given node in a given graph
-successors g v = img (tgt g) $ filter (\e-> appl (src g) e == v) (es g)
+successors :: (Foldable t, GR g, Eq a, Eq b) => g a b -> t a -> Set a
+successors g vs = img (tgt g) $ img (inv . src $ g) vs
 
 -- Gives all predecessor nodes of a given node in a given graph
-predecessors g v = img (src g) $ filter (\e-> appl (tgt g) e == v) (es g)
+predecessors :: (Foldable t, GR g, Eq a, Eq b) => g a b -> t a -> Set a
+predecessors g vs =  img (src g) $ img (inv . tgt $ g) vs
+--img (src g) $ filter (\e-> appl (tgt g) e == v) (es g)
 
---Gives all nodes adjacent to a particular node (sucessors and predecessors)
-getAdjacent g v = (successors g v) `union` (predecessors g v)
+--Gives all nodes adjacent to a set of nodes (sucessors and predecessors)
+adjacentNs :: (Foldable t, GR g, Eq a, Eq b) => g a b -> t a -> Set a
+adjacentNs g vs = (successors g vs) `union` (predecessors g vs)
 
--- defines graph notion of adjency
+-- defines graph notion of adjency, saying whether two nodes are adjacent
+adjacent::(GR g, Eq a, Eq b) => g a b->a->a->Bool
 adjacent g v1 v2 = 
-   (not . null) $ filter (\e-> (img (src g) [e]) `seteq` [v1] && (img (tgt g) [e]) `seteq`  [v2]) (es g)
+   (not . null) $ filterS (\e-> img (src g) [e] == (singles v1) && img (tgt g) [e] == singles v2) (es g)
 
 -- Inverts a graph
-invertg g = cons_g (ns g) (es g) (tgt g) (src g)
+invertG :: (GR g, Eq a, Eq b) => g a b -> Gr a b
+invertG g = consG (ns g) (es g) (tgt g) (src g)
  
 -- gets adjacency relation induced by graph
-relOfG g = foldr (\e r-> (appl (src g) e, appl (tgt g) e):r) [] (es g)
+relOfG :: (GR g, Eq a, Eq b) => g a b-> Rel a a
+relOfG g = foldr (\e r-> (appl (src g) e, appl (tgt g) e) `intoSet` r) nil (es g)
 
 
 -- checks whether a graph is acyclic
@@ -131,27 +145,25 @@ fun_total_fV (gs, m, gt) = fun_total (fV m) (ns gs) (ns gt)
 fun_total_fE (gs, m, gt) = fun_total (fE m) (es gs) (es gt)
 
 -- Checks whether the source function commutes
-morphism_gm_commutes_src (gs, m, gt) = ((fV m) `bcomp` (src gs))  `seteq` ((src gt) `bcomp` (fE m) ) 
-morphism_gm_commutes_tgt (gs, m, gt) = ((fV m) `bcomp` (tgt gs))  `seteq` ((tgt gt) `bcomp` (fE m) ) 
+morphism_gm_commutes_src (gs, m, gt) = (fV m) `bcomp` (src gs)  == (src gt) `bcomp` (fE m) 
+morphism_gm_commutes_tgt (gs, m, gt) = (fV m) `bcomp` (tgt gs)  == (tgt gt) `bcomp` (fE m) 
 
-is_wf_gm_g:: (Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
-is_wf_gm_g (gs, m, gt) = fun_total_fV (gs, m, gt) && fun_total_fE (gs, m, gt)
+wfGM:: (Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
+wfGM (gs, m, gt) = fun_total_fV (gs, m, gt) && fun_total_fE (gs, m, gt)
    && morphism_gm_commutes_src (gs, m, gt)
    && morphism_gm_commutes_tgt (gs, m, gt)
 
-is_wf_g' _ = is_wf_g
-
-is_wf_gm_g' _ (g, gm, gt) = is_wf_gm_g (g, gm, gt)
-
-check_wf_g' id _ = check_wf_g id
-
 instance G_WF_CHK Gr where
-   is_wf = is_wf_g'
-   check_wf = check_wf_g'
+   okayG :: (Eq a, Eq b) => Maybe TK -> Gr a b -> Bool
+   okayG _ = wfG
+   faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> Gr a b -> ErrorTree
+   faultsG id _ = reportG id
 
 instance GM_CHK Gr Gr where
-   is_wf_gm = is_wf_gm_g'
-   check_wf_gm = check_wf_gm_g'
+   okayGM :: (Eq a, Eq b) => Maybe MK -> (Gr a b, GrM a b, Gr a b) -> Bool
+   okayGM _ = wfGM
+   faultsGM :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> (Gr a b, GrM a b, Gr a b) -> ErrorTree
+   faultsGM nm Nothing = reportGM nm
 
 --check_gr_wf:: (GR g, Eq a, Show a) => String -> g a -> IO () 
 --check_gr_wf g_id g = 
@@ -160,50 +172,54 @@ instance GM_CHK Gr Gr where
 --      then putStrLn $ "Graph " ++ g_id ++ " is well forfEd" 
 --      else putStrLn $ "Graph " ++ g_id ++ " is not well-forfEd. " ++ (show errs) 
 
-errors_gm_g:: (GR g, Eq a, Eq b, Show a, Show b) => (g a b, GrM a b, g a b) -> [ErrorTree]
-errors_gm_g (gs, m, gt) =
-   let err1 = if fun_total_fV (gs, m, gt) then nile else cons_et "Function 'fV' is ill defined." [check_fun_total (fV m) (ns gs) (ns gt)] in
-   let err2 = if fun_total_fE (gs, m, gt) then nile else cons_et "Function 'fE' is ill defined." [check_fun_total (fE m) (es gs) (es gt)] in
-   let err3 = if morphism_gm_commutes_src (gs, m, gt) then nile else cons_se "Problems in the commuting of the source functions" in
-   let err4 = if morphism_gm_commutes_tgt (gs, m, gt) then nile else cons_se "Problems in the commuting of the target functions" in
+errorsGM:: (GR g, Eq a, Eq b, Show a, Show b) => (g a b, GrM a b, g a b) -> [ErrorTree]
+errorsGM (gs, m, gt) =
+   let err1 = if fun_total_fV (gs, m, gt) then nile else consET "Function 'fV' is ill defined." [reportFT (fV m) (ns gs) (ns gt)] in
+   let err2 = if fun_total_fE (gs, m, gt) then nile else consET "Function 'fE' is ill defined." [reportFT (fE m) (es gs) (es gt)] in
+   let err3 = if morphism_gm_commutes_src (gs, m, gt) then nile else consSET "Problems in the commuting of the source functions" in
+   let err4 = if morphism_gm_commutes_tgt (gs, m, gt) then nile else consSET "Problems in the commuting of the target functions" in
    [err1,err2,err3,err4]
 
-check_wf_gm_g:: (GR g, Eq a, Eq b, Show a, Show b) => String-> (g a b, GrM a b, g a b) -> ErrorTree
-check_wf_gm_g nm (gs, gm, gt) = 
-   check_wf_of (gs, gm, gt) nm (is_wf_gm_g) (errors_gm_g)
+reportGM:: (GR g, Eq a, Eq b, Show a, Show b) => String-> (g a b, GrM a b, g a b) -> ErrorTree
+reportGM nm (gs, gm, gt) = reportWF (gs, gm, gt) nm (wfGM) (errorsGM)
 
-check_wf_gm_g' nm Nothing = check_wf_gm_g nm 
+--reportGM' nm Nothing = check_wf_gm_g nm 
 
-disj_gs gs = disjoint (map ns gs) && disjoint (map es gs)
+disjGs gs = disjoint (map ns gs) && disjoint (map es gs)
 
 -- graph union
-union_g g1 g2 = 
+unionG :: (Eq b, Eq a, GR g1, GR g2) => g1 a b -> g2 a b -> Gr a b
+unionG g1 g2 = 
    let ns' = (ns g1) `union` (ns g2) in
    let es' = (es g1) `union` (es g2) in
    let s = (src g1) `union` (src g2) in
    let t = (tgt g1) `union` (tgt g2) in
-   cons_g ns' es' s t
+   consG ns' es' s t
 
 -- generalised graph union
-union_gs gs = foldl (\gacc g-> gacc `union_g` g) empty_g gs
+unionGs::(Foldable t, Eq a, Eq b, GR g)=>t (g a b)->Gr a b
+unionGs = foldl (\gacc g-> gacc `unionG` g) empty
 
 -- graph subsumption: takes a graph and a substituion mapping
-subsume_g g sub =
+subsumeG :: (Eq a, Eq b) => Gr a b -> Rel a a -> Gr a b
+subsumeG g sub =
    let total_ns = sub `mktotal_in` ns g in
-   let g' = cons_g ((ns g `diff` dom_of sub) `union` (ran_of sub)) (es g) (total_ns `bcomp` src g) (total_ns `bcomp` tgt g) in
+   let g' = consG ((ns g `sminus` dom_of sub) `union` (ran_of sub)) (es g) (total_ns `bcomp` src g) (total_ns `bcomp` tgt g) in
    if pfun sub (ns g) (ns g) then g' else g
 
 -- Identity morphism over a graph
-gid g = cons_gm (id_on $ ns g) (id_on $ es g)
+gid::(Eq a, Eq b, GR g)=>g a b->GrM a b
+gid g = consGM (id_on . ns $ g) (id_on . es $ g)
 
 -- Union on graph morphisms
-union_gm gm1 gm2 = cons_gm ((fV gm1) `union` (fV gm2)) ((fE gm1) `union` (fE gm2))
+unionGM gm1 gm2 = consGM ((fV gm1) `union` (fV gm2)) ((fE gm1) `union` (fE gm2))
 
 -- Generalised union for graph morphisms 
-union_gms gms = foldl (\gmacc gm-> gmacc `union_gm` gm) empty_gm gms
+unionGMs gms = foldl (\gmacc gm-> gmacc `unionGM` gm) emptyGM gms
 
 -- Morphism composition
-ogm g f = cons_gm (fV g `bcomp` fV f) (fE g `bcomp` fE f)
+ogm :: (Eq a, Eq b, GRM gm1, GRM gm2) => gm1 a b -> gm2 a b -> GrM a b
+ogm g f = consGM (fV g `bcomp` fV f) (fE g `bcomp` fE f)
 
 --replace_in_gm gm subs_ns_dom subs_ns_ran =
 --   let ns_dom' = substitute (map fst (fV gm)) subs_ns_dom in

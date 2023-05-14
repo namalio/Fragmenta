@@ -6,6 +6,6 @@ Morphism M_ECC_PVA {
 	}
 	edges {
 	   Owns->Owns
-		 Employee_lives->AnyPersonRel
+	   Lives->AnyRel
 	}
 }

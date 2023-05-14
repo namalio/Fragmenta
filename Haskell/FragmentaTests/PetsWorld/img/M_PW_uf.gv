@@ -48,9 +48,11 @@ subgraph cluster_M_PW_uf{style=dashed;label=M_PW_uf;
 "EnsuiteRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnsuiteRoom"];
 "Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
 "PHotelZone"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelZone<br/>(P)>];
+"Pmiddleclass"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<middleclass<br/>(P)>];
 "PPetRoom3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom3<br/>(P)>];
 "Pdisadvantaged"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<disadvantaged<br/>(P)>];
 "Pprivileged"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<privileged<br/>(P)>];
+"NotPrivileged"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NotPrivileged</I><br/>(V)}>];
 "PEnsuiteRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<EnsuiteRoom<br/>(P)>];
 "Preptiles"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<reptiles<br/>(P)>];
 
@@ -108,8 +110,11 @@ subgraph cluster_M_PW_uf{style=dashed;label=M_PW_uf;
 "N_THZ2"->"Toilet"[arrowhead=dot,style=dotted];
 "N_THZ2"->"PHotelZone"[arrowhead=vee,style=dotted];
 
+"Pdisadvantaged"->"NotPrivileged"[arrowhead=onormal,arrowsize=2.0];
+"Pmiddleclass"->"NotPrivileged"[arrowhead=onormal,arrowsize=2.0];
 "PPetRoom3"->"Pdisadvantaged"[label="PRA: EHosts ▷ Reptile ⨾ Epstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"PEnsuiteRoom"->"Pprivileged"[label="PRP: EHosts ⨾ Epstatus ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"PEnsuiteRoom"->"Pprivileged"[label="ERP: EHosts ⨾ Epstatus ▼",dir=none,taillabel="0..1",headlabel="0..2",style=dotted];
+"PEnsuiteRoom"->"NotPrivileged"[label="EROP: EHosts ⨾ Epstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "PEnsuiteRoom"->"Preptiles"[label="ERNR: Ezone ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "N_THZ1"->"N_THZ2"[arrowhead=normal,style=dashed, label = "="];
 
@@ -133,4 +138,5 @@ subgraph cluster_M_PW_uf{style=dashed;label=M_PW_uf;
 "Pdisadvantaged"->"disadvantaged"[arrowhead=normalnormal];
 "Pprivileged"->"privileged"[arrowhead=normalnormal];
 "Preptiles"->"reptiles"[arrowhead=normalnormal];
+"Pmiddleclass"->"middleclass"[arrowhead=normalnormal];
 }

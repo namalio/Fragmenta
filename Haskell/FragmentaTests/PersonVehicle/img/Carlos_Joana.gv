@@ -8,6 +8,6 @@ digraph {graph[label=Carlos_Joana,labelloc=tl,labelfontsize=12];
 
 "Carlos"->"Corsa"[label="Carlos_Corsa :Owns▼",arrowhead=vee];
 "Joana"->"Panda"[label="Joana_Panda :Owns▼",arrowhead=vee];
-"Joana"->"Lisboa"[label="Joana_Lisboa :Person_lives▼",arrowhead=vee];
-"Carlos"->"Birmingham"[label="Carlos_Birmingham :Person_lives▼",arrowhead=vee];
+"Joana"->"Lisboa"[label="Joana_Lisboa :Lives▼",arrowhead=vee];
+"Carlos"->"Birmingham"[label="Carlos_Birmingham :Lives▼",arrowhead=vee];
 }

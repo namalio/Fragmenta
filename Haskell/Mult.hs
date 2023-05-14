@@ -5,22 +5,24 @@
 -- Author: Nuno Amálio
 ----------------------------
 
-module Mult (MultVal(..), mval, mmany, MultC(..), Mult, mrange, msole_many, msole_k, multwf, multOk, check_multOk, mopt, allowedm, m_leq, mv_mult,
-    isMultVal_k, isMultMany, isMultOpt, isMultRange, mult_mr, isMultEither) where
+module Mult (MultVal(..), mval, mmany, MultC(..), Mult, mrange, msole_many, msole_k, multwf, multOk, mlbn,
+    check_multOk, mopt, allowedm, m_leq, mv_mult,
+    isMultVal_k, isMultMany, isMultOpt, isMultRange, mult_mr, isMultEither, isMultLbZ) where
 
 import SGElemTys
 import Relations
 import ErrorAnalysis
-import SimpleFuns
+import SimpleFuns ( butLast)
 import Logic
-import Sets
+import Sets ( Set(..), card, singles )
+import TheNil
 
 data MultVal = Val Int | Many 
    deriving (Eq, Show)
 
 -- 'MultVal' constructors
 mval :: Int -> MultVal
-mval k = Val k
+mval = Val
 mmany :: MultVal
 mmany = Many
 
@@ -29,15 +31,20 @@ data MultC = Rm Int MultVal | Sm MultVal
    deriving (Eq, Show)
 
 -- The actual mutliplicities
-type Mult = [MultC]
+type Mult = Set MultC
 
 -- 'MultC' constructors
+mrange :: Int -> MultVal -> MultC
 mrange k mv = Rm k mv
+msole_many :: MultC
 msole_many  = Sm Many
+msole_k :: Int -> MultC
 msole_k k   = Sm (mval k)
+mopt :: MultC
 mopt        = Rm 0 (mval 1)
 
 -- Checks that a multiplicity constraint is well-formed
+multcwf :: MultC -> Bool
 multcwf (Rm n Many) = n >= 0
 multcwf (Rm lb (Val ub)) = lb < ub && lb >=0
 multcwf (Sm Many) = True
@@ -71,91 +78,108 @@ m_leq (mc1:mcs) m2 = (any (\mc2->mc1 <= mc2) m2) && mcs `m_leq` m2
 --withinm k (m1, m2) = m1 <= mval k && mval k <= m2
 
 -- Function mlb, which gives the lower bound of a multplicity constraint (Mult) 
+mlbn :: MultC -> Int
 mlbn (Sm Many) =  0
 mlbn (Sm (Val k)) = k
 mlbn (Rm k _) = k
+mlb :: MultC -> MultVal
 mlb mc = Val $ mlbn mc
 
 -- Functions mub, which gives the upper bound of a multiplicity constraint (Mult)
+mub :: MultC -> MultVal
 mub (Sm m) = m
 mub (Rm _ m) = m
 
+mult_mr :: MultC -> MultC -> MultC
 mult_mr (Rm n1 m_1) (Rm n2 m_2) = Rm (n1 * n2) (m_1 `mv_mult` m_2)
 
 -- Complies to multiplicity (≬)
+compliesm :: Int -> MultC -> Bool
 compliesm k m  = mlb m <= mval k && mval k <= mub m
 
 -- Either multplicity (…)
-eitherm k []     = False
-eitherm k (m:ms) = k `compliesm` m || eitherm k ms
+eitherm :: Foldable t=>Int ->t MultC -> Bool
+eitherm k = foldl(\br m->k `compliesm` m || br) False
+--eitherm k []     = False
+--eitherm k (m:ms) = k `compliesm` m || eitherm k ms
 
 -- Checks whether 'm' is a many multiplicity
-isMultMany [Sm Many]   = True
-isMultMany [Rm 0 Many] = True
+isMultMany :: Mult -> Bool
+isMultMany (Set (Sm Many) EmptyS)   = True
+isMultMany (Set (Rm 0 Many) EmptyS) = True
 isMultMany _ = False
 
-isMultVal_k [m] k = m == msole_k k 
+isMultVal_k :: Mult -> Int -> Bool
+isMultVal_k (Set m EmptyS) k = m == msole_k k 
 isMultVal_k _ _ = False
-isMultOpt [m] = m == mopt 
+isMultOpt :: Mult -> Bool
+isMultOpt (Set m EmptyS) = m == mopt 
 isMultOpt _ = False
 
 -- Checks whether  m is a range or bounded multiplicity
-isMultRange :: [MultC] -> Bool
-isMultRange [Sm (Val k)] = k > 1
-isMultRange [m@(Rm lb ub)] = lb >= 0 && (mval 2) <= ub && multcwf m
+isMultRange :: Mult -> Bool
+isMultRange (Set (Sm (Val k)) EmptyS) = k > 1
+isMultRange (Set m@(Rm lb ub) EmptyS) = lb >= 0 && mval 2 <= ub && multcwf m
 isMultRange _ = False
 
 -- Unique, non-empty, individually well-formed and no manys allowed if more than one multiplicity in set
-multwf :: [MultC] -> Bool
-multwf ms = unique ms && length ms > 0 && all (\m->multcwf m) ms && ((length ms) > 1) `implies` (all (\m->not . isMultMany $ [m]) ms)
+multwf :: Mult -> Bool
+multwf ms = all multcwf ms && (length ms > 1) `implies` (all (\m->not . isMultMany $ singles m) ms)
 
-isMultEither :: [MultC] -> Bool
-isMultEither ms = multwf ms && (length ms) > 1
+isMultEither :: Mult -> Bool
+isMultEither ms = multwf ms && card ms > 1
 
--- Predicate 'allowedm' (∝) 
+isMultLbZ :: Mult -> Bool
+isMultLbZ EmptyS = False
+isMultLbZ (Set m ms) = mlbn m == 0 || isMultLbZ ms
+
+-- Predicate 'allowedm' (∝) s
+allowedm :: SGETy -> (Mult, Mult) -> Bool
 allowedm (Erel Dbi) (_, _) = True
 allowedm Eder (_, _) = True
-allowedm (Ecomp Duni) ([Sm (Val 1)], _) = True
+allowedm (Ecomp Duni) (Set (Sm (Val 1)) EmptyS, _) = True
 allowedm (Erel Duni) (m1, _) = isMultMany m1
 allowedm (Ecomp Dbi) (m1, _) = isMultVal_k m1 1 || isMultOpt m1
-allowedm Ewander (m1, m2)    = isMultMany m1 && isMultMany m2
 allowedm _ _                 = False
+--allowedm Ewander (m1, m2)    = isMultMany m1 && isMultMany m2
 
 
-rbounded :: (Foldable t, Eq a1) => [(a1, a2)] -> t a1 -> MultC -> Bool
+
+rbounded :: (Foldable t, Eq a) => Rel a a-> t a -> MultC -> Bool
 rbounded r s m = all (\x->length(img r [x]) `compliesm` m)  s
+eitherbounded :: (Foldable t, Eq a) => Rel a a -> t a -> Mult -> Bool
 eitherbounded r s ms = all (\x->length(img r [x]) `eitherm` ms)  s
 
 --
 -- Predicate 'rmOk', which checks whether a multiplicity is satisfied by a given relation
-multOk::Eq a=>[(a, a)]->[a]->[a]->Mult->Mult->Bool
-multOk r s t m [Sm (Val 0)] = null $ rres r t  
-multOk r s t [Sm (Val 0)] m = null $ dres r s
-multOk r s t m [Sm (Val 1)]
-    | m == [msole_k 1] = fun_bij r s t
-    | m == [mopt]      = fun_inj r s t
+multOk::Eq a=>Rel a a->Set a->Set a->Mult->Mult->Bool
+multOk r s t m (Sm (Val 0) `Set` EmptyS) = null $ rres r t  
+multOk r s t (Sm (Val 0) `Set` EmptyS) m = null $ dres r s
+multOk r s t m (Sm (Val 1) `Set` EmptyS)
+    | m == singles (msole_k 1) = fun_bij r s t
+    | m == singles mopt      = fun_inj r s t
     | isMultMany m     = fun_total r s t
-    | isMultRange m    = fun_total r s t && rbounded (inv r) t (head m)
+    | isMultRange m    = fun_total r s t && rbounded (inv r) t (the m)
     | isMultEither m   = fun_total r s t && eitherbounded (inv r) t m
-multOk r s t [Sm (Val 1)] m 
-    | m == [mopt]      = fun_inj (inv r) t s
-    | isMultMany m     = fun_total (inv r) t s
-    | isMultRange m    = fun_total (inv r) t s && rbounded r s (head m)
-    | isMultEither m   = fun_total (inv r) s t && eitherbounded r t m
-multOk r s t m [Rm 0 (Val 1)]
-    | m == [mopt]       = fun_pinj r s t
+multOk r s t (Sm (Val 1) `Set` EmptyS) m 
+    | m == singles mopt = fun_inj (inv r) t s
+    | isMultMany m      = fun_total (inv r) t s
+    | isMultRange m     = fun_total (inv r) t s && rbounded r s (the m)
+    | isMultEither m    = fun_total (inv r) s t && eitherbounded r t m
+multOk r s t m (Rm 0 (Val 1) `Set` EmptyS)
+    | m == singles mopt = fun_pinj r s t
     | isMultMany m      = pfun r s t
-    | isMultRange m     = pfun r s t && rbounded (inv r) t (head m)
+    | isMultRange m     = pfun r s t && rbounded (inv r) t (the m)
     | isMultEither m    = pfun r s t && eitherbounded (inv r) t m
-multOk r s t [Rm 0 (Val 1)] m
+multOk r s t (Rm 0 (Val 1) `Set` EmptyS) m
     | isMultMany m      = pfun (inv r) t s
-    | isMultRange m     = pfun (inv r) t s && rbounded r s (head m) 
+    | isMultRange m     = pfun (inv r) t s && rbounded r s (the m) 
     | isMultEither m    = pfun (inv r) t s && eitherbounded r s m 
 multOk r s t m1 m2 
     | all isMultMany [m1, m2]         = relation r s t
-    | isMultMany m1 && isMultRange m2 = relation r s t && rbounded r s (head m2) 
-    | isMultRange m1 && isMultMany m2 = relation r s t && rbounded (inv r) t (head m1)
-    | all isMultRange [m1, m2]        = relation r s t && rbounded r s (head m2) && rbounded (inv r) t (head m1)
+    | isMultMany m1 && isMultRange m2 = relation r s t && rbounded r s (the m2) 
+    | isMultRange m1 && isMultMany m2 = relation r s t && rbounded (inv r) t (the m1)
+    | all isMultRange [m1, m2]        = relation r s t && rbounded r s (the m2) && rbounded (inv r) t (the m1)
     | all isMultEither [m1, m2]       = relation r s t && eitherbounded r s m2 && eitherbounded (inv r) t m1
 
 --
@@ -169,72 +193,75 @@ multOk r s t m1 m2
 --multOk r s t (m1:ms1) ms2 = multOk r s t [m1] ms2 || multOk r s t ms1 ms2
 
 
+say_mv :: MultVal -> String
 say_mv (Val k) = if k == 1 then "one" else (show k)
 say_mv (Many) = "many (*)"
 
+say_multc :: MultC -> String
 say_multc (Sm mv) = say_mv mv
 say_multc (Rm 0 (Val 1)) = "optional (0..1)"
 say_multc (Rm 0 Many) = say_mv (Many)
 say_multc (Rm lb ub) = say_mv (mval lb) ++ ".." ++ (say_mv ub) 
-say_mult [m] = say_multc m
+say_mult :: Mult -> String
+say_mult (m `Set` EmptyS) = say_multc m
 say_mult ms = butLast (foldr (\m say->say ++ say_multc m ++ ",") "{" ms) ++ "}"
 
-multc_err_msg :: Show a => a -> [MultC] -> [MultC] -> [Char]
+multc_err_msg :: Show a => a -> Mult -> Mult -> String
 multc_err_msg me m1 m2 = (say_mult m1) ++ " to " ++ (say_mult m2) ++ " multiplicity constraint  of meta-edge " ++ (show me) ++ " is unsatisfied."
 
-check_rbounded :: (Eq a1, Show a1, Show a2) => [(a1, a2)] -> [a1] -> MultC -> ErrorTree
-check_rbounded r s m = 
-   if rbounded r s m then nile else cons_se "Relation not within multiplicity bounds" 
+reportRB :: (Foldable t, Eq a, Show a) => Rel a a -> t a -> MultC -> ErrorTree
+reportRB r s m = 
+   if rbounded r s m then nile else consSET "Relation not within multiplicity bounds" 
 
-check_eitherbounded :: (Foldable t, Eq a1) => [(a1, a2)] -> t a1 -> [MultC] -> ErrorTree
-check_eitherbounded r s m = if eitherbounded r s m then nile else cons_se "Relation not within multiplicity bounds"
+reportEB :: (Foldable t, Eq a) => Rel a a -> t a -> Mult -> ErrorTree
+reportEB r s m = if eitherbounded r s m then nile else consSET "Relation not within multiplicity bounds"
 
-check_multOk::(Eq a, Show a, Eq b, Show b)=>b->[(a, a)]->[a]->[a]->Mult->Mult->ErrorTree
-check_multOk me r s t m1 m2@[Sm (Val 0)] = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) []
-check_multOk me r s t m1@[Sm (Val 0)] m2 = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) []
-check_multOk me r s t m1 m2@[Sm (Val 1)] 
-    | m1 == [msole_k 1] = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_bij r s t]
-    | m1 == [mopt]      = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_inj r s t]
-    | isMultMany m1     = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_total r s t]
+check_multOk::(Eq a, Show a, Show b)=>b->Rel a a->Set a->Set a->Mult->Mult->ErrorTree
+check_multOk me r s t m1 m2@(Sm (Val 0) `Set` EmptyS) = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) []
+check_multOk me r s t m1@(Sm (Val 0) `Set` EmptyS) m2 = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) []
+check_multOk me r s t m1 m2@(Sm (Val 1) `Set` EmptyS) 
+    | m1 == singles (msole_k 1)  = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFB r s t]
+    | m1 == singles mopt = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFI r s t]
+    | isMultMany m1      = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFT r s t]
     | isMultRange m1    = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_total r s t, check_rbounded (inv r) t $ head m1] 
-    | isMultEither m1   = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_total r s t, check_eitherbounded (inv r) t m1]
-check_multOk me r s t m1@[Sm (Val 1)] m2 
-    | m2 == [mopt] = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_inj (inv r) t s]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFT r s t, reportRB (inv r) t $ the m1] 
+    | isMultEither m1   = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFT r s t, reportEB (inv r) t m1]
+check_multOk me r s t m1@(Sm (Val 1) `Set` EmptyS) m2 
+    | m2 == singles mopt = 
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFI (inv r) t s]
     | isMultMany m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_total (inv r) t s]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFT (inv r) t s]
     | isMultRange m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_total (inv r) t s, check_rbounded r s $ head m2] 
-    | isMultEither m2   = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_total (inv r) t s, check_eitherbounded r s m2]
-check_multOk me r s t m1 m2@[Rm 0 (Val 1)]
-    | m1 == [mopt]  = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_fun_pinj r s t] 
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFT (inv r) t s, reportRB r s $ the m2] 
+    | isMultEither m2   = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFT (inv r) t s, reportEB r s m2]
+check_multOk me r s t m1 m2@(Rm 0 (Val 1) `Set` EmptyS)
+    | m1 == singles mopt  = 
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportFPI r s t] 
     | isMultMany m1      = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_pfun r s t] 
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportPF r s t] 
     | isMultRange m1     = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_pfun r s t, check_rbounded (inv r) t $ head m1]
-    | isMultEither m1   = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_pfun r s t, check_eitherbounded (inv r) t m1]
-check_multOk me r s t m1@[Rm 0 (Val 1)] m2
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportPF r s t, reportRB (inv r) t $ the m1]
+    | isMultEither m1   = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportPF r s t, reportEB (inv r) t m1]
+check_multOk me r s t m1@(Rm 0 (Val 1) `Set` EmptyS) m2
     | isMultMany m2  = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_pfun (inv r) t s]  
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportPF (inv r) t s]  
     | isMultRange m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_pfun (inv r) t s, check_rbounded (inv r) t $ head m2]
-    | isMultEither m2 = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_pfun (inv r) t s, check_eitherbounded (inv r) t m2]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportPF (inv r) t s, reportRB (inv r) t $ the m2]
+    | isMultEither m2 = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportPF (inv r) t s, reportEB (inv r) t m2]
 check_multOk me r s t m1 m2 
     | all isMultMany [m1, m2]         = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t]
     | isMultMany m1 && isMultRange m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_rbounded r s $ head m2]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t, reportRB r s $ the m2]
     | isMultMany m1 && isMultEither m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_eitherbounded r s m2]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t, reportEB r s m2]
     | isMultRange m1 && isMultMany m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_rbounded (inv r) t $ head m1]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t, reportRB (inv r) t $ the m1]
     | isMultEither m1 && isMultMany m2 = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_eitherbounded (inv r) t  m1]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t, reportEB (inv r) t  m1]
     | all isMultRange [m1, m2]        = 
-        if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_rbounded r s $ head m2, check_rbounded (inv r) t $ head m1]
-    | all isMultEither [m1, m2] = if multOk r s t m1 m2 then nile else cons_et (multc_err_msg me m1 m2) [check_relation r s t, check_eitherbounded r s m2, check_eitherbounded (inv r) t m1]
+        if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t, reportRB r s $ the m2, reportRB (inv r) t $ the m1]
+    | all isMultEither [m1, m2] = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) [reportR r s t, reportEB r s m2, reportEB (inv r) t m1]
 
 mult_err_msg :: Show a => a -> String
 mult_err_msg me = "Multiplicity errors in " ++ (show me)

@@ -1,15 +1,16 @@
-module Utils(transToStr, check_wf_of, evalExpectation, print_g_wf_msg, option_main_save) where
+module Utils(transToStr, reportWF, evalExpectation, print_g_wf_msg, option_main_save) where
 
-import ErrorAnalysis
-import System.Environment
+import ErrorAnalysis ( nile, consET )
+import System.Environment ( getArgs )
 import Control.Monad(when)
 
+transToStr :: (Foldable t, Show a) => t a -> String -> String
 transToStr ss sep = foldl (\ss s->if null ss then (show s) else (show s)++sep++ss) "" ss
 
+reportWF s nm wf_f errs_f = 
+    if wf_f s then nile else consET (nm++" is malformed. ") (errs_f s)
 
-check_wf_of s nm wf_f errs_f = 
-    if wf_f s then nile else cons_et (nm++" is malformed. ") (errs_f s)
-
+evalExpectation :: Eq a => a -> a -> String
 evalExpectation e r = if e == r then "Ok" else "Fail"
 
 print_g_wf_msg g_id errs = 

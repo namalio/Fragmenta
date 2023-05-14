@@ -5,7 +5,7 @@ subgraph cluster_F_ECC{style=dashed;label=F_ECC;
 "City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
 
 "Employee"->"Car"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
-"Employee"->"City"[label="Employee_lives",arrowhead=vee,headlabel="",arrowsize=.5];
+"Employee"->"City"[label="Lives",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 }

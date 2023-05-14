@@ -7,6 +7,6 @@ GrwT Carlos_Joana {
    node Birmingham : City
    edge Carlos->Corsa : Owns
    edge Joana->Panda : Owns
-   edge Joana->Lisboa : Person_lives
-   edge Carlos->Birmingham : Person_lives
+   edge Joana->Lisboa : Lives
+   edge Carlos->Birmingham : Lives
 }

@@ -1,19 +1,19 @@
 module FrParsing (loadFragment, loadSG) where
 
-import Sets
+import Sets ( set, singles, union, Set(..) )
 import Relations
-import Grs
+import Grs ( consG )
 import SGrs
-import Frs
+import Frs ( consF, Fr )
 import Text.ParserCombinators.ReadP
-import Control.Applicative hiding (many)
-import The_Nil
+import Control.Applicative hiding (many,empty)
+import TheNil
 import MyMaybe
 import CommonParsing
 import SGElemTys
 import Mult
 import PathExpressions
-import The_Nil
+import Gr_Cls
 
 -- Edge definition: optional name, source and a target nodes (Strings), edge type, two optional multiplicities, an optional path expression
 data EdgeDef = EdgeDef String String String SGETy Mult Mult (Maybe (PE String String)) 
@@ -37,41 +37,43 @@ data ProxyRef = ProxyRef String String
 data FrDef = FrDef String SGDef [ProxyRef] 
    deriving(Eq, Show)
 
+sgd_name :: SGDef -> String
 sgd_name (SGDef nm _) = nm
 
+frd_sg_def :: FrDef -> SGDef
 frd_sg_def (FrDef _ sgd _) = sgd
 
 frd_fname::FrDef->String
 frd_fname (FrDef fnm _ _) = fnm
 
-ext_mult_t::String->Mult->[(String, Mult)]
-ext_mult_t e [] = [(e, [Sm $ Val 1])]
-ext_mult_t e m = [(e, m)]
+ext_mult_t::String->Mult->Rel String Mult
+ext_mult_t e EmptyS = singles (e, singles (Sm $ Val 1))
+ext_mult_t e m = singles (e, m)
 
-ext_mult_s::String->Mult->[(String, Mult)]
-ext_mult_s _ [] = []
-ext_mult_s e m = [(e, m)]
+ext_mult_s::String->Mult->Rel String Mult
+ext_mult_s _ EmptyS = nil
+ext_mult_s e m = singles (e, m)
 
 
 extract_elem::SGElem->SGr String String
-extract_elem (ElemN (NodeDef n nty)) = cons_sg (cons_g [n] [] [] []) [(n, nty)] [] [] [] [] []
+extract_elem (ElemN (NodeDef n nty)) = consSG (consG (singles n) nil nil nil) (singles (n, nty)) nil nil nil nil nil
 extract_elem (ElemE (EdgeDef e s t ety m1 m2 pe)) = 
    let e' = nm_of_edge ety e s t in 
    let sm = ext_mult_s e' m1 in
    let tm = ext_mult_s e' m2 in
-   let pei = if ety `elem` [Eder, Epath] then [(e', the pe)] else [] in
-   cons_sg (cons_g [s, t] [e'] [(e', s)] [(e', t)]) [] [(e', ety)] sm tm pei []
+   let pei = if ety `elem` [Eder, Epath] then singles (e', the pe) else nil in
+   consSG (consG (set [s, t]) (singles e') (singles (e', s)) (singles (e', t))) nil (singles (e', ety)) sm tm pei nil
    where nm_of_edge Einh _ s t = "EI" ++ s ++ "_" ++ t
          nm_of_edge _ enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
-extract_elem (ElemD (EdgeDep se te)) =  cons_sg empty_g [] [] [] [] [] [(nm_e se, nm_e te)]
+extract_elem (ElemD (EdgeDep se te)) =  consSG empty nil nil nil nil nil (singles (nm_e se, nm_e te))
    where nm_e e = "E"++ e
 extract_elem (ElemClE (ClEnum ne vs)) = 
-   let f_nty = (ne, Nenum):(map (\v->(v, Nval)) vs) in
-   let f_ety = (map (\v->("EI"++v, Einh)) vs) in
-   cons_sg (cons_g (ne:vs) (map (\v->"EI"++v) vs) (map (\v->("EI"++v, v)) vs) (map (\v->("EI"++v, ne)) vs)) f_nty f_ety [] [] [] []
+   let f_nty = Set (ne, Nenum) (set $ map (\v->(v, Nval)) vs) in
+   let f_ety = set (map (\v->("EI"++v, Einh)) vs) in
+   consSG (consG (Set ne (set vs)) (set $ map (\v->"EI"++v) vs) (set $ map (\v->("EI"++v, v)) vs) (set $ map (\v->("EI"++v, ne)) vs)) f_nty f_ety nil nil nil nil
 
 extract_sg::[SGElem]->SGr String String
-extract_sg es = foldl (\sg e-> sg `union_sg` (extract_elem e)) empty_sg es
+extract_sg = foldl (\sg e-> sg `unionSG` (extract_elem e)) empty
 
 --extract_sg ((ElemN (NodeDef n nty)):es) = (cons_sg (cons_g [n] [] [] []) [(n, nty)] [] [] []) `union_sg` (extract_sg es)
 --extract_sg ((ElemE (EdgeDef e s t ety om1 om2)):es) = 
@@ -86,17 +88,17 @@ extract_sg es = foldl (\sg e-> sg `union_sg` (extract_elem e)) empty_sg es
 cons_sg_fr_sgd::SGDef->SGr String String
 cons_sg_fr_sgd (SGDef _ elems) = extract_sg elems
 
-t_union::(Eq a, Eq b, Eq c)=>([a], [b], [c])->([a], [b], [c])->([a], [b], [c])
+t_union :: (Eq a1, Eq a2, Eq a3) =>(Set a1, Set a2, Set a3)-> (Set a1, Set a2, Set a3) -> (Set a1, Set a2, Set a3)
 t_union (e1a, e2a, e3a) (e1b, e2b, e3b) = (e1a `union` e1b, e2a `union` e2b, e3a `union` e3b)
 
-ext_proxy_refs::[ProxyRef]->([String], [(String, String)], [(String, String)])
-ext_proxy_refs [] = ([], [], [])
-ext_proxy_refs ((ProxyRef p r):prs) = (["E"++p], [("E"++p, p)], [("E"++p, r)]) `t_union` (ext_proxy_refs prs)
+ext_proxy_refs::[ProxyRef]->(Set String, Rel String String, Rel String String)
+ext_proxy_refs [] = (nil, nil, nil)
+ext_proxy_refs ((ProxyRef p r):prs) = (singles ("E"++p), singles ("E"++p, p), singles ("E"++p, r)) `t_union` (ext_proxy_refs prs)
 
 cons_fr_fr_frd::FrDef->Fr String String
 cons_fr_fr_frd (FrDef _ sgd prs ) = 
    let (esr, s, t) = ext_proxy_refs prs in
-   cons_f (cons_sg_fr_sgd sgd) esr s t
+   consF (cons_sg_fr_sgd sgd) esr s t
 
 parse_fin_node::SGNTy->ReadP NodeDef
 parse_fin_node nty= do
@@ -188,7 +190,7 @@ parse_multc = do
 parse_mult::ReadP Mult
 parse_mult = do
    ms<-sepBy (parse_multc) (char ',')
-   return ms   
+   return (set ms)   
 
 parse_edge_info::ReadP(String, String, String)
 parse_edge_info = do
@@ -233,9 +235,9 @@ parse_opt_mult = do
 parse_rel_uni::SGETy->ReadP EdgeDef
 parse_rel_uni ety = do
    (s, t, e)<-parse_edge_info
-   m<-parse_opt_mult <++ return ([Sm $ Val 1])
+   m<-parse_opt_mult <++ return (singles $ Sm $ Val 1)
    skipSpaces
-   return (EdgeDef e s t ety [] m Nothing)
+   return (EdgeDef e s t ety nil m Nothing)
 
 parse_relu::ReadP EdgeDef
 parse_relu = do
@@ -244,12 +246,12 @@ parse_relu = do
    ed<-parse_rel_uni (Erel Duni)
    return ed
 
-parse_wander::ReadP EdgeDef
-parse_wander = do
-   string "wander"
-   skipSpaces
-   (s, t, e)<-parse_edge_info
-   return (EdgeDef e s t Ewander [msole_many] [msole_many] Nothing)
+--parse_wander::ReadP EdgeDef
+--parse_wander = do
+--   string "wander"
+--   skipSpaces
+--   (s, t, e)<-parse_edge_info
+--   return (EdgeDef e s t Ewander (singles msole_many) (singles msole_many) Nothing)
 
 
 parse_PEA_nrml::ReadP (PEA String)
@@ -387,7 +389,7 @@ parse_path = do
    skipSpaces
    char ']'
    skipSpaces
-   return (EdgeDef e s t Epath [] [] (Just pe))
+   return (EdgeDef e s t Epath nil nil (Just pe))
 
 parse_compu::ReadP EdgeDef
 parse_compu = do
@@ -413,11 +415,11 @@ parse_inh = do
    skipSpaces
    tn<-parse_id
    skipSpaces
-   return (EdgeDef "" sn tn Einh [] [] Nothing)
+   return (EdgeDef "" sn tn Einh nil nil Nothing)
 
 parse_sg_edge::ReadP EdgeDef
 parse_sg_edge = do
-   e <- parse_rel <|> parse_relu  <|> parse_wander  <|> parse_comp  <|> parse_compu  <|> parse_inh <|> parse_der <|> parse_path 
+   e <- parse_rel <|> parse_relu  <|> parse_comp  <|> parse_compu  <|> parse_inh <|> parse_der <|> parse_path 
    return e
 
 end_of_sep_term::ReadP ()
@@ -546,7 +548,7 @@ loadFragment fn = do
          return(Just (frd_fname frd,cons_fr_fr_frd frd)) -- This as a function here.
    return ofr 
 
-loadSG :: FilePath -> IO (Maybe (String, (SGr String String)))
+loadSG :: FilePath -> IO (Maybe (String, SGr String String))
 loadSG fn = do
    sg_def<-loadSGDefFrFile fn
    --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))
@@ -559,10 +561,12 @@ loadSG fn = do
          return(Just (sgd_name sgd, cons_sg_fr_sgd sgd))
    return osg
 
+test1 :: IO ()
 test1 = do
    fr<-loadFragment "Tests/f_Person1.fr"
    putStrLn $ show fr
 
+test2 :: IO ()
 test2 = do
    sg<-loadSG "Tests/SG_Employee_Car.sg"
    putStrLn $ show sg
@@ -575,6 +579,8 @@ test5c = readP_to_S parse_PE "<-> Serves⨾ HotelRoom_zone"
 test5d = readP_to_S parse_PE "<-> Serves⨾ HotelRoom_zone~"
 test5e = readP_to_S parse_PE "<-> Serves~⨾ HotelRoom_zone"
 test5f = readP_to_S parse_PE "<-> Hosts ▷ Reptile⨾ Pet_status"
+test6 :: [(EdgeDef, String)]
 test6 = readP_to_S parse_der "derived Car->Wheel[HasWheels_1 <-> HasWheels]: 1,4"
+test7 :: [(SGDef, String)]
 test7 = readP_to_S parse_sg test_sg
 

@@ -1,5 +1,10 @@
 SG Wander_Exmp {
    node A
    node B
-   wander A->B[SomeRel]
+   virtual V
+   inh A->V
+   inh B->V
+   rel V->V[SomeRel]:*;*
+   derived A->A[SRNAA <-> SomeRel]:0;0
+   derived B->B[SRNBB <-> SomeRel]:0;0
 }

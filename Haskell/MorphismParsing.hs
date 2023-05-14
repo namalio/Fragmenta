@@ -1,11 +1,12 @@
 module MorphismParsing (loadMorphism) where
 
+import Sets ( intoSet )
 import Relations
 import Grs
 import Gr_Cls
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many)
-import The_Nil
+import TheNil
 import MyMaybe
 import CommonParsing
 
@@ -23,7 +24,7 @@ morphD_name::MorphismDef->String
 morphD_name (MorphismDef nm _ _) = nm
 
 cons_morph_md::MorphismDef->GrM String String
-cons_morph_md (MorphismDef _ nms ems) = cons_gm (extract_node_pairs nms) (extract_edge_pairs ems)
+cons_morph_md (MorphismDef _ nms ems) = consGM (extract_node_pairs nms) (extract_edge_pairs ems)
 
 extract_pair_fr_nm::NodeMapping->(String, String)
 extract_pair_fr_nm (NodeMapping n1 n2) = (n1, n2) 
@@ -31,11 +32,11 @@ extract_pair_fr_nm (NodeMapping n1 n2) = (n1, n2)
 extract_pair_fr_em::EdgeMapping->(String, String)
 extract_pair_fr_em (EdgeMapping e1 e2) = (e1, e2) 
 
-extract_node_pairs::[NodeMapping]->[(String, String)]
-extract_node_pairs nms = foldr (\nm lps-> (extract_pair_fr_nm nm):lps) [] nms
+extract_node_pairs::[NodeMapping]->Rel String String
+extract_node_pairs nms = foldr (\nm lps-> (extract_pair_fr_nm nm) `intoSet` lps) nil nms
 
-extract_edge_pairs::[EdgeMapping]->[(String, String)]
-extract_edge_pairs ems = foldr (\em lps-> (extract_pair_fr_em em):lps) [] ems
+extract_edge_pairs::[EdgeMapping]->Rel String String
+extract_edge_pairs ems = foldr (\em lps-> (extract_pair_fr_em em) `intoSet` lps) nil ems
 
 
 parse_map::ReadP (String, String)

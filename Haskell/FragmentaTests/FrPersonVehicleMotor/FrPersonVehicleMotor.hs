@@ -6,22 +6,24 @@
 ---------------------------
 import SGrs
 import Grs
-import CheckUtils
+import CheckUtils ( check_morphism, check_report_wf )
 import System.Environment
 import Control.Monad(when)
 import FrParsing
 import MyMaybe
 import LoadCheckDraw
-import Utils
+import Utils ( option_main_save )
 
 def_path = "FragmentaTests/FrPersonVehicleMotor/"
 img_path = "FragmentaTests/FrPersonVehicleMotor/img/"
 
+saveDrawings :: IO ()
 saveDrawings = do
    draw_mdl def_path img_path "PersonVehicleAny"
    draw_mdl def_path img_path "PersonVehicleMotor"
    draw_def def_path img_path "Person_Vehicle_Motor.fr"
 
+check_PVA :: IO ()
 check_PVA = do
     amdl<-load_mdl_def def_path "PersonVehicleAny"
     check_report_wf "PersonVehicleAny" (Just Total) amdl True
@@ -56,6 +58,7 @@ do_test3 = do
     check_report_wf "PersonVehicleMotor" (Just Total) mdl True
     check_morphism "Refinement of 'PersonVehicleMotor' by 'PersonVehicleAny'" (Just TotalM) mdl rms amdl True
 
+do_main :: IO ()
 do_main = do
    do_test1
    check_PVA
@@ -63,6 +66,7 @@ do_main = do
    do_test2
    do_test3
 
+main :: IO ()
 main = do
    option_main_save do_main saveDrawings
 

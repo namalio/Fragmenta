@@ -50,7 +50,7 @@ saveDrawings = do
 --    else putStrLn $ "Expectation: " ++ id ++ " should not be well typed (" ++ msg ++ ")"
 
 do_test1 = do
-   (nmw, sgw)<-load_sg_def def_path "mm_1.sg"
+   (nmw, sgw)<-loadSG def_path "mm_1.sg"
    putStrLn "Test 1"
    check_report_wf nmw (Just Total) sgw False
 

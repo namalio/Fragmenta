@@ -11,6 +11,7 @@ Morphism F_PW2 {
     privileged->Other
     middleclass->Other
     disadvantaged->Other
+    NoPrivilege->Other
   }
   edges {
     pstatus->AnyRel

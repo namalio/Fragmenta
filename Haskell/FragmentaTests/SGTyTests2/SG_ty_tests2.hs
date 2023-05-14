@@ -13,8 +13,8 @@ import GrswT
 import LoadCheckDraw
 import CheckUtils
 import Utils
-
-
+import Relations
+import SGElemTys
 
 def_path = "FragmentaTests/SGTyTests2/"
 img_path = "FragmentaTests/SGTyTests2/img/"
@@ -45,18 +45,19 @@ saveDrawings = do
 --    else putStrLn $ "Expectation: " ++ id ++ " should not be well typed (" ++ msg ++ ")"
 
 -- Checks that the different graphs are morphisms (only one isn't, g4)
-do_test1 = do
-   (nmt, sgt)<-load_sg_def def_path "SG_Person_Vehicle_I.sg" -- SG_PV in Fig 6a
-   (nmt2, sgt2)<-load_sg_def def_path "SG_Person_Vehicle_Ib.sg"
-   (nmt3, sgt3)<-load_sg_def def_path "SG_PVMI.sg"
-   (nmt4, sgt4)<-load_sg_def def_path "SG_HBP.sg" -- SG_HBP in Fig 6g
-   (nm_g1, gwt1)<-load_gwt_def def_path "g1.gwt" -- G1 in Fig. 6a
-   (nm_g2, gwt2)<-load_gwt_def def_path "g2.gwt" -- G2 in Fig. 6b
-   (nm_g3, gwt3)<-load_gwt_def def_path "g3.gwt"
-   (nm_g4, gwt4)<-load_gwt_def def_path "g4.gwt" -- G4 in Fig. 6e 
-   (nm_g5, gwt5)<-load_gwt_def def_path "g5.gwt"
-   (nm_g6, gwt6)<-load_gwt_def def_path "g6.gwt"
-   (nm_g7, gwt7)<-load_gwt_def def_path "g7.gwt"
+test1 :: IO ()
+test1 = do
+   (nmt, sgt)<-loadSG def_path "SG_Person_Vehicle_I.sg" -- SG_PV in Fig 8a
+   (nmt2, sgt2)<-loadSG def_path "SG_Person_Vehicle_Ib.sg" -- SG_PVa in Fig 8c
+   (nmt3, sgt3)<-loadSG def_path "SG_PVMI.sg" -- SG_PMVI in Fig 8d
+   (nmt4, sgt4)<-loadSG def_path "SG_HBP.sg"  -- SG_HBP in Fig 8g
+   (nm_g1, gwt1)<-loadGwT def_path "g1.gwt" -- G1 in Fig. 8a
+   (nm_g2, gwt2)<-loadGwT def_path "g2.gwt" -- G2 in Fig. 8b
+   (nm_g3, gwt3)<-loadGwT def_path "g3.gwt" -- G3 in Fig. 8c
+   (nm_g4, gwt4)<-loadGwT def_path "g4.gwt" -- G4 in Fig. 8e 
+   (nm_g5, gwt5)<-loadGwT def_path "g5.gwt" -- G5 in Fig. 8f
+   (nm_g6, gwt6)<-loadGwT def_path "g6.gwt"
+   (nm_g7, gwt7)<-loadGwT def_path "g7.gwt"
    check_report_wf nmt (Just Total) sgt True
    check_report_wf nmt2 (Just Total) sgt2 True
    check_report_wf nmt3 (Just Total) sgt3 True
@@ -77,17 +78,18 @@ do_test1 = do
 
 
 -- Checks that the different graphs are well-typed
-do_test2 = do
-   (nmt, sgt)<-load_sg_def def_path "SG_Person_Vehicle_I.sg" -- SG_PV in Fig 6a
-   (nmt2, sgt2)<-load_sg_def def_path "SG_Person_Vehicle_Ib.sg"
-   (nmt3, sgt3)<-load_sg_def def_path "SG_PVMI.sg" -- SG_PVMI in Fig. 8d
-   (nmt4, sgt4)<-load_sg_def def_path "SG_HBP.sg"  -- SG_HBP in Fig 6g
-   (nm_g1, gwt1)<-load_gwt_def def_path "g1.gwt" -- G1 in Fig. 6a
-   (nm_g2, gwt2)<-load_gwt_def def_path "g2.gwt" -- G2 in Fig. 6b
-   (nm_g3, gwt3)<-load_gwt_def def_path "g3.gwt" -- G3 in Fig. 6c
-   (nm_g5, gwt5)<-load_gwt_def def_path "g5.gwt" -- G5 in Fig. 6f 
-   (nm_g6, gwt6)<-load_gwt_def def_path "g6.gwt" -- G6 in Fig. 6h
-   (nm_g7, gwt7)<-load_gwt_def def_path "g7.gwt" -- G7 in Fig. 6i
+test2 :: IO ()
+test2 = do
+   (nmt, sgt)<-loadSG def_path "SG_Person_Vehicle_I.sg" -- SG_PV in Fig 8a
+   (nmt2, sgt2)<-loadSG def_path "SG_Person_Vehicle_Ib.sg" -- SG_PVa in Fig 8c
+   (nmt3, sgt3)<-loadSG def_path "SG_PVMI.sg" -- SG_PVMI in Fig. 8d
+   (nmt4, sgt4)<-loadSG def_path "SG_HBP.sg"  -- SG_HBP in Fig 8g
+   (nm_g1, gwt1)<-loadGwT def_path "g1.gwt" -- G1 in Fig. 8a
+   (nm_g2, gwt2)<-loadGwT def_path "g2.gwt" -- G2 in Fig. 8b
+   (nm_g3, gwt3)<-loadGwT def_path "g3.gwt" -- G3 in Fig. 8c
+   (nm_g5, gwt5)<-loadGwT def_path "g5.gwt" -- G5 in Fig. 8f 
+   (nm_g6, gwt6)<-loadGwT def_path "g6.gwt" -- G6 in Fig. 8h
+   (nm_g7, gwt7)<-loadGwT def_path "g7.gwt" -- G7 in Fig. 8h
    check_report_wf nmt (Just Total) sgt True
    check_report_wf nmt2 (Just Total) sgt2 True
    check_report_wf nmt3 (Just Total) sgt3 True
@@ -105,9 +107,12 @@ do_test2 = do
    check_ty_morphism (nm_g7 ++ " typing morphism (Total)") (Just TotalM) gwt7 sgt4 True
 
 
+do_main :: IO ()
 do_main = do
-   do_test1
+   test1
+   test2
 
+main :: IO ()
 main = do
    option_main_save do_main saveDrawings
 

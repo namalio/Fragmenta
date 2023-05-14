@@ -13,11 +13,12 @@ import Frs
 import Grs
 import LoadCheckDraw
 import CheckUtils
+    ( check_morphism, check_report_wf, check_ty_morphism )
 import Mdls
 import Relations
 import Sets
-import Utils
-import Path_Expressions
+import Utils ( option_main_save )
+import PathExpressions
 
 def_path = "FragmentaTests/PetsWorld/"
 img_path = "FragmentaTests/PetsWorld/img/"
@@ -47,6 +48,7 @@ do_main = do
    check_report_wf "M_PW" (Just Total) cmdl True
    check_morphism "Refinement of M_AHW by M_PW " (Just TotalM) cmdl rms amdl True
 
+check_fs_and_ms :: IO ()
 check_fs_and_ms = do 
    (nm_af, af)<-load_fr_def def_path "F_AH.fr"
    (nm_f1, f1)<-load_fr_def def_path "F_PW1.fr"
@@ -75,12 +77,17 @@ check_fs_and_ms = do
    check_morphism ("Morphism '" ++ nm_m5 ++ "' (Partial)") (Just PartialM) f5 m5 af True
    check_morphism ("Morphism '" ++ nm_m6 ++ "' (Partial)") (Just PartialM) f6 m6 af True
 
+check_instances :: IO ()
 check_instances = do 
    (amdl, cmdl, rms)<- load_mdl 
    (nm_g1, gwt1)<-load_gwt_def def_path "PWI1.gwt"
+   (nm_g2, gwt2)<-load_gwt_def def_path "PWI2.gwt"
    check_report_wf nm_g1 (Just Total) gwt1 True
+   check_report_wf nm_g2 (Just Total) gwt2 True
    check_ty_morphism (nm_g1 ++ " (Weak)") (Just WeakM) gwt1 cmdl True
    check_ty_morphism (nm_g1 ++ " (Total)") (Just TotalM) gwt1 cmdl True
+   check_ty_morphism (nm_g2 ++ " (Weak)") (Just WeakM) gwt2 cmdl True
+   check_ty_morphism (nm_g2 ++ " (Weak)") (Just TotalM) gwt2 cmdl False
    --putStrLn $ show gwt1
    --check_ty_morphism (nm_g1 ++ " (Total)") (Just TotalM) gwt1 cmdl False
 

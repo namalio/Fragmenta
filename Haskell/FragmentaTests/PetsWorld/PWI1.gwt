@@ -26,8 +26,8 @@ GrwT PetRoomWorld_I1 {
 	edge PR1->cats : zone
 	edge F1->cats : zone
 	edge F1->PR1 : Serves
-	node v1: Nat
-	edge PR1->v1:rcapacity
+	node v2: Nat
+	edge PR1->v2:rcapacity
 	node G : Cat
 	node Gato : Name
 	node d_07_01_2009 : Date
@@ -61,9 +61,13 @@ GrwT PetRoomWorld_I1 {
 	edge K->d_04_05_2015:dob
 	node F3: Toilet
 	edge PH->F3:facilities
+	node T3:RoomId
+	edge F3->T3:roomid
 	node PR3:PetRoom
+	node T3:RoomId
 	node v20: Nat
 	edge PR3->v20:rcapacity
+	edge PR3->T3:roomid
 	edge PH->PR3:rooms
 	node reptiles : reptiles
 	edge PR3->reptiles:zone
@@ -83,4 +87,6 @@ GrwT PetRoomWorld_I1 {
 	edge PO_P->G:Owns
 	edge PO_P->K:Owns
 	edge PO_P->L:Owns
+	edge PO_P->UK:country
+	edge PO_P->Nottingham:city
 }

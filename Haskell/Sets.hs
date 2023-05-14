@@ -1,55 +1,179 @@
-module Sets (subseteq, seteq, diff, union, gunion, dups, no_dups, intersec, gintersec, insert, disjoint) where
+module Sets (Set(..), singles, filterS, zipS, set, toList, intoSet, rest, card, sminus, union, gunion, reduce, 
+   intersec, gintersec, disjoint, power, first, dups) where
 
-subseteq :: (Foldable t1, Foldable t2, Eq a) => t1 a -> t2 a -> Bool
-subseteq s1 s2 = all (`elem` s2) s1
+import TheNil
+data Set a = EmptyS | Set a (Set a) 
 
-seteq :: (Foldable t2, Foldable t1, Eq a) => t2 a -> t1 a -> Bool
-seteq l1 l2 = (subseteq l1 l2) && (subseteq l2 l1) 
+instance The Set where
+   the :: Eq a => Set a -> a
+   the (x `Set` xs) = x
 
-diff :: Eq a => [a] -> [a] -> [a]
-diff [] b = []
-diff a [] = a
-diff (x:xs) b 
-  | x `elem` b = diff xs b
-  | otherwise  = x:(diff xs b)
+instance Nil Set where
+   nil :: Set a
+   nil = EmptyS
+   isNil :: Eq a => Set a -> Bool
+   isNil s = s == EmptyS
+--nilSet :: Set a
+--nilSet = EmptyS
 
--- inserts only if not in the list
-insert :: Eq a => a -> [a] -> [a]
-insert e l 
-   | e `elem` l = l
-   | otherwise = e:l
+--instance Unique Set where
+--   unique :: Eq a => Set a -> Bool
+--   unique EmptyS = True
+--   unique (x `Set` xs) = if x `elem` xs then False else unique xs
 
-union :: Eq a => [a] -> [a] -> [a]
-union sa sb = foldr insert [] (sa++sb)
+singles :: a -> Set a
+singles x = x `Set` EmptyS
 
--- generalised union
-gunion :: (Foldable t, Eq a) => t [a] -> [a]
-gunion ss = foldr union [] ss
+joinS::Set a->Set a->Set a
+joinS EmptyS s = s
+joinS s EmptyS = s
+joinS s (y `Set` ys) = Set y (joinS s ys)
+
+inSet::(Eq a) => a->Set a ->Bool
+inSet x EmptyS = False
+inSet x (y `Set` s) 
+   | x == y  = True
+   | otherwise = inSet x s
+
+-- adds element to set
+intoSet :: Eq a => a -> Set a -> Set a
+intoSet x EmptyS = x `Set` EmptyS
+intoSet x s@(Set y s') 
+   | x == y = s
+   | otherwise = y `Set` (x `intoSet` s')
+
+toList :: Set a -> [a]
+toList = foldr (:) []
+
+set:: (Foldable t, Eq a)=> t a->Set a
+set = foldr intoSet nil
+
+first::Set a->a
+first (Set x _) = x
+
+rest::Set a->Set a
+rest (Set _ xs) = xs
 
 -- removes duplicates
-no_dups [] = []
-no_dups [x] = [x]
-no_dups (x:xs) 
-   | x `elem` xs = no_dups xs
-   | otherwise = x:(no_dups xs)
+reduce :: Eq a => Set a -> Set a
+reduce = foldl (\s e->if e `elem` s then s else Set e s) nil
+--reduce (Set []) = nilSet
+--reduce (Set (x:xs))
+--   | x `elem` xs = reduce (Set xs)
+--   | otherwise = intoSet x (reduce (Set xs))
+
+--set cardinality
+card :: Eq a => Set a -> Int
+card s = foldl (\c _->c+ 1) 0 (reduce s)
+--   length . toList . reduce
+
+subseteq :: (Eq a) => Set a -> Set a -> Bool
+subseteq s1 s2 = all (`elem` s2) s1
+
+instance Eq a => Ord (Set a) where
+   (<=) :: Eq a => Set a -> Set a -> Bool
+   (<=) = subseteq
+
+seteq :: (Eq a) => Set a -> Set a -> Bool
+seteq s1 s2 = s1 <= s2 && s2 <= s1
+
+instance Eq a => Eq (Set a) where
+   (==) :: Eq a => Set a -> Set a -> Bool
+   (==) = seteq  
+
+instance Show a => Show (Set a) where
+   show :: Show a => Set a -> String
+   show s = "{" ++ foldr (\e str->show e ++ if null str then "" else "," ++ str) "" s ++ "}"
+
+instance Foldable Set where
+   elem :: Eq a => a -> Set a -> Bool
+   elem = inSet
+   null :: Set a -> Bool
+   null EmptyS = True
+   null _ = False
+   foldr :: (a -> b -> b) -> b -> Set a -> b
+   foldr _ z EmptyS = z
+   foldr f z (Set x s) = f x (foldr f z s)
+   foldl :: (b -> a -> b) -> b -> Set a -> b
+   foldl _ z EmptyS = z
+   foldl f z (Set x s) = f (foldl f z s) x
+   length :: Set a -> Int
+   length EmptyS = 0
+   length (Set x xs) = 1 + length xs
+
+filterS:: (a -> Bool) -> Set a -> Set a
+filterS p = foldr (\e s'->if p e then Set e s' else s') EmptyS
+
+zipS::Set a -> Set b->Set (a, b)
+zipS EmptyS _ = EmptyS
+zipS _ EmptyS = EmptyS
+zipS (Set x xs) (Set y ys) = Set (x, y) $ zipS xs ys
+
+instance Functor Set where
+   fmap :: (a -> b) -> Set a -> Set b
+   fmap _ EmptyS = EmptyS
+   fmap f (Set x s) = Set (f x) (fmap f s)
+
+instance Applicative Set where
+   pure :: a -> Set a
+   pure x = Set x EmptyS
+   (<*>) :: Set (a -> b) -> Set a -> Set b
+   EmptyS <*> _ = EmptyS
+   (Set f fs) <*> as = joinS (fmap f as) (fs <*> as)
+ 
+instance Traversable Set where
+   traverse :: Applicative f => (a -> f b) -> Set a -> f (Set b)
+   traverse _ EmptyS = pure EmptyS
+   traverse f (Set x s) = Set <$> f x <*> traverse f s
+
+-- set difference
+sminus :: Eq a => Set a -> Set a -> Set a
+sminus EmptyS _ = EmptyS
+sminus a EmptyS = a
+sminus (Set x a) b 
+  | x `elem` b = a `sminus` b
+  | otherwise  = intoSet x ( a `sminus` b)
+
+union :: Eq a => Set a -> Set a -> Set a
+union = foldr intoSet
+
+-- generalised union
+gunion :: (Foldable t, Eq a) => t (Set a) -> Set a
+gunion = foldl union nil
 
 -- intersection
-intersec _ [] = []
-intersec [] _ = []
-intersec (x:xs) ys 
-   | x `elem` ys  = x:(intersec xs ys)
-   | otherwise    = (intersec xs ys)
+intersec :: Eq a => Set a -> Set a -> Set a
+intersec sa sb = foldl (\s e->if e `elem` sa then e `intoSet` s else s) nil sb
+--intersec _ [] = []
+--intersec [] _ = []
+--intersec (x:xs) ys 
+--   | x `elem` ys  = x:(intersec xs ys)
+--   | otherwise    = (intersec xs ys)
 
 -- generalised intersection
-gintersec ss = if null ss then [] else foldr (\s si->(s `intersec` si)) (head ss) (tail ss)
+gintersec :: Eq a =>  [Set a] -> Set a
+gintersec ss = if null ss then nil else foldl intersec (head ss) (tail ss)
+   --if null ss then [] else foldr (\s si->(s `intersec` si)) (head ss) (tail ss)
 
-dups [] = []
-dups (x:xs) 
-   | x `elem` xs  = x:(dups xs)
-   | otherwise    = dups xs
-
-disjoint_set xs = null $ dups xs
-
+--disjoint_set :: Eq a => Set a -> Bool
+--disjoint_set xs = null $ dups xs
+disjoint::Eq a =>  [Set a]->Bool
 disjoint [] = True
 disjoint (s:ss) = 
     (foldr (\s' si->(null $ s `intersec` s') && si) True ss) && disjoint ss 
+
+combine::Eq a =>Set a->Set a->Set (Set a)
+combine s EmptyS = singles s
+combine s (Set x xs) = gunion[singles s, combine (x `intoSet` s) xs, combine s xs]
+
+power :: Eq a => Set a -> Set (Set a)
+power EmptyS = singles EmptyS 
+power (Set x xs) = combine (singles x) xs `union` power xs
+--(singles (singles x)) 
+
+-- Gives elements of a set which are duplicated
+dups :: Eq a => Set a -> Set a
+dups EmptyS = EmptyS
+dups (Set x xs) 
+   | x `elem` xs  = Set x (dups xs)
+   | otherwise    = dups xs

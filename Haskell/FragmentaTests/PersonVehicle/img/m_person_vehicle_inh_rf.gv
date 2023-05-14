@@ -10,7 +10,7 @@ subgraph cluster_m_person_vehicle_inh_rf{style=dashed;label=m_person_vehicle_inh
 "Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
 "Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
 "Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
-"Person"->"City"[label="Person_lives",arrowhead=vee,headlabel="",arrowsize=.5];
+"Person"->"City"[label="Lives",arrowhead=vee,headlabel="",arrowsize=.5];
 "Vehicle"->"PlateNo"[label="Vehicle_plateNo",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }

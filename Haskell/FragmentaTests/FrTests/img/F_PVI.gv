@@ -1,16 +1,16 @@
 digraph {graph[label=F_PVI,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PVI{style=dashed;label=F_PVI;
-"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
-"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
 "Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
 "Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
-"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
 
 "Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
 "Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
-"Person"->"Vehicle"[label="Owns▼",arrowhead=vee,headlabel="*",arrowsize=.5];
-"PPerson"->"City"[label="Person_lives▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Person"->"Vehicle"[label="Owns",arrowhead=vee,headlabel="*",arrowsize=.5];
+"PPerson"->"City"[label="Person_lives",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 "PPerson"->"Person"[arrowhead=normalnormal];

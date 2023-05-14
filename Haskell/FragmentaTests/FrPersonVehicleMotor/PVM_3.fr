@@ -9,8 +9,8 @@ fragment F_PVM_3 {
     inh ThreeWheeler->Wheeled
     inh FourWheeler->Wheeled
     compu Wheeled->Wheel[HasWheels]:1..*
-    derived TwoWheeler->Wheel[HWs_1:HasWheels]:0..1,2
-    derived ThreeWheeler->Wheel[HWs_2:HasWheels]:0..1,3
-    derived FourWheeler->Wheel[HWs_3:HasWheels]:0..1,4
+    derived TwoWheeler->Wheel[HWs_1 <-> HasWheels]:0..1;2
+    derived ThreeWheeler->Wheel[HWs_2 <-> HasWheels]:0..1;3
+    derived FourWheeler->Wheel[HWs_3 <-> HasWheels]:0..1;4
   }
 }

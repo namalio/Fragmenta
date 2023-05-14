@@ -7,5 +7,5 @@ SG SG_PVO {
    inh Vehicle->Manner
    opt Other
    inh Other->Manner
-   wander Manner->Other[OtherRel]
+   rel Manner->Other[OtherRel]:*;*
 }

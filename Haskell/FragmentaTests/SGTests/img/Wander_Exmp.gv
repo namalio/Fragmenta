@@ -1,6 +1,11 @@
 digraph {graph[label=Wander_Exmp,labelloc=tl,labelfontsize=12];
 "A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
 "B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+"V"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>V</I><br/>(V)}>];
 
-"A"->"B"[label="SomeRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"A"->"V"[arrowhead=onormal,arrowsize=2.0];
+"B"->"V"[arrowhead=onormal,arrowsize=2.0];
+"V"->"V"[label="SomeRel▼",dir=none,taillabel="*",headlabel="*"];
+"A"->"A"[label="SRNAA: ESomeRel ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"B"->"B"[label="SRNBB: ESomeRel ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 }

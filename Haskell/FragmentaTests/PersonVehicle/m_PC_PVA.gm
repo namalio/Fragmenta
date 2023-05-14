@@ -4,6 +4,6 @@ Morphism M_PC_PVA {
 		 City->Any
 	}
 	edges {
-	   Person_lives->AnyPersonRel
+	   Lives->AnyRel
 	}
 }

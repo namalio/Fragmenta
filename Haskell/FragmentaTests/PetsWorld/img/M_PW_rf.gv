@@ -5,7 +5,6 @@ subgraph cluster_M_PW_rf{style=dashed;label=M_PW_rf;
 "City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
 "Date"[shape=record,fillcolor=lightskyblue1,style = filled,label="Date"];
 "PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
-"middleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
 "PetStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="PetStatus\l(enum)"];
 "Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
 "Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
@@ -18,6 +17,7 @@ subgraph cluster_M_PW_rf{style=dashed;label=M_PW_rf;
 "HotelGroup"[shape=record,fillcolor=lightskyblue1,style = filled,label="HotelGroup"];
 "Grooming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Grooming"];
 "Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
+"NotPrivileged"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NotPrivileged</I><br/>(V)}>];
 "Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Pet</I><br/>(A)}>];
 "Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
 "Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
@@ -34,6 +34,7 @@ subgraph cluster_M_PW_rf{style=dashed;label=M_PW_rf;
 "disadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
 "privileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
 "reptiles"[shape=cds,fillcolor="#FFF2CC",style = filled,label="reptiles"];
+"middleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
 
 "Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
 "Locatable"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
@@ -89,8 +90,11 @@ subgraph cluster_M_PW_rf{style=dashed;label=M_PW_rf;
 "N_THZ2"->"Toilet"[arrowhead=dot,style=dotted];
 "N_THZ2"->"HotelZone"[arrowhead=vee,style=dotted];
 
+"disadvantaged"->"NotPrivileged"[arrowhead=onormal,arrowsize=2.0];
+"middleclass"->"NotPrivileged"[arrowhead=onormal,arrowsize=2.0];
 "PetRoom"->"disadvantaged"[label="PRA: EHosts ▷ Reptile ⨾ Epstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"EnsuiteRoom"->"privileged"[label="PRP: EHosts ⨾ Epstatus ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"EnsuiteRoom"->"privileged"[label="ERP: EHosts ⨾ Epstatus ▼",dir=none,taillabel="0..1",headlabel="0..2",style=dotted];
+"EnsuiteRoom"->"NotPrivileged"[label="EROP: EHosts ⨾ Epstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "EnsuiteRoom"->"reptiles"[label="ERNR: Ezone ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "N_THZ1"->"N_THZ2"[arrowhead=normal,style=dashed, label = "="];
 

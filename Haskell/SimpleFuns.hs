@@ -1,8 +1,9 @@
 module SimpleFuns(swap, pair_up, equalLs, quicksort, fst_T, snd_T, thd_T, fst_Q, mapT, applyPToP, butLast, 
     ext_P_to_T, toIdxC, combineTwAppend, combineTwInsert, combineQwInsert, combineQwAppend, combineQwUnion, 
-    makeQFrTFst, nilQl,  gapp, replace, unique) where
+    makeQFrTFst, nilQl,  replace, unique) where
 
-import Sets ( insert, union )
+import Sets (union )
+import Data.List(insert)
 
 --inverts the pair
 swap :: (b, a) -> (a, b)
@@ -30,6 +31,7 @@ fst_Q (x, _, _, _) = x
 -- Combines triples with an operator
 combineTwOp op (x, y, z) (x', y' , z') = (op x x', op y y', op z z')
 combineTwAppend = combineTwOp (++) 
+combineTwInsert :: (Ord a1, Ord a2, Ord a3) =>(a1, a2, a3) -> ([a1], [a2], [a3]) -> ([a1], [a2], [a3])
 combineTwInsert (x, y, z) (x', y' , z') = (insert x x', insert y y', insert z z')
 
 -- A quadruple with empty lists
@@ -77,14 +79,26 @@ toIdxC xs = toIdxC' xs 0
     where  toIdxC' [] _ = []
            toIdxC' (x:xs) k = (x, k):toIdxC' xs (k+1)
 
-gapp ls = foldr (++) [] ls
+--dups :: Eq a => [a] -> [a]
+--dups [] = []
+--dups (x:xs) 
+--   | x `elem` xs  = x:(dups xs)
+--   | otherwise    = dups xs
 
+--gapp :: (Foldable t) => t [a] -> [a]
+--gapp = foldr (++) []
+
+replace :: Eq t => t -> t -> [t] -> [t]
 replace x y [] = []
 replace x y (z:zs) 
    | x == z    = y:(replace x y zs)
    | otherwise = z:(replace x y zs)
 
 -- Checks whether a list has unique values
+--unique :: (Foldable t, Eq a) => t a -> Bool
+--unique xs = foldr (\x br->if x `elem` xs then False else br) True xs
+--instance Unique [] where
+unique :: Eq a => [a] -> Bool
 unique [] = True
 unique (x:xs) = if x `elem` xs then False else unique xs
 

@@ -12,9 +12,12 @@ import CheckUtils
 import LoadCheckDraw
 import Mdls
 
+def_path :: String
 def_path = "FragmentaTests/CatLynxFeline/"
+img_path :: String
 img_path = "FragmentaTests/CatLynxFeline/img/"
 
+saveDrawings :: IO ()
 saveDrawings= do
     draw_mdl def_path img_path "m_felines"
     --(nm_f1, f1)<-load_fr_def def_path "cat_lynx_feline.fr"
@@ -27,6 +30,8 @@ saveDrawings= do
     --saveFrDrawing img_path "Rf_UFs_CatLynxFeline" rf 
     --draw_def def_path img_path "gfg_felines.gfg"
 
+-- Figures 9b and 9c of Fragmenta paper 
+do_test_frs :: IO ()
 do_test_frs = do
     (nm_f1, f1)<-load_fr_def def_path "F_CLF.fr"
     (nm_f2, f2)<-load_fr_def def_path "F_FL.fr"
@@ -37,15 +42,18 @@ do_test_frs = do
     check_report_wf "UFs_CatLynxFeline" (Just Total) ufs False
     check_report_wf "Rf_UFs_CatLynxFeline" (Just Total) rf False
 
+do_test_mdl :: IO ()
 do_test_mdl = do
     mdl<-load_mdl_def def_path "m_felines"
     check_report_wf "M_CLF" (Just Total) mdl False
 
 
+do_main :: IO ()
 do_main = do
     putStrLn "Inheritance cycle example with fragments revolving around Lynx, Cat, Feline"
     do_test_mdl
 
+main :: IO ()
 main = do
    option_main_save do_main saveDrawings
 

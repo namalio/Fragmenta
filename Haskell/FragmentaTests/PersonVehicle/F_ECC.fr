@@ -4,6 +4,6 @@ fragment F_ECC {
        node Car
        node City
        rel Employee->Car[Owns]:1;*
-       relu Employee->City[Employee_lives]
+       relu Employee->City[Lives]
     }
 }

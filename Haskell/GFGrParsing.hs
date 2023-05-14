@@ -8,10 +8,11 @@ module GFGrParsing(loadGFG) where
 
 import GFGrs
 import Sets
+import Relations
 import CommonParsing
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many)
-import The_Nil
+import TheNil
 import MyMaybe
 
 -- A GFG node element has a name 
@@ -24,17 +25,17 @@ data GFGDef = GFGDef String [GFGElem]
 gfgd_name (GFGDef nm _) = nm
 
 -- Constructs a GFG from a set of nodes and a relation between nodes
-cons_gfg'::([String], [(String, String)])->GFGr String String
+cons_gfg'::(Set String, Rel String String)->GFGr String String
 cons_gfg' (ns, r_refs) =
     let e_nm ns nt =  "E" ++ (show ns) ++ "_" ++ (show nt) in
-    let combine ns nt (es, s, t) = ((e_nm ns nt):es, (e_nm ns nt, ns):s, (e_nm ns nt, nt):t) in
-    let (es', s', t') = foldr (\(n_s, n_t) ces ->if [n_s, n_t] `subseteq` ns then combine n_s n_t ces else ces) ([], [], []) r_refs in
-    cons_gfg ns es' s' t'
+    let combine ns nt (es, s, t) = (Set (e_nm ns nt) es, Set (e_nm ns nt, ns) s, Set (e_nm ns nt, nt) t) in
+    let (es', s', t') = foldr (\(n_s, n_t) ces ->if (Set n_s $ singles n_t) <= ns then combine n_s n_t ces else ces) (nil, nil, nil) r_refs in
+    consGFG ns es' s' t'
 
-extract::[GFGElem]->([String], [(String, String)])
-extract es = foldr (\e ap-> combine e ap) ([], []) es
-   where combine (GFGN n_nm) (ns, r)  =  (n_nm:ns, r)
-         combine (GFGR n_s n_t) (ns, r)  =  (ns, (n_s, n_t):r)
+extract::[GFGElem]->(Set String, Rel String String)
+extract es = foldr (\e ap-> combine e ap) (nil, nil) es
+   where combine (GFGN n_nm) (ns, r)  =  (Set n_nm ns, r)
+         combine (GFGR n_s n_t) (ns, r)  =  (ns, Set (n_s, n_t) r)
 
 cons_gfg_fr_d::GFGDef->GFGr String String
 cons_gfg_fr_d (GFGDef _ elems ) = cons_gfg' . extract $ elems

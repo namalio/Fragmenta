@@ -17,7 +17,7 @@ fragment F_Person_Vehicle_Motor {
     virtual ThreeWheeler
     virtual FourWheeler
     node Wheel
-    rel Person->Vehicle[Owns]:1,*
+    rel Person->Vehicle[Owns]:1;*
     inh Employee->Person
     inh Customer->Person
     inh Motor->PVehicle
@@ -36,9 +36,9 @@ fragment F_Person_Vehicle_Motor {
     inh Motortrike->ThreeWheeler
     relu Motor->PlateNo[Motor_plateNo]
     compu Wheeled->Wheel[HasWheels]:1..*
-    derived TwoWheeler->Wheel[HWs_1:HasWheels]:0..1,2
-    derived ThreeWheeler->Wheel[HWs_2:HasWheels]:0..1,3
-    derived FourWheeler->Wheel[HWs_3:HasWheels]:0..1,4
+    derived TwoWheeler->Wheel[HWs_1<->HasWheels]:0..1;2
+    derived ThreeWheeler->Wheel[HWs_2<->HasWheels]:0..1;3
+    derived FourWheeler->Wheel[HWs_3<->HasWheels]:0..1;4
   }
   ref PVehicle->Vehicle
 }

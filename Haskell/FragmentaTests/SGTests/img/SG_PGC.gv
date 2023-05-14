@@ -1,9 +1,9 @@
 digraph {graph[label=SG_PGC,labelloc=tl,labelfontsize=12];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Male"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Male"];
 "Female"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Female"];
-"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
-"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Gender"[shape=record,fillcolor="#FFCCFF",style = filled,label="Gender\l(enum)"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
 
 "Male"->"Gender"[arrowhead=onormal,arrowsize=2.0];
 "Female"->"Gender"[arrowhead=onormal,arrowsize=2.0];
