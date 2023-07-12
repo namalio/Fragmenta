@@ -1,0 +1,9 @@
+SG Wander_Exmp3 {
+   node A
+   node B
+   virtual V
+   inh A->V
+   inh B->V
+   rel V->V[SomeRel]:*;*
+   derived B->B[SRNBB <-> SomeRel~]:1;1
+}

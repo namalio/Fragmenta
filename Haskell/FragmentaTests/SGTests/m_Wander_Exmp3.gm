@@ -1,0 +1,9 @@
+Morphism M_Wander_Exmp3 {
+	nodes {
+	   A->A
+	   B->B
+	}
+	edges {
+	   SomeRel->SomeRel
+	}
+}

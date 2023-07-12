@@ -5,7 +5,7 @@ import LoadCheckDraw
 import MyMaybe 
 import CheckUtils
 import Utils
-import FragmentaTests.GTests.GrsTestsCommon
+import FragmentaTests.GTests.GTestsCommon
 
 saveDrawings :: IO ()
 saveDrawings = do

@@ -11,20 +11,21 @@ where
 
 import Gr_Cls
 import Grs
+import Sets
 import SGrs
-import GrswT
+import GrswT (GrwT)
 import Mdls 
 import LoadCheckDraw
 import Frs
 import Statecharts.StCs_MM_Names
 import SimpleFuns
-import Relations
-import The_Nil
-import Sets
-import MyMaybe
-import MMI
+import Relations (appl, dom_of, img, rcomp)
+import TheNil
+import Sets ( intersec )
+import MyMaybe ( applM )
+import MMI ( cons_mm_info )
 
-type StC a = GrwT a
+type StC a b = GrwT a b
 
 load_stcs_amm def_path = do
   mdl<-load_mdl_def def_path "StCs_AMM"
@@ -39,8 +40,9 @@ load_stcs_rm def_path = do
     return rm
 
 nmOfNamed stc n = appl (consRelOfEdge stc CMM_ENamed_name) n
-nmOfNamed' stc n = if n `elem` (dom_of $ consRelOfEdge stc CMM_ENamed_name) then nmOfNamed stc n else n
-  --allButLast $ appl (tgt stc) (the $ img (inv . src $ stc) [n] `intersec` (es_of_ety stc $ show_cmm_e CMM_ENamed_name))
+nmOfNamed' stc n = 
+   if n `elem` (dom_of $ consRelOfEdge stc CMM_ENamed_name) then nmOfNamed stc n else n
+   --allButLast $ appl (tgt stc) (the $ img (inv . src $ stc) [n] `intersec` (es_of_ety stc $ show_cmm_e CMM_ENamed_name))
 
 load_stcs_mmi def_path = do
   amm<-load_stcs_amm def_path
@@ -49,7 +51,7 @@ load_stcs_mmi def_path = do
   return (cons_mm_info cmm amm rm (fsg . reso_m $ cmm))
 
 -- Gives the relation of an edge in a statechart
-consRelOfEdge stc e = foldr (\e r->(appl (src stc) e, appl (tgt stc) e):r) [] (es_of_ety stc $ show_cmm_e e)
+consRelOfEdge stc e = foldr (\e r->(appl (src stc) e, appl (tgt stc) e) `intoSet` r) nil (es_of_ety stc $ show_cmm_e e)
 
 -- Gets name of given statechart 
 gStCName stc = appl (consRelOfEdge stc CMM_ENamed_name) "StCModel_"

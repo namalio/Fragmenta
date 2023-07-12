@@ -2,7 +2,7 @@ fragment F_PVA {
     SG F_PVA {
        node Person
        node Vehicle
-       opt Any
+       node Any
        virtual Manner
        inh Person->Manner
        inh Vehicle->Manner

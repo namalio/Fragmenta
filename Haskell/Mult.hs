@@ -5,8 +5,18 @@
 -- Author: Nuno Amálio
 ----------------------------
 
-module Mult (MultVal(..), mval, mmany, MultC(..), Mult, mrange, msole_many, msole_k, multwf, multOk, mlbn,
-    check_multOk, mopt, allowedm, m_leq, mv_mult,
+module Mult (MultVal(..)
+    , mval
+    , mmany
+    , MultC(..)
+    , Mult
+    , mvok
+    , mrange
+    , msole_many
+    , msole_k
+    , msingle
+    , multwf, multOk, mlbn,
+    check_multOk, mopt, allowedm, m_leq, mv_mult, isMultManyMC, mcsLeq,
     isMultVal_k, isMultMany, isMultOpt, isMultRange, mult_mr, isMultEither, isMultLbZ) where
 
 import SGElemTys
@@ -14,8 +24,9 @@ import Relations
 import ErrorAnalysis
 import SimpleFuns ( butLast)
 import Logic
-import Sets ( Set(..), card, singles )
+import Sets ( Set(..), card, singles)
 import TheNil
+import ShowUtils
 
 data MultVal = Val Int | Many 
    deriving (Eq, Show)
@@ -26,14 +37,28 @@ mval = Val
 mmany :: MultVal
 mmany = Many
 
+mvok :: MultVal -> Bool
+mvok (Val k) = k >= 0 
+mvok Many    = True
+
 -- The mutliplicity compound
 data MultC = Rm Int MultVal | Sm MultVal 
-   deriving (Eq, Show)
+   deriving (Show)
 
--- The actual mutliplicities
-type Mult = Set MultC
+eqMC::MultC ->MultC->Bool
+eqMC (Rm 0 Many) (Sm Many) = True
+eqMC (Rm i (Val j)) (Sm (Val k)) = i == j && j == k
+eqMC (Sm mv1) (Sm mv2) = mv1== mv2
+eqMC (Rm i mv1) (Rm j mv2) = i == j && mv1== mv2
+eqMC _ _ = False
+
+instance Eq MultC where
+    (==) = eqMC
 
 -- 'MultC' constructors
+msingle :: MultVal -> MultC
+msingle = Sm
+
 mrange :: Int -> MultVal -> MultC
 mrange k mv = Rm k mv
 msole_many :: MultC
@@ -43,14 +68,20 @@ msole_k k   = Sm (mval k)
 mopt :: MultC
 mopt        = Rm 0 (mval 1)
 
+-- The actual mutliplicities
+type Mult = Set MultC
+
+--cmus = Mu
+--tmus (Mu ms) = ms
+
 -- Checks that a multiplicity constraint is well-formed
-multcwf :: MultC -> Bool
-multcwf (Rm n Many) = n >= 0
-multcwf (Rm lb (Val ub)) = lb < ub && lb >=0
-multcwf (Sm Many) = True
-multcwf (Sm (Val v)) = v >= 0
+multcok :: MultC -> Bool
+multcok (Rm n Many) = n >= 0
+multcok (Rm lb (Val ub)) = lb < ub && lb >=0
+multcok (Sm mv) = mvok mv
 
 
+mv_leq :: MultVal -> MultVal -> Bool
 mv_leq _ Many = True
 mv_leq (Val k) (Val j) = k <= j
 mv_leq _ _ = False
@@ -64,15 +95,35 @@ mv_mult Many _  = Many
 mv_mult _ Many  = Many
 mv_mult (Val k) (Val j)  = Val (k * j)
 
-mc_leq mc1 mc2 = mlb mc2 <= mlb mc1 && mub mc1 <= mub mc2
+mcLeq :: MultC -> MultC -> Bool
+mcLeq mc1 mc2 = mlb mc2 <= mlb mc1 && mub mc1 <= mub mc2
 
 instance Ord MultC where
-   (<=) = mc_leq
+   (<=) = mcLeq
+
+eqM ::Mult -> Mult -> Bool
+eqM ms1 ms2 = all (\m->any (==m) ms2) ms1
+
+--instance Eq Mult where
+--   (==) = eqM
+
+mcsLeq :: Mult -> Mult -> Bool
+mcsLeq (EmptyS) _            = False
+mcsLeq (Set mc1 EmptyS) m2 = any (mc1 <=) m2
+mcsLeq (Set mc1 ms) m2     = any (mc1 <=) m2 && ms `mcsLeq` m2
+
+--instance Ord Mult where
+--    (<=) = mcsLeq
+
 
 m_leq [] m2 = False
 m_leq [mc1] m2 = any (\mc2->mc1 <= mc2) m2
 m_leq (mc1:mcs) m2 = (any (\mc2->mc1 <= mc2) m2) && mcs `m_leq` m2
 
+isMultManyMC::MultC->Bool
+isMultManyMC (Sm Many) = True
+isMultManyMC (Rm 0 Many) = True
+isMultManyMC _ = False
 
 -- Predicate 'withinm' (≬)
 --withinm k (m1, m2) = m1 <= mval k && mval k <= m2
@@ -103,38 +154,37 @@ eitherm k = foldl(\br m->k `compliesm` m || br) False
 --eitherm k []     = False
 --eitherm k (m:ms) = k `compliesm` m || eitherm k ms
 
--- Checks whether 'm' is a many multiplicity
-isMultMany :: Mult -> Bool
-isMultMany (Set (Sm Many) EmptyS)   = True
-isMultMany (Set (Rm 0 Many) EmptyS) = True
+-- Checks whether 'm' is a many multiplicity (work here!! introduce one for MC)
+isMultMany :: Set MultC -> Bool
+isMultMany (Set mc EmptyS)  = isMultManyMC mc
 isMultMany _ = False
 
-isMultVal_k :: Mult -> Int -> Bool
+isMultVal_k :: Set MultC -> Int -> Bool
 isMultVal_k (Set m EmptyS) k = m == msole_k k 
 isMultVal_k _ _ = False
-isMultOpt :: Mult -> Bool
+isMultOpt :: Set MultC -> Bool
 isMultOpt (Set m EmptyS) = m == mopt 
 isMultOpt _ = False
 
 -- Checks whether  m is a range or bounded multiplicity
-isMultRange :: Mult -> Bool
+isMultRange :: Set MultC -> Bool
 isMultRange (Set (Sm (Val k)) EmptyS) = k > 1
-isMultRange (Set m@(Rm lb ub) EmptyS) = lb >= 0 && mval 2 <= ub && multcwf m
+isMultRange (Set m@(Rm lb ub) EmptyS) = lb >= 0 && mval 2 <= ub && multcok m
 isMultRange _ = False
 
 -- Unique, non-empty, individually well-formed and no manys allowed if more than one multiplicity in set
-multwf :: Mult -> Bool
-multwf ms = all multcwf ms && (length ms > 1) `implies` (all (\m->not . isMultMany $ singles m) ms)
+multwf :: Set MultC -> Bool
+multwf ms = all multcok ms && (length ms > 1) `implies` (all (\m->not . isMultMany $ singles m) ms)
 
-isMultEither :: Mult -> Bool
+isMultEither :: Set MultC -> Bool
 isMultEither ms = multwf ms && card ms > 1
 
-isMultLbZ :: Mult -> Bool
+isMultLbZ :: Set MultC -> Bool
 isMultLbZ EmptyS = False
 isMultLbZ (Set m ms) = mlbn m == 0 || isMultLbZ ms
 
 -- Predicate 'allowedm' (∝) s
-allowedm :: SGETy -> (Mult, Mult) -> Bool
+allowedm :: SGETy -> (Set MultC, Set MultC) -> Bool
 allowedm (Erel Dbi) (_, _) = True
 allowedm Eder (_, _) = True
 allowedm (Ecomp Duni) (Set (Sm (Val 1)) EmptyS, _) = True
@@ -147,12 +197,12 @@ allowedm _ _                 = False
 
 rbounded :: (Foldable t, Eq a) => Rel a a-> t a -> MultC -> Bool
 rbounded r s m = all (\x->length(img r [x]) `compliesm` m)  s
-eitherbounded :: (Foldable t, Eq a) => Rel a a -> t a -> Mult -> Bool
+eitherbounded :: (Foldable t, Eq a) => Rel a a -> t a -> Set MultC -> Bool
 eitherbounded r s ms = all (\x->length(img r [x]) `eitherm` ms)  s
 
 --
 -- Predicate 'rmOk', which checks whether a multiplicity is satisfied by a given relation
-multOk::Eq a=>Rel a a->Set a->Set a->Mult->Mult->Bool
+multOk::Eq a=>Rel a a->Set a->Set a->Set MultC->Set MultC->Bool
 multOk r s t m (Sm (Val 0) `Set` EmptyS) = null $ rres r t  
 multOk r s t (Sm (Val 0) `Set` EmptyS) m = null $ dres r s
 multOk r s t m (Sm (Val 1) `Set` EmptyS)
@@ -201,22 +251,22 @@ say_multc :: MultC -> String
 say_multc (Sm mv) = say_mv mv
 say_multc (Rm 0 (Val 1)) = "optional (0..1)"
 say_multc (Rm 0 Many) = say_mv (Many)
-say_multc (Rm lb ub) = say_mv (mval lb) ++ ".." ++ (say_mv ub) 
-say_mult :: Mult -> String
+say_multc (Rm lb ub) = say_mv (mval lb) ++ " to " ++ (say_mv ub) 
+say_mult :: Set MultC -> String
 say_mult (m `Set` EmptyS) = say_multc m
 say_mult ms = butLast (foldr (\m say->say ++ say_multc m ++ ",") "{" ms) ++ "}"
 
-multc_err_msg :: Show a => a -> Mult -> Mult -> String
-multc_err_msg me m1 m2 = (say_mult m1) ++ " to " ++ (say_mult m2) ++ " multiplicity constraint  of meta-edge " ++ (show me) ++ " is unsatisfied."
+multc_err_msg :: Show a => a -> Set MultC -> Set MultC -> String
+multc_err_msg me m1 m2 = (say_mult m1) ++ " to " ++ (say_mult m2) ++ " multiplicity constraint  of meta-edge " ++ (showEdge me) ++ " is unsatisfied."
 
 reportRB :: (Foldable t, Eq a, Show a) => Rel a a -> t a -> MultC -> ErrorTree
 reportRB r s m = 
    if rbounded r s m then nile else consSET "Relation not within multiplicity bounds" 
 
-reportEB :: (Foldable t, Eq a) => Rel a a -> t a -> Mult -> ErrorTree
+reportEB :: (Foldable t, Eq a) => Rel a a -> t a -> Set MultC -> ErrorTree
 reportEB r s m = if eitherbounded r s m then nile else consSET "Relation not within multiplicity bounds"
 
-check_multOk::(Eq a, Show a, Show b)=>b->Rel a a->Set a->Set a->Mult->Mult->ErrorTree
+check_multOk::(Eq a, Show a, Show b)=>b->Rel a a->Set a->Set a->Set MultC->Set MultC->ErrorTree
 check_multOk me r s t m1 m2@(Sm (Val 0) `Set` EmptyS) = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) []
 check_multOk me r s t m1@(Sm (Val 0) `Set` EmptyS) m2 = if multOk r s t m1 m2 then nile else consET (multc_err_msg me m1 m2) []
 check_multOk me r s t m1 m2@(Sm (Val 1) `Set` EmptyS) 

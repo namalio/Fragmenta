@@ -19,6 +19,7 @@ import SGElemTys
 def_path = "FragmentaTests/SGTyTests2/"
 img_path = "FragmentaTests/SGTyTests2/img/"
 
+saveDrawings :: IO ()
 saveDrawings = do
    draw_def def_path img_path "SG_Person_Vehicle_I.sg"
    draw_def def_path img_path "SG_Person_Vehicle_Ib.sg"

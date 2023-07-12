@@ -10,9 +10,9 @@ fragment F_AH {
     compu Description->Element[Contains]:*
     inh Description->Manner
     inh Element->Manner
-    rel Manner->Attribute[Has]:*,*
-    rel Element->Element[RelatedTo]:*,*
-    rel Attribute->Attribute[AssociatedWith]:*,*
+    rel Manner->Attribute[Has]:*;*
+    rel Element->Element[RelatedTo]:*;*
+    rel Attribute->Attribute[AssociatedWith]:*;*
     compu Definition->Description[HasDesc]:*
     inh Model->Definition
     inh Model->Manner

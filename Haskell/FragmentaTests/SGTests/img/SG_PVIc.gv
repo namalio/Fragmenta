@@ -1,0 +1,14 @@
+digraph {graph[label=SG_PVIc,labelloc=tl,labelfontsize=12];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Person</I><br/>(A)}>];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Motorcycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Motorcycle"];
+"Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Customer"[shape=record,fillcolor=lightskyblue1,style = filled,label="Customer"];
+
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Customer"->"Person"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+"Motorcycle"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
+}

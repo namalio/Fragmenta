@@ -1,20 +1,20 @@
 digraph {graph[label=StCs_AMM,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_AH{style=dashed;label=F_AH;
-"Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
-"Description"[shape=record,fillcolor=lightskyblue1,style = filled,label="Description"];
 "Model"[shape=record,fillcolor=lightskyblue1,style = filled,label="Model"];
-"Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
+"Description"[shape=record,fillcolor=lightskyblue1,style = filled,label="Description"];
 "Element"[shape=record,fillcolor=lightskyblue1,style = filled,label="Element"];
 "DepthElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="DepthElement"];
+"Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
+"Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
 "Definition"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Definition</I><br/>(V)}>];
 
-"Description"->"Element"[label="Contains▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Description"->"Element"[label="Contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Description"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Element"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Manner"->"Attribute"[label="Has▼",dir=none,taillabel="*",headlabel="*"];
 "Element"->"Element"[label="RelatedTo▼",dir=none,taillabel="*",headlabel="*"];
 "Attribute"->"Attribute"[label="AssociatedWith▼",dir=none,taillabel="*",headlabel="*"];
-"Definition"->"Description"[label="HasDesc▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Definition"->"Description"[label="HasDesc",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Model"->"Definition"[arrowhead=onormal,arrowsize=2.0];
 "Model"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "DepthElement"->"Element"[arrowhead=onormal,arrowsize=2.0];

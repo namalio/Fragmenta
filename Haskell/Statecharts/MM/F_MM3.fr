@@ -4,9 +4,9 @@ fragment F_MM3 {
     proxy PStartState
     proxy PEndState
     proxy PHistoryState
-    derived PStCDesc->PEndState[Contains_es:Contains]:1,0..1
-    derived PStCDesc->PStartState[Contains_ss:Contains]:1,1
-    derived PStCDesc->PHistoryState[Contains_hs:Contains]:1,0..1
+    derived PStCDesc->PEndState[Contains_es <->Contains]:1;0..1
+    derived PStCDesc->PStartState[Contains_ss <->Contains]:1;1
+    derived PStCDesc->PHistoryState[Contains_hs <->Contains]:1;0..1
   }
   ref PStCDesc->StCDesc
   ref PEndState->EndState

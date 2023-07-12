@@ -1,13 +1,13 @@
 digraph {graph[label=F_MM3,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM3{style=dashed;label=F_MM3;
-"PEndState"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<EndState<br/>(P)>];
-"PStartState"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartState<br/>(P)>];
 "PStCDesc"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StCDesc<br/>(P)>];
+"PStartState"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartState<br/>(P)>];
+"PEndState"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<EndState<br/>(P)>];
 "PHistoryState"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HistoryState<br/>(P)>];
 
-"PStCDesc"->"PEndState"[label="Contains_es:Contains ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
-"PStCDesc"->"PStartState"[label="Contains_ss:Contains ▼",dir=none,taillabel="",headlabel="",style=dotted];
-"PStCDesc"->"PHistoryState"[label="Contains_hs:Contains ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
+"PStCDesc"->"PEndState"[label="Contains_es: EContains ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
+"PStCDesc"->"PStartState"[label="Contains_ss: EContains ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"PStCDesc"->"PHistoryState"[label="Contains_hs: EContains ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
 
 }
 

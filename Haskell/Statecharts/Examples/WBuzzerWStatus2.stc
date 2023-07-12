@@ -1,0 +1,17 @@
+StCModel StC_WBuzzerWStatus2:
+  StC Buzzer {
+    state Muted
+    state Buzzing
+    transition MutedToBuzzing Muted->Buzzing:buzz
+    transition BuzzingToMuted Buzzing->Muted:after(3sec)/mute
+   }
+   StC tatus {
+      start initStatus
+      history hStatus
+      transition BuzzerStatusInit initStatus->Happy
+      state Angry
+      state Happy
+      transition FrHStatus hStatus->initStatus
+      transition FrHappy Happy->Angry:chSound[in(Muted)]
+      transition FrAngry Angry->Happy:chSound[in(Muted)]
+   }

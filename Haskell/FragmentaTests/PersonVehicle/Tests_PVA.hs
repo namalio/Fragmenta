@@ -48,6 +48,7 @@ saveDrawings= do
 
 test1 :: IO ()
 test1 = do
+    putStrLn "Test 1"
     mdl<-load_mdl_def def_path "m_person_vehicle_any"
     check_report_wf "M_PVA" (Just Total) mdl True
     check_report_wf "M_PVA_UF " (Just Total) (mufs mdl) True
@@ -55,6 +56,7 @@ test1 = do
 
 test2 :: IO ()
 test2 = do
+    putStrLn "Test 2"
     mdl<-load_mdl_def def_path "m_person_vehicle_inh"
     check_report_wf "M_PVI" (Just Total) mdl True
     check_report_wf "M_PVI_UF " (Just Total) (mufs mdl) True
@@ -63,16 +65,17 @@ test2 = do
 -- Checks that 'm1, m2, m3 and m4' mentioned in the paper are valid refinements
 test3 :: IO ()
 test3 = do
-    (nm_f1, f1)<-load_fr_def def_path "F_PV.fr" -- Fig. 11a
-    (nm_f2, f2)<-load_fr_def def_path "F_PVA.fr"  -- Fig. 11a
-    (nm_f3, f3)<-load_fr_def def_path "F_PVI.fr" -- Fig. 11b
-    (nm_f4, f4)<-load_fr_def def_path "F_PC.fr" -- Fig. 11b
-    (nm_f5, f5)<-load_fr_def def_path "F_V.fr" -- Fig. 11b
-    (nm_f6, f6)<-load_fr_def def_path "F_ECC.fr" -- Fig. 11c
-    (nm_m1, m1)<-load_morphism_def def_path "m_PVI_PV.gm"
-    (nm_m2, m2)<-load_morphism_def def_path "m_PC_PVA.gm"
-    (nm_m3, m3)<-load_morphism_def def_path "m_V_PVA.gm"
-    (nm_m5, m5)<-load_morphism_def def_path "m_ECC_PVA.gm"
+    putStrLn "Test 3"
+    (nm_f1, f1)<-loadF def_path "F_PV.fr" -- Fig. 11a
+    (nm_f2, f2)<-loadF def_path "F_PVA.fr"  -- Fig. 11a
+    (nm_f3, f3)<-loadF def_path "F_PVI.fr" -- Fig. 11b
+    (nm_f4, f4)<-loadF def_path "F_PC.fr" -- Fig. 11b
+    (nm_f5, f5)<-loadF def_path "F_V.fr" -- Fig. 11b
+    (nm_f6, f6)<-loadF def_path "F_ECC.fr" -- Fig. 11c
+    (nm_m1, m1)<-loadM def_path "m_PVI_PV.gm"
+    (nm_m2, m2)<-loadM def_path "m_PC_PVA.gm"
+    (nm_m3, m3)<-loadM def_path "m_V_PVA.gm"
+    (nm_m5, m5)<-loadM def_path "m_ECC_PVA.gm"
     check_report_wf nm_f1 (Just Partial) f1 True
     check_report_wf nm_f2 (Just Partial) f2 True
     check_report_wf nm_f3 (Just Partial) f3 True
@@ -83,38 +86,42 @@ test3 = do
     let ufs = f3 `union_f` (f4 `union_f` f5)
     check_report_wf "F_PV UF F_PVA" (Just Total) uft True -- Fig. 11a
     check_report_wf "F_PVI UF F_C UF F_C" (Just Total) ufs True -- Fig. 11b
-    check_morphism (nm_m1 ++ " morphism (Partial)") (Just PartialM) f3 m1 f1 True
-    check_morphism (nm_m2 ++ " morphism (Partial)") (Just PartialM) f4 m2 f2 True
-    check_morphism (nm_m3 ++ " morphism (Partial)") (Just PartialM) f5 m3 f2 True
-    let m4 = m1 `union_gm` (m2 `union_gm` m3)
-    check_morphism (nm_m1 ++ " U " ++ nm_m2 ++ " U " ++ nm_m3 ++ " morphism (Total)") (Just TotalM) ufs m4 uft True
-    check_morphism (nm_m5 ++ " morphism (Total)") (Just TotalM) f6 m5 uft True
+    check_morphism ("(" ++ nm_f3 ++ ", " ++ nm_m1 ++ ") ⊒ " ++ nm_f1) (Just PartialM) f3 m1 f1 True
+    check_morphism ("(" ++ nm_f3 ++ ", " ++ nm_m1 ++ ") ⊐ " ++ nm_f1) (Just TotalM) f3 m1 f1 True
+    check_morphism ("(" ++ nm_f4 ++ ", " ++ nm_m2 ++ ") ⊒ " ++ nm_f2) (Just PartialM) f4 m2 f2 True
+    check_morphism ("(" ++ nm_f5 ++ ", " ++ nm_m3 ++ ") ⊒ " ++ nm_f2) (Just PartialM) f5 m3 f2 True
+    let m4 = m1 `unionGM` (m2 `unionGM` m3)
+    check_morphism ("(" ++ nm_f3 ++ " U " ++ nm_f4 ++ " U " ++ nm_f5 ++ ", " ++ nm_m1 ++ " U " ++ nm_m2 ++ " U " ++ nm_m3 ++ ") ⊐ " ++ nm_f1 ++ " U " ++ nm_f2) (Just TotalM) ufs m4 uft True
+    check_morphism ("(" ++ nm_f6 ++ ", " ++ nm_m5 ++ ") ⊐ " ++ nm_f1 ++ " U " ++ nm_f2) (Just TotalM) f6 m5 uft True
 
 test4 :: IO ()
 test4 = do
+    putStrLn "Test 4"
     amdl<-load_mdl_def def_path "m_person_vehicle_any"
     cmdl<-load_mdl_def def_path "m_person_vehicle_inh"
-    (nm_m1, m1)<-load_morphism_def def_path "m_PVI_PV.gm"
-    (nm_m2, m2)<-load_morphism_def def_path "m_PC_PVA.gm"
-    (nm_m3, m3)<-load_morphism_def def_path "m_V_PVA.gm"
-    let m4 = m1 `union_gm` (m2 `union_gm` m3)
-    check_morphism ("Refinement of M_PVA by M_PVI") (Just TotalM) cmdl m4 amdl True
+    (nm_m1, m1)<-loadM def_path "m_PVI_PV.gm"
+    (nm_m2, m2)<-loadM def_path "m_PC_PVA.gm"
+    (nm_m3, m3)<-loadM def_path "m_V_PVA.gm"
+    let m4 = m1 `unionGM` (m2 `unionGM` m3)
+    check_morphism ("(M_PVA, " ++ nm_m1 ++ " U " ++ nm_m2 ++ " U " ++ nm_m3 ++ ") ⊐ M_PVI") (Just TotalM) cmdl m4 amdl True
 
 test5 :: IO ()
 test5 = do
-    (nm_f3, f3)<-load_fr_def def_path "F_PVI.fr"
-    (nm_f4, f4)<-load_fr_def def_path "F_PC.fr"
-    (nm_f6, f6)<-load_fr_def def_path "F_ECC.fr"
-    (nm_gwt1, gwt1) <- load_gwt_def def_path "carlos_joana.gwt" -- Fig. 12b
-    check_ty_morphism (nm_gwt1 ++ " typing morphism (Strong)") (Just TotalM) gwt1 (f3 `union_f` f4) True
-    check_ty_morphism (nm_gwt1 ++ " typing morphism (Strong)") (Just TotalM) gwt1 f6 True
+    putStrLn "Test 5"
+    (nm_f3, f3)<-loadF def_path "F_PVI.fr"
+    (nm_f4, f4)<-loadF def_path "F_PC.fr"
+    (nm_f6, f6)<-loadF def_path "F_ECC.fr"
+    (nm_gwt1, gwt1) <- loadGwT def_path "carlos_joana.gwt" -- Fig. 12b
+    check_ty_morphism (nm_gwt1 ++ " ⋑ " ++ nm_f3 ++ " U " ++ nm_f4) (Just TotalM) gwt1 (f3 `union_f` f4) True
+    check_ty_morphism (nm_gwt1 ++ " ⋑ " ++ nm_f6) (Just TotalM) gwt1 f6 True
 
 test6 :: IO ()
 test6 = do
+    putStrLn "Test 6"
     mdl<-load_mdl_def def_path "m_person_vehicle_inh"
-    (nm_gwt, gwt) <- load_gwt_def def_path "carlos_joana2.gwt"
-    check_report_wf "M_PVI" (Just Total) mdl True
-    check_ty_morphism (nm_gwt ++ " typing morphism (Strong)") (Just TotalM) gwt mdl True
+    (nm_gwt, gwt) <- loadGwT def_path "carlos_joana2.gwt"
+    check_report_wf "Model M_PVI" (Just Total) mdl True
+    check_ty_morphism (nm_gwt ++ " ⋑ " ++  "M_PVI") (Just TotalM) gwt mdl True
 
 do_main :: IO ()
 do_main = do

@@ -4,16 +4,17 @@ fragment F_MM5 {
     proxy PStartState2
     proxy PEndState2
     proxy PHistoryState2
-    derived PTransition->PEndState2[Transition_end_src:Transition_src]:0,0
-    derived PTransition->PEndState2[Transition_end_tgt:Transition_tgt]:1..*,0..1
-    derived PTransition->PStartState2[Transition_start_src:Transition_src]:1..*,0..1
-    derived PTransition->PStartState2[Transition_start_tgt:Transition_tgt]:0,0
-    derived PTransition->PHistoryState2[Transition_hs_src:Transition_src]:1,0..1
-    derived PTransition->PHistoryState2[Transition_hs_tgt:Transition_tgt]:1..*,0..1
-
+    proxy PState2
+    derived PTransition->PEndState2[TEndSS<->Transition_src]:0;0
+    derived PTransition->PEndState2[TEndST<->Transition_tgt]:1..*;0..1
+    derived PTransition->PStartState2[TStartSS<->Transition_src]:1..*;0..1
+    derived PTransition->PStartState2[TStartST<->Transition_tgt]:0;0
+    derived PHistoryState2->PState2[HSOneT<->Transition_src~⨾Transition_tgt]:*;1
+    derived PHistoryState2->PEndState2[HSNoEndT<->Transition_src~⨾Transition_tgt]:0;0
   }
   ref PTransition->Transition
   ref PEndState2->EndState
   ref PStartState2->StartState
   ref PHistoryState2->HistoryState
+  ref PState2->State
 }

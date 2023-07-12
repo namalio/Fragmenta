@@ -2,12 +2,8 @@ Morphism F_MM3 {
 	nodes {
 	   PStCDesc->Description
 	   PEndState->Element
-		 PStartState->Element
-		 PHistoryState->Element
+	   PStartState->Element
+	   PHistoryState->Element
 	}
-	edges {
-	   Contains_es->Contains
-	   Contains_ss->Contains
-		 Contains_hs->Contains
-	}
+	edges {}
 }

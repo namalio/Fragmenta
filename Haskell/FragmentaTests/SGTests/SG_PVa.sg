@@ -1,4 +1,4 @@
-SG SG_Person_Vehicle {
+SG SG_PVa {
    node Person
    node Vehicle
    rel Person->Vehicle[Owns]:1;*

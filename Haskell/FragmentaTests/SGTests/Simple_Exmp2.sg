@@ -1,0 +1,6 @@
+SG Simple_Exmp2 {
+   node A
+   node B
+   rel A->B[SomeRel]:*;*
+   rel A->A[SomeRel2]:*;*
+}

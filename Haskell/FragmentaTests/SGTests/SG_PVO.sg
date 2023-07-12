@@ -5,7 +5,7 @@ SG SG_PVO {
    virtual Manner
    inh Person->Manner
    inh Vehicle->Manner
-   opt Other
+   node Other
    inh Other->Manner
    rel Manner->Other[OtherRel]:*;*
 }

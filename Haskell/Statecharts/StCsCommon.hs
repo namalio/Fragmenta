@@ -19,6 +19,7 @@ type Action = Exp
 data StateTy = StartSt | EndSt | MutableSt | HistorySt
    deriving(Eq, Show)
 
+frCMMTyToStTy :: StCs_CMM_Ns -> StateTy
 frCMMTyToStTy (CMM_StartState) = StartSt
 frCMMTyToStTy (CMM_EndState) = EndSt
 frCMMTyToStTy (CMM_MutableState ) = MutableSt

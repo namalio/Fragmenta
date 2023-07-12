@@ -1,4 +1,5 @@
-module Sets (Set(..), singles, filterS, zipS, set, toList, intoSet, rest, card, sminus, union, gunion, reduce, 
+module Sets (Set(..)
+   , singles, filterS, zipS, set, toList, intoSet, rest, card, sminus, union, gunion, reduce, 
    intersec, gintersec, disjoint, power, first, dups) where
 
 import TheNil
@@ -104,6 +105,9 @@ instance Foldable Set where
 filterS:: (a -> Bool) -> Set a -> Set a
 filterS p = foldr (\e s'->if p e then Set e s' else s') EmptyS
 
+--anyS :: (a -> Bool) -> Set a -> Bool
+--anyS p s = foldr (\x ob->p x || ob) False s
+   
 zipS::Set a -> Set b->Set (a, b)
 zipS EmptyS _ = EmptyS
 zipS _ EmptyS = EmptyS

@@ -1,0 +1,11 @@
+Morphism M_IEs {
+	nodes {
+	   A->A
+	   B->B
+	}
+	edges {
+	   R1->FlexRel
+	   AA->FlexRel
+	   BB->FlexRel
+	}
+}

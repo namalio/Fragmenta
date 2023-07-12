@@ -2,16 +2,16 @@ digraph {graph[label=m_person_vehicle_any_uf,labelloc=tl,labelfontsize=12];
 subgraph cluster_m_person_vehicle_any_uf{style=dashed;label=m_person_vehicle_any_uf;
 "PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
 "PVehicle"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Vehicle<br/>(P)>];
-"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
 "Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
+"Any"[shape=record,fillcolor=lightskyblue1,style = filled,label="Any"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
 "Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
-"Any"[shape=record,fillcolor="#CCFFFF",style ="filled,dotted",label=<Any<br/>(O)>];
 
 "PPerson"->"PVehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
-"Person"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Vehicle"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Manner"->"Manner"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
 "Any"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Person"->"Any"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
+"Vehicle"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Person"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 
 }
 "PPerson"->"Person"[arrowhead=normalnormal];

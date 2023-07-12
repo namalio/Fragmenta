@@ -1,16 +1,18 @@
 digraph {graph[label=F_MM5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM5{style=dashed;label=F_MM5;
-"PEndState2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<EndState2<br/>(P)>];
-"PStartState2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartState2<br/>(P)>];
 "PTransition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Transition<br/>(P)>];
+"PStartState2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartState2<br/>(P)>];
+"PEndState2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<EndState2<br/>(P)>];
 "PHistoryState2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HistoryState2<br/>(P)>];
 
-"PTransition"->"PEndState2"[label="Transition_end_src:Transition_src ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"PTransition"->"PEndState2"[label="Transition_end_tgt:Transition_tgt ▼",dir=none,taillabel="1..*",headlabel="0..1",style=dotted];
-"PTransition"->"PStartState2"[label="Transition_start_src:Transition_src ▼",dir=none,taillabel="1..*",headlabel="0..1",style=dotted];
-"PTransition"->"PStartState2"[label="Transition_start_tgt:Transition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"PTransition"->"PHistoryState2"[label="Transition_hs_src:Transition_src ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
-"PTransition"->"PHistoryState2"[label="Transition_hs_tgt:Transition_tgt ▼",dir=none,taillabel="1..*",headlabel="0..1",style=dotted];
+"PTransition"->"PEndState2"[label="TEndSS: ETransition_src ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PTransition"->"PEndState2"[label="TEndST: ETransition_tgt ▼",dir=none,taillabel="1..*",headlabel="0..1",style=dotted];
+"PTransition"->"PStartState2"[label="TStartSS: ETransition_src ▼",dir=none,taillabel="1..*",headlabel="0..1",style=dotted];
+"PTransition"->"PStartState2"[label="TStartST: ETransition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PHistoryState2"->"PTransition"[label="HSS: ~ETransition_src ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
+"PHistoryState2"->"PTransition"[label="HST: ~ETransition_tgt ▼",dir=none,taillabel="1..*",headlabel="0..1",style=dotted];
+"PHistoryState2"->"PStartState2"[label="HSNoStart: ~ETransition_src ⨾ ETransition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PHistoryState2"->"PEndState2"[label="HSNoEnd: ~ETransition_src ⨾ ETransition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 
 }
 

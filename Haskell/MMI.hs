@@ -13,7 +13,7 @@ import Grs
 import SGrs
 import Mdls 
 
-data MMI a = MMI {cmm_ :: Mdl a, amm_ :: Mdl a, rm_:: GrM a, sg_cmm_ :: SGr a}
+data MMI a b = MMI {cmm_ :: Mdl a b, amm_ :: Mdl a b, rm_:: GrM a b, sg_cmm_ :: SGr a b}
   deriving (Show)
 
 cons_mm_info cmm amm rm sgcmm = MMI {cmm_ = cmm, amm_ = amm, rm_ = rm, sg_cmm_ = sgcmm}

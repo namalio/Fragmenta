@@ -6,23 +6,43 @@
 -------------------------------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module SGrs(SGr, consSG, inhG, g_sg, srcm, tgtm, nty, ety, pe, ds, nsTys, nsP, nsO, esTys, esA, esI, srcst, tgtst, 
-   inh, inhst, disjSGs, unionSG, unionSGs, subsume_sg, sg_refinesz, errs_sg_refinesz, tsg_refinesz, 
-   errs_tsg_refinesz, ns_of_ntys, es_of_ety, ins)  
+module SGrs(SGr
+   , consSG
+   , inhG
+   , g_sg
+   , srcm
+   , tgtm
+   , nty
+   , ety
+   , pe
+   , ds
+   , nsTys
+   , nsP
+   , esTys, esA, esI, srcst, tgtst, 
+   inh, inhst, disjSGs, unionSG, unionSGs, subsume_sg, sg_refinesz, errs_sg_refinesz, 
+   tsg_refinesz, errs_tsg_refinesz, ns_of_ntys, es_of_ety, ins)  
 where
 
 import Sets (Set(..), sminus, gunion, intersec, union, singles, set, intoSet, toList, rest, filterS )
 import Relations
 import Gr_Cls
+    ( GRM(..),
+      MK(..),
+      TK(..),
+      GrM,
+      GM_CHK(..),
+      G_WF_CHK(..),
+      GM_CHK'(..),
+      GR(empty, src, es, ns, tgt) )
 import Grs
 import ErrorAnalysis
-import ShowUtils
+import ShowUtils ( showElems, showElems', showEdges, showNodes )
 import SGElemTys
     ( sgety_set,
       sgnty_set,
       SGED(Duni, Dbi),
       SGETy(..),
-      SGNTy(Nenum, Nprxy, Nopt, Nvirt, Nnrml, Nabst) )
+      SGNTy(..) )
 import Mult
 import MyMaybe
 import GrswT ( consGWT, ty, gOf, GrwT )
@@ -87,8 +107,8 @@ nsP :: Eq a=>SGr a b -> Set a
 nsP = (flip nsTys) [Nprxy]
 
 -- Gets optional nodes
-nsO :: Eq a=>SGr a b -> Set a
-nsO = (flip nsTys) [Nopt]
+--nsO :: Eq a=>SGr a b -> Set a
+--nsO = (flip nsTys) [Nopt]
 
 -- Gets virtual nodes
 nsV :: Eq a=>SGr a b1 -> Set a
@@ -220,8 +240,8 @@ nodeopt_ok sg n = all isMultLbZ (img (srcma sg) (img (inv . src $ sg) [n]))
 --nodeopt_ok sg n = nsIncident sg ((esIncident sg [n]) `sminus` (esI sg)) <= ((nsO sg) `union` (nsV sg))
 --img (ety sg) ((esIncidentst sg [n]) `sminus` (esI sg))  `subseteq` [Ewander]
 
-optsVoluntary::(Eq a, Eq b)=>SGr a b->Bool
-optsVoluntary sg = all (nodeopt_ok sg) $ nsO sg
+--optsVoluntary::(Eq a, Eq b)=>SGr a b->Bool
+--optsVoluntary sg = all (nodeopt_ok sg) $ nsO sg
 --adjacentNs (restrict sg (esA sg)) (nsO sg) <= (nsO sg) `union` (nsV sg)
    --nsIncident sg ((esIncident sg [nsO sg]) `sminus` (esI sg)) `subseteq` ((nsO sg) `union` (nsV sg))
 --all (nodeopt_ok sg) $ nsO sg
@@ -245,7 +265,7 @@ okaySG sg = okaySGz sg
    && (dom_of . pe $ sg) == esCnt sg
    && antireflexive_on (ds sg) (esPa sg) 
    && mult_etys_ok sg 
-   && optsVoluntary sg 
+--   && optsVoluntary sg 
    && inh_ok sg 
 
 -- Ethereal nodes must be inherited
@@ -270,16 +290,20 @@ okPEATgt :: (Eq a, Eq b) => SGr b a -> b -> PEA a -> Bool
 okPEATgt sg v (Edg e) = (e, v) `elem` (tgtst sg)
 okPEATgt sg v (Inv e) = (e, v) `elem` (srcst sg)
 
-okPEA :: (GR g, Eq a, Eq b) => g a b -> PEA b -> Bool
+okPEA :: (GR g, Eq a, Eq b) => g b a -> PEA a -> Bool
 okPEA sg (Edg e) = e `elem` (es sg)
 okPEA sg (Inv e) = e `elem` (es sg)
 
-okPE sg (At pea) = okPEA sg pea
-okPE sg (Dres v pea) = okPEA sg pea && okPEASrc sg v pea
-okPE sg (Rres pea v) = okPEA sg pea && okPEATgt sg v pea
-okPE sg (SCmp pe1 pe2) = 
+okPEC :: (Eq a, Eq b) => SGr b a -> PEC b a -> Bool
+okPEC sg (At pea) = okPEA sg pea
+okPEC sg (Dres v pea) = okPEA sg pea && okPEASrc sg v pea
+okPEC sg (Rres pea v) = okPEA sg pea && okPEATgt sg v pea
+
+okPE :: (Eq a, Eq b) => SGr b a -> PE b a -> Bool
+okPE sg (Ec pe) = okPEC sg pe 
+okPE sg (SCmp pec pe) = 
    let g = restrict (g_sg sg) $ esA sg in
-   okPE sg pe1 && okPE sg pe2 && (tgtPE g pe1, srcPE g pe2) `elem` ((inhst sg) `union` (inv . inhst $ sg))
+   okPEC sg pec && okPE sg pe && (tgtPEC g pec, srcPE g pe) `elem` ((inhst sg) `union` (inv . inhst $ sg))
 
 esCntOk :: (Eq b1, Eq b2) => SGr b2 b1 -> b1 -> Bool
 esCntOk sg e = okPE sg (appl (pe sg) e)
@@ -299,13 +323,13 @@ okayTSG sg = okaySG sg && etherealInherited sg
    && esCntsOk sg && isInhTree sg 
 
 check_mult_etys_ok sg = 
-   if mult_etys_ok sg then nile else consSET $ "The following edges have incorrect multiplicities:"++ (showElems' err_es)
+   if mult_etys_ok sg then nile else consSET $ "Certain edges have incorrect multiplicities:"++ (showEdges err_es)
    where err_es = foldr (\e es->if edge_multOk sg e then es else (e:es)) [] (esM sg)
 
-check_optsVoluntary::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
-check_optsVoluntary sg = 
-   if optsVoluntary sg then nile else consSET $ "Optional nodes engaged in compulsory relations:" ++ (showElems' err_opts)
-   where err_opts = foldr (\n ns-> if nodeopt_ok sg n then ns else n:ns) [] (nsO sg)
+--check_optsVoluntary::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
+--check_optsVoluntary sg = 
+--   if optsVoluntary sg then nile else consSET $ "Optional nodes engaged in compulsory relations:" ++ (showElems' err_opts)
+--   where err_opts = foldr (\n ns-> if nodeopt_ok sg n then ns else n:ns) [] (nsO sg)
 
 check_inh_ok::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
 check_inh_ok sg = 
@@ -332,9 +356,9 @@ errsSG sg =
    let err1 = if mults_wf (ran_of $ srcm sg) then nile else consSET "Well-formedness errors in edge source multiplicities." in
    let err2 = if mults_wf (ran_of $ tgtm sg) then nile else consSET "Well-formedness errors in edge target multiplicities." in
    let err3 = check_mult_etys_ok sg in
-   let err4 = check_optsVoluntary sg in
-   let err5 = check_inh_ok sg in
-   errs ++ [err1, err2, err3, err4, err5]
+--   let err4 = check_optsVoluntary sg in
+   let err4 = check_inh_ok sg in
+   errs ++ [err1, err2, err3, err4]
 
 reportSG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
 reportSG nm sg = reportWF sg nm okaySG errsSG
@@ -389,6 +413,7 @@ instance G_WF_CHK SGr where
    okayG (Just Total) = okayTSG 
    okayG (Just Partial) = okaySG 
    okayG Nothing = okaySGz
+   faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> SGr a b -> ErrorTree
    faultsG id (Just Total) = reportTSG id
    faultsG id (Just Partial) = reportSG id 
    faultsG id Nothing = reportSGz id
@@ -466,6 +491,8 @@ morphism_sgm_commutes_tgt (sgs, m, sgt) =
 ihh_sgm_ok (sgs, m, sgt) = ((fV m) `bcomp` (inhst sgs)) <= ((inhst sgt) `bcomp` (fV m))
 
 -- Common aspects of both graph morphism settings which involve SGs
+--is_wf_gm_common::(Eq a, Eq b) => (SGr a b, GrM a b,  SGr a b) -> Bool
+is_wf_gm_common :: (GRM gm, GR g1, GR g2, Eq a, Eq b) =>(g1 a b, gm a b, g2 a b) -> Bool
 is_wf_gm_common (gs, m, gt) = 
    -- is_wf Nothing gs && is_wf Nothing gt 
    fun_total (fV m) (ns gs) (ns gt)  
@@ -558,23 +585,118 @@ igRMEs gwt mes = (gOf gwt) `restrict` (ies (ty gwt) mes)
 igRMNsEs::(Foldable t, Eq a, Eq b)=>GrwT a b->SGr a b->t a->t b->Gr a b
 igRMNsEs gwt sg mns mes = (igRMEs gwt mes) `restrictNs` (ins (ty gwt) sg mns)
 
+
 -- SG multiplicity refinement (leq == '<=')
 sgs_mult_leq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> b -> Bool
-sgs_mult_leq sgc m sga e  = appl (srcma sgc) e <= appl ((srcma sga) `bcomp` (fE m)) e
-sg_refines_m :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
-sg_refines_m (sgc, m) sga = all (sgs_mult_leq sgc m sga) $ esA sgc
+sgs_mult_leq sgc m sga e  = (appl (srcma sgc) e)  `mcsLeq` (appl ((srcma sga) `bcomp` (fE m)) e) 
+                            && (appl (tgtm sgc) e) `mcsLeq` (appl ((tgtm sga) `bcomp` (fE m)) e)
 
+sg_refines_m :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+sg_refines_m (sgc, m) sga = all (sgs_mult_leq sgc m sga) (esA sgc)
+
+--sg_refines_m' :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+--sg_refines_m' (sgc, m) sga = all (sgs_mult_leq sgc m sga) (esA sgc)
+
+--ok_src_nodes :: (GRM gm, Eq a, Eq b) =>SGr a b-> gm a b->SGr a b->b->b->Bool
+--ok_src_nodes sgc m sga e e' = appl (fV m) (appl (src sgc) e') == appl (src sga) e
+
+--ok_tgt_nodes :: (GRM gm, Eq a, Eq b) =>SGr a b->gm a b->SGr a b->b->b->Bool
+--ok_tgt_nodes sgc m sga e e' = appl (fV m) (appl (tgt sgc) e') == appl (tgt sga) e
+
+--src_m_ok sgc m sga e e' = 
+--   let peas e = startEdg (appl (pe sga) e) in
+--   appl (esMult (peas e) sgc) e' `mcsLeq` appl (srcma sga) e
+--   where esMult (Edg _) sg = srcma sg 
+--         esMult (Inv _) sg = tgtm sg 
+
+--tgt_m_ok sgc m sga e e' = 
+--   let peae e = endEdg (appl (pe sga) e)  in
+--   appl (etMult (peae e) sgc) e' `mcsLeq` (appl (tgtm sga) e)
+--   where etMult (Edg _) sg = tgtm sg 
+--         etMult (Inv _) sg = srcma sg 
+
+smf :: (Eq a, Eq b) => PEA e -> SGr a b -> Rel b Mult
+smf (Edg _) sg = srcma sg 
+smf (Inv _) sg = tgtm sg 
+tmf :: (Eq a, Eq b) => PEA e -> SGr a b -> Rel b Mult
+tmf (Edg _) sg = tgtm sg 
+tmf (Inv _) sg = srcma sg 
+
+sf :: (GR g, Eq a, Eq b) => PEA e -> g a b -> Rel b a
+sf (Edg _) sg = src sg 
+sf (Inv _) sg = tgt sg 
+tf :: (GR g, Eq a, Eq b) => PEA e -> g a b -> Rel b a
+tf (Edg _) sg = tgt sg 
+tf (Inv _) sg = src sg 
+
+affectedPEAStart::(GRM gm, Eq a, Eq b) =>SGr a b->gm a b->SGr a b->PEA b->b->b->Bool
+affectedPEAStart sgc m sga pea e ie = ie `elem` (img (inv . fE $ m) [ePEA pea])
+   && appl (fV m) (appl (sf pea sgc) ie) == appl (sf  pea sga) e
+
+affectedPEAEnd::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b -> SGr a b ->PEA b->b->b->Bool
+affectedPEAEnd sgc m sga pea e ie = ie `elem` (img (inv . fE $ m) [ePEA pea])
+   && appl (fV m) (appl (tf pea sgc) ie) == appl (tf pea sga) e
+
+affectedPECStart::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b ->PEC a b ->b ->b->Bool
+affectedPECStart sgc m sga (At pea) e ie = affectedPEAStart sgc m sga pea e ie
+affectedPECStart sgc m sga (Dres v pea) e ie = 
+   affectedPEAStart sgc m sga pea e ie 
+   && any (\v'->(appl (sf  pea sga) ie, v') `elem` inhst sgc) (img (inv . fV $ m) [v]) 
+affectedPECStart sgc m sga (Rres pea v) e ie = affectedPEAStart sgc m sga pea e ie && (appl (inv . fV $ m) (appl (tf  pea sga) e), appl (inv . fV $ m) v) `elem` inhst sga
+
+affectedPECEnd::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b ->PEC a b ->b ->b->Bool
+affectedPECEnd sgc m sga (At pea) e ie = affectedPEAEnd sgc m sga pea e ie
+affectedPECEnd sgc m sga (Dres v pea) e ie = affectedPEAEnd sgc m sga pea e ie && any (\v'->(appl (sf  pea sga) ie, v') `elem` inhst sgc) (img (inv . fV $ m) [v]) 
+affectedPECEnd sgc m sga (Rres pea v) e ie = affectedPEAEnd sgc m sga pea e ie && (appl (inv . fV $ m) (appl (tf  pea sga) e), appl (inv . fV $ m) v) `elem` inhst sga
+
+affectedPE::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b ->PE a b ->b ->b->b->Bool
+affectedPE sgc m sga (Ec pec) e ie ie' = 
+   ie == ie' && affectedPECStart sgc m sga pec e ie 
+   && affectedPECEnd sgc m sga pec e ie
+affectedPE sgc m sga (SCmp pec1 (Ec pec2)) e ie ie' = 
+   appl (tf (endEAC pec1) sgc) ie == appl (sf (startEAC pec2) sgc) ie' 
+   && affectedPECStart sgc m sga pec1 e ie && affectedPECEnd sgc m sga pec2 e ie'
+affectedPE sgc m sga (SCmp pec pe) e ie ie' = 
+   affectedPECStart sgc m sga pec e ie
+   && any (\ie''->appl (tf (endEAC pec) sgc) ie == appl (sf (startEA pe) sgc) ie''
+               && affectedPE sgc m sga pe e ie'' ie')(es sgc)
+
+refines_mcnt::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b -> SGr a b ->b-> Bool
+refines_mcnt sgc m sga e = 
+   let peas e = startEA (appl (pe sga) e) 
+       peae e = endEA (appl (pe sga) e) 
+       --ok_src_nodes e e' = appl (fV m) (appl (sf (peas e) sgc) e') == appl (src sga) e
+       --ok_tgt_nodes e e' = appl (fV m) (appl (tf (peae e) sgc) e') == appl (tgt sga) e
+       src_m_ok e e' = appl (smf (peas e) sgc) e' `mcsLeq` (appl (srcma sga) e)
+       tgt_m_ok e e' = appl (tmf (peae e) sgc) e' `mcsLeq` (appl (tgtm sga) e) in
+   all(\e'->all(\e''-> (affectedPE sgc m sga (appl (pe sga) e) e e' e'') `implies` (src_m_ok e e' && tgt_m_ok e e'')) (img (inv . fE $ m) [ePEA . peae $ e])) (img (inv . fE $ m) [ePEA . peas $ e])
+   --(ok_src_nodes e e' && ok_tgt_nodes e e'') 
+--  where smf (Edg _) sg = srcma sg 
+--         smf (Inv _) sg = tgtm sg 
+--         tmf (Edg _) sg = tgtm sg 
+--         tmf (Inv _) sg = srcma sg 
+--         sf (Edg _) sg = src sg 
+--         sf (Inv _) sg = tgt sg 
+--         tf (Edg _) sg = tgt sg 
+--         tf (Inv _) sg = src sg 
+
+sg_refines_mcnts :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+sg_refines_mcnts (sgc, m) sga = all (refines_mcnt sgc m sga) $ esD sga
+   
 -- SG refinement of edge types
 sgs_ety_leq sgc m sga e  = appl (ety sgc) e <= appl ((ety sga) `bcomp` (fE m)) e
 sg_refines_ety (sgc, m) sga = all (sgs_ety_leq sgc m sga) $ esA sgc
 
 -- SG refinement of node types
 sgs_nty_leq sgc m sga n  = appl (nty sgc) n <= appl ((nty sga) `bcomp` (fV m)) n
-sg_refines_nty (sgc, m) sga = all (\n-> sgs_nty_leq sgc m sga n) $ ns sgc
+sg_refines_nty (sgc, m) sga = all (sgs_nty_leq sgc m sga) $ ns sgc
 
 -- SG refinement conditions
-sg_refinesz (sgc, m) sga = (sgc, m) `sg_refines_nty` sga && (sgc, m) `sg_refines_ety`  sga 
+sg_refinesz :: (GRM gm, Eq a, Eq b) => (SGr a b, gm a b) -> SGr a b -> Bool
+sg_refinesz (sgc, m) sga = (sgc, m) `sg_refines_nty` sga 
+   && (sgc, m) `sg_refines_ety`  sga 
    && (sgc, m) `sg_refines_m` sga
+   && (sgc, m) `sg_refines_mcnts` sga
 
 -- SG refinement 
 sg_refines :: (Eq a, Eq b) => (SGr a b, GrM a b) -> SGr a b -> Bool
@@ -585,23 +707,29 @@ sg_refines (sgc, m) sga =
 -- Error checking
 check_sg_refines_m :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_m (sgc, m) sga = 
-   if (sgc, m) `sg_refines_m` sga then nile else consSET $ "Issues with multiplicity refinement for the following edges:" ++ (showElems' es_n_ref)
-   where es_n_ref = filterS (\e-> not $ sgs_mult_leq sgc m sga e) (esA sgc)
+   if (sgc, m) `sg_refines_m` sga then nile else consSET $ "Errors with multiplicity refinement. The following concrete edes fail to comply with the abstract multplicity restrictions:" ++ (showElems' es)
+   where es = filterS (not . sgs_mult_leq sgc m sga) (esA sgc)
+
+check_sg_refines_mcnts :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
+check_sg_refines_mcnts (sgc, m) sga = 
+   if (sgc, m) `sg_refines_mcnts` sga then nile else consSET $ "The following derived edges are not multiplicity-refined properly:" ++ (showEdges es)
+   where es = filterS (not . refines_mcnt sgc m sga) (esD sga)
 
 check_sg_refines_ety :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_ety (sgc, m) sga = 
-   if (sgc, m) `sg_refines_ety` sga then nile else consSET $ "Issues with edge type refinement for the following edges:" ++ (showElems' es_n_ref)
+   if (sgc, m) `sg_refines_ety` sga then nile else consSET $ "Issues with edge type refinement for the following edges:" ++ (showEdges es_n_ref)
    where es_n_ref = filterS (\e-> not $ sgs_ety_leq  sgc m sga e) (esA sgc)
 
 check_sg_refines_nty (sgc, m) sga = 
-   if (sgc, m) `sg_refines_nty` sga then nile else consSET $ "The following instance nodes fail to preserve their type kinds: " ++ (showElems' ns_n_ref)
+   if (sgc, m) `sg_refines_nty` sga then nile else consSET $ "Certain instance nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)
    where ns_n_ref = filterS (\n-> not $ sgs_nty_leq sgc m sga n) (ns sgc)
 
 errs_sg_refinesz (sgc, m) sga = 
    let err1 = check_sg_refines_nty (sgc, m) sga in
    let err2 = check_sg_refines_ety (sgc, m) sga in
    let err3 = check_sg_refines_m (sgc, m) sga in
-   [err1, err2, err3]
+   let err4 = check_sg_refines_mcnts (sgc, m) sga in
+   [err1, err2, err3, err4]
 
 -- errors of SG refinement
 errs_sg_refines id (sgc, m, sga) = 
@@ -629,7 +757,7 @@ okRefinedIn (sga, me) (sgc, m) =
    let r = (inhst sgc) `rcomp` (relOfG $ igRMEs (consGWT (g_sg sgc) m) [me]) `rcomp` (inv . inhst $ sgc) in
    let s = (ins m sga $ img (src sga) [me]) `sminus`  (nsEther sgc `sminus` dom_of r) in
    let t = (ins m sga $ img (tgt sga) [me]) `sminus` (nsEther sgc `sminus` ran_of r) in
-   (relation r s t) && (not . null) (img (nty sga) ((nsIncident sga [me]) `sminus` (nsV sga `union` nsO sga))) `implies` (not . null $ r)
+   (relation r s t) && (not . null) (img (nty sga) ((nsIncident sga [me]) `sminus` (nsV sga))) `implies` (not . null $ r)
 -- && (not . null $ r) 
 
 -- Total SG refinement conditions
@@ -645,12 +773,12 @@ tsg_refines (sgc, m) sga =
 -- Errors checking
 -- errors of SG refinement of abstract nodes
 check_tsg_refines_ans m sga = 
-   if m `tsg_refines_ans` sga then nile else consSET $ "The following normal nodes are not being refined: " ++ (showElems' nns_n_ref)
+   if m `tsg_refines_ans` sga then nile else consSET $ "The following normal nodes are not refined: " ++ (showNodes nns_n_ref)
    where nns_n_ref = filterS (\nn-> not $ is_refined m sga nn) (nsTys sga $ singles Nnrml)
 
 check_tsg_refines_aes::(Eq a, Eq b, Show a, Show b)=>(SGr a b, GrM a b)->SGr a b->ErrorTree
 check_tsg_refines_aes (sgc, m) sga =
-   if (sgc, m) `tsg_refines_aes` sga then nile else consSET $ "Certain association edges are not correctly refined: " ++ (showElems' aes_nref)
+   if (sgc, m) `tsg_refines_aes` sga then nile else consSET $ "Certain association edges are incorrectly refined: " ++ (showEdges aes_nref)
    where aes_nref = filterS (\me-> not $ (sga, me) `okRefinedIn` (sgc, m)) (esA sga)
 
 errs_tsg_refinesz::(Eq a, Eq b, Show a, Show b)=>(SGr a b, GrM a b)->SGr a b->[ErrorTree]
@@ -745,14 +873,16 @@ rPEA gwt sg (Inv e) = inv. relOfG $ restrict gwt (ies gwt [e])
    --inv . relOfG $ restrict gwt [e]
 
 -- Builds a relation from a path expression atom
+rPEC :: (Eq a, Eq b, GR g, GRM g) =>g a b -> SGr a b -> PEC a b ->Rel a a
+rPEC gwt sg (At pea) = rPEA gwt sg pea
+rPEC gwt sg (Dres v pea) = dres (rPEA gwt sg pea) $ ins gwt sg [v]
+rPEC gwt sg (Rres pea v) = rres (rPEA gwt sg pea) $ ins gwt sg [v]
 rPE :: (Eq a, Eq b, GR g, GRM g) =>g a b -> SGr a b -> PE a b ->Rel a a
-rPE gwt sg (At pea) = rPEA gwt sg pea
-rPE gwt sg (Dres v pea) = dres (rPEA gwt sg pea) $ ins gwt sg [v]
-rPE gwt sg (Rres pea v) = rres (rPEA gwt sg pea) $ ins gwt sg [v]
-rPE gwt sg (SCmp pe1 pe2) = (rPE gwt sg pe1) `rcomp` (rPE gwt sg pe2)
+rPE gwt sg (Ec pec) = rPEC gwt sg pec
+rPE gwt sg (SCmp pec pe) = (rPEC gwt sg pec) `rcomp` (rPE gwt sg pe)
 
 ape :: (Eq a, Eq b) => SGr a b -> b -> PE a b
-ape sg e = if e `elem` esCnt sg then appl (pe sg) e else At (Edg e) 
+ape sg e = if e `elem` esCnt sg then appl (pe sg) e else (Ec . At . Edg $ e) 
 
 multComp ::Mult -> Mult -> Mult
 multComp m1 m2
@@ -766,54 +896,20 @@ multComp m1 m2
    | isMultEither m2 = multComp m1 (singles $ the m2) `union` multComp m1 (rest m2)
    | isMultEither m1 = multComp (singles $ the m1) m2 `union` multComp (rest m1) m2
 
-
--- 'srcst' relation of a PEA
-srcstPEA :: (Eq a, Eq b) => SGr a b -> PEA b ->Rel b a
-srcstPEA sg (Edg _) = srcst sg
-srcstPEA sg (Inv _) = tgtst sg
-
--- 'srcst' relation of a PE restricted to a particular node
-srcstPE :: (Eq a, Eq b) => SGr a b -> PE a b->Rel b a
-srcstPE sg (At pea) = srcstPEA sg pea
-srcstPE sg (Dres v pea) = rres (srcstPEA sg pea) [v]
-srcstPE sg (Rres pea _) = srcstPEA sg pea
-srcstPE sg (SCmp pe1 pe2) = srcstPE sg pe1
-
--- 'tgtst' relation of a PEA 
-tgtstPEA :: (Eq a, Eq b) => SGr a b -> PEA b ->Rel b a
-tgtstPEA sg (Edg e) = tgtst sg
-tgtstPEA sg (Inv e) = srcst sg
-
--- 'tgtst' relation of a PE restricted to a particular node
-tgtstPE :: (Eq a, Eq b) => SGr a b -> PE a b->Rel b a
-tgtstPE sg (At pea) = tgtstPEA sg pea
-tgtstPE sg (Dres _ pea) = tgtstPEA sg pea
-tgtstPE sg (Rres pea v) = rres (tgtstPEA sg pea) [v]
-tgtstPE sg (SCmp pe1 pe2) = tgtstPE sg pe2
-
--- gives target of path expression atom
-tPEA :: (Eq a, Eq b) => SGr a b -> PEA b -> a
-tPEA sg (Edg e) = appl (tgt sg) e
-tPEA sg (Inv e) = appl (src sg) e
-
--- gives target of path expression
-tPE :: (Eq a, Eq b) => SGr a b -> PE a b -> a
-tPE sg (At pea) = tPEA sg pea
-tPE sg (Dres v pea) = tPEA sg pea
-tPE sg (Rres pea v) = tPEA sg pea
-tPE sg (SCmp pe1 pe2) = tPE sg pe2
-
 -- gives source multiplicity of path expression atom
 smPEA :: (Eq a, Eq b) => SGr a b -> PEA b -> Mult
 smPEA sg (Edg e) = appl (srcma sg) e
 smPEA sg (Inv e) = appl (tgtm sg) e
 
 -- source multiplicity of path expression 
+smPEC :: (Eq a, Eq b) => SGr a b -> PEC a b -> Mult
+smPEC sg (At pea) = smPEA sg pea
+smPEC sg (Dres v pea) = smPEA sg pea
+smPEC sg (Rres pea v) = smPEA sg pea
+
 smPE :: (Eq a, Eq b) => SGr a b -> PE a b -> Mult
-smPE sg (At pea) = smPEA sg pea
-smPE sg (Dres v pea) = smPEA sg pea
-smPE sg (Rres pea v) = smPEA sg pea
-smPE sg (SCmp pe1 pe2) = multComp (smPE sg pe1)  (smPE sg pe2)
+smPE sg (Ec pec) = smPEC sg pec
+smPE sg (SCmp pec pe) = multComp (smPEC sg pec)  (smPE sg pe)
 
 -- target multiplicity of path expression atom
 tmPEA :: (Eq a, Eq b) => SGr a b -> PEA b -> Mult
@@ -821,11 +917,55 @@ tmPEA sg (Edg e) = appl (tgtm sg) e
 tmPEA sg (Inv e) = appl (srcma sg) e
 
 -- gives target multiplicity of path expression 
+tmPEC :: (Eq a, Eq b) => SGr a b -> PEC a b -> Mult
+tmPEC sg (At pea) = tmPEA sg pea
+tmPEC sg (Dres v pea) = tmPEA sg pea
+tmPEC sg (Rres pea v) = tmPEA sg pea
 tmPE :: (Eq a, Eq b) => SGr a b -> PE a b -> Mult
-tmPE sg (At pea) = tmPEA sg pea
-tmPE sg (Dres v pea) = tmPEA sg pea
-tmPE sg (Rres pea v) = tmPEA sg pea
-tmPE sg (SCmp pe1 pe2) = multComp (tmPE sg pe1)  (tmPE sg pe2)
+tmPE sg (Ec pec) = tmPEC sg pec
+tmPE sg (SCmp pec pe) = multComp (tmPEC sg pec)  (tmPE sg pe)
+
+-- 'srcst' relation of a PEA
+srcstPEA :: (Eq a, Eq b) => SGr a b -> PEA b ->Rel b a
+srcstPEA sg (Edg _) = srcst sg
+srcstPEA sg (Inv _) = tgtst sg
+
+-- 'srcst' relation of a PE restricted to a particular node
+srcstPEC :: (Eq a, Eq b) => SGr a b -> PEC a b->Rel b a
+srcstPEC sg (At pea) = srcstPEA sg pea
+srcstPEC sg (Dres v pea) = rres (srcstPEA sg pea) [v]
+srcstPEC sg (Rres pea _) = srcstPEA sg pea
+srcstPE :: (Eq a, Eq b) => SGr a b -> PE a b->Rel b a
+srcstPE sg (Ec pec) = srcstPEC sg pec
+srcstPE sg (SCmp pec pe) = srcstPEC sg pec
+
+-- 'tgtst' relation of a PEA 
+tgtstPEA :: (Eq a, Eq b) => SGr a b -> PEA b ->Rel b a
+tgtstPEA sg (Edg e) = tgtst sg
+tgtstPEA sg (Inv e) = srcst sg
+
+-- 'tgtst' relation of a PE restricted to a particular node
+tgtstPEC :: (Eq a, Eq b) => SGr a b -> PEC a b->Rel b a
+tgtstPEC sg (At pea) = tgtstPEA sg pea
+tgtstPEC sg (Dres _ pea) = tgtstPEA sg pea
+tgtstPEC sg (Rres pea v) = rres (tgtstPEA sg pea) [v]
+tgtstPE :: (Eq a, Eq b) => SGr a b -> PE a b->Rel b a
+tgtstPE sg (Ec pec) = tgtstPEC sg pec
+tgtstPE sg (SCmp pec pe) = tgtstPE sg pe
+
+-- gives target of path expression atom
+tPEA :: (Eq a, Eq b) => SGr a b -> PEA b -> a
+tPEA sg (Edg e) = appl (tgt sg) e
+tPEA sg (Inv e) = appl (src sg) e
+
+-- gives target of path expression
+tPEC :: (Eq a, Eq b) => SGr a b -> PEC a b -> a
+tPEC sg (At pea) = tPEA sg pea
+tPEC sg (Dres v pea) = tPEA sg pea
+tPEC sg (Rres pea v) = tPEA sg pea
+tPE :: (Eq a, Eq b) => SGr a b -> PE a b -> a
+tPE sg (Ec pec) = tPEC sg pec
+tPE sg (SCmp pec pe) = tPE sg pe
 
 -- Builds relation to be subject to the multiplicity check
 rMultOk :: (Eq a, Eq b, GR g, GRM g) => SGr a b -> b -> g a b ->Rel a a

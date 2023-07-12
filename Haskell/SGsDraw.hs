@@ -44,7 +44,7 @@ wrNode (SGNode nm Nvirt _) = "\"" ++ nm++ "\"" ++ "[shape=record,fillcolor=light
 wrNode (SGNode nm Nenum _) = "\"" ++ nm++ "\"" ++ "[shape=record,fillcolor=\"#FFCCFF\",style = filled,label=\""++nm++"\\l(enum)\"];"
 wrNode (SGNode nm Nval _) = "\"" ++ nm++ "\"" ++ "[shape=cds,fillcolor=\"#FFF2CC\",style = filled,label=\""++nm++"\"];"
 wrNode (SGNode nm Nprxy _) = "\"" ++ nm++ "\"" ++ "[shape=box,fillcolor=lightgray,style =\"rounded,filled,dotted\",label=<"++(tail nm)++"<br/>(P)>];"
-wrNode (SGNode nm Nopt _) =  "\"" ++ nm ++ "\"" ++"[shape=record,fillcolor=\"#CCFFFF\",style =\"filled,dotted\",label=<"++nm++"<br/>(O)>];"
+--wrNode (SGNode nm Nopt _) =  "\"" ++ nm ++ "\"" ++"[shape=record,fillcolor=\"#CCFFFF\",style =\"filled,dotted\",label=<"++nm++"<br/>(O)>];"
 --wrNode (SGNode nm Npath _) =  "\"" ++ nm++ "\"" ++ "[shape=box,style =\"filled,dashed\",label=\""++nm++"\"];"
 wrNode (SGNode nm _ _) =  "\"" ++ nm ++ "\"" ++"[shape=record,fillcolor=lightskyblue1,style = filled,label=\""++nm++"\"];"
 wrNodes :: Foldable t => t SGNode -> String
@@ -65,10 +65,11 @@ wrMult (m `Set` ms) = (wrMultS m) ++ if ms == EmptyS then "" else  "," ++ (wrMul
 wrPEA (Edg e) = e
 wrPEA (Inv e) = "~" ++ e
 
-wrPE (At pea) = wrPEA pea
-wrPE (Dres v pea) = v ++ " ◁ " ++ (wrPEA pea)
-wrPE (Rres pea v) = (wrPEA pea)  ++ " ▷ " ++ v
-wrPE (SCmp pe1 pe2) = (wrPE pe1) ++ " ⨾ " ++ (wrPE pe2)
+wrPEC (At pea) = wrPEA pea
+wrPEC (Dres v pea) = v ++ " ◁ " ++ (wrPEA pea)
+wrPEC (Rres pea v) = (wrPEA pea)  ++ " ▷ " ++ v
+wrPE (Ec pec) = wrPEC pec 
+wrPE (SCmp pec pe) = (wrPEC pec) ++ " ⨾ " ++ (wrPE pe)
 
 wrEdgeSettings _ et@(Einh) m1 m2 pe = "[" ++ (wrEdgeSettings' "" et m1 m2 pe) ++ "];"
 wrEdgeSettings nm et m1 m2 pe = "[" ++ (wrEdgeSettings' (tail nm) et m1 m2 pe) ++ "];"

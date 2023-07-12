@@ -1,0 +1,7 @@
+SG SEs {
+   node A
+   node B
+   node C
+   rel A->B[R1]:*;*
+   rel B->C[R2]:1;*
+}

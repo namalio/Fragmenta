@@ -8,8 +8,18 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module Grs (Gr, TK(..), MK(..), isKTotal, consG, consGM, emptyGM, fV, 
-   fE, restrict, restrictNs, subtractNs, adjacent, successors, predecessors, adjacentNs, relOfG, 
-   esIncident, esConnect, acyclicG, nsIncident,
+   fE, restrict, restrictNs, subtractNs
+   , adjacent
+   , adjacentE
+   , successors
+   , predecessors
+   , adjacentNs
+   , relOfG
+   , relOfGE
+   , esIncident
+   , esConnect
+   , acyclicG
+   , nsIncident,
    disjGs, unionG, unionGs, unionGM, gid, ogm, unionGMs, subsumeG, invertG) 
 where
 
@@ -120,23 +130,29 @@ predecessors g vs =  img (src g) $ img (inv . tgt $ g) vs
 adjacentNs :: (Foldable t, GR g, Eq a, Eq b) => g a b -> t a -> Set a
 adjacentNs g vs = (successors g vs) `union` (predecessors g vs)
 
--- defines graph notion of adjency, saying whether two nodes are adjacent
+-- Graph adjency: whether one node is adjacent to another
 adjacent::(GR g, Eq a, Eq b) => g a b->a->a->Bool
 adjacent g v1 v2 = 
-   (not . null) $ filterS (\e-> img (src g) [e] == (singles v1) && img (tgt g) [e] == singles v2) (es g)
+   any (\e-> img (src g) [e] == (singles v1) && img (tgt g) [e] == singles v2) (es g)
+
+adjacentE::(GR g, Eq a, Eq b) => g a b->b->b->Bool
+adjacentE g e1 e2 = appl (src g) e1 == appl (src g) e2
 
 -- Inverts a graph
 invertG :: (GR g, Eq a, Eq b) => g a b -> Gr a b
 invertG g = consG (ns g) (es g) (tgt g) (src g)
  
--- gets adjacency relation induced by graph
+-- gets adjacency relation between nodes induced by graph
 relOfG :: (GR g, Eq a, Eq b) => g a b-> Rel a a
 relOfG g = foldr (\e r-> (appl (src g) e, appl (tgt g) e) `intoSet` r) nil (es g)
 
+-- gets adjacency relation between edges induced by graph
+relOfGE :: (GR g, Eq a, Eq b) => g a b-> Rel b b
+relOfGE g = foldr (\e r-> singles e `cross` (img (inv . src $ g) (singles $ appl (tgt g) e)) `union` r) nil (es g)
 
 -- checks whether a graph is acyclic
 acyclicG::(Eq a, Eq b, GR g) => g a b->Bool
-acyclicG = acyclic . relOfG 
+acyclicG = acyclic . relOfGE
 
 -- Total function check on 'fV'
 fun_total_fV (gs, m, gt) = fun_total (fV m) (ns gs) (ns gt)

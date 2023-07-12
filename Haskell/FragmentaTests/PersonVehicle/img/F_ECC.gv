@@ -1,7 +1,7 @@
 digraph {graph[label=F_ECC,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ECC{style=dashed;label=F_ECC;
-"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
 "Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
+"Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
 "City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
 
 "Employee"->"Car"[label="Owns▼",dir=none,taillabel="",headlabel="*"];

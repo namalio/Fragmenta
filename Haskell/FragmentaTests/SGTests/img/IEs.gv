@@ -1,0 +1,8 @@
+digraph {graph[label=IEs,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+
+"A"->"A"[label="AA▼",dir=none,taillabel="*",headlabel=""];
+"B"->"B"[label="BB▼",dir=none,taillabel="",headlabel="*"];
+"A"->"B"[label="R1▼",dir=none,taillabel="",headlabel="*"];
+}

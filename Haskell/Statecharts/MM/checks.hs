@@ -20,17 +20,17 @@ check_CMM = do
     check_report_wf "Stcs_MM" (Just Total) cmdl True
 
 check_morphisms = do
-    (nm_af, af)<-load_fr_def def_path "F_AMM.fr"
-    (nm_f1, f1)<-load_fr_def def_path "F_MM1.fr"
-    (nm_f2, f2)<-load_fr_def def_path "F_MM2.fr"
-    (nm_f3, f3)<-load_fr_def def_path "F_MM3.fr"
+    (nm_af, af)<-loadF def_path "F_AMM.fr"
+    (nm_f1, f1)<-loadF def_path "F_MM1.fr"
+    (nm_f2, f2)<-loadF def_path "F_MM2.fr"
+    (nm_f3, f3)<-loadF def_path "F_MM3.fr"
     check_report_wf nm_af (Just Total) af True
     check_report_wf nm_f1 (Just Partial) f1 True
     check_report_wf nm_f2 (Just Partial) f2 True
     check_report_wf nm_f3 (Just Partial) f3 True
-    (nm_m1, m1)<-load_morphism_def def_path "F_MM1.gm"
-    (nm_m2, m2)<-load_morphism_def def_path "F_MM2.gm"
-    (nm_m3, m3)<-load_morphism_def def_path "F_MM3.gm"
+    (nm_m1, m1)<-loadM def_path "F_MM1.gm"
+    (nm_m2, m2)<-loadM def_path "F_MM2.gm"
+    (nm_m3, m3)<-loadM def_path "F_MM3.gm"
     --putStrLn $ show m2
     check_morphism (nm_m1 ++ " (Partial)") (Just PartialM) f1 m1 af True
     check_morphism (nm_m2 ++ " (Partial)") (Just PartialM) f2 m2 af True

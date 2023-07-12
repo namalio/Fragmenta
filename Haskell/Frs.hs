@@ -6,7 +6,20 @@
 ---------------------------
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Frs(Fr, srcR, tgtR, esR, fsg, consF, union_f, disjFs, rep_ns_of_fs, rep_es_of_fs, refs, union_fs, reso_f, mres) where
+module Frs(Fr
+    , srcR
+    , tgtR
+    , esR
+    , fsg
+    , consF
+    , union_f
+    , disjFs
+    , rep_ns_of_fs
+    , rep_es_of_fs
+    , refs
+    , union_fs
+    , reso_f
+    , mres) where
 
 import Gr_Cls
 import Grs
@@ -142,8 +155,9 @@ reso_f f = consF (reso_sg f) es' (dres (srcR f) es') (dres (tgtR f) es')
 -- Base well-formedness predicate
 okayFz :: (Eq a, Eq b) => Fr a b -> Bool
 okayFz f = okayG Nothing (fsg f) && disjoint [fLEs f, esR f] 
-    && fun_bij (srcR f) (esR f) (nsP . fsg $ f) && fun_total' (tgtR f) (esR f) 
-    && disjoint [ran_of . tgtR $ f, nsO . fsg $ f]
+    && fun_bij (srcR f) (esR f) (nsP . fsg $ f) 
+    && fun_total' (tgtR f) (esR f) 
+    -- && disjoint [ran_of . tgtR $ f, nsO . fsg $ f]
 
 -- Base well-formedness with acyclicity
 okayFa :: (Eq a, Eq b) => Fr a b -> Bool
@@ -164,6 +178,7 @@ oneway f1 f2 = f1 `refs_in` f2 && (not $ f2 `refs_in` f1)
 refsLocal :: (Eq a, Eq b) => Fr a b -> Bool
 refsLocal f = fRNs f <= fLNs f
 
+-- Well-formedness of total fragments
 okayTF :: (Eq a, Eq b) => Fr a b -> Bool
 okayTF f = okayFa f && refsLocal f && okayG (Just Total) (reso_sg f)
 
@@ -175,6 +190,9 @@ errsFz nm f =
         else consET "Function 'srcR' is not bijective " [reportFB (srcR f) (esR f) (nsP .fsg $ f)] in
     let err4 = if fun_total' (tgtR f) (esR f) then nile else consET "Function 'tgtR' is not total" [reportFT' (tgtR f) (esR f)] in
     [err1, err2, err3, err4]
+
+--reportFz :: (Eq a, Eq b, Show a, Show b) => String -> Fr a b -> ErrorTree
+--reportFz nm f = reportWF f nm okayFz (errsFz nm)
 
 errsFa::(Eq a, Eq b, Show a, Show b)=>String->Fr a b -> [ErrorTree]
 errsFa nm f = 
@@ -193,12 +211,13 @@ reportF nm f = reportWF f nm okayF (errsF nm)
 
 errsTF::(Eq a, Eq b, Show a, Show b)=>String->Fr a b -> [ErrorTree]
 errsTF nm f = 
-    let errs1 = errsFa nm f in
-    let err2 = if refsLocal f then nile else consSET $ "Not all references are local: " ++ (showElems' (sminus (fRNs f) (fLNs f))) in
+    let errs = errsFa nm f in
+    let err2 = if refsLocal f then nile else consSET $ "Some proxy references are foreign (or not local): " ++ (showNodes (sminus (fRNs f) (fLNs f))) in
     let err3 = faultsG ("Resolved SG (" ++ nm ++ ")") (Just Total) (reso_sg f) in
-    errs1 ++ [err2, err3]
+    errs ++ [err2, err3]
 
---faults_tf nm f = check_wf_of f nm is_wf_tf (errors_tfr nm)
+reportTF :: (Eq a, Eq b, Show a, Show b) => String -> Fr a b -> ErrorTree
+reportTF id f = reportWF f id okayTF (errsTF id) -- check_wf_of f nm is_wf_tf (errors_tfr nm)
 
 instance G_WF_CHK Fr where
    okayG :: (Eq a, Eq b) => Maybe TK -> Fr a b -> Bool
@@ -206,7 +225,9 @@ instance G_WF_CHK Fr where
    okayG (Just Total) = okayTF
    okayG (Just Partial) = okayF
    faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> Fr a b -> ErrorTree
-   faultsG id (Just Total) f = reportWF f id okayTF (errsTF id)
+   faultsG id Nothing f = reportWF f id okayFz (errsFz id)
+   faultsG id (Just Partial) f = Frs.reportF id f 
+   faultsG id (Just Total) f   = reportTF id f --okayTF (errsTF id)
 
 -- morphism resolution operation
 mres m (fs, ft) = 
@@ -215,7 +236,8 @@ mres m (fs, ft) =
 
 -- Checks that a morphism between fragments is well-formed 
 okayFGM :: (GRM gm, Eq a, Eq b) => (Fr a b, gm a b, Fr a b) -> Bool
-okayFGM (fs, m, ft) = fun_total (fV m) (fLNs fs) (fLNs ft) && fun_total (fE m) (fEsA fs) (fEsA ft)
+okayFGM (fs, m, ft) = fun_total (fV m) (fLNs fs) (fLNs ft) 
+    && fun_total (fE m) (fEsA fs) (fEsA ft)
     && okayGM (Just WeakM) (reso_sg fs, mres m (fs, ft), reso_sg ft)
 
 errsFGM :: (Eq a, Eq b, Show a, Show b, GRM gm) =>(Fr a b, gm a b, Fr a b) -> [ErrorTree]
@@ -230,9 +252,10 @@ errsFGM (fs, m, ft) =
 reportFGM :: (GRM gm, Eq a, Eq b, Show a, Show b) =>String -> (Fr a b, gm a b, Fr a b) -> ErrorTree
 reportFGM nm (fs, m, ft) = reportWF (fs, m, ft) nm okayFGM errsFGM
 
--- notion of partial fragment refinement
+-- Partial fragment refinement
 frefines :: (Eq a, Eq b, GRM gm)=>(Fr a b, gm a b) -> Fr a b -> Bool
-frefines (fc, m) fa = okayFGM (fc, m, fa) && sg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
+frefines (fc, m) fa = okayFGM (fc, m, fa) 
+    && sg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
 
 errs_frefines :: (Eq a, Eq b, Show a, Show b, GRM gm) =>String -> (Fr a b, gm a b) -> Fr a b -> [ErrorTree]
 errs_frefines nm (fc, m) fa =
@@ -240,17 +263,24 @@ errs_frefines nm (fc, m) fa =
     let errs2 = errs_sg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa) in
     (err1:errs2)
 
+report_frefines :: (Eq a, Eq b, GRM gm, Show a, Show b) =>String-> (Fr a b, gm a b, Fr a b) -> ErrorTree
 report_frefines nm (fc, m, fa) = reportWF (fc, m, fa) nm (appl frefines) (appl $ errs_frefines nm)
     where appl f = (\(fc, m, fa)->f (fc, m) fa)
 
--- notion of total fragment refinement
+-- Total fragment refinement
 tfrefines :: (GRM gm, Eq a, Eq b) => (Fr a b, gm a b) -> Fr a b -> Bool
-tfrefines (fc, m) fa = okayFGM (fc, m, fa) && tsg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
+tfrefines (fc, m) fa = okayFGM (fc, m, fa) 
+    && okayG (Just Total) fc 
+    && okayG (Just Total) fa
+    && tsg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
 
+errs_tfrefines :: (Eq a, Eq b, Show a, Show b, GRM gm) =>String -> (Fr a b, gm a b) -> Fr a b -> [ErrorTree]
 errs_tfrefines nm (fc, m) fa =
     let err1 = reportFGM nm (fc, m, fa) in
-    let errs2 = errs_tsg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa) in
-    (err1:errs2)
+    let err2 = reportTF "Fragment concrete" fc in
+    let err3 = reportTF "Fragment abstract" fa in
+    let errs = errs_tsg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa) in
+    (err1:err2:err3:errs)
 
 report_tfrefines nm (fc, m, fa) = reportWF (fc, m, fa) nm (appl tfrefines) (appl $ errs_tfrefines nm)
     where appl f = (\(fc, m, fa)->f (fc, m) fa)
@@ -271,7 +301,7 @@ instance GM_CHK Fr Fr where
    okayGM (Just WeakM) = okayFGM
    okayGM (Just PartialM) = \(fc, m, fa)->frefines (fc, m) fa
    okayGM (Just TotalM) = \(fc, m, fa)-> tfrefines (fc, m) fa
-   faultsGM :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> (Fr a b, GrM a b, Fr a b) -> ErrorTree
+   faultsGM :: (Eq a, Eq b, Show a, Show b) =>String-> Maybe MK->(Fr a b, GrM a b, Fr a b)->ErrorTree
    faultsGM id Nothing         = reportFGM id
    faultsGM id (Just WeakM)    = reportFGM id
    faultsGM id (Just PartialM) = report_frefines id

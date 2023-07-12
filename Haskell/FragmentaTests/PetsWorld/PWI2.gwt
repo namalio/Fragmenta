@@ -1,0 +1,92 @@
+GrwT PetRoomWorld_I2 {
+	node Nottingham : City
+	node UK : Country
+	node Bath : City
+	node GoodPetHotels : Name
+	node PH : PetHotel
+	node PetRest : Name
+	node GPHS : HotelGroup
+	edge PH->Nottingham:city
+	edge PH->UK:country
+	edge PH->PetRest:name
+	node GPHS:HotelGroup
+	edge GPHS->UK:country
+	edge GPHS->Bath:city
+	edge GPHS->GoodPetHotels:name
+	edge PH->GPHS:PartOfGroup
+	node F1: Toilet
+	node T1 : RoomId
+	edge F1->T1:roomid
+	edge PH->F1: facilities
+	node PR1 : EnsuiteRoom
+	node R1 : RoomId
+	edge PR1->R1:roomid
+	edge PH->PR1: rooms
+	node cats : cats
+	edge PR1->cats : zone
+	edge F1->cats : zone
+	edge F1->PR1 : Serves
+	node v2: Nat
+	edge PR1->v2:rcapacity
+	node G : Cat
+	node Gato : Name
+	node d_07_01_2009 : Date
+	edge G->Gato : name
+	node privileged : privileged
+	edge G->privileged : pstatus
+	edge G->d_07_01_2009 : dob
+	node PR2:PetRoom
+	edge PH->PR2:rooms
+	node v10: Nat
+	edge PR2->v10:rcapacity
+	node F2: Toilet
+	edge PH->F2:facilities
+	edge PH->PR2:rooms
+	node dogs : dogs
+	edge F2->dogs:zone
+	edge PR2->dogs:zone
+	edge F2->PR2:Serves
+	node T2:RoomId
+	edge F2->T2:roomid
+	node R2:RoomId
+	edge PR2->R2:roomid
+	node K : Dog
+	edge PR1->K:Hosts
+	node Kopek : Name
+	edge K->Kopek : name
+	node d_04_05_2015 : Date
+	node disadvantaged : disadvantaged
+	edge K->disadvantaged :pstatus
+	edge PR2->G:Hosts
+	edge K->d_04_05_2015:dob
+	node F3: Toilet
+	edge PH->F3:facilities
+	node T3:RoomId
+	edge F3->T3:roomid
+	node PR3:PetRoom
+	node T3:RoomId
+	node v20: Nat
+	edge PR3->v20:rcapacity
+	edge PR3->T3:roomid
+	edge PH->PR3:rooms
+	node reptiles : reptiles
+	edge PR3->reptiles:zone
+	edge F3->reptiles:zone
+	edge F3->PR3:Serves
+	node L : Chamaeleon
+	node Lagartixa : Name
+	edge L->Lagartixa : name
+	node d_17_11_2018 : Date
+	edge L->d_17_11_2018:dob
+	node middleclass : middleclass
+	edge L->middleclass :pstatus
+	edge PR3->L:Hosts
+	node PO_P:PetOwner
+	node Pete : Name
+	edge PO_P->Pete:name
+	edge PO_P->G:Owns
+	edge PO_P->K:Owns
+	edge PO_P->L:Owns
+	edge PO_P->UK:country
+	edge PO_P->Nottingham:city
+}

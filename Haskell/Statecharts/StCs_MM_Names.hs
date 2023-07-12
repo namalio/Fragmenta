@@ -19,9 +19,14 @@ data StCs_CMM_Es = CMM_ENamed_name | CMM_EContains | CMM_EHasDesc | CMM_ETransit
    | CMM_EWExp_exp
     deriving (Read, Show, Eq)
 
+show_amm_n :: Show a => a -> String
 show_amm_n nt = drop 4 (show nt)
+show_amm_e :: Show a => a -> String
 show_amm_e et = drop 4 (show et)
+show_cmm_n :: Show a => a -> String
 show_cmm_n nt = drop 4 (show nt)
+show_cmm_e :: Show a => a -> String
 show_cmm_e et = drop 4 (show et)
+read_cmm :: Read a => String -> a
 read_cmm x = read ("CMM_" ++ x)
 

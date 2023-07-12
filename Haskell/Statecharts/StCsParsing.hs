@@ -13,7 +13,7 @@ import Grs
 import SGrs
 import Sets
 import Relations
-import The_Nil
+import TheNil
 import MyMaybe
 import GrswT
 import ParseUtils
@@ -21,6 +21,7 @@ import Statecharts.StCs_MM_Names
 import SimpleFuns
 import CommonParsing
 import Statecharts.StCsCommon
+import Gr_Cls
 
 
 -- An actual state has a name, a kind and a list of descriptions (for mutable states only)
@@ -53,7 +54,8 @@ isTransition _ = False
 
 -- isNode (ElemC _) = False
 gDescName (StCDesc nm _) = nm
-gElems (StCDesc _ es) = es
+gElems :: StCDesc -> Set Elem
+gElems (StCDesc _ es) = set es
 getSt (ElemSt st) = st
 getT (ElemT t) = t
 
@@ -68,15 +70,16 @@ getTgtOfT(Transition _ _ t _ _ _) = t
 
 gStName (State nm _ _) = nm
 gStTy (State _ ty _) = ty
-gStDescs (State _ _ ds) = ds
+gStDescs :: State -> Set StCDesc
+gStDescs (State _ _ ds) = set ds
 
 gCMMTy (State _ StartSt _) = CMM_StartState
 gCMMTy (State _ EndSt _) = CMM_EndState
 gCMMTy (State _ HistorySt _) = CMM_HistoryState
 gCMMTy (State _ MutableSt _) = CMM_MutableState
 
-getStates desc = foldr (\e es-> if isState e then (getSt e):es else es) [] (gElems desc)
-getTransitions desc = foldr (\e es-> if isTransition e then (getT e):es else es) [] (gElems desc)
+getStates desc = foldr (\e es-> if isState e then (getSt e) `intoSet` es else es) nil (gElems desc)
+getTransitions desc = foldr (\e es-> if isTransition e then (getT e) `intoSet` es else es) nil (gElems desc)
 -- getTheCs elems = foldl (\es e-> if not . isNode $ e then (getC e):es else es) [] elems
 
 stc_model :: ReadP StCModel
@@ -149,7 +152,7 @@ stc_history_state = do
 tevent :: ReadP (Maybe Action)
 tevent = do
    char ':'
-   e <- parse_until_chs "\n[/"
+   e <- parse_until_chs "\n/["
    return (Just e)
 
 tguard :: ReadP (Maybe String)
@@ -162,7 +165,7 @@ tguard = do
 taction :: ReadP (Maybe Action)
 taction = do
    char '/'
-   a <- parse_until_chs "\n"
+   a <- parse_id
    return (Just a)
 
 stc_transition :: ReadP Transition
@@ -212,96 +215,106 @@ mkenm_frn n = "E"++n
 
 cNm nm = nm++"_"
 descId nm = nm ++ "_Desc"
+stId :: String -> String
 stId nm = nm ++ "_St"
 
 -- builds id of entity being named and actual id being assigned to entity
+mk_nm_info_q :: String->String-> ((String, String), (String, String), (String, String), (String, String))
 mk_nm_info_q snm nm = ((nm, show_cmm_n CMM_Name), ("ENmOf"++snm, show_cmm_e CMM_ENamed_name), 
-                   ("ENmOf"++snm, snm), ("ENmOf"++snm, nm))
+                      ("ENmOf"++snm, snm), ("ENmOf"++snm, nm))
 
 -- builds the contains
 consContainsT nm src = ((mkenm_frn $ "Contains"++ nm, show_cmm_e CMM_EContains), 
    (mkenm_frn $ "Contains" ++ nm, src), (mkenm_frn $ "Contains" ++ nm, nm))
 
+consGwT_InitQ :: String->(Set (String, String), Set (String, String),Set (String, String), Set (String, String))
 consGwT_InitQ nm  = 
-   let ns_m_i = [("StCModel_", show_cmm_n CMM_StCModel)] in 
-   (mk_nm_info_q "StCModel_" nm) `combineQwInsert` (ns_m_i, [], [], [])
+   let ns_m_i = singles ("StCModel_", show_cmm_n CMM_StCModel) in 
+   (mk_nm_info_q "StCModel_" nm) `combineQwIntoS` (ns_m_i, nil, nil, nil)
 
+consGwT_desc :: String-> StCDesc->(Set (String, String), Set (String, String),Set (String, String), Set (String, String))
 consGwT_desc snm desc  = 
-   let dnm = descId $ gDescName desc in
-   let ns_m_i = [(dnm, show_cmm_n CMM_StCDesc)] in 
-   let es_m_i = ([(mkenm_frn $ snm ++ "_" ++ dnm, show_cmm_e CMM_EHasDesc)], 
-                 [(mkenm_frn $ snm ++ "_" ++ dnm, snm)], 
-                 [(mkenm_frn $ snm ++ "_" ++ dnm, dnm)]) in
-   let names_q = (mk_nm_info_q dnm (gDescName desc)) `combineQwInsert` nilQl in
+   let dnm = descId $ gDescName desc 
+       ns_m_i = singles (dnm, show_cmm_n CMM_StCDesc) 
+       es_m_i = (singles (mkenm_frn $ snm ++ "_" ++ dnm, show_cmm_e CMM_EHasDesc), 
+                 singles (mkenm_frn $ snm ++ "_" ++ dnm, snm), 
+                 singles (mkenm_frn $ snm ++ "_" ++ dnm, dnm)) 
+       names_q = (mk_nm_info_q dnm (gDescName desc)) `combineQwIntoS` nilQS in
    names_q `combineQwUnion` (makeQFrTFst ns_m_i es_m_i)
    `combineQwUnion` (consGwT_Sts desc) `combineQwUnion` (consGwT_Ts desc)
 
+consGwT_Sts :: StCDesc->(Set (String, String), Set (String, String),Set (String, String), Set (String, String))
 consGwT_Sts desc = 
    let cons_st_q_final s = let snm = stId $ gStName s in let sty = gCMMTy s in 
-                           if sty /= CMM_MutableState then nilQl
+                           if sty /= CMM_MutableState then nilQS
                                else (mk_nm_info_q snm (gStName s)) 
-                               `combineQwInsert` (foldr(\d aq->(consGwT_desc snm d) `combineQwUnion` aq) (nilQl) (gStDescs s)) in
+                               `combineQwIntoS` (foldr(\d aq->(consGwT_desc snm d) `combineQwUnion` aq) nilQS $ gStDescs s) in
    let cons_st_q s = let snm = stId $ gStName s in  
           (makeQFrTFst (snm, show_cmm_n $ gCMMTy s) (consContainsT snm $ descId (gDescName desc))) 
-          `combineQwInsert` (cons_st_q_final s) in
-   foldr (\s ss->(cons_st_q s) `combineQwUnion` ss) (nilQl) (getStates desc)
+          `combineQwIntoS` (cons_st_q_final s) in
+   foldr (\s ss->(cons_st_q s) `combineQwUnion` ss) nilQS (getStates desc)
 
+consGwT_Ts::StCDesc ->(Set (String, String), Set (String, String),Set (String, String), Set (String, String))
 consGwT_Ts desc = 
-   foldr (\t qs->(consGwT_T t desc) `combineQwUnion` qs) (nilQl) (getTransitions desc)
+   foldr (\t qs->(consGwT_T t desc) `combineQwUnion` qs) nilQS (getTransitions desc)
 
+consGwT_T :: Transition-> StCDesc-> (Set (Name, String), Set ([Char], [Char]), Set ([Char], [Char]),
+    Set ([Char], [Char]))
 consGwT_T t desc = 
-   let tnm = getNameOfT t in
-   let tq = (makeQFrTFst (tnm, show_cmm_n CMM_Transition) $ consContainsT tnm (descId $ gDescName desc)) in
-   let enm = "Ev" ++ tnm in
-   let exp_nm nm e = nm ++ "Exp:" ++ e in
-   let oe = getEventOfT t in
-   let ev_q = if isNil oe then nilQl 
-              else ([(enm, show_cmm_n CMM_Event), (exp_nm enm $ the oe, show_cmm_n CMM_Exp)], 
-              [(mkenm_frn enm, show_cmm_e CMM_ETransition_event), 
+   let tnm = getNameOfT t 
+       tq = (makeQFrTFst (tnm, show_cmm_n CMM_Transition) $ consContainsT tnm (descId $ gDescName desc)) 
+       enm = "Ev" ++ tnm 
+       exp_nm nm e = nm ++ "Exp:" ++ e 
+       oe = getEventOfT t 
+       ev_q = if isNil oe then nilQS 
+              else (set [(enm, show_cmm_n CMM_Event), (exp_nm enm $ the oe, show_cmm_n CMM_Exp)], 
+              set [(mkenm_frn enm, show_cmm_e CMM_ETransition_event), 
                (mkenm_frn $ exp_nm enm "", show_cmm_e CMM_EWExp_exp)], 
-              [(mkenm_frn enm, tnm), (mkenm_frn $ exp_nm enm "", enm)], 
-              [(mkenm_frn enm, enm), (mkenm_frn $ exp_nm enm "", exp_nm enm $ the oe)]) in
-   let og = getGuardOfT t in
-   let gnm = "G" ++ tnm in
-   let g_q = if isNil og then nilQl 
-           else ([(gnm, show_cmm_n CMM_Guard), (exp_nm gnm (the og), show_cmm_n CMM_Exp)], 
-           [(mkenm_frn gnm, show_cmm_e CMM_ETransition_guard), 
-            (mkenm_frn $ exp_nm gnm "", show_cmm_e CMM_EWExp_exp)],
-           [(mkenm_frn gnm, tnm), (mkenm_frn $ exp_nm gnm "", gnm)], 
-           [(mkenm_frn gnm, gnm), (mkenm_frn $ exp_nm gnm "", exp_nm gnm $ the og)]) in
-   let oa = getActionOfT t in
-   let anm = "A" ++ tnm in
-   let a_q = if isNil oa then nilQl 
-          else ([(anm, show_cmm_n CMM_Action), (exp_nm anm (the oa), show_cmm_n CMM_Exp)], 
-          [(mkenm_frn anm, show_cmm_e CMM_ETransition_action), 
+              set [(mkenm_frn enm, tnm), (mkenm_frn $ exp_nm enm "", enm)], 
+              set [(mkenm_frn enm, enm), (mkenm_frn $ exp_nm enm "", exp_nm enm $ the oe)])
+       og = getGuardOfT t
+       gnm = "G" ++ tnm 
+       g_q = if isNil og then nilQS
+           else (set [(gnm, show_cmm_n CMM_Guard), (exp_nm gnm (the og), show_cmm_n CMM_Exp)], 
+                set [(mkenm_frn gnm, show_cmm_e CMM_ETransition_guard), 
+               (mkenm_frn $ exp_nm gnm "", show_cmm_e CMM_EWExp_exp)],
+               set [(mkenm_frn gnm, tnm), (mkenm_frn $ exp_nm gnm "", gnm)], 
+               set [(mkenm_frn gnm, gnm), (mkenm_frn $ exp_nm gnm "", exp_nm gnm $ the og)])
+       oa = getActionOfT t 
+       anm = "A" ++ tnm 
+       a_q = if isNil oa then nilQS 
+          else (set [(anm, show_cmm_n CMM_Action), (exp_nm anm (the oa), show_cmm_n CMM_Exp)], 
+          set [(mkenm_frn anm, show_cmm_e CMM_ETransition_action), 
            (mkenm_frn $ exp_nm anm "", show_cmm_e CMM_EWExp_exp)],
-          [(mkenm_frn anm, tnm), (mkenm_frn $ exp_nm anm "", anm)], 
-          [(mkenm_frn anm, anm), (mkenm_frn $ exp_nm anm "", exp_nm anm $ the oa)]) in
-   let s_t_q = ([], [(mkenm_frn $ tnm ++ "src", show_cmm_e CMM_ETransition_src), 
+          set [(mkenm_frn anm, tnm), (mkenm_frn $ exp_nm anm "", anm)], 
+          set [(mkenm_frn anm, anm), (mkenm_frn $ exp_nm anm "", exp_nm anm $ the oa)]) 
+       s_t_q = (nil, set [(mkenm_frn $ tnm ++ "src", show_cmm_e CMM_ETransition_src), 
                (mkenm_frn $ tnm ++ "tgt", show_cmm_e CMM_ETransition_tgt)], 
-               [(mkenm_frn $ tnm ++ "src", tnm), (mkenm_frn $ tnm ++ "tgt", tnm)], 
-               [(mkenm_frn $ tnm ++ "src", stId $ getSrcOfT t), 
+               set [(mkenm_frn $ tnm ++ "src", tnm), (mkenm_frn $ tnm ++ "tgt", tnm)], 
+               set [(mkenm_frn $ tnm ++ "src", stId $ getSrcOfT t), 
                 (mkenm_frn $ tnm ++ "tgt", stId $ getTgtOfT t)]) in
-   (((tq `combineQwInsert` ev_q) `combineQwAppend` g_q) `combineQwAppend` a_q) `combineQwAppend` s_t_q
+   (((tq `combineQwIntoS` ev_q) `combineQwUnion` g_q) `combineQwUnion` a_q) `combineQwUnion` s_t_q
 
 -- Constructs the graph with typing for given  StC model
-consGwT (StCModel nm descs)  = 
+consGwTFrStc :: StCModel -> GrwT String String
+consGwTFrStc (StCModel nm descs)  = 
    -- initial set of nodes with type mapping
    let (ns_m, es_m, src_m, tgt_m) = (consGwT_InitQ nm) 
-                          `combineQwAppend` foldr(\d q->(consGwT_desc "StCModel_" d) `combineQwAppend` q) nilQl descs in
-   let pcg = cons_g (map fst ns_m) (map fst es_m) src_m tgt_m in
-   cons_gwt pcg (cons_gm (ns_m) (es_m))
+               `combineQwUnion` foldr(\d q->(consGwT_desc "StCModel_" d) `combineQwUnion` q) nilQS (set descs)
+       pcg = consG (fmap fst ns_m) (fmap fst es_m) src_m tgt_m in
+   consGWT pcg (consGM ns_m es_m)
    
 --is_wf_stcdef (StCDef d) = start `elem` (map (\(Node nm _)->nm) (getTheNodes elems))
 
+loadStC :: FilePath -> IO (GrwT String String)
 loadStC fn = do
    ostc <- loadStCFrFile fn
    if (isNil ostc) 
       then do
          putStrLn "The StC definition could not be parsed."
-         return empty_gwt
+         return Gr_Cls.empty
       else do
-         let pc_gs = consGwT $ the ostc
+         let pc_gs = consGwTFrStc $ the ostc
          return pc_gs
 
 process_stc_def :: FilePath -> IO ()
@@ -333,6 +346,8 @@ test4 = readP_to_S stc_transition "transition BuzzingToMuted Buzzing->Muted:afte
 test5 = readP_to_S stc_transition "transition BuzzerInit init->Muted"
 test6 = readP_to_S stc_end_state "end endSt"
 test7 = readP_to_S stc_state complexSt
+
+test8 = readP_to_S stc_transition "transition FrHappy Happy->Angry:chSound[in(Muted)]"
 
 -- test1 = readP_to_S pc_def tb_pc_def
 -- test2 = process_pc_def (def_path ++ "PC_CashMachine.pc")

@@ -8,8 +8,8 @@ fragment F_MM4 {
     node Action
     node Exp
     virtual WExp
-    rel Transition->PState[Transition_src]:*,1
-    rel Transition->PState[Transition_tgt]:*,1
+    rel Transition->PState[Transition_src]:*;1
+    rel Transition->PState[Transition_tgt]:*;1
     relu Transition->Event[Transition_event]:0..1
     relu Transition->Guard[Transition_guard]:0..1
     relu Transition->Action[Transition_action]:0..1

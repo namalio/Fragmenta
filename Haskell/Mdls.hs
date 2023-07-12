@@ -120,10 +120,13 @@ instance GM_CHK Mdl Mdl where
    okayGM :: (Eq a, Eq b) => Maybe MK -> (Mdl a b, GrM a b, Mdl a b) -> Bool
    okayGM Nothing      = okayMGM
    okayGM (Just WeakM) = okayMGM
-   okayGM (Just PartialM) = (\(mdlc, m, mdla)-> (mdlc, [m]) `mrefines` mdla)
-   okayGM (Just TotalM)   = (\(mdlc, m, mdla)-> (mdlc, [m]) `mrefines` mdla)
+   okayGM (Just PartialM) = \(mdlc, m, mdla)-> (mdlc, [m]) `mrefines` mdla
+   okayGM (Just TotalM)   = \(mdlc, m, mdla)-> (mdlc, [m]) `mrefines` mdla
    faultsGM :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
-   faultsGM id Nothing    = reportMGM id
+   faultsGM id Nothing         = reportMGM id
+   faultsGM id (Just WeakM)    = reportMGM id
+   faultsGM id (Just PartialM) = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
+   faultsGM id (Just TotalM) = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
 
 ty_compliesm::(Eq a, Eq b)=>GrwT a b->Mdl a b->Bool
 ty_compliesm gwt mdl = okayGM' (Just PartialM) (gwt, mufs mdl) 

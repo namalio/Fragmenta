@@ -1,0 +1,11 @@
+Morphism M_SEs {
+	nodes {
+	   A->A
+	   B->B
+	   C->B
+	}
+	edges {
+	   R1->FlexRel
+	   R2->FlexRel
+	}
+}

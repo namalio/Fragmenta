@@ -1,0 +1,10 @@
+digraph {graph[label=Wander_Exmp3,labelloc=tl,labelfontsize=12];
+"A"[shape=record,fillcolor=lightskyblue1,style = filled,label="A"];
+"B"[shape=record,fillcolor=lightskyblue1,style = filled,label="B"];
+"V"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>V</I><br/>(V)}>];
+
+"A"->"V"[arrowhead=onormal,arrowsize=2.0];
+"B"->"V"[arrowhead=onormal,arrowsize=2.0];
+"V"->"V"[label="SomeRel▼",dir=none,taillabel="*",headlabel="*"];
+"B"->"B"[label="SRNBB: ~ESomeRel ▼",dir=none,taillabel="",headlabel="",style=dotted];
+}

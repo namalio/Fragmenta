@@ -1,9 +1,32 @@
-module SimpleFuns(swap, pair_up, equalLs, quicksort, fst_T, snd_T, thd_T, fst_Q, mapT, applyPToP, butLast, 
-    ext_P_to_T, toIdxC, combineTwAppend, combineTwInsert, combineQwInsert, combineQwAppend, combineQwUnion, 
-    makeQFrTFst, nilQl,  replace, unique) where
+module SimpleFuns(swap
+    , pair_up
+    , equalLs
+    , quicksort
+    , fst_T
+    , snd_T
+    , thd_T
+    , fst_Q
+    , mapT
+    , applyPToP
+    , butLast
+    , ext_P_to_T
+    , toIdxC
+    , combineTwAppend
+    , combineTwInsert
+    , combineQwInsert
+    , combineQwIntoS
+    , combineQwAppend
+    , combineQwUnion
+    , makeQFrTFst
+    , nilQl
+    , nilQS
+    , replace
+    , unique
+    , dupsL) where
 
-import Sets (union )
+import Sets (union, intoSet, Set )
 import Data.List(insert)
+import TheNil
 
 --inverts the pair
 swap :: (b, a) -> (a, b)
@@ -37,6 +60,8 @@ combineTwInsert (x, y, z) (x', y' , z') = (insert x x', insert y y', insert z z'
 -- A quadruple with empty lists
 nilQl :: ([a1], [a2], [a3], [a4])
 nilQl = ([], [], [], [])
+nilQS:: (Set a1, Set a2, Set a3, Set a4)
+nilQS = (nil, nil, nil, nil)
 
 -- Makes a quadruple out of an element and a triple
 makeQFrTFst :: a -> (b, c, d) -> (a, b, c, d)
@@ -45,8 +70,10 @@ makeQFrTFst x (y, z, w) = (x, y, z, w)
 -- Combines quadruples with an operator
 combineQwOp op (x, y, z, w) (x', y' , z', w') = (op x x', op y y', op z z', op w w')
 combineQwAppend = combineQwOp (++) 
+combineQwUnion :: (Eq a1, Eq a2, Eq a3, Eq a4) =>(Set a1, Set a2, Set a3, Set a4)->(Set a1, Set a2, Set a3, Set a4)-> (Set a1, Set a2, Set a3, Set a4)
 combineQwUnion (x, y, z, w) (x', y' , z', w') = (x `union` x', y `union` y', z `union` z', w `union` w')
 combineQwInsert (x, y, z, w) (x', y' , z', w') = (insert x x', insert y y', insert z z', insert w w')
+combineQwIntoS (x, y, z, w) (x', y' , z', w') = (x `intoSet` x', y `intoSet` y', z `intoSet` z', w `intoSet` w')
 
 -- Maps a function onto a triple
 mapT f (x, y, z) = (f x, f y, f z)
@@ -104,3 +131,10 @@ unique (x:xs) = if x `elem` xs then False else unique xs
 
 test1 = combineTwInsert (1, 2, 3) ([2, 3], [4, 5], [6, 7])
 test2 = combineQwInsert (1, 2, 3, 4) ([2, 3], [4, 5], [6, 7], [8, 9])
+
+-- Gives elements of a set which are duplicated
+dupsL :: Eq a => [a] -> [a]
+dupsL [] = []
+dupsL (x:xs) 
+   | x `elem` xs  = x:dupsL xs
+   | otherwise    = dupsL xs

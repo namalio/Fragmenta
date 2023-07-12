@@ -1,0 +1,9 @@
+SG Flex_Exmp {
+   node A
+   node B
+   virtual G
+   inh A->G
+   inh B->G
+   rel G->G[FlexRel]:*;*
+   derived A->A[NAA <-> FlexRel]:0;0
+}

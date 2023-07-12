@@ -1,6 +1,6 @@
 
 module LoadCheckDraw(load_def, draw_to_file, wrapSG, wrapG, unwrapG, unwrapSG, unwrapSGWithinP, draw_def, draw_mdl, loadSG,
-    loadG, loadGwT, load_fr_def, loadM, load_gfg_def, load_mdl_def, load_rm_cmdl_def, saveSGDrawing, saveFrDrawing, 
+    loadG, loadGwT, loadF, loadM, load_gfg_def, load_mdl_def, load_rm_cmdl_def, saveSGDrawing, saveFrDrawing, 
     saveGDrawing, saveGwTDrawing, saveGFGDrawing, saveDrawingWithMdlFrs) 
 where
 
@@ -66,6 +66,7 @@ load_gen path fnm load wrap = do
         return $ Just (nm_g, wrap g)
       else return Nothing
 
+def_kind :: String -> GKind
 def_kind fnm =
     let (_, ext) = splitAtStr "." fnm in
     case ext of
@@ -102,10 +103,11 @@ loadGwT path fnm = do
     let (nm, g) = unwrapGwTWithinP d
     return (nm, g)
 
-load_fr_def path fnm = do 
+loadF::FilePath ->String ->IO (String, Fr String String)
+loadF path fnm = do 
     d<- load_def path fnm
-    let (nm, g) = unwrapFrWithinP d
-    return (nm, g)
+    let (nm, f) = unwrapFrWithinP d
+    return (nm, f)
 
 load_gfg_def path fnm = do 
     d<- load_def path fnm
@@ -114,7 +116,7 @@ load_gfg_def path fnm = do
 load_mdl_def path nm = do 
     (_, gfg)<-load_gfg_def path (nm ++ ".gfg")
     fd <- forM (ns gfg) (\fn-> do
-        (_, f)<-load_fr_def path (fn ++ ".fr")
+        (_, f)<-loadF path (fn ++ ".fr")
         return (fn, f))
     return $ consMdl gfg fd
 
@@ -130,6 +132,7 @@ loadM path fnm = do
     om1<-loadMorphism $ path ++ fnm
     return (the om1)
 
+draw_def :: String -> String -> String -> IO ()
 draw_def dpath ipath fnm = do
     d<-load_def dpath fnm 
     when (isSomething d) $ do
@@ -145,6 +148,7 @@ draw_to_file path nm pg = do
         Fr -> saveFrDrawing path nm $ unwrapFr pg
         GFG -> saveGFGDrawing path nm $ unwrapGFG pg
 
+draw_mdl :: String -> String -> String -> IO ()
 draw_mdl dpath ipath mnm = do
     mdl<-load_mdl_def dpath mnm
     saveGFGDrawing ipath (mnm ++ "_gfg") (mgfg mdl)

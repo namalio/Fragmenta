@@ -1,21 +1,21 @@
 digraph {graph[label=F_MM4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM4{style=dashed;label=F_MM4;
 "PState"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<State<br/>(P)>];
-"Transition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Transition"];
 "PElement2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Element2<br/>(P)>];
-"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
+"Transition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Transition"];
 "Event"[shape=record,fillcolor=lightskyblue1,style = filled,label="Event"];
 "Guard"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guard"];
 "Action"[shape=record,fillcolor=lightskyblue1,style = filled,label="Action"];
+"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
 "WExp"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>WExp</I><br/>(V)}>];
 
 "Transition"->"PState"[label="Transition_src▼",dir=none,taillabel="*",headlabel=""];
 "Transition"->"PState"[label="Transition_tgt▼",dir=none,taillabel="*",headlabel=""];
-"Transition"->"Event"[label="Transition_event▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Transition"->"Guard"[label="Transition_guard▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Transition"->"Action"[label="Transition_action▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Transition"->"Event"[label="Transition_event",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Transition"->"Guard"[label="Transition_guard",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Transition"->"Action"[label="Transition_action",arrowhead=vee,headlabel="0..1",arrowsize=.5];
 "Transition"->"PElement2"[arrowhead=onormal,arrowsize=2.0];
-"WExp"->"Exp"[label="WExp_exp▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"WExp"->"Exp"[label="WExp_exp",arrowhead=vee,headlabel="",arrowsize=.5];
 "Event"->"WExp"[arrowhead=onormal,arrowsize=2.0];
 "Guard"->"WExp"[arrowhead=onormal,arrowsize=2.0];
 "Action"->"WExp"[arrowhead=onormal,arrowsize=2.0];

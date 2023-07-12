@@ -134,16 +134,17 @@ parse_nvirt = do
    n<-parse_fin_node Nvirt
    return n
 
-parse_nopt::ReadP NodeDef
-parse_nopt = do
-   string "opt"
-   skipSpaces
-   n<-parse_fin_node Nopt
-   return n
+--parse_nopt::ReadP NodeDef
+--parse_nopt = do
+--   string "opt"
+--   skipSpaces
+--   n<-parse_fin_node Nopt
+--   return n
 
 parse_sg_node::ReadP NodeDef
 parse_sg_node = do
-   n<-parse_noden <|> parse_nodea <|> parse_proxy <|>  parse_nvirt <|> parse_nopt 
+   n<-parse_noden <|> parse_nodea <|> parse_proxy <|>  parse_nvirt 
+-- <|> parse_nopt 
    return n
 
 parse_edge_name::ReadP String
@@ -270,13 +271,13 @@ parse_PEA = do
    pea <- parse_PEA_nrml <|> parse_PEA_inv 
    return pea
 
-parse_PE_At::ReadP (PE String String)
+parse_PE_At::ReadP (PEC String String)
 parse_PE_At = do
    pea <- parse_PEA
    skipSpaces
-   return (At pea)
+   return (At $ pea)
 
-parse_PE_Dres::ReadP (PE String String)
+parse_PE_Dres::ReadP (PEC String String)
 parse_PE_Dres = do
    s<-parse_id -- parses names of restricting set
    skipSpaces
@@ -284,9 +285,9 @@ parse_PE_Dres = do
    skipSpaces
    pea<-parse_PEA -- parses names of relation
    skipSpaces
-   return (Dres s pea) 
+   return (Dres s pea)
 
-parse_PE_Rres::ReadP (PE String String)
+parse_PE_Rres::ReadP (PEC String String)
 parse_PE_Rres = do
    pea<-parse_PEA -- parses names of relation
    skipSpaces
@@ -294,9 +295,9 @@ parse_PE_Rres = do
    skipSpaces
    s<-parse_id -- parses names of restricting set
    skipSpaces
-   return (Rres pea s)   
+   return (Rres pea s)
 
-parse_PE_Smpl::ReadP (PE String String)
+parse_PE_Smpl::ReadP (PEC String String)
 parse_PE_Smpl= do
    pe <- parse_PE_At  <|> parse_PE_Dres  <|> parse_PE_Rres 
    return pe
@@ -313,7 +314,7 @@ parse_PE_Scmp = do
 
 parse_PEa::ReadP (PE String String)
 parse_PEa = do
-   pe <- parse_PE_Smpl <|> parse_PE_Scmp
+   pe <- (fmap Ec parse_PE_Smpl) <|> parse_PE_Scmp
    return pe
 
 parse_PE::ReadP (PE String String)

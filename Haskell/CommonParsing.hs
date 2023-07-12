@@ -1,7 +1,16 @@
-module CommonParsing (parse_id, parse_spc_id, parse_number, parseMaybe, parse_until_chs, parse_ls_ids, capitalise_fst, lower_fst) where
+module CommonParsing (
+   parse_id
+   , parse_spc_id
+   , parse_number
+   , parseMaybe
+   , parse_until_chs
+   , parse_ls_ids
+   , capitalise_fst
+   , lower_fst) where
 
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
+import MyMaybe ( str_of_ostr )
 
 is_letter::Char->Bool
 is_letter ch = (ch>='a' && ch<='z') || (ch>='A' && ch<='Z')
@@ -40,10 +49,11 @@ parseMaybe parser input =
         [] -> Nothing
         ((result, _):_) -> Just result
 
+satisfyWLook::(Char->Bool)->ReadP Char
+satisfyWLook p = look >>= (\s->if not (null s) && p (head s) then return (head s) else pfail)
+
 parse_until_chs::String->ReadP String
-parse_until_chs chs = do
-    str<-manyTill (satisfy (\ch->True)) (satisfy (\ch-> any (ch ==) chs))
-    return str
+parse_until_chs chs = do manyTill (satisfy (\ch->True)) (satisfyWLook (\c-> any (c ==) chs))
 
 parse_ls_ids ::String->ReadP [String]
 parse_ls_ids sep = do

@@ -1,0 +1,7 @@
+SG IEs {
+   node A
+   node B
+   rel A->A[AA]:*;1
+   rel B->B[BB]:1;*
+   rel A->B[R1]:1;*
+}

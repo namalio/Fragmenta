@@ -1,0 +1,34 @@
+digraph {
+compound=true;
+rankdir=LR;
+label="StC_WBuzzerWStatus";
+labelloc=t;
+subgraph cluster_Status {
+style="filled,rounded";
+label ="Status";
+fillcolor = lightgray;
+hStatus_St [shape = circle,fillcolor=black,label="H"];
+
+Happy [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Happy];
+Angry [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Angry];
+initStatus_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
+
+
+Happy->Angry[label="chSound[in(Muted)]",  ];
+Angry->Happy[label="chSound[in(Muted)]",  ];
+initStatus_St->Happy[label="",  ];
+}
+subgraph cluster_Buzzer {
+style="filled,rounded";
+label ="Buzzer";
+fillcolor = lightgray;
+init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
+
+Buzzing [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Buzzing];
+Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
+
+init_St->Muted[label="",  ];
+Buzzing->Muted[label="after(3sec)/mute",  ];
+Muted->Buzzing[label="buzz",  ];
+}
+}

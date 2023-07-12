@@ -15,12 +15,13 @@ import Statecharts.StCsParsing
 import CheckUtils
 import Control.Monad(when, forM)
 import MyMaybe
-import The_Nil
+import TheNil
 import ErrorAnalysis
 import LoadCheckDraw
 import Statecharts.StCsDraw
 import SimpleFuns
 import MMI
+import GrswT ( GrwT )
 
 mm_path   = "Statecharts/MM/"
 stcs_path = "Statecharts/Examples/"
@@ -37,14 +38,15 @@ check_stcs_MM = do
     check_report_wf "StCs_MM" (Just Total) (mmi_cmm mmi) True
     check_morphism "Refinement of 'StCs_MM' by 'StCs_AMM'" (Just TotalM) (mmi_cmm mmi) (mmi_rm mmi) (mmi_amm mmi) True
 
-checkWF::MMI String->StC String->IO(Bool)
+checkWF::MMI String String->StC String String->IO(Bool)
 checkWF mmi stc = do
     let stc_nm = gStCName stc
-    let errs = check_wf_gm' stc_nm (Just TotalM) (stc, mmi_cmm mmi) 
+    let errs = faultsGM' stc_nm (Just TotalM) (stc, mmi_cmm mmi) 
     when (not . is_nil $ errs) $ do
         show_wf_msg ("StC " ++ stc_nm) errs
     return (is_nil errs)
 
+loadAndCheck :: FilePath->FilePath-> MMI String String-> IO (Maybe (GrwT String String))
 loadAndCheck stcs_path fnm mmi = do
   stc <- loadStC (stcs_path ++ fnm)
   b <- checkWF mmi stc 
@@ -58,16 +60,19 @@ drawStCToFile stc_img_path mmi stc = do
    putStrLn "Writing the statechart drawing to the GraphViz file..." 
    writeStCDrawingToFile stc_img_path mmi stc
 
+check_draw_stc :: FilePath -> FilePath -> MMI String String -> FilePath -> IO ()
 check_draw_stc stcs_path stc_img_path mmi fn = do
    putStrLn $ "Processing '" ++ fn ++ "'" 
    ostc <- loadAndCheck stcs_path fn mmi
    when (isSomething ostc) $ do
       drawStCToFile stc_img_path mmi (the ostc)
 
+check_draw_BoolSetter :: IO ()
 check_draw_BoolSetter = do
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "BoolSetter.stc"
 
+check_draw_Buzzer :: IO ()
 check_draw_Buzzer = do
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "Buzzer.stc"
@@ -79,6 +84,14 @@ check_draw_WBuzzer = do
 check_draw_BuzzerWStatus = do
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "BuzzerWStatus.stc"
+
+check_draw_WBuzzerWStatus = do
+    mmi<-load_stcs_mmi mm_path
+    check_draw_stc stcs_path stc_img_path mmi "WBuzzerWStatus.stc"
+
+check_draw_WBuzzerWStatus2 = do
+    mmi<-load_stcs_mmi mm_path
+    check_draw_stc stcs_path stc_img_path mmi "WBuzzerWStatus2.stc"
 
 check_draw_Lasbscs = do
     mmi<-load_stcs_mmi mm_path
@@ -113,13 +126,14 @@ draw_WBuzzer = do
 test = do
     mmi<-load_stcs_mmi mm_path
     --check_draw_stc stcs_path stc_img_path mmi "BoolSetter.stc"
-    stc <- loadStC (stcs_path ++ "SimpleWatch.stc") 
-    putStrLn $ show stc
-    putStrLn $ show $ gMainDescs stc 
+    stc <- loadStC (stcs_path ++ "WBuzzerWStatus2.stc") 
+    drawStCToFile stc_img_path mmi stc
+    putStrLn . show $ stc
+    putStrLn . show $ gMainDescs stc
     --putStrLn $ gStCName stc
     --putStrLn $ show $ gDescInfo (stc_sg_cmm mmi) stc (gMainDescNode stc)
     --putStrLn $ show $ gTransitionInfo stc "BuzzingToMuted"
-    putStrLn $ show $ drawStC mmi stc
+    putStrLn $ show (drawStC mmi stc)
     -- putStrLn $ show $ gMutableStateDescs stc "ProcessingSt"
     -- putStrLn $ getStCName stc
     -- putStrLn $ show $ getMainDescInfo (stc_sg_cmm mmi) stc

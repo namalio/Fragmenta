@@ -89,8 +89,8 @@ reportRT::(Eq a, Show a)=>Rel a b->Set a->ErrorTree
 reportRT f xs = 
    let es_diff = xs `sminus` (dom_of f) in
    let es_diff2 = (dom_of f) `sminus` xs in
-   let errs2 = if null es_diff then nile else consSET ("No mapping for elements: " ++ (showElems' es_diff)) in
-   let errs3 = if null es_diff2 then nile else consSET ("The following shouldn't be mapped: " ++ (showElems' es_diff2)) in
+   let errs2 = if null es_diff then nile else consSET ("No mapping for elements: " ++ (showNodes es_diff)) in
+   let errs3 = if null es_diff2 then nile else consSET ("The following shouldn't be mapped: " ++ (showNodes es_diff2)) in
    if total f xs then nile else consET "The totality constraint is unsatisfied. " [errs2, errs3]
 
 -- Errors related to a relation

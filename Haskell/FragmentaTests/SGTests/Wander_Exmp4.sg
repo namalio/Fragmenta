@@ -1,0 +1,10 @@
+SG Wander_Exmp4 {
+   node A
+   node B
+   virtual V
+   inh A->V
+   inh B->V
+   rel V->V[SomeRel]:*;*
+   derived A->A[SRNAA <-> SomeRel]:0;0
+   derived B->B[SRNBB <-> SomeRel⨾SomeRel~]:0;0
+}

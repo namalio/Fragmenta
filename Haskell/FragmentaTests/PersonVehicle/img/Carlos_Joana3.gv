@@ -1,12 +1,12 @@
 digraph {graph[label=Carlos_Joana3,labelloc=tl,labelfontsize=12];
-"Joana"[shape=box,fillcolor=lightskyblue1,style = filled,label="Joana : Employee"];
-"Lisboa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Lisboa : City"];
 "Carlos"[shape=box,fillcolor=lightskyblue1,style = filled,label="Carlos : Employee"];
-"Birmingham"[shape=box,fillcolor=lightskyblue1,style = filled,label="Birmingham : City"];
-"Panda"[shape=box,fillcolor=lightskyblue1,style = filled,label="Panda : Car"];
-"plnoP"[shape=box,fillcolor=lightskyblue1,style = filled,label="plnoP : PlateNo"];
+"Joana"[shape=box,fillcolor=lightskyblue1,style = filled,label="Joana : Employee"];
 "Corsa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Corsa : Car"];
+"Panda"[shape=box,fillcolor=lightskyblue1,style = filled,label="Panda : Car"];
+"Lisboa"[shape=box,fillcolor=lightskyblue1,style = filled,label="Lisboa : City"];
+"Birmingham"[shape=box,fillcolor=lightskyblue1,style = filled,label="Birmingham : City"];
 "plnoC"[shape=box,fillcolor=lightskyblue1,style = filled,label="plnoC : PlateNo"];
+"plnoP"[shape=box,fillcolor=lightskyblue1,style = filled,label="plnoP : PlateNo"];
 
 "Joana"->"Panda"[label="Joana_Panda :Owns▼",arrowhead=vee];
 "Joana"->"Lisboa"[label="Joana_Lisboa :Lives▼",arrowhead=vee];

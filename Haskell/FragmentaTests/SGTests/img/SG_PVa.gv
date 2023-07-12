@@ -1,0 +1,6 @@
+digraph {graph[label=SG_PVa,labelloc=tl,labelfontsize=12];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+}

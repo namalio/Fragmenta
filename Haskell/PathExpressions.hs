@@ -5,7 +5,18 @@
 -- Author: Nuno Amálio
 ---------------------
 
-module PathExpressions (PEA(..), PE(..), srcPE, tgtPE, rsrcPE, rtgtPE) where
+module PathExpressions (PEA(..), PE(..), PEC(..)
+   , ePEA
+   , srcPE
+   , srcPEC
+   , tgtPE
+   , tgtPEC
+   , rsrcPE
+   , rtgtPE
+   , startEA
+   , startEAC
+   , endEA
+   , endEAC) where
 
 import Sets
 import Gr_Cls
@@ -14,7 +25,9 @@ import Grs
 
 data PEA e = Edg e | Inv e 
    deriving (Eq, Show)
-data PE v e = At (PEA e) | Dres v (PEA e) | Rres (PEA e) v | SCmp (PE v e) (PE v e) 
+data PEC v e = At (PEA e) | Dres v (PEA e) | Rres (PEA e) v 
+   deriving (Eq, Show)
+data PE v e = Ec (PEC v e)| SCmp (PEC v e) (PE v e) 
    deriving (Eq, Show)
 
 ePEA :: (Eq a) => PEA a -> a
@@ -31,33 +44,49 @@ srcPEA :: (Eq a, Eq b, GR g) => g a b->PEA b -> a
 srcPEA g (Edg e) = appl (src g) e
 srcPEA g (Inv e) = appl (tgt g) e
 
+srcPEC :: (Eq a, Eq b, GR g) => g a b->PEC a b -> a
+srcPEC g (At pea) = srcPEA g pea
+srcPEC g (Dres _ pea) = srcPEA g pea
+srcPEC g (Rres pea _) = srcPEA g pea
 srcPE :: (Eq a, Eq b, GR g) => g a b->PE a b -> a
-srcPE g (At pea) = srcPEA g pea
-srcPE g (Dres _ pea) = srcPEA g pea
-srcPE g (Rres pea _) = srcPEA g pea
-srcPE g (SCmp pe1 _) = srcPE g pe1
+srcPE g (Ec pe) = srcPEC g pe
+srcPE g (SCmp pe1 _) = srcPEC g pe1
 
 tgtPEA :: (Eq a, Eq b, GR g) => g a b->PEA b -> a
 tgtPEA g (Edg e) = appl (tgt g) e
 tgtPEA g (Inv e) = appl (src g) e
 
+tgtPEC :: (Eq a, Eq b, GR g) => g a b->PEC a b -> a
+tgtPEC g (At pea) = tgtPEA g pea
+tgtPEC g (Dres _ pea) = tgtPEA g pea
+tgtPEC g (Rres pea _) = tgtPEA g pea
 tgtPE :: (Eq a, Eq b, GR g) => g a b->PE a b -> a
-tgtPE g (At pea) = tgtPEA g pea
-tgtPE g (Dres _ pea) = tgtPEA g pea
-tgtPE g (Rres pea _) = tgtPEA g pea
-tgtPE g (SCmp _ pe2) = tgtPE g pe2
+tgtPE g (Ec pe) = tgtPEC g pe
+tgtPE g (SCmp _ pe) = tgtPE g pe
 
+
+-- The start or source edge (leftmost) of a path expression
+startEAC :: PEC a b -> PEA b
+startEAC (At pea) = pea 
+startEAC (Dres _ pea) = pea 
+startEAC (Rres pea _) = pea
+startEA :: PE a b -> PEA b
+startEA (Ec pe) = startEAC pe
+startEA (SCmp pe _) = startEAC pe
+
+-- The end or target edge (rightmost) of a path expression
+endEAC :: PEC a b -> PEA b
+endEAC (At pea) = pea 
+endEAC (Dres _ pea) = pea 
+endEAC (Rres pea _) = pea
+endEA :: PE a b -> PEA b
+endEA (Ec pe) = endEAC pe
+endEA (SCmp _ pe) = endEA pe
 
 -- reduces to the source edge (leftmost) of a path expression
 rsrcPE :: (Eq a, Eq b) => PE a b -> b
-rsrcPE (At pea) = ePEA pea 
-rsrcPE (Dres _ pea) = ePEA pea
-rsrcPE (Rres pea _) = ePEA pea
-rsrcPE (SCmp pe1 _) = rsrcPE pe1
+rsrcPE = ePEA . startEA
 
 -- reduces to the target edge (rightmost) of a path expression
 rtgtPE :: (Eq a, Eq b) => PE a b -> b
-rtgtPE (At pea) = ePEA pea 
-rtgtPE (Dres _ pea) = ePEA pea
-rtgtPE (Rres pea _) = ePEA pea
-rtgtPE (SCmp _ pe) = rtgtPE pe
+rtgtPE = ePEA . endEA
