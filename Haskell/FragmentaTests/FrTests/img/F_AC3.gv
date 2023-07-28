@@ -1,0 +1,10 @@
+digraph {graph[label=F_AC3,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_AC3{style=dashed;label=F_AC3;
+"PPart"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Part<br/>(P)>];
+"SerialNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="SerialNumber"];
+
+"PPart"->"SerialNumber"[label="sno",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+}

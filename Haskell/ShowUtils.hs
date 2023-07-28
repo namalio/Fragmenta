@@ -6,6 +6,7 @@ module ShowUtils(
    , showNode
    , showEdge
    , showEdges
+   , slimShow
    , showNodes) where
 import SimpleFuns (butLast)
 
@@ -27,17 +28,20 @@ showNodes xs  = showStrs (fmap showNode xs) ", "
 do_indent 0 = ""
 do_indent n = "   " ++ do_indent(n-1)
 
-shortenENm::String->String
-shortenENm x = (drop 2) . (butLast) $ x
+shortenENm::Show a=>a->String
+shortenENm = (drop 1) . slimShow
 
-shortenNNm::String->String
-shortenNNm x = (drop 1) . (butLast) $ x
+slimShow::Show a=>a->String
+slimShow = drop 1 . butLast . show
+
+shortenNNm::Show a=>a->String
+shortenNNm = slimShow
 
 showNode :: Show a => a -> String
-showNode = shortenNNm . show 
+showNode = shortenNNm 
 
 showEdge :: Show b => b -> String
-showEdge = shortenENm . show
+showEdge = shortenENm 
 
 -- Writes elements separated by some separator
 -- Takes an identation level (a natural number)

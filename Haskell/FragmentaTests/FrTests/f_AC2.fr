@@ -1,0 +1,21 @@
+fragment F_AC2 {
+  SG SG_AC2 {
+  	proxy PNamed
+  	virtual Composite
+  	virtual Part
+  	inh Composite->PNamed
+  	inh Part->PNamed
+    node Composite1
+    node Part1
+    node Composite2
+    node Part2
+    inh Composite1->Composite
+    inh Part1->Part
+    inh Composite2->Composite
+    inh Part2->Part
+    compu Composite->Part[parts]:1..*
+    derived Composite1->Part1[CPs1 <-> parts]:1;1..*
+    derived Composite2->Part2[CPs2 <-> parts]:1;1..*
+  }
+  ref PNamed->Named
+}

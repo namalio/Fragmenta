@@ -117,6 +117,7 @@ testMorphisms = do
    (nm_m3, m3)<-loadM def_path "m_A_B_C_D_3.gm"
    (nm_m4, m4)<-loadM def_path "m_A_B_C_D_4.gm"
    (nm_m5, m5)<-loadM def_path "m_A_B_C_D_5.gm"
+   (nm_m6, m6)<-loadM def_path "m_p_Chain_A_B.gm"
    let g3 = g1 `unionG` g2
    assertBool ("Erroneous G1->G2" ++ nm_m1) (not $ okayGM Nothing (g1, m1, g2))
    assertBool ("Ok G1->G2:" ++ nm_m2) (okayGM Nothing (g1, m2, g2))
@@ -128,12 +129,37 @@ testMorphisms = do
    assertBool ("⊙ G_A_B_C_D -> G_A_B (" ++ nm_m5 ++ ")") (okayGM Nothing (g4, m5, g1)) 
    assertBool ("⊙ G_A_B_C -> G_A_B (composition with identity)") (okayGM Nothing (g4, gid g1 `ogm` m5, g1))
    assertBool ("⊙ G_A_B_C -> G_A_B_C (composition via g1)") (okayGM Nothing (g4, m2 `ogm` m5, g3))
+   assertBool ("⊙ G_A_B_C -> G_A_B_C (composition via g1)") (okayGM Nothing (g4, m2 `ogm` m5, g3))
+
+testMorphisms2 :: IO()
+testMorphisms2 = do
+   (nm1, g1) <-loadG def_path "G_chain_4.g"
+   (nm2, g2) <-loadG def_path "G_loop_4.g"
+   (nm3, g3) <-loadG def_path "G_A_B.g"
+   (nm4, g4) <-loadG def_path "G_C_D.g" 
+   (nm_m1, m1)<-loadM def_path "m_p_Chain_A_B.gm"
+   (nm_m2, m2)<-loadM def_path "m_p_Chain_A_B_D.gm"
+   assertBool ("WF " ++ nm1) (okayG Nothing g1)
+   assertBool ("Partial morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " to " ++ nm3) (okayGM (Just WeakM) (g1, m1, g3))
+   assertBool ("Total morphism " ++ nm1 ++ "from " ++ nm1 ++ " to " ++ nm3) (not $ okayGM Nothing (g1, m1, g3))
+   assertBool ("Partial morphism " ++ nm_m1 ++ " from " ++ nm2 ++ " to " ++ nm3) (okayGM (Just WeakM) (g2, m1, g3))
+   assertBool ("Total morphism " ++ nm_m1 ++ "from " ++ nm2 ++ " to " ++ nm3) (not $ okayGM Nothing (g2, m1, g3))
+   let g5 = g3 `unionG` g4
+   assertBool ("Partial morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " to G_A_B_C_D") (okayGM (Just WeakM) (g1, m1, g5))
+   assertBool ("Total morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " to G_A_B_C_D") (not $ okayGM Nothing (g1, m1, g5))
+   assertBool ("Partial morphism " ++ nm_m1 ++ " from " ++ nm2 ++ " to G_A_B_C_D") (okayGM (Just WeakM) (g2, m1, g5))
+   assertBool ("Total morphism " ++ nm_m1 ++ "from " ++ nm2 ++ " to G_A_B_C_D") (not $ okayGM Nothing (g2, m1, g5))
+   let g6 = subsumeG g5 (singles ("C", "B"))
+   assertBool ("WF ⊙" ++ nm1 ++ " where B->C") (okayG Nothing g6)
+   assertBool ("Partial morphism " ++ nm_m2 ++ " from " ++ nm1 ++ " to G_A_B_D") (okayGM (Just WeakM) (g1, m2, g6)) 
+   assertBool ("Total morphism " ++ nm_m2 ++ " from " ++ nm1 ++ " to G_A_B_D") (not $ okayGM Nothing (g1, m2, g6)) 
 
 testsBigWFGs :: TestTree
 testsBigWFGs = testGroup "Big tests involving well-formed graphs and morphisms" [
    testCase "Tests for 'G_chain_4.g'" testWFG1
    , testCase "Tests for 'G_A_B.g' and 'G_C_D.g'" testWFG2
    , testCase "Tests for 'G_A_B.g' and 'G_C_D.g' and morphisms" testMorphisms
+   , testCase "Tests for partial morphism" testMorphisms2
    ]
 
 

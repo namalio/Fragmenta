@@ -1,9 +1,9 @@
 digraph {graph[label=Bicyle_Car_I2,labelloc=tl,labelfontsize=12];
-"WF"[shape=box,fillcolor=lightskyblue1,style = filled,label="WF : Wheel"];
 "B1"[shape=box,fillcolor=lightskyblue1,style = filled,label="B1 : Bicycle"];
+"WF"[shape=box,fillcolor=lightskyblue1,style = filled,label="WF : Wheel"];
 "WB"[shape=box,fillcolor=lightskyblue1,style = filled,label="WB : Wheel"];
-"WL"[shape=box,fillcolor=lightskyblue1,style = filled,label="WL : Wheel"];
 "C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Car"];
+"WL"[shape=box,fillcolor=lightskyblue1,style = filled,label="WL : Wheel"];
 "WR"[shape=box,fillcolor=lightskyblue1,style = filled,label="WR : Wheel"];
 
 "B1"->"WF"[label="B1_WF :CPair_fst▼",arrowhead=vee];

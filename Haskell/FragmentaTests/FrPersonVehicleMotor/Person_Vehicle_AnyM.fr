@@ -3,7 +3,7 @@ fragment F_Person_Vehicle_AnyM {
     node Person
     node Vehicle
     rel Person->Vehicle[Owns]:1;*
-    opt Any
+    node Any
     virtual Manner
     wander Manner->Any[MannerRel]
     inh Person->Manner

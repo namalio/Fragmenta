@@ -1,0 +1,12 @@
+digraph {graph[label=F_APerson1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_APerson1{style=dashed;label=F_APerson1;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
+"Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
+
+"Trait"->"Trait"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
+"Person"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Other"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

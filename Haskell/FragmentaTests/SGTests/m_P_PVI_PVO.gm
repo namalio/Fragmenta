@@ -1,0 +1,9 @@
+Morphism M_P_PVI_To_PVO {
+   nodes {
+      PPerson->Person
+	   Vehicle->Vehicle
+   }
+   edges {
+     Owns->Owns
+	}
+}

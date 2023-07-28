@@ -18,9 +18,27 @@ module SGrs(SGr
    , ds
    , nsTys
    , nsP
-   , esTys, esA, esI, srcst, tgtst, 
-   inh, inhst, disjSGs, unionSG, unionSGs, subsume_sg, sg_refinesz, errs_sg_refinesz, 
-   tsg_refinesz, errs_tsg_refinesz, ns_of_ntys, es_of_ety, ins)  
+   , nsN
+   , esTys
+   , esA
+   , esI
+   , srcst
+   , tgtst
+   , inh
+   , inhst
+   , disjSGs
+   , unionSG
+   , unionSGs
+   , subsume_sg
+   , sg_refinesz
+   , errs_sg_refinesz
+   , tsg_refinesz
+   , errs_tsg_refinesz
+   , ns_of_ntys
+   , es_of_ety
+   , ins
+   , okETSGs
+   , rOkETSGs) 
 where
 
 import Sets (Set(..), sminus, gunion, intersec, union, singles, set, intoSet, toList, rest, filterS )
@@ -105,6 +123,10 @@ nsTys sg nts = img (inv . nty $ sg) nts
 -- Gets proxy nodes
 nsP :: Eq a=>SGr a b -> Set a
 nsP = (flip nsTys) [Nprxy]
+
+-- Gets normal nodes
+nsN :: Eq a=>SGr a b -> Set a
+nsN = (flip nsTys) [Nnrml]
 
 -- Gets optional nodes
 --nsO :: Eq a=>SGr a b -> Set a
@@ -227,8 +249,8 @@ acyclicI::(Eq a, Eq b)=>SGr a b->Bool
 acyclicI = acyclicG . inhG
 
 -- Checks whether the inheritance hierarchy complies with required restrictions
-inh_ok::(Eq a, Eq b)=>SGr a b->Bool
-inh_ok sg = inh_ntys_ok sg && acyclicI sg
+inhOk::(Eq a, Eq b)=>SGr a b->Bool
+inhOk sg = inh_ntys_ok sg && acyclicI sg
 
 -- Checks whether an optional node is involved in non-compulsory relations
 --nodeopt_ok_src::(Eq a, Eq b)=>SGr a b->a->Bool
@@ -252,21 +274,21 @@ mults_wf = all multwf
 -- Checks whether a SG is well-formed either totally or partially
 okaySGz::(Eq a, Eq b)=>SGr a b->Bool
 okaySGz sg = okayG Nothing (g_sg sg)
-   && fun_total (nty sg) (ns sg) (sgnty_set) 
-   && fun_total (ety sg) (es sg) (sgety_set)
+   && tfun (nty sg) (ns sg) (sgnty_set) 
+   && tfun (ety sg) (es sg) (sgety_set)
    && (dom_of . srcm $ sg) <= es sg  
    && (dom_of . tgtm $ sg) <= es sg
 
 -- Checks whether a SG is well-formed partially
 okaySG::(Eq a, Eq b)=>SGr a b->Bool
 okaySG sg = okaySGz sg
-   && mults_wf (ran_of $ srcm sg) && mults_wf (ran_of $ tgtm sg) 
-   && fun_total' (srcma sg) (esM sg) && fun_total' (tgtm sg) (esM sg)
+   && mults_wf (ran_of . srcm $ sg) && mults_wf (ran_of . tgtm $ sg) 
+   && tfun' (srcma sg) (esM sg) && tfun' (tgtm sg) (esM sg)
    && (dom_of . pe $ sg) == esCnt sg
    && antireflexive_on (ds sg) (esPa sg) 
    && mult_etys_ok sg 
 --   && optsVoluntary sg 
-   && inh_ok sg 
+   && inhOk sg 
 
 -- Ethereal nodes must be inherited
 etherealInherited::(Eq a, Eq b)=>SGr a b->Bool
@@ -331,24 +353,24 @@ check_mult_etys_ok sg =
 --   if optsVoluntary sg then nile else consSET $ "Optional nodes engaged in compulsory relations:" ++ (showElems' err_opts)
 --   where err_opts = foldr (\n ns-> if nodeopt_ok sg n then ns else n:ns) [] (nsO sg)
 
-check_inh_ok::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
-check_inh_ok sg = 
-   let errs1 = if inh_ntys_ok sg then nile else consSET $ "The following inheritance pairs are not compliant with the node type restrictions:" ++ (showElems' err_inh_pairs) in
-   let errs2 = if acyclicI sg then nile else consSET "The inheritance hierarchy has cycles." in
-   if inh_ok sg then nile else consET "Errors in the inheritance hierarchy." [errs1, errs2]
-   where err_inh_pairs = filterS (not . (inh_nty_ok sg)) (inh sg)
-
 errsSGz::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
 errsSGz sg = 
-   let err1 = err_prepend "The underlying graph is malformed." (faultsG "SG" Nothing $ g_sg sg) in
-   let err2 = err_prepend "Function 'nty' is not total. " $ reportFT (nty sg) (ns sg) (sgnty_set) in
-   let err3 = err_prepend "Function 'ety' is not total. " $ reportFT (ety sg) (es sg) (sgety_set) in
-   let err4 = err_prepend "Source multplicity function is not total. " $ reportFT' (srcma sg) (esM sg) in
-   let err5 = err_prepend "Target multplicity function is not total. " $ reportFT' (tgtm sg) (esM sg) in
+   let err1 = err_prepend "The underlying graph is malformed." (faultsG "SG" Nothing $ g_sg sg)
+       err2 = err_prepend "Function 'nty' is not total. " $ reportFT (nty sg) (ns sg) (sgnty_set)
+       err3 = err_prepend "Function 'ety' is not total. " $ reportFT (ety sg) (es sg) (sgety_set)
+       err4 = err_prepend "Source multplicity function is not total. " $ reportFT' (srcma sg) (esM sg)
+       err5 = err_prepend "Target multplicity function is not total. " $ reportFT' (tgtm sg) (esM sg) in
    [err1, err2, err3, err4, err5]
 
-reportSGz::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
-reportSGz nm sg = reportWF sg nm okaySGz errsSGz
+rOkaySGz::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
+rOkaySGz nm sg = reportWF sg nm okaySGz errsSGz
+
+rInhOk::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
+rInhOk sg = 
+   let errs1 = if inh_ntys_ok sg then nile else consSET $ "The following inheritance pairs are not compliant with the node type restrictions:" ++ (showElems' err_inh_pairs)
+       errs2 = if acyclicI sg then nile else consSET "The inheritance hierarchy has cycles." in
+   if inhOk sg then nile else consET "Errors in the inheritance hierarchy." [errs1, errs2]
+   where err_inh_pairs = filterS (not . inh_nty_ok sg) (inh sg)
 
 errsSG::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
 errsSG sg = 
@@ -357,47 +379,47 @@ errsSG sg =
    let err2 = if mults_wf (ran_of $ tgtm sg) then nile else consSET "Well-formedness errors in edge target multiplicities." in
    let err3 = check_mult_etys_ok sg in
 --   let err4 = check_optsVoluntary sg in
-   let err4 = check_inh_ok sg in
+   let err4 = rInhOk sg in
    errs ++ [err1, err2, err3, err4]
 
-reportSG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
-reportSG nm sg = reportWF sg nm okaySG errsSG
+rOkaySG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
+rOkaySG nm sg = reportWF sg nm okaySG errsSG
 
-check_etherealInherited sg = 
+rEtherealInherited sg = 
    if etherealInherited sg then nile else consSET $ "The following ethereal nodes are not inherited: " ++ (showElems' ens_n_inh)
    where isInherited n = n `elem` (ran_of $ inh sg)
          ens_n_inh = filterS (not . isInherited)(nsEther sg) 
 
-check_isInhTree sg = 
+rIsInhTree sg = 
    let msg1 = "The inheritance is not single." in
    let msg2 = "The inheritance hierarchy without virtual nodes is not a tree. " in
    if isInhTree sg then nile else consET msg1 [err_prepend msg2 $ reportPF (inhMinus sg) (ns sg) (ns sg)]
 
-check_derOk::(Eq a, Eq b, Show a, Show b)=>SGr a b-> ErrorTree
-check_derOk sg = 
-   let msg_src e = "The source of edge " ++ (show e) ++ " is invalid." in
-   let msg_tgt e = "The target of edge " ++ (show e) ++ " is invalid." in
-   let cons_ems_src e = if (not $ srcDerEOk sg e) then [msg_src e] else [] in
-   let cons_ems_tgt e = if (not $ tgtDerEOk sg e) then [msg_tgt e] else [] in
-   let des_bad = foldr (\e ms->(cons_ems_src e) ++ (cons_ems_tgt e) ++ ms) [] (esD sg) in
-   if derOk sg then nile else consSET $ "Errors with derived edges: " ++ (showElems' des_bad)
+rDerOk::(Eq a, Eq b, Show a, Show b)=>SGr a b-> ErrorTree
+rDerOk sg = 
+   let msg_src e = "The source of edge " ++ (show e) ++ " is invalid." 
+       msg_tgt e = "The target of edge " ++ (show e) ++ " is invalid." 
+       cons_ems_src e = if (not $ srcDerEOk sg e) then [msg_src e] else [] 
+       cons_ems_tgt e = if (not $ tgtDerEOk sg e) then [msg_tgt e] else [] 
+       des_bad = foldr (\e ms->(cons_ems_src e) ++ (cons_ems_tgt e) ++ ms) [] (esD sg) in
+   if derOk sg then nile else consSET $ "Errors in the following derived edges: " ++ (showElems' des_bad)
 
-check_esCntsOk :: (Eq a, Show a,Eq b, Show b)=>SGr a b -> ErrorTree
-check_esCntsOk sg = 
-   if esCntsOk sg then nile else consSET $ "Errors with the following constraint edges: " ++ (showElems' esCnts_nOk) ++ (show $ srcst sg) ++ (show $ tgtst sg)
+rEsCntsOk :: (Eq a, Show a,Eq b, Show b)=>SGr a b -> ErrorTree
+rEsCntsOk sg = 
+   if esCntsOk sg then nile else consSET $ "Errors in the following constraint edges: " ++ (showElems' esCnts_nOk) ++ (show $ srcst sg) ++ (show $ tgtst sg)
    where esCnts_nOk = filterS (not . (esCntOk sg)) (esCnt sg) 
 
 errsTSG::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
 errsTSG sg = 
-   let err1 = faultsG "SG" Nothing sg in
-   let err2 = check_isInhTree sg in
-   let err3 = check_etherealInherited sg in
-   let err4 = check_derOk sg in
-   let err5 = check_esCntsOk sg in 
-   [err1] ++ [err2, err3, err4, err5]
+   let err1 = faultsG "SG" (Just Partial) sg in
+   let err2 = rIsInhTree sg in
+   let err3 = rEtherealInherited sg in
+   let err4 = rDerOk sg in
+   let err5 = rEsCntsOk sg in 
+   [err1, err2, err3, err4, err5]
 
-reportTSG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
-reportTSG nm sg = reportWF sg nm okayTSG errsTSG
+rOkayTSG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
+rOkayTSG nm sg = reportWF sg nm okayTSG errsTSG
 
 --okaySG' :: (Eq a, Eq b) => Maybe TK -> SGr a b -> Bool
 --okaySG' (Just Total) = okayTSG 
@@ -414,9 +436,9 @@ instance G_WF_CHK SGr where
    okayG (Just Partial) = okaySG 
    okayG Nothing = okaySGz
    faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> SGr a b -> ErrorTree
-   faultsG id (Just Total) = reportTSG id
-   faultsG id (Just Partial) = reportSG id 
-   faultsG id Nothing = reportSGz id
+   faultsG id (Just Total) = rOkayTSG id
+   faultsG id (Just Partial) = rOkaySG id 
+   faultsG id Nothing = rOkaySGz id
 
 -- Checs whether SGs are disjoint
 disjSGs :: (Eq a, Eq b) => [SGr a b] -> Bool
@@ -477,7 +499,7 @@ morphism_sgm_commutes_src (sgs, m, sgt) =
    lhs  <= rhs
 
 commute_sgm_tgt (sgs, m, sgt) = 
-   let lhs = (fV m) `bcomp` (dres (tgtstm sgs) $ esA sgs) in  
+   let lhs = (fV m) `bcomp` (tgtstm sgs) in  
    let rhs = (tgtstm sgt) `bcomp` (fE m) in
    (lhs, rhs)
 
@@ -492,39 +514,49 @@ ihh_sgm_ok (sgs, m, sgt) = ((fV m) `bcomp` (inhst sgs)) <= ((inhst sgt) `bcomp` 
 
 -- Common aspects of both graph morphism settings which involve SGs
 --is_wf_gm_common::(Eq a, Eq b) => (SGr a b, GrM a b,  SGr a b) -> Bool
-is_wf_gm_common :: (GRM gm, GR g1, GR g2, Eq a, Eq b) =>(g1 a b, gm a b, g2 a b) -> Bool
-is_wf_gm_common (gs, m, gt) = 
+okay_gm_common :: (GRM gm, GR g1, GR g2, Eq a, Eq b) =>(g1 a b, gm a b, g2 a b) -> Bool
+okay_gm_common (gs, m, gt) = 
    -- is_wf Nothing gs && is_wf Nothing gt 
-   fun_total (fV m) (ns gs) (ns gt)  
+   tfun (fV m) (ns gs) (ns gt)  
 
--- checks whether a morphisms between SGs is well-formed
-is_wf_sgm::(Eq a, Eq b) => (SGr a b, GrM a b,  SGr a b) -> Bool
-is_wf_sgm (sgs, m, sgt) = is_wf_gm_common (sgs, m, sgt)
-   && fun_total (fE m) (esA sgs) (esA sgt)
+okSGMCommon::(Eq a, Eq b) =>(SGr a b, GrM a b, SGr a b)->Bool
+okSGMCommon (sgs, m, sgt) =
+   okay_gm_common (sgs, m, sgt) && tfun (fE m) (esA sgs) (esA sgt)
    && morphism_sgm_commutes_src (sgs, m, sgt)
    && morphism_sgm_commutes_tgt (sgs, m, sgt)
-   && ihh_sgm_ok (sgs, m, sgt)
 
-errors_sgm_common (gs, m, gt) =
-   let err1 = faultsG "Source graph" Nothing gs in
-   let err2 = faultsG "Target Graph" Nothing gt in
-   let err3 = if fun_total (fV m) (ns gs) (ns gt) then nile else consET "Function 'fV' is ill defined." [reportFT (fV m) (ns gs) (ns gt)] in
-   [err1, err2, err3]
+-- checks whether a morphisms between SGs is well-formed
+okSGM::(Eq a, Eq b) => (SGr a b, GrM a b,  SGr a b) -> Bool
+okSGM (sgs, m, sgt) = 
+   okSGMCommon (sgs, m, sgt) && ihh_sgm_ok (sgs, m, sgt)
 
+errors_commuting :: (Eq a, Show a) =>(Set a, Set a)->String-> ErrorTree
 errors_commuting (r1, r2) ty = 
-   if  r1 <= r2 then nile else consET ("Problems in commuting of " ++ ty ++ " functions") [reportSSEq r1 r2]
+   if r1 <= r2 then nile else consET ("Problems in commuting of " ++ ty ++ " functions") [reportSSEq r1 r2]
 
-errors_wf_sgm :: (Show b, Show a, GRM gm, Eq a, Eq b) =>(SGr a b, gm a b, SGr a b) -> [ErrorTree]
-errors_wf_sgm (gs, m, gt) = 
-   let errs1 = errors_sgm_common (gs, m, gt) in
-   let err2 = if fun_total (fE m) (esA gs) (esA gt) then nile else consET "Function 'fE' is ill defined." [reportFT (fE m) (esA gs) (esA gt)] in
-   let err3 = if morphism_sgm_commutes_src (gs, m, gt) then nile else errors_commuting (commute_sgm_src (gs, m, gt)) "source" in
-   let err4 = if morphism_sgm_commutes_tgt (gs, m, gt) then nile else errors_commuting (commute_sgm_tgt (gs, m, gt)) "target" in
-   let err5 = if ihh_sgm_ok (gs, m, gt) then nile else consSET "Problems in the commuting of the inheritance relation" in
-   errs1 ++ [err2, err3, err4, err5]
+errs_gm_common :: (Show b, GRM gm, Eq a, Eq b, Show a, GR g1, GR g2) =>(g1 a b, gm a b, g2 a b) -> [ErrorTree]
+errs_gm_common (gs, m, gt) =
+   let err1 = if tfun (fV m) (ns gs) (ns gt) then nile else consET "Function 'fV' is ill defined." [reportFT (fV m) (ns gs) (ns gt)] in
+   [err1]
+   
+errs_sgm_common :: (Show b, GRM gm, Eq a, Eq b, Show a) =>(SGr a b, gm a b, SGr a b) -> [ErrorTree]
+errs_sgm_common (gs, m, gt) =
+   --let err1 = faultsG "Source graph" Nothing gs in
+   --let err2 = faultsG "Target Graph" Nothing gt in
+   let errs = errs_gm_common (gs, m, gt) 
+       err1 = if tfun (fE m) (esA gs) (esA gt) then nile else consET "Function 'fE' is ill defined." [reportFT (fE m) (esA gs) (esA gt)] 
+       err2 = if morphism_sgm_commutes_src (gs, m, gt) then nile else errors_commuting (commute_sgm_src (gs, m, gt)) "source" 
+       err3 = if morphism_sgm_commutes_tgt (gs, m, gt) then nile else errors_commuting (commute_sgm_tgt (gs, m, gt)) "target" in
+   errs ++ [err1, err2, err3]
 
-check_wf_sgm::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> GrM a b->SGr a b->ErrorTree
-check_wf_sgm nm sgs gm sgt = reportWF (sgs, gm, sgt) nm (is_wf_sgm) (errors_wf_sgm)
+errOkSGM :: (Show b, Show a, GRM gm, Eq a, Eq b) =>(SGr a b, gm a b, SGr a b) -> [ErrorTree]
+errOkSGM (gs, m, gt) = 
+   let errs1 = errs_sgm_common (gs, m, gt) in
+   let err2 = if ihh_sgm_ok (gs, m, gt) then nile else consSET "Problems in the commuting of the inheritance relation" in
+   errs1 ++ [err2]
+
+rOkSGM::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> GrM a b->SGr a b->ErrorTree
+rOkSGM nm sgs gm sgt = reportWF (sgs, gm, sgt) nm okSGM errOkSGM
 
 -- Totalises a morphism for the derived edges
 -- totaliseForDer m sg = cons_gm (fV m) ((mktotal_in (dres (eb sg) (esD sg)) (esC sg)) `rcomp` (fE m))
@@ -554,15 +586,15 @@ morphism_gm_commutes_tgt (gwt, sg) =
    lhs  <= rhs
 
 is_wf_gwt_sg:: (Eq a, Eq b) => (GrwT a b, SGr a b) -> Bool
-is_wf_gwt_sg (gwt, sg) = is_wf_gm_common (gOf gwt, ty gwt, sg)
-   && fun_total (fE gwt) (es gwt) (esA sg)
+is_wf_gwt_sg (gwt, sg) = okay_gm_common (gOf gwt, ty gwt, sg)
+   && tfun (fE gwt) (es gwt) (esA sg)
    && morphism_gm_commutes_src (gwt, sg)
    && morphism_gm_commutes_tgt (gwt, sg)
 
 errors_gwt_sg::(Eq a, Eq b, Show a, Show b) => (GrwT a b, SGr a b) -> [ErrorTree]
 errors_gwt_sg (gwt, sg) =
-   let errs1 = errors_sgm_common (gOf gwt, ty gwt, sg) in
-   let err2 = if fun_total (fE gwt) (es gwt) (esA sg) then nile else consET ("Function 'fE' is ill defined." ++ (show $ fE gwt)++ (show $ esA sg)) [reportFT (fE gwt) (es gwt) (esA sg)] in
+   let errs1 = errs_gm_common (gOf gwt, ty gwt, sg) in
+   let err2 = if tfun (fE gwt) (es gwt) (esA sg) then nile else consET ("Function 'fE' is ill defined." ++ (show $ fE gwt)++ (show $ esA sg)) [reportFT (fE gwt) (es gwt) (esA sg)] in
    let err3 = if morphism_gm_commutes_src (gwt, sg) then nile else errors_commuting (commute_gm_src (gwt, sg)) "source" in
    let err4 = if morphism_gm_commutes_tgt (gwt, sg) then nile else errors_commuting (commute_gm_tgt (gwt, sg)) "target" in 
    errs1 ++ [err2, err3, err4]
@@ -585,14 +617,13 @@ igRMEs gwt mes = (gOf gwt) `restrict` (ies (ty gwt) mes)
 igRMNsEs::(Foldable t, Eq a, Eq b)=>GrwT a b->SGr a b->t a->t b->Gr a b
 igRMNsEs gwt sg mns mes = (igRMEs gwt mes) `restrictNs` (ins (ty gwt) sg mns)
 
-
 -- SG multiplicity refinement (leq == '<=')
 sgs_mult_leq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> b -> Bool
 sgs_mult_leq sgc m sga e  = (appl (srcma sgc) e)  `mcsLeq` (appl ((srcma sga) `bcomp` (fE m)) e) 
                             && (appl (tgtm sgc) e) `mcsLeq` (appl ((tgtm sga) `bcomp` (fE m)) e)
 
-sg_refines_m :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
-sg_refines_m (sgc, m) sga = all (sgs_mult_leq sgc m sga) (esA sgc)
+refinesM :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+refinesM (sgc, m) sga = all (sgs_mult_leq sgc m sga) (esA sgc)
 
 --sg_refines_m' :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
 --sg_refines_m' (sgc, m) sga = all (sgs_mult_leq sgc m sga) (esA sgc)
@@ -643,11 +674,15 @@ affectedPECStart sgc m sga (Dres v pea) e ie =
    affectedPEAStart sgc m sga pea e ie 
    && any (\v'->(appl (sf  pea sga) ie, v') `elem` inhst sgc) (img (inv . fV $ m) [v]) 
 affectedPECStart sgc m sga (Rres pea v) e ie = affectedPEAStart sgc m sga pea e ie && (appl (inv . fV $ m) (appl (tf  pea sga) e), appl (inv . fV $ m) v) `elem` inhst sga
+affectedPEStart sgc m sga (Ec pec) e ie = affectedPECStart sgc m sga pec e ie 
+affectedPEStart sgc m sga (SCmp pec _) e ie = affectedPECStart sgc m sga pec e ie 
 
 affectedPECEnd::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b ->PEC a b ->b ->b->Bool
 affectedPECEnd sgc m sga (At pea) e ie = affectedPEAEnd sgc m sga pea e ie
 affectedPECEnd sgc m sga (Dres v pea) e ie = affectedPEAEnd sgc m sga pea e ie && any (\v'->(appl (sf  pea sga) ie, v') `elem` inhst sgc) (img (inv . fV $ m) [v]) 
 affectedPECEnd sgc m sga (Rres pea v) e ie = affectedPEAEnd sgc m sga pea e ie && (appl (inv . fV $ m) (appl (tf  pea sga) e), appl (inv . fV $ m) v) `elem` inhst sga
+affectedPEEnd sgc m sga (Ec pec) e ie = affectedPECEnd sgc m sga pec e ie 
+affectedPEEnd sgc m sga (SCmp _ pe) e ie = affectedPEEnd sgc m sga pe e ie 
 
 affectedPE::(GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b ->PE a b ->b ->b->b->Bool
 affectedPE sgc m sga (Ec pec) e ie ie' = 
@@ -667,9 +702,15 @@ refines_mcnt sgc m sga e =
        peae e = endEA (appl (pe sga) e) 
        --ok_src_nodes e e' = appl (fV m) (appl (sf (peas e) sgc) e') == appl (src sga) e
        --ok_tgt_nodes e e' = appl (fV m) (appl (tf (peae e) sgc) e') == appl (tgt sga) e
-       src_m_ok e e' = appl (smf (peas e) sgc) e' `mcsLeq` (appl (srcma sga) e)
-       tgt_m_ok e e' = appl (tmf (peae e) sgc) e' `mcsLeq` (appl (tgtm sga) e) in
-   all(\e'->all(\e''-> (affectedPE sgc m sga (appl (pe sga) e) e e' e'') `implies` (src_m_ok e e' && tgt_m_ok e e'')) (img (inv . fE $ m) [ePEA . peae $ e])) (img (inv . fE $ m) [ePEA . peas $ e])
+       src_m_ok e e' = appl (smf (peas e) sgc) e' `mcsLeq` appl (srcma sga) e
+       tgt_m_ok e e' = appl (tmf (peae e) sgc) e' `mcsLeq` appl (tgtm sga) e
+       src_ok e e' = appl (fV m) (appl (sf (peas e) sgc) e') == appl (src sga) e
+       tgt_ok e e' = appl (fV m) (appl (tf (peae e) sgc) e') == appl (tgt sga) e 
+       case1 e' e'' = (affectedPE sgc m sga (appl (pe sga) e) e e' e'') `implies` (src_m_ok e e' && tgt_m_ok e e'') 
+       case2 e' = ((affectedPEStart sgc m sga (appl (pe sga) e) e e') && ((singles . msole_k $ 1) `mcsLeq` appl (tgtm sga) e)) `implies` tgt_ok e e'
+       case3 e' = ((affectedPEEnd sgc m sga (appl (pe sga) e) e e') && ((singles . msole_k $ 1) `mcsLeq` appl (srcma sga) e)) `implies` src_ok e e' in
+   all(\e'->all(\e''-> case1 e' e'' && (case2 e' || case3 e'')) (img (inv . fE $ m) [ePEA . peae $ e])) (img (inv . fE $ m) [ePEA . peas $ e])
+   -- && all(\e'->all(\e''-> case2 e' || case3 e'') (img (inv . fE $ m) [ePEA . peae $ e])) (img (inv . fE $ m) [ePEA . peas $ e])
    --(ok_src_nodes e e' && ok_tgt_nodes e e'') 
 --  where smf (Edg _) sg = srcma sg 
 --         smf (Inv _) sg = tgtm sg 
@@ -680,49 +721,53 @@ refines_mcnt sgc m sga e =
 --         tf (Edg _) sg = tgt sg 
 --         tf (Inv _) sg = src sg 
 
-sg_refines_mcnts :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+sg_refines_mcnts::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b)->SGr a b->Bool
 sg_refines_mcnts (sgc, m) sga = all (refines_mcnt sgc m sga) $ esD sga
    
 -- SG refinement of edge types
+sgs_ety_leq::(GRM gm, Eq a, Eq b) =>SGr a b->gm a b->SGr a b->b->Bool
 sgs_ety_leq sgc m sga e  = appl (ety sgc) e <= appl ((ety sga) `bcomp` (fE m)) e
+sg_refines_ety::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
 sg_refines_ety (sgc, m) sga = all (sgs_ety_leq sgc m sga) $ esA sgc
 
 -- SG refinement of node types
+sgs_nty_leq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> a -> Bool
 sgs_nty_leq sgc m sga n  = appl (nty sgc) n <= appl ((nty sga) `bcomp` (fV m)) n
+sg_refines_nty::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
 sg_refines_nty (sgc, m) sga = all (sgs_nty_leq sgc m sga) $ ns sgc
 
 -- SG refinement conditions
 sg_refinesz :: (GRM gm, Eq a, Eq b) => (SGr a b, gm a b) -> SGr a b -> Bool
 sg_refinesz (sgc, m) sga = (sgc, m) `sg_refines_nty` sga 
    && (sgc, m) `sg_refines_ety`  sga 
-   && (sgc, m) `sg_refines_m` sga
+   && (sgc, m) `refinesM` sga
    && (sgc, m) `sg_refines_mcnts` sga
 
 -- SG refinement 
 sg_refines :: (Eq a, Eq b) => (SGr a b, GrM a b) -> SGr a b -> Bool
 sg_refines (sgc, m) sga = 
-   --let m' = totaliseForDer m sgc  in 
-   is_wf_sgm (sgc, m, sga) &&  (sgc, m) `sg_refinesz` sga
+   okSGM (sgc, m, sga) && (sgc, m) `sg_refinesz` sga
 
--- Error checking
+-- Error checking for SG refinement
 check_sg_refines_m :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_m (sgc, m) sga = 
-   if (sgc, m) `sg_refines_m` sga then nile else consSET $ "Errors with multiplicity refinement. The following concrete edes fail to comply with the abstract multplicity restrictions:" ++ (showElems' es)
+   if (sgc, m) `refinesM` sga then nile else consSET $ "Errors with multiplicity refinement. The following concrete edes fail to comply with the abstract multplicity restrictions:" ++ (showElems' es)
    where es = filterS (not . sgs_mult_leq sgc m sga) (esA sgc)
 
-check_sg_refines_mcnts :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
+check_sg_refines_mcnts::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_mcnts (sgc, m) sga = 
    if (sgc, m) `sg_refines_mcnts` sga then nile else consSET $ "The following derived edges are not multiplicity-refined properly:" ++ (showEdges es)
    where es = filterS (not . refines_mcnt sgc m sga) (esD sga)
 
-check_sg_refines_ety :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
+check_sg_refines_ety::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_ety (sgc, m) sga = 
    if (sgc, m) `sg_refines_ety` sga then nile else consSET $ "Issues with edge type refinement for the following edges:" ++ (showEdges es_n_ref)
-   where es_n_ref = filterS (\e-> not $ sgs_ety_leq  sgc m sga e) (esA sgc)
+   where es_n_ref = filterS (not . sgs_ety_leq  sgc m sga) (esA sgc)
 
+check_sg_refines_nty::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_nty (sgc, m) sga = 
    if (sgc, m) `sg_refines_nty` sga then nile else consSET $ "Certain instance nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)
-   where ns_n_ref = filterS (\n-> not $ sgs_nty_leq sgc m sga n) (ns sgc)
+   where ns_n_ref = filterS (not . sgs_nty_leq sgc m sga) (ns sgc)
 
 errs_sg_refinesz (sgc, m) sga = 
    let err1 = check_sg_refines_nty (sgc, m) sga in
@@ -734,7 +779,7 @@ errs_sg_refinesz (sgc, m) sga =
 -- errors of SG refinement
 errs_sg_refines id (sgc, m, sga) = 
    --let m' = totaliseForDer m sgc in 
-   let err1 = check_wf_sgm id sgc m sga in
+   let err1 = rOkSGM id sgc m sga in
    let errs2 = errs_sg_refinesz (sgc, m) sga in
    (err1:errs2)
 
@@ -768,7 +813,7 @@ tsg_refinesz (sgc, m) sga =
 -- Total SG refinement
 tsg_refines::(Eq a, Eq b)=>(SGr a b, GrM a b)->SGr a b->Bool
 tsg_refines (sgc, m) sga = 
-   is_wf_sgm (sgc, m, sga) && (sgc, m) `tsg_refinesz` sga 
+   okSGM (sgc, m, sga) && (sgc, m) `tsg_refinesz` sga 
 
 -- Errors checking
 -- errors of SG refinement of abstract nodes
@@ -790,13 +835,116 @@ errs_tsg_refinesz (sgc, m) sga =
 
 check_tsg_refines::(Eq a, Eq b, Show a, Show b)=>String->(SGr a b, GrM a b)->SGr a b->ErrorTree
 check_tsg_refines id (sgc, m) sga = 
-   let err1 = check_wf_sgm id sgc m sga in
+   let err1 = rOkSGM id sgc m sga in
    let errs2 = errs_tsg_refinesz (sgc, m) sga in
    if (sgc, m) `tsg_refines` sga then nile else consET "Errors in total SG refinement" (err1:errs2)
 
 
 -- Checks that 'abstract' and 'enum' mEtamodel nodes have no direct nodes in instance graph
 no_instances_of_abstract_tnodes m sgt = null (img (inv $ fV m) $ nsTys sgt [Nabst, Nenum])
+
+-- ET Compatability with respect to extra typing
+
+-- multiplicities of source SG must be included in those of target SG
+mssgsLEq :: (GRM gm, Eq a, Eq b) =>SGr a b ->gm a b ->SGr a b->b-> Bool
+mssgsLEq sgs m sgt e = appl (srcma sgt) e <= appl (srcma sgs `bcomp` fE m) e
+                     && appl (tgtm sgt) e <= appl (tgtm sgs `bcomp` fE m) e
+
+-- Compliance of multiplicities for extra typing
+etCompliesM::(GRM gm, Eq a, Eq b)=>(SGr a b, gm a b)->SGr a b ->Bool 
+etCompliesM (sgs, m) sgt = all (mssgsLEq sgs m sgt) (dom_of . fE $ m)
+   --dres (srcma sgt) (dom_of . fE $ m) <= (srcma sgs `bcomp` fE m)
+   -- && dres (tgtm sgt) (dom_of . fE $ m) <= (tgtm sgs `bcomp` fE m)
+   --
+
+retCompliesM :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
+retCompliesM (sgs, m) sgt = 
+   if (sgs, m) `etCompliesM` sgt then nile else consSET $ "Errors with multiplicity strict refinement. The following edes fail to comply with the multplicity restrictions of the target SG:" ++ (showElems' es)
+   where es = filterS (not . mssgsLEq sgs m sgt) (dom_of . fE $ m)
+
+-- For extra typing compliance, node types must be preserved 
+sgsNtyEq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> a -> Bool
+sgsNtyEq sgs m sgt n  = appl (nty sgs) n == appl (nty sgt `bcomp` fV m) n
+
+etCompliesNty::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+etCompliesNty (sgs, m) sgt = dres (nty sgs) (dom_of . fV $ m) == (nty sgt `bcomp` fV m) --all (msgsNtyEq sgs m sgt) 
+
+retCompliesNty::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
+retCompliesNty (sgs, m) sgt = 
+   if (sgs, m) `etCompliesNty` sgt then nile else consSET $ "Certain source nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)
+   where ns_n_ref = filterS (not . sgsNtyEq sgs m sgt) (dom_of . fV $ m)
+
+-- For extra typing compliance, edge types must be preserved 
+sgsEtyEq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> b -> Bool
+sgsEtyEq sgs m sgt e  = appl (ety sgs) e == appl (ety sgt `bcomp` fE m) e
+etCompliesEty::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
+etCompliesEty (sgs, m) sgt = dres (ety sgs) (dom_of . fE $ m) == (ety sgt `bcomp` fE m) --all (msgsEtyEq sgs m sgt) 
+
+retCompliesEty::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
+retCompliesEty (sgs, m) sgt = 
+   if (sgs, m) `etCompliesEty` sgt then nile else consSET $ "Certain edge nodes fail to preserve their type kinds:" ++ (showEdges es_n_ref)
+   where es_n_ref = filterS (not . sgsEtyEq  sgs m sgt) (dom_of . fE $ m)
+
+commutePPairSGsS :: (GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b -> (Rel b a, Rel b a)
+commutePPairSGsS sgs m sgt = 
+   let lhs = (fV m) `bcomp` (dres (srcstm sgs) (dom_of . fE $ m))
+       rhs = (srcstm sgt) `bcomp` (fE m) in
+   (lhs, rhs)
+
+commutePSGsS::(GRM gm, Eq a, Eq b)=>SGr a b->gm a b->SGr a b-> Bool
+commutePSGsS sgs m sgt = 
+   let (lhs, rhs) = commutePPairSGsS sgs m sgt in
+   lhs  <= rhs
+
+commutePPairSGsT :: (GRM gm, Eq a, Eq b) =>SGr a b-> gm a b-> SGr a b -> (Rel b a, Rel b a)
+commutePPairSGsT sgs m sgt = 
+   let lhs = (fV m) `bcomp` (dres (tgtstm sgs) (dom_of . fE $ m))  
+       rhs = (tgtstm sgt) `bcomp` (fE m) in
+   (lhs, rhs)
+
+commutePSGsT::(GRM gm, Eq a, Eq b)=>SGr a b->gm a b->SGr a b-> Bool
+commutePSGsT sgs m sgt = 
+   let (lhs, rhs) = commutePPairSGsT sgs m sgt in
+   lhs  <= rhs
+
+okPSGM::(Eq a, Eq b) =>(SGr a b, GrM a b, SGr a b)->Bool
+okPSGM (sgs, m, sgt) =
+   pfun (fV m) (ns sgs) (ns sgt)
+   && pfun (fE m) (esA sgs) (esA sgt)
+   && commutePSGsS sgs m sgt
+   && commutePSGsT sgs m sgt
+
+errsOkPSGM:: (Show b, GRM gm, Eq a, Eq b, Show a) =>(SGr a b, gm a b, SGr a b)-> [ErrorTree]
+errsOkPSGM (sgs, m, sgt) =
+   let err1 = if pfun (fV m) (ns sgs) (ns sgt) then nile else consET "Function 'fV' is ill defined." [reportPF (fV m) (ns sgs) (ns sgt)] 
+       err2 = if pfun (fE m) (esA sgs) (esA sgt) then nile else consET "Function 'fE' is ill defined." [reportPF (fE m) (esA sgs) (esA sgt)] 
+       err3 = if commutePSGsS sgs m sgt then nile else errors_commuting (commutePPairSGsS sgs m sgt) "source" 
+       err4 = if commutePSGsT sgs m sgt then nile else errors_commuting (commutePPairSGsT sgs m sgt) "target" in
+   [err1, err2, err3]
+
+rOkPSGM::(Eq a, Eq b, Show a, Show b) =>String->(SGr a b, GrM a b, SGr a b)->ErrorTree
+rOkPSGM id (sgs, m, sgt) = reportWF (sgs, m, sgt) id okPSGM errsOkPSGM
+
+-- Actual WF definition of extra typing of SGs: 
+-- (i) there is a partial morphism, and strict refinements of (ii) multiplicity, 
+-- and (iii) node and (iv) edge types
+okETSGs::(Eq a, Eq b) =>(SGr a b, GrM a b) -> SGr a b -> Bool
+okETSGs (sgs, m) sgt = okPSGM (sgs, m, sgt) 
+   && (sgs, m) `etCompliesM` sgt &&  (sgs, m) `etCompliesNty` sgt 
+   && (sgs, m) `etCompliesEty` sgt
+
+errsOkayETSGs::(Eq a, Eq b, Show a, Show b)=>String->(SGr a b, GrM a b, SGr a b)->[ErrorTree]
+errsOkayETSGs id (sgs, m, sgt) =
+   let errs = errsOkPSGM (sgs, m, sgt)
+   --if pfun (fV m) (ns sgs) (ns sgt) then nile else consET "Function 'fV' is ill defined." [reportPF (fV m) (ns sgs) (ns sgt)] in
+       err2 = retCompliesM (sgs, m) sgt 
+       err3 = retCompliesNty (sgs, m) sgt 
+       err4 = retCompliesEty  (sgs, m) sgt in
+   errs ++ [err2, err3, err4]
+
+rOkETSGs ::(Eq a, Eq b, Show a, Show b)=>String->(SGr a b, GrM a b)->SGr a b->ErrorTree
+rOkETSGs id (sgs, m) sgt = reportWF (sgs, m, sgt) id okayETSGs' (errsOkayETSGs id)
+   where okayETSGs' (sgs, m, sgt) = (sgs, m) `okETSGs` sgt
 
 -- Checks whether an edge is instantiated invertedly, which is permitted for wander edges
 --inverted_ie gwt sg e = applM ((tgt sg) `bcomp` (fE . ty $ gwt)) e == applM ((fV . ty $ gwt) `bcomp` (src sg)) e
@@ -818,23 +966,27 @@ no_instances_of_abstract_tnodes m sgt = null (img (inv $ fV m) $ nsTys sgt [Nabs
 --   | me `elem` esD sg = igRMNsEs gwt sg [appl (src sg) me, appl (tgt sg) me] [appl (eb sg) me]
 --   | me `elem` esW sg =  gOfweis gwt sg (img (inv $ (fE . ty $ gwt)) [me])
 --   | otherwise = igRMEs gwt [me]
+--okay_sgm'::(Eq a, Eq b)=>Maybe MK->(SGr a b, GrM a b, SGr a b)->Bool
+--okay_sgm' Nothing = okSGM
+--okay_sgm' (Just WeakM) = okSGM
+--okay_sgm' (Just PartialM) = (\(sgc, m, sga)->(sgc, m) `sg_refines` sga)
+--okay_sgm' (Just TotalM) = (\(sgc, m, sga)->(sgc, m) `tsg_refines` sga)
 
-
-is_wf_sgm'::(Eq a, Eq b)=>Maybe MK->(SGr a b, GrM a b, SGr a b)->Bool
-is_wf_sgm' Nothing = is_wf_sgm
-is_wf_sgm' (Just WeakM) = is_wf_sgm
-is_wf_sgm' (Just PartialM) = (\(sgc, m, sga)->(sgc, m) `sg_refines` sga)
-is_wf_sgm' (Just TotalM) = (\(sgc, m, sga)->(sgc, m) `tsg_refines` sga)
-
-check_wf_gm_g'::(Eq a, Eq b, Show a, Show b)=>String->Maybe MK->(SGr a b, GrM a b, SGr a b)->ErrorTree
-check_wf_gm_g' id Nothing (sgc, m, sga)= check_wf_sgm id sgc m sga
-check_wf_gm_g' id (Just WeakM) (sgc, m, sga) = check_wf_sgm id sgc m sga
-check_wf_gm_g' id (Just  PartialM) (sgc, m, sga) = check_sg_refines id (sgc, m) sga
-check_wf_gm_g' id (Just TotalM) (sgc, m, sga) = check_tsg_refines id (sgc, m) sga
+--rokay_gm_g'::(Eq a, Eq b, Show a, Show b)=>String->Maybe MK->(SGr a b, GrM a b, SGr a b)->ErrorTree
+--rokay_gm_g' id Nothing (sgc, m, sga)= rOkSGM id sgc m sga
+--rokay_gm_g' id (Just WeakM) (sgc, m, sga) = rOkSGM id sgc m sga
+--rokay_gm_g' id (Just  PartialM) (sgc, m, sga) = check_sg_refines id (sgc, m) sga
+--rokay_gm_g' id (Just TotalM) (sgc, m, sga) = check_tsg_refines id (sgc, m) sga
 
 instance GM_CHK SGr SGr where
-   okayGM = is_wf_sgm'
-   faultsGM = check_wf_gm_g'
+      okayGM Nothing = okSGM
+      okayGM (Just WeakM) = okPSGM
+      okayGM (Just PartialM) = (\(sgc, m, sga)->(sgc, m) `sg_refines` sga)
+      okayGM (Just TotalM) = (\(sgc, m, sga)->(sgc, m) `tsg_refines` sga)
+      faultsGM id Nothing (sgc, m, sga)= rOkSGM id sgc m sga
+      faultsGM id (Just WeakM) (sgc, m, sga) = rOkPSGM id (sgc, m, sga)
+      faultsGM id (Just  PartialM) (sgc, m, sga) = check_sg_refines id (sgc, m) sga
+      faultsGM id (Just TotalM) (sgc, m, sga) = check_tsg_refines id (sgc, m) sga
 
 --
 -- SG Type conformance
@@ -1166,5 +1318,3 @@ es_of_ety m e = img (inv . fE $ m) [e]
 --check_wf_gm_sg nm PartialM (gm, sg, sgt) = check_wf_ty_sgs_partial nm gm sg sgt
 --check_wf_gm_sg nm (TotalM Strong) (gm, sg, sgt) = check_wf_ty_sgs_strong nm gm sg sgt
 --check_wf_gm_sg nm (TotalM Weak) (gm, sg, sgt) = check_wf_ty_sgs_weak nm gm sg sgt
-
-

@@ -1,0 +1,16 @@
+digraph {graph[label=F_Person1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_Person1{style=dashed;label=F_Person1;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"Hotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Hotel"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+
+"Hotel"->"Person"[label="Hosts▼",dir=none,taillabel="",headlabel="*"];
+"Person"->"City"[label="Person_lives",arrowhead=vee,headlabel="",arrowsize=.5];
+"Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"Hotel"->"Name"[label="Hotel_name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Person"->"Name"[label="Person_name",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

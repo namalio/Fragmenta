@@ -1,0 +1,7 @@
+fragment F_SCP1 {
+  SG SG_SCP1 {
+  	virtual Serialised
+    node SerialNumber
+    rel Serialised->SerialNumber[sno]:0..1;1
+  }
+}

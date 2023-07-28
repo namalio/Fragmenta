@@ -208,14 +208,14 @@ multOk r s t (Sm (Val 0) `Set` EmptyS) m = null $ dres r s
 multOk r s t m (Sm (Val 1) `Set` EmptyS)
     | m == singles (msole_k 1) = fun_bij r s t
     | m == singles mopt      = fun_inj r s t
-    | isMultMany m     = fun_total r s t
-    | isMultRange m    = fun_total r s t && rbounded (inv r) t (the m)
-    | isMultEither m   = fun_total r s t && eitherbounded (inv r) t m
+    | isMultMany m     = tfun r s t
+    | isMultRange m    = tfun r s t && rbounded (inv r) t (the m)
+    | isMultEither m   = tfun r s t && eitherbounded (inv r) t m
 multOk r s t (Sm (Val 1) `Set` EmptyS) m 
     | m == singles mopt = fun_inj (inv r) t s
-    | isMultMany m      = fun_total (inv r) t s
-    | isMultRange m     = fun_total (inv r) t s && rbounded r s (the m)
-    | isMultEither m    = fun_total (inv r) s t && eitherbounded r t m
+    | isMultMany m      = tfun (inv r) t s
+    | isMultRange m     = tfun (inv r) t s && rbounded r s (the m)
+    | isMultEither m    = tfun (inv r) s t && eitherbounded r t m
 multOk r s t m (Rm 0 (Val 1) `Set` EmptyS)
     | m == singles mopt = fun_pinj r s t
     | isMultMany m      = pfun r s t

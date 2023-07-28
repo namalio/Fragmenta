@@ -1,0 +1,19 @@
+GrwET I_SCP1 {
+   node C1 : Composite :: C1a
+   node C2 : Composite :: C1b
+   node P1 : Part :: P1a
+   node P2 : Part :: P1b
+   node snop1: SerialNumber
+   node snop2 : SerialNumber
+   node snoc1: SerialNumber
+   node snoc2 : SerialNumber
+   node CD1 : CompositeDepot
+   edge CD1->C1 : holds
+   edge CD1->C2 : holds
+   edge C1->P1 : parts :: ps1a1
+   edge C2->P2 : parts :: ps1b
+   edge P1->snop1 : sno
+   edge P2->snop2 : sno
+   edge C1->snoc1 : sno
+   edge C2->snoc2 : sno
+}

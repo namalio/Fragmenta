@@ -23,6 +23,7 @@ import PathExpressions
 def_path = "FragmentaTests/PetsWorld/"
 img_path = "FragmentaTests/PetsWorld/img/"
 
+saveDrawings :: IO ()
 saveDrawings = do
    draw_mdl def_path img_path "M_AHW"
    draw_mdl def_path img_path "M_PW"
@@ -34,6 +35,7 @@ load_mdl = do
    rms<-load_rm_cmdl_def def_path "M_PW"
    return (amdl, cmdl, rms)
 
+do_main :: IO ()
 do_main = do 
    (amdl, cmdl, rms)<- load_mdl 
    check_report_wf "M_AHW" (Just Total) amdl True
@@ -50,19 +52,19 @@ do_main = do
 
 check_fs_and_ms :: IO ()
 check_fs_and_ms = do 
-   (nm_af, af)<-load_fr_def def_path "F_AH.fr"
-   (nm_f1, f1)<-load_fr_def def_path "F_PW1.fr"
-   (nm_f2, f2)<-load_fr_def def_path "F_PW2.fr"
-   (nm_f3, f3)<-load_fr_def def_path "F_PW3.fr"
-   (nm_f4, f4)<-load_fr_def def_path "F_PW4.fr"
-   (nm_f5, f5)<-load_fr_def def_path "F_PW5.fr"
-   (nm_f6, f6)<-load_fr_def def_path "F_PW6.fr"
-   (nm_m1, m1)<-load_morphism_def def_path "F_PW1.gm"
-   (nm_m2, m2)<-load_morphism_def def_path "F_PW2.gm"
-   (nm_m3, m3)<-load_morphism_def def_path "F_PW3.gm"
-   (nm_m4, m4)<-load_morphism_def def_path "F_PW4.gm"
-   (nm_m5, m5)<-load_morphism_def def_path "F_PW5.gm"
-   (nm_m6, m6)<-load_morphism_def def_path "F_PW6.gm"
+   (nm_af, af)<-loadF def_path "F_AH.fr"
+   (nm_f1, f1)<-loadF def_path "F_PW1.fr"
+   (nm_f2, f2)<-loadF def_path "F_PW2.fr"
+   (nm_f3, f3)<-loadF def_path "F_PW3.fr"
+   (nm_f4, f4)<-loadF def_path "F_PW4.fr"
+   (nm_f5, f5)<-loadF def_path "F_PW5.fr"
+   (nm_f6, f6)<-loadF def_path "F_PW6.fr"
+   (nm_m1, m1)<-loadM def_path "F_PW1.gm"
+   (nm_m2, m2)<-loadM def_path "F_PW2.gm"
+   (nm_m3, m3)<-loadM def_path "F_PW3.gm"
+   (nm_m4, m4)<-loadM def_path "F_PW4.gm"
+   (nm_m5, m5)<-loadM def_path "F_PW5.gm"
+   (nm_m6, m6)<-loadM def_path "F_PW6.gm"
    check_report_wf nm_af (Just Partial) af True
    check_report_wf nm_f1 (Just Partial) f1 True
    check_report_wf nm_f2 (Just Partial) f2 True
@@ -80,8 +82,8 @@ check_fs_and_ms = do
 check_instances :: IO ()
 check_instances = do 
    (amdl, cmdl, rms)<- load_mdl 
-   (nm_g1, gwt1)<-load_gwt_def def_path "PWI1.gwt"
-   (nm_g2, gwt2)<-load_gwt_def def_path "PWI2.gwt"
+   (nm_g1, gwt1)<-loadGwT def_path "PWI1.gwt"
+   (nm_g2, gwt2)<-loadGwT def_path "PWI2.gwt"
    check_report_wf nm_g1 (Just Total) gwt1 True
    check_report_wf nm_g2 (Just Total) gwt2 True
    check_ty_morphism (nm_g1 ++ " (Weak)") (Just WeakM) gwt1 cmdl True

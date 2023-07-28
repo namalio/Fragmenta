@@ -1,0 +1,16 @@
+Morphism M_P_AP {
+	nodes {
+		Person->Person
+		Hotel->Other
+		City->Other
+		Vehicle->Other
+		Name->Other
+	}
+	edges {
+	   Hosts->AnyRel
+	   Owns->AnyRel
+	   Person_lives->AnyRel
+	   Hotel_name->AnyRel
+	   Person_name->AnyRel
+	}
+}

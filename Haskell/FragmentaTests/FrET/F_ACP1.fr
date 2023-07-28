@@ -1,0 +1,7 @@
+fragment F_ACP1 {
+  SG SG_ACP1 {
+  	virtual Named
+    node Name
+    rel Named->Name[name]:0..1;1
+  }
+}

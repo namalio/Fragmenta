@@ -1,0 +1,7 @@
+fragment F_AC1 {
+  SG SG_AC1 {
+  	virtual Named
+    node Name
+    relu Named->Name[name]
+  }
+}

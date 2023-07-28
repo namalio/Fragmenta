@@ -8,7 +8,7 @@ import Gr_Cls
 import Grs
 import Frs
 import Mdls
-import Utils
+import Utils ( option_main_save )
 import CheckUtils
 import LoadCheckDraw
 
@@ -82,8 +82,8 @@ test3 = do
     check_report_wf nm_f4 (Just Partial) f4 True
     check_report_wf nm_f5 (Just Partial) f5 True
     check_report_wf nm_f6 (Just Total) f6 True
-    let uft = f1 `union_f` f2
-    let ufs = f3 `union_f` (f4 `union_f` f5)
+    let uft = f1 `unionF` f2
+    let ufs = f3 `unionF` (f4 `unionF` f5)
     check_report_wf "F_PV UF F_PVA" (Just Total) uft True -- Fig. 11a
     check_report_wf "F_PVI UF F_C UF F_C" (Just Total) ufs True -- Fig. 11b
     check_morphism ("(" ++ nm_f3 ++ ", " ++ nm_m1 ++ ") ⊒ " ++ nm_f1) (Just PartialM) f3 m1 f1 True
@@ -112,7 +112,8 @@ test5 = do
     (nm_f4, f4)<-loadF def_path "F_PC.fr"
     (nm_f6, f6)<-loadF def_path "F_ECC.fr"
     (nm_gwt1, gwt1) <- loadGwT def_path "carlos_joana.gwt" -- Fig. 12b
-    check_ty_morphism (nm_gwt1 ++ " ⋑ " ++ nm_f3 ++ " U " ++ nm_f4) (Just TotalM) gwt1 (f3 `union_f` f4) True
+    check_report_wf ("GwT " ++ nm_gwt1) Nothing gwt1 True
+    check_ty_morphism (nm_gwt1 ++ " ⋑ " ++ nm_f3 ++ " U " ++ nm_f4) (Just TotalM) gwt1 (f3 `unionF` f4) True
     check_ty_morphism (nm_gwt1 ++ " ⋑ " ++ nm_f6) (Just TotalM) gwt1 f6 True
 
 test6 :: IO ()
@@ -120,6 +121,7 @@ test6 = do
     putStrLn "Test 6"
     mdl<-load_mdl_def def_path "m_person_vehicle_inh"
     (nm_gwt, gwt) <- loadGwT def_path "carlos_joana2.gwt"
+    check_report_wf ("GwT " ++ nm_gwt) Nothing gwt True
     check_report_wf "Model M_PVI" (Just Total) mdl True
     check_ty_morphism (nm_gwt ++ " ⋑ " ++  "M_PVI") (Just TotalM) gwt mdl True
 

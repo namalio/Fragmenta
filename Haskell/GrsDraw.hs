@@ -1,8 +1,7 @@
 module GrsDraw(wrGAsGraphviz) where
 
 import Gr_Cls
-import Grs
-import Relations
+import Relations ( appl )
 
 data GEdge = GEdge String String String 
    deriving(Show)
@@ -22,14 +21,21 @@ consEdges g = foldr (\e es'->(consEdge g e):es') [] (es g)
 
 consNode n = GNode n 
 consNodes g = foldr (\n ns'->(consNode n):ns') [] (ns g)
+consGDrawingDesc :: GR g => g String String -> GDrawing
 consGDrawingDesc g = GDrawing (consNodes g) (consEdges g)
 
+wrEdgeSettings::String->String
 wrEdgeSettings nm = "[" ++ (wrEdgeSettings' $ tail nm) ++ "];"
+wrEdgeSettings'::String->String
 wrEdgeSettings' enm = "label=\""++enm++"▼\",arrowhead=vee"
+wrEdge :: GEdge->String
 wrEdge (GEdge nm s t) = "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ (wrEdgeSettings nm)
-wrEdges es  = foldr (\e es'-> (wrEdge e)++ "\n" ++es') "" es 
+wrEdges :: Foldable t =>t GEdge->String
+wrEdges es = foldr (\e es'-> (wrEdge e)++ "\n" ++es') "" es 
 
-wrNode (GNode nm) =  "\"" ++ nm ++ "\"" ++"[shape=box,fillcolor=lightskyblue1,style = filled,label=\""++nm++"\"];"
+wrNode ::GNode ->String
+wrNode (GNode nm) =  "\"" ++ nm ++ "\"" ++"[shape=box,fillcolor=\"#CCFFFF\",style = filled,label=\""++nm++"\"];"
+wrNodes :: Foldable t=>t GNode->String
 wrNodes ns  = foldr (\n ns'-> (wrNode n)++ "\n" ++ns') "" ns
 
 wrGGraphvizDesc::String->GDrawing->String
@@ -39,4 +45,5 @@ wrGGraphvizDesc nm (GDrawing ns es) =
    intro ++ (wrNodes ns) ++ "\n" ++ (wrEdges es) ++ end
 
 
+wrGAsGraphviz ::GR g=>String->g String String->String
 wrGAsGraphviz nm g = wrGGraphvizDesc nm $ consGDrawingDesc g

@@ -1,13 +1,13 @@
 digraph {graph[label=Car_Wheels_I1b,labelloc=tl,labelfontsize=12];
+"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Vehicle"];
+"C2"[shape=box,fillcolor=lightskyblue1,style = filled,label="C2 : Vehicle"];
 "W1a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1a : Part"];
 "W1b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1b : Part"];
 "W1c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1c : Part"];
-"C1"[shape=box,fillcolor=lightskyblue1,style = filled,label="C1 : Vehicle"];
 "W1d"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1d : Part"];
 "W2a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2a : Part"];
 "W2b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2b : Part"];
 "W2c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2c : Part"];
-"C2"[shape=box,fillcolor=lightskyblue1,style = filled,label="C2 : Vehicle"];
 "W2d"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2d : Part"];
 
 "C1"->"W1a"[label="C1_W1a :HasParts▼",arrowhead=vee];

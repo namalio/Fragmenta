@@ -2,10 +2,10 @@ Morphism M_A_B_C_D_5 {
 	nodes {
 	   A->A
 	   B->B
-		 D->B
+	   D->B
 	}
 	edges {
 	   A_B->A_B
-		 C_D->A_B
+	   C_D->A_B
 	}
 }

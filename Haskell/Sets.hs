@@ -1,6 +1,23 @@
-module Sets (Set(..)
-   , singles, filterS, zipS, set, toList, intoSet, rest, card, sminus, union, gunion, reduce, 
-   intersec, gintersec, disjoint, power, first, dups) where
+module Sets (
+   Set(..)
+   , singles
+   , filterS
+   , zipS
+   , set
+   , toList
+   , intoSet
+   , rest
+   , card
+   , sminus
+   , union
+   , gunion
+   , reduce
+   , intersec
+   , gintersec
+   , disjoint
+   , power
+   , first
+   , dups) where
 
 import TheNil
 data Set a = EmptyS | Set a (Set a) 

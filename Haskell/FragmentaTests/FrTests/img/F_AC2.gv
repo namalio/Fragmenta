@@ -1,0 +1,23 @@
+digraph {graph[label=F_AC2,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_AC2{style=dashed;label=F_AC2;
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"Composite"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Composite</I><br/>(V)}>];
+"Part"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Part</I><br/>(V)}>];
+"Composite1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composite1"];
+"Part1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part1"];
+"Composite2"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composite2"];
+"Part2"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part2"];
+
+"Composite"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Part"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Composite1"->"Composite"[arrowhead=onormal,arrowsize=2.0];
+"Part1"->"Part"[arrowhead=onormal,arrowsize=2.0];
+"Composite2"->"Composite"[arrowhead=onormal,arrowsize=2.0];
+"Part2"->"Part"[arrowhead=onormal,arrowsize=2.0];
+"Composite"->"Part"[label="parts",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"Composite1"->"Part1"[label="CPs1: Eparts ▼",dir=none,taillabel="",headlabel="1..*",style=dotted];
+"Composite2"->"Part2"[label="CPs2: Eparts ▼",dir=none,taillabel="",headlabel="1..*",style=dotted];
+
+}
+
+}

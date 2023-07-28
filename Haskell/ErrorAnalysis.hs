@@ -1,11 +1,32 @@
-module ErrorAnalysis(ErrorTree, nile, is_nil, consET, consSET, err_prepend, concat_ets, add_to_err, reportS, reportI, reportF', reportF, 
-  reportFI, reportRT, reportFB, reportFT, report_fun_total_seq, reportFT', reportPF, reportFPI, showErr, reportSSEq, 
-  reportSEq, reportR) where
+module ErrorAnalysis(
+  ErrorTree
+  , nile
+  , is_nil
+  , consET
+  , consSET
+  , err_prepend
+  , concat_ets
+  , add_to_err
+  , reportS
+  , reportI
+  , reportF'
+  , reportF
+  , reportFI
+  , reportRT
+  , reportFB
+  , reportFT
+  , report_fun_total_seq
+  , reportFT'
+  , reportPF
+  , reportFPI
+  , showErr
+  , reportSSEq
+  , reportSEq
+  , reportR) where
 
 import Relations
 import Sets ( sminus, gunion, Set ) 
 import ShowUtils
-import SimpleFuns
 
 data ErrorTree = NilE | Error String [ErrorTree]
     deriving (Eq, Show)
@@ -94,6 +115,7 @@ reportRT f xs =
    if total f xs then nile else consET "The totality constraint is unsatisfied. " [errs2, errs3]
 
 -- Errors related to a relation
+errsR::(Eq a1, Eq a2, Show a1, Show a2)=>Rel a1 a2->Set a1->Set a2->[ErrorTree]
 errsR r xs ys = [reportSSEq (dom_of r) xs, reportSSEq (ran_of r) ys]
 
 reportR r xs ys = 
@@ -110,7 +132,7 @@ errsFT f xs =
 reportFT'::(Eq a, Eq b, Show a, Show b)=>Rel a b->Set a->ErrorTree
 reportFT' f xs =
    let err = errsFT f xs in
-   if fun_total' f xs then nile else err
+   if tfun' f xs then nile else err
 
 -- reporting of a total function given a set of domain and range elements
 reportFT::(Eq a, Eq b, Show a, Show b)=>Rel a b->Set a->Set b->ErrorTree
@@ -139,7 +161,7 @@ reportFPI f xs ys =
 
 -- Errors related to a subset constraint
 reportSSEq r1 r2 =
-   if r1 <= r2 then nile else consSET $ "The following are not included: " ++ (showElems' $ r1 `sminus` r2)
+   if r1 <= r2 then nile else consSET $ "The following are not (or should not be) included: " ++ (showElems' $ r1 `sminus` r2)
 
 reportSEq r1 r2 =
     let err1 = reportSSEq r1 r2 in

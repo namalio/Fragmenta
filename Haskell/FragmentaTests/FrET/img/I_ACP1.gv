@@ -1,0 +1,36 @@
+digraph {graph[label=I_ACP1,labelloc=tl,labelfontsize=12];
+"C1a"[shape=box,fillcolor="#CCFFFF",style = filled,label=":C1a :: Composite1"];
+"C1b"[shape=box,fillcolor="#CCFFFF",style = filled,label=":C1b :: Composite1"];
+"P1a1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":P1a1 :: Part1"];
+"P1a2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":P1a2 :: Part1"];
+"P1b"[shape=box,fillcolor="#CCFFFF",style = filled,label=":P1b :: Part1"];
+"C2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":C2 :: Composite2"];
+"P2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":P2 :: Part2"];
+"nmC1a"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmC1a :: Name"];
+"nmC1b"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmC1b :: Name"];
+"nmC2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmC2 :: Name"];
+"nmP1a1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmP1a1 :: Name"];
+"nmP1a2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmP1a2 :: Name"];
+"nmP1b"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmP1b :: Name"];
+"nmP2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":nmP2 :: Name"];
+"sno1a1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":sno1a1 :: SerialNumber"];
+"sno1a2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":sno1a2 :: SerialNumber"];
+"sno1b"[shape=box,fillcolor="#CCFFFF",style = filled,label=":sno1b :: SerialNumber"];
+"sno2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":sno2 :: SerialNumber"];
+
+"C1a"->"P1a1"[label=":ps1a1 ::parts▼",arrowhead=vee];
+"C1a"->"P1a2"[label=":ps1a2 ::parts▼",arrowhead=vee];
+"C1b"->"P1b"[label=":ps1b ::parts▼",arrowhead=vee];
+"C1a"->"nmC1a"[label=":C1a_nmC1a ::name▼",arrowhead=vee];
+"P1a1"->"nmP1a1"[label=":P1a1_nmP1a1 ::name▼",arrowhead=vee];
+"P1a2"->"nmP1a2"[label=":P1a2_nmP1a2 ::name▼",arrowhead=vee];
+"C1b"->"nmC1b"[label=":C1b_nmC1b ::name▼",arrowhead=vee];
+"P1b"->"nmP1b"[label=":P1b_nmP1b ::name▼",arrowhead=vee];
+"P1a1"->"sno1a1"[label=":P1a1_sno1a1 ::sno▼",arrowhead=vee];
+"P1a2"->"sno1a2"[label=":P1a2_sno1a2 ::sno▼",arrowhead=vee];
+"P1b"->"sno1b"[label=":P1b_sno1b ::sno▼",arrowhead=vee];
+"C2"->"P2"[label=":C2_P2 ::parts▼",arrowhead=vee];
+"C2"->"nmC2"[label=":C2_nmC2 ::name▼",arrowhead=vee];
+"P2"->"nmP2"[label=":P2_nmP2 ::name▼",arrowhead=vee];
+"P2"->"sno2"[label=":P2_sno2 ::sno▼",arrowhead=vee];
+}

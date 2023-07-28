@@ -11,6 +11,7 @@ import Relations ( dom_of )
 import Grs
 import Gr_Cls
 import ErrorAnalysis
+import Utils ( reportWF )
 
 data GrwT a b = GrwT {
     g_ :: Gr a b
@@ -40,24 +41,26 @@ instance GRM GrwT where
     fE = fE . ty
 
 -- well-formedness
-wfGWT :: (Eq a, Eq b)=>GrwT a b -> Bool
-wfGWT gwt = (okayG Nothing $ gOf gwt) && (dom_of . fV $ gwt) == ns gwt && (dom_of . fE $ gwt) == es gwt
+okGWT :: (Eq a, Eq b)=>GrwT a b -> Bool
+okGWT gwt = okayG Nothing (gOf gwt) && domg gwt == els gwt 
 
-errsGWT :: (Show a, Show b, Eq b, Eq a) => String -> GrwT a b -> ErrorTree
+errsGWT :: (Show a, Show b, Eq b, Eq a) => String -> GrwT a b -> [ErrorTree]
 errsGWT id gwt = 
-    let err1 = faultsG id Nothing $ gOf gwt in
-    let err2 = if (dom_of . fV $ gwt) == ns gwt then nile else reportSEq (dom_of . fV $ gwt) (ns gwt) in
-    let err3 = if (dom_of . fE $ gwt) == es gwt then nile else reportSEq (dom_of . fE $ gwt) (es gwt) in
-    add_to_err err1 [err2, err3]
+    let err1 = faultsG id Nothing $ gOf gwt 
+        err2 = if (dom_of . fV $ gwt) == ns gwt then nile else reportSEq (dom_of . fV $ gwt) (ns gwt) 
+        err3 = if (dom_of . fE $ gwt) == es gwt then nile else reportSEq (dom_of . fE $ gwt) (es gwt) in
+    [err1, err2, err3]
 
 reportGWT :: (Eq a, Eq b, Show a, Show b) => String -> GrwT a b -> ErrorTree
-reportGWT id gwt = (faultsG id Nothing $ gOf gwt)
+reportGWT id gwt = reportWF gwt id okGWT (errsGWT id)
+
 
 --is_wf' _ = is_wf_gwt
 --check_wf' id _ = check_wf_gwt id
 
+unionGWT :: (Eq a, Eq b) =>GrwT a b -> GrwT a b -> GrwT a b
 unionGWT gwt1 gwt2 = consGWT (gwt1 `unionG` gwt2) (gwt1 `unionGM` gwt2)
 
 instance G_WF_CHK GrwT where
-   okayG _ = wfGWT
-   faultsG id _ = reportGWT  id
+   okayG _ = okGWT
+   faultsG id _ = reportGWT id

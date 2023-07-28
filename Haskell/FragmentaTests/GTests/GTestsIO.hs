@@ -1,4 +1,6 @@
 
+import Gr_Cls
+import Relations
 import Grs
 import Sets ( singles )
 import LoadCheckDraw
@@ -17,10 +19,12 @@ saveDrawings = do
     draw_to_file img_path nm3 (wrapG g3)
     let g4 = g1 `unionG` g2
     draw_to_file img_path "G_A_B_C_D" (wrapG g4)
-    let g5 = subsumeG g3 (singles ("C", "A"))
-    draw_to_file img_path "G_A_B_C_1" (wrapG g5)
+    let g5 = subsumeG g4 (singles ("C", "A"))
+    draw_to_file img_path "G_A_B_D_1" (wrapG g5)
     let g6 = invertG g5
-    draw_to_file img_path "G_A_B_C_2" (wrapG g6)
+    draw_to_file img_path "G_A_B_D_2" (wrapG g6)
+    let g7 = subsumeG g4 (singles ("C", "B"))
+    draw_to_file img_path "G_A_B_D_3" (wrapG g7)
 
 
 --confirms that 'g_1' and 'g_2' are malformed
@@ -41,7 +45,7 @@ do_test_1 = do
     putStrLn $ "Subtracting 'V3': " ++  (show $ subtractNs g1 (singles "V3"))
 
 -- Examples of the PCs paper
---confirms that 'G_A_B_C' is well-formed and does stuff with these graphs
+-- checks well-formedness of 'G_A_B_C' and does stuff with graphs
 test_G_A_B_C_D :: IO ()
 test_G_A_B_C_D = do
     (nm1, g1) <-loadG def_path "G_A_B.g"
@@ -74,9 +78,34 @@ test_G_A_B_C_D = do
     check_morphism "⊙ G_A_B_C -> G_A_B (composition with identity)" Nothing g4 (gid g1 `ogm` m5)  g1 True
     check_morphism "⊙ G_A_B_C -> G_A_B_C (composition via g1)" Nothing g4 (m2 `ogm` m5)  g3 True
 
+test_PMorphisms :: IO ()
+test_PMorphisms = do
+   (nm1, g1) <-loadG def_path "G_chain_4.g"
+   (nm2, g2) <-loadG def_path "G_loop_4.g"
+   (nm3, g3) <-loadG def_path "G_A_B.g"
+   (nm4, g4) <-loadG def_path "G_C_D.g" 
+   (nm_m1, m1)<-loadM def_path "m_p_Chain_A_B.gm"
+   (nm_m2, m2)<-loadM def_path "m_p_Chain_A_B_D.gm"
+   check_report_wf nm2 Nothing g2 True
+   check_morphism  ("Partial morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " to " ++ nm3) (Just WeakM) g1 m1 g3 True
+   check_morphism  ("Total morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " to " ++ nm3) Nothing g1 m1 g3 False
+   check_morphism  ("Partial morphism " ++ nm_m1 ++ " from " ++ nm2 ++ " to " ++ nm4) (Just WeakM) g2 m1 g3 True
+   check_morphism  ("Total morphism " ++ nm_m1 ++ " from " ++ nm2 ++ " to " ++ nm4) Nothing g2 m1 g3 False
+   let g5 = g3 `unionG` g4
+   check_morphism  ("Partial morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " to G_A_B_C_D") (Just WeakM) g1 m1 g5 True
+   check_morphism  ("Total morphism " ++ nm_m1 ++ " from " ++ nm1 ++ " toto G_A_B_C_D") Nothing g1 m1 g5 False
+   check_morphism ("Partial morphism " ++ nm_m1 ++ " from " ++ nm2 ++ " to G_A_B_C_D") (Just WeakM) g2 m1 g5 True
+   check_morphism ("Total morphism " ++ nm_m1 ++ "from " ++ nm2 ++ " to G_A_B_C_D") Nothing g2 m1 g5 False
+   let g6 = subsumeG g5 (singles ("C", "B"))
+   check_morphism  ("Partial morphism " ++ nm_m2 ++ " from " ++ nm1 ++ " to G_A_B_D") (Just WeakM) g1 m2 g6 True
+   check_morphism  ("Total morphism " ++ nm_m2 ++ " from " ++ nm1 ++ " to G_A_B_D") Nothing g1 m2 g6 False
+   --putStrLn . show $ (fV m1) `bcomp` (tgt g2) 
+   --putStrLn . show $ (tgt g3) `bcomp` (fE m1)
+
 do_main = do
     test_gerrs
     test_G_A_B_C_D
+    test_PMorphisms
 
 main :: IO ()
 main = do

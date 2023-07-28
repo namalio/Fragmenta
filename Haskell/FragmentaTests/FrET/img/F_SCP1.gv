@@ -1,0 +1,9 @@
+digraph {graph[label=F_SCP1,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_SCP1{style=dashed;label=F_SCP1;
+"Serialised"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Serialised</I><br/>(V)}>];
+"SerialNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="SerialNumber"];
+
+"Serialised"->"SerialNumber"[label="sno▼",dir=none,taillabel="0..1",headlabel=""];
+
+}
+}

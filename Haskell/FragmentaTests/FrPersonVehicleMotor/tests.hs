@@ -21,7 +21,7 @@ saveDrawings :: IO ()
 saveDrawings = do
    draw_mdl def_path img_path "PersonVehicleAny"
    draw_mdl def_path img_path "PersonVehicleMotor"
-   draw_def def_path img_path "Person_Vehicle_Motor.fr"
+   draw_def def_path img_path "Person_Vehicle_Motor"
 
 check_PVA :: IO ()
 check_PVA = do
@@ -34,14 +34,14 @@ check_PVM = do
 
 -- Checks the well-formedness of the abstract model
 do_test1 = do
-   (nmaf, af)<-load_fr_def def_path "Person_Vehicle_AnyM.fr"
+   (nmaf, af)<-loadF def_path "Person_Vehicle_AnyM.fr"
    check_report_wf nmaf (Just Total) af True
 
 -- Checks the well-formedness of the concrete fragment against the abstract one
 do_test2 = do
-   (nmaf, af)<-load_fr_def def_path "Person_Vehicle_AnyM.fr"
-   (nmf, f)<-load_fr_def def_path "Person_Vehicle_Motor.fr"
-   (nm_m1, m1)<-load_morphism_def def_path "m_PVI.gm"
+   (nmaf, af)<-loadF def_path "Person_Vehicle_AnyM.fr"
+   (nmf, f)<-loadF def_path "Person_Vehicle_Motor.fr"
+   (nm_m1, m1)<-loadM def_path "m_PVI.gm"
    check_report_wf nmaf (Just Total) af True
    check_report_wf nmf (Just Total) f True
    check_morphism (nm_m1++ " refinement morphism (Weak)") (Just WeakM) f m1 af True

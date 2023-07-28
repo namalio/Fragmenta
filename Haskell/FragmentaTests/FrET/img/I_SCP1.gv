@@ -1,0 +1,20 @@
+digraph {graph[label=I_SCP1,labelloc=tl,labelfontsize=12];
+"C1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":C1 :: Composite→C1a"];
+"C2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":C2 :: Composite→C1b"];
+"P1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":P1 :: Part→P1a1"];
+"P2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":P2 :: Part→P1b"];
+"snop1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":snop1 :: SerialNumber"];
+"snop2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":snop2 :: SerialNumber"];
+"snoc1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":snoc1 :: SerialNumber"];
+"snoc2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":snoc2 :: SerialNumber"];
+"CD1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":CD1 :: CompositeDepot"];
+
+"CD1"->"C1"[label=":CD1_C1 ::holds▼",arrowhead=vee];
+"CD1"->"C2"[label=":CD1_C2 ::holds▼",arrowhead=vee];
+"C1"->"P1"[label=":C1_P1 ::parts→Eps1a1▼",arrowhead=vee];
+"C2"->"P2"[label=":C2_P2 ::parts→Eps1b▼",arrowhead=vee];
+"P1"->"snop1"[label=":P1_snop1 ::sno▼",arrowhead=vee];
+"P2"->"snop2"[label=":P2_snop2 ::sno▼",arrowhead=vee];
+"C1"->"snoc1"[label=":C1_snoc1 ::sno▼",arrowhead=vee];
+"C2"->"snoc2"[label=":C2_snoc2 ::sno▼",arrowhead=vee];
+}

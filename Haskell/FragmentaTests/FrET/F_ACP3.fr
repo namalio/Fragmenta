@@ -1,0 +1,8 @@
+fragment F_ACP3 {
+  SG SG_ACP3 {
+  	proxy PPart
+    node SerialNumber
+    rel PPart->SerialNumber[sno]:0..1;1
+  }
+  ref PPart->Part
+}

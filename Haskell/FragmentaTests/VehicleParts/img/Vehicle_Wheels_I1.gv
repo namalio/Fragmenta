@@ -1,12 +1,12 @@
 digraph {graph[label=Vehicle_Wheels_I1,labelloc=tl,labelfontsize=12];
+"V1"[shape=box,fillcolor=lightskyblue1,style = filled,label="V1 : Car"];
+"V2"[shape=box,fillcolor=lightskyblue1,style = filled,label="V2 : ThreeWheeler"];
 "W1a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1a : Wheel"];
 "W1b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1b : Wheel"];
 "W1c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1c : Wheel"];
-"V1"[shape=box,fillcolor=lightskyblue1,style = filled,label="V1 : Car"];
 "W1d"[shape=box,fillcolor=lightskyblue1,style = filled,label="W1d : Wheel"];
 "W2a"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2a : Wheel"];
 "W2b"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2b : Wheel"];
-"V2"[shape=box,fillcolor=lightskyblue1,style = filled,label="V2 : ThreeWheeler"];
 "W2c"[shape=box,fillcolor=lightskyblue1,style = filled,label="W2c : Wheel"];
 
 "V1"->"W1a"[label="V1_W1a :HasWheels▼",arrowhead=vee];

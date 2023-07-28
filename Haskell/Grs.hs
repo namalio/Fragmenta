@@ -7,8 +7,19 @@
 
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Grs (Gr, TK(..), MK(..), isKTotal, consG, consGM, emptyGM, fV, 
-   fE, restrict, restrictNs, subtractNs
+module Grs (
+   Gr
+   , TK(..)
+   , MK(..)
+   , isKTotal
+   , consG
+   , consGM
+   , emptyGM
+   , fV
+   , fE
+   , restrict
+   , restrictNs
+   , subtractNs
    , adjacent
    , adjacentE
    , successors
@@ -19,15 +30,23 @@ module Grs (Gr, TK(..), MK(..), isKTotal, consG, consGM, emptyGM, fV,
    , esIncident
    , esConnect
    , acyclicG
-   , nsIncident,
-   disjGs, unionG, unionGs, unionGM, gid, ogm, unionGMs, subsumeG, invertG) 
+   , nsIncident
+   , disjGs
+   , unionG
+   , unionGs
+   , unionGM
+   , gid
+   , ogm
+   , unionGMs
+   , subsumeG
+   , invertG) 
 where
 
 import Gr_Cls
 import Sets ( sminus, disjoint, intersec, union, Set, intoSet, singles, filterS )
 import Relations
 import ErrorAnalysis
-    ( reportFT, consET, consSET, nile, ErrorTree ) 
+    ( reportFT, reportPF, consET, consSET, nile, ErrorTree ) 
 import Utils (reportWF)
 import TheNil
 
@@ -64,16 +83,17 @@ instance GR Gr where
    empty :: Gr a b
    empty = consG nil nil nil nil
 
-wfG:: (Eq a, Eq b, GR g) => g a b-> Bool
-wfG g = fun_total (src g) (es g) (ns g) && fun_total (tgt g) (es g) (ns g)
+okG:: (Eq a, Eq b, GR g) => g a b-> Bool
+okG g = tfun (src g) (es g) (ns g) && tfun (tgt g) (es g) (ns g)
 
 errorsG:: (GR g, Eq a, Eq b, Show a, Show b) => g a b-> [ErrorTree]
 errorsG g =
-   let errs1 = if fun_total (src g) (es g) (ns g) then nile else consET ("Function 'src' is ill defined.") [reportFT (src g) (es g) (ns g)] in
-   let errs2 = if fun_total (tgt g) (es g) (ns g) then nile else consET ("Function 'tgt' is ill defined.") [reportFT (tgt g) (es g) (ns g)] in
+   let errs1 = if tfun (src g) (es g) (ns g) then nile else consET ("Function 'src' is ill defined.") [reportFT (src g) (es g) (ns g)] in
+   let errs2 = if tfun (tgt g) (es g) (ns g) then nile else consET ("Function 'tgt' is ill defined.") [reportFT (tgt g) (es g) (ns g)] in
    [errs1, errs2]
 
-reportG id g = reportWF g id wfG errorsG
+reportG :: (Eq a, Eq b, GR g, Show a, Show b) => String -> g a b -> ErrorTree
+reportG id g = reportWF g id okG errorsG
 
 -- Nodes of a graph connected a set of edges, either as source or target nodes
 nsIncident :: (Foldable t, Eq a, Eq b, GR g) => g a b -> t b -> Set a
@@ -155,31 +175,52 @@ acyclicG::(Eq a, Eq b, GR g) => g a b->Bool
 acyclicG = acyclic . relOfGE
 
 -- Total function check on 'fV'
-fun_total_fV (gs, m, gt) = fun_total (fV m) (ns gs) (ns gt)
+totalfV::(Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
+totalfV (gs, m, gt) = tfun (fV m) (ns gs) (ns gt)
 
 -- Total function check on 'fE'
-fun_total_fE (gs, m, gt) = fun_total (fE m) (es gs) (es gt)
+totalfE::(Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
+totalfE (gs, m, gt) = tfun (fE m) (es gs) (es gt)
+
+-- Partial function check on 'fV'
+partialfV::(Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
+partialfV (gs, m, gt) = pfun (fV m) (ns gs) (ns gt)
+
+-- Partial function check on 'fE'
+partialfE::(Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
+partialfE (gs, m, gt) = pfun (fE m) (es gs) (es gt)
 
 -- Checks whether the source function commutes
-morphism_gm_commutes_src (gs, m, gt) = (fV m) `bcomp` (src gs)  == (src gt) `bcomp` (fE m) 
-morphism_gm_commutes_tgt (gs, m, gt) = (fV m) `bcomp` (tgt gs)  == (tgt gt) `bcomp` (fE m) 
+morphism_commutes_src (gs, m, gt) = (src gt) `bcomp` (fE m)  == (fV m) `bcomp` (src gs) 
+pmorphism_commutes_src (gs, m, gt) = (src gt) `bcomp` (fE m)  == (fV m) `bcomp` (dres (src gs) (dom_of . fE $ m)) 
+morphism_commutes_tgt (gs, m, gt) = (tgt gt) `bcomp` (fE m) == (fV m) `bcomp` (tgt gs)  
+pmorphism_commutes_tgt (gs, m, gt) = (tgt gt) `bcomp` (fE m)  == (fV m) `bcomp` (dres (tgt gs) (dom_of . fE $ m))
 
+-- Well-formedness of total morphisms
 wfGM:: (Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
-wfGM (gs, m, gt) = fun_total_fV (gs, m, gt) && fun_total_fE (gs, m, gt)
-   && morphism_gm_commutes_src (gs, m, gt)
-   && morphism_gm_commutes_tgt (gs, m, gt)
+wfGM (gs, m, gt) = totalfV (gs, m, gt) && totalfE (gs, m, gt)
+   && morphism_commutes_src (gs, m, gt)
+   && morphism_commutes_tgt (gs, m, gt)
+
+-- Well-formedness of partial morphisms
+wfPGM:: (Eq a, Eq b, GR g) => (g a b, GrM a b, g a b) -> Bool
+wfPGM (gs, m, gt) = partialfV (gs, m, gt) && partialfE (gs, m, gt)
+   && pmorphism_commutes_src (gs, m, gt)
+   && pmorphism_commutes_tgt (gs, m, gt)
 
 instance G_WF_CHK Gr where
    okayG :: (Eq a, Eq b) => Maybe TK -> Gr a b -> Bool
-   okayG _ = wfG
+   okayG _ = okG
    faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> Gr a b -> ErrorTree
    faultsG id _ = reportG id
 
 instance GM_CHK Gr Gr where
    okayGM :: (Eq a, Eq b) => Maybe MK -> (Gr a b, GrM a b, Gr a b) -> Bool
+   okayGM (Just WeakM) = wfPGM
    okayGM _ = wfGM
    faultsGM :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> (Gr a b, GrM a b, Gr a b) -> ErrorTree
-   faultsGM nm Nothing = reportGM nm
+   faultsGM nm (Just WeakM) = reportPGM nm
+   faultsGM nm _ = reportGM nm
 
 --check_gr_wf:: (GR g, Eq a, Show a) => String -> g a -> IO () 
 --check_gr_wf g_id g = 
@@ -190,14 +231,25 @@ instance GM_CHK Gr Gr where
 
 errorsGM:: (GR g, Eq a, Eq b, Show a, Show b) => (g a b, GrM a b, g a b) -> [ErrorTree]
 errorsGM (gs, m, gt) =
-   let err1 = if fun_total_fV (gs, m, gt) then nile else consET "Function 'fV' is ill defined." [reportFT (fV m) (ns gs) (ns gt)] in
-   let err2 = if fun_total_fE (gs, m, gt) then nile else consET "Function 'fE' is ill defined." [reportFT (fE m) (es gs) (es gt)] in
-   let err3 = if morphism_gm_commutes_src (gs, m, gt) then nile else consSET "Problems in the commuting of the source functions" in
-   let err4 = if morphism_gm_commutes_tgt (gs, m, gt) then nile else consSET "Problems in the commuting of the target functions" in
+   let err1 = if totalfV (gs, m, gt) then nile else consET "Function 'fV' is ill defined." [reportFT (fV m) (ns gs) (ns gt)] in
+   let err2 = if totalfE (gs, m, gt) then nile else consET "Function 'fE' is ill defined." [reportFT (fE m) (es gs) (es gt)] in
+   let err3 = if morphism_commutes_src (gs, m, gt) then nile else consSET "Problems in the commuting of the source functions" in
+   let err4 = if morphism_commutes_tgt (gs, m, gt) then nile else consSET "Problems in the commuting of the target functions" in
+   [err1,err2,err3,err4]
+
+errorsPGM:: (GR g, Eq a, Eq b, Show a, Show b) => (g a b, GrM a b, g a b) -> [ErrorTree]
+errorsPGM (gs, m, gt) =
+   let err1 = if partialfV (gs, m, gt) then nile else consET "Function 'fV' is ill defined." [reportPF (fV m) (ns gs) (ns gt)] in
+   let err2 = if partialfE (gs, m, gt) then nile else consET "Function 'fE' is ill defined." [reportPF (fE m) (es gs) (es gt)] in
+   let err3 = if pmorphism_commutes_src (gs, m, gt) then nile else consSET "Problems in the commuting of the source functions" in
+   let err4 = if pmorphism_commutes_tgt (gs, m, gt) then nile else consSET "Problems in the commuting of the target functions" in
    [err1,err2,err3,err4]
 
 reportGM:: (GR g, Eq a, Eq b, Show a, Show b) => String-> (g a b, GrM a b, g a b) -> ErrorTree
 reportGM nm (gs, gm, gt) = reportWF (gs, gm, gt) nm (wfGM) (errorsGM)
+
+reportPGM:: (GR g, Eq a, Eq b, Show a, Show b) => String-> (g a b, GrM a b, g a b) -> ErrorTree
+reportPGM nm (gs, gm, gt) = reportWF (gs, gm, gt) nm (wfPGM) (errorsPGM)
 
 --reportGM' nm Nothing = check_wf_gm_g nm 
 
@@ -206,10 +258,10 @@ disjGs gs = disjoint (map ns gs) && disjoint (map es gs)
 -- graph union
 unionG :: (Eq b, Eq a, GR g1, GR g2) => g1 a b -> g2 a b -> Gr a b
 unionG g1 g2 = 
-   let ns' = (ns g1) `union` (ns g2) in
-   let es' = (es g1) `union` (es g2) in
-   let s = (src g1) `union` (src g2) in
-   let t = (tgt g1) `union` (tgt g2) in
+   let ns' = ns g1 `union` ns g2 in
+   let es' = es g1 `union` es g2 in
+   let s = src g1 `union` src g2 in
+   let t = tgt g1 `union` tgt g2 in
    consG ns' es' s t
 
 -- generalised graph union
@@ -226,6 +278,14 @@ subsumeG g sub =
 -- Identity morphism over a graph
 gid::(Eq a, Eq b, GR g)=>g a b->GrM a b
 gid g = consGM (id_on . ns $ g) (id_on . es $ g)
+
+-- Domain of a graph morphism
+--domg :: (GRM gm, Eq a, Eq b) => gm a b -> (Set a, Set b)
+--domg gm = (dom_of . fV $ gm, dom_of . fE $ gm)
+
+-- Co-domain of a graph morphism
+codg :: (GRM gm, Eq a, Eq b) => gm a b -> (Set a, Set b)
+codg gm = (ran_of . fV $ gm, ran_of . fE $ gm)
 
 -- Union on graph morphisms
 unionGM gm1 gm2 = consGM ((fV gm1) `union` (fV gm2)) ((fE gm1) `union` (fE gm2))

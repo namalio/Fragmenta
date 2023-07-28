@@ -1,0 +1,11 @@
+Morphism M_P_Chain_AB {
+	nodes {
+	   V1->A
+	   V2->B
+	   V3->D
+	}
+	edges {
+	   V1_V2->A_B
+	   V2_V3->C_D
+	}
+}

@@ -1,0 +1,16 @@
+Morphism M_FCC_FAC {
+	nodes {
+	   PNamed->PNamed
+	   Composite->Composite
+	   Part->Part
+	   Composite1->Composite1
+	   Composite2->Composite2
+	   Part1->Part1
+	   Part2->Part2
+
+	}
+	edges {
+	   parts1->parts
+	   parts2->parts
+	}
+}

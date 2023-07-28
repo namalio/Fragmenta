@@ -1,0 +1,8 @@
+fragment F_AC3 {
+  SG SG_AC3 {
+  	proxy PPart
+    node SerialNumber
+    relu PPart->SerialNumber[sno]
+  }
+  ref PPart->Part
+}

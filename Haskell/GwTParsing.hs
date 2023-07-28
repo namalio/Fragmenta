@@ -35,7 +35,7 @@ extract_elem (ElemE e s t ety) =
    where nm_of_edge enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
 
 extract_gwt::[GwTElem]->GrwT String String
-extract_gwt es = foldl (\g e-> g `unionGWT` (extract_elem e)) empty es
+extract_gwt = foldl (\g e-> g `unionGWT` (extract_elem e)) empty
 
 cons_gwt_fr_gd::GwTDef->GrwT String String
 cons_gwt_fr_gd (GwTDef _ elems ) = extract_gwt elems

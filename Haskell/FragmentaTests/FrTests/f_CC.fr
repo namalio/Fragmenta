@@ -1,0 +1,20 @@
+fragment F_CC {
+  SG SG_CC {
+  	proxy PNamed
+  	nodea Composite
+  	nodea Part
+    inh Composite->PNamed
+    inh Part->PNamed
+    node Composite1
+    node Composite2
+    node Part1
+    node Part2
+    inh Composite1->Composite
+    inh Composite2->Composite
+    inh Part1->Part
+    inh Part2->Part
+    compu Composite1->Part1[parts1]:1..*
+    compu Composite2->Part2[parts2]:1..*
+  }
+  ref PNamed->Named
+}

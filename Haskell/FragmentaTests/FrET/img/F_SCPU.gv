@@ -1,0 +1,18 @@
+digraph {graph[label=F_SCPU,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_SCPU{style=dashed;label=F_SCPU;
+"Serialised"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Serialised</I><br/>(V)}>];
+"SerialNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="SerialNumber"];
+"CompositeDepot"[shape=record,fillcolor=lightskyblue1,style = filled,label="CompositeDepot"];
+"Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part:Part1"];
+"Composite"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composite:Composite1"];
+"PSerialised"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Serialised<br/>(P)>];
+
+"Serialised"->"SerialNumber"[label="sno▼",dir=none,taillabel="0..1",headlabel=""];
+"CompositeDepot"->"Composite"[label="holds",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"Composite"->"Part"[label="parts:Eparts",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"Part"->"PSerialised"[arrowhead=onormal,arrowsize=2.0];
+"Composite"->"PSerialised"[arrowhead=onormal,arrowsize=2.0];
+
+}
+"PSerialised"->"Serialised"[arrowhead=normalnormal];
+}

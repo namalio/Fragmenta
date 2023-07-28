@@ -2,7 +2,7 @@ module FrParsing (loadFragment, loadSG) where
 
 import Sets ( set, singles, union, Set(..) )
 import Relations
-import Grs ( consG )
+import Grs ( consG, unionGM )
 import SGrs
 import Frs ( consF, Fr )
 import Text.ParserCombinators.ReadP
@@ -30,11 +30,22 @@ data SGElem = ElemN NodeDef | ElemE EdgeDef | ElemD EdgeDep | ElemClE ClEnum
    deriving(Eq, Show)
 data SGDef = SGDef String [SGElem] 
    deriving(Eq, Show)
--- A proxy reference links a proxy to some node
-data ProxyRef = ProxyRef String String 
+
+--data Proxy = Proxy String String 
+--   deriving(Eq, Show)
+-- Certain nodes have a partial typing
+--data InstanceOfN = InstanceOfN String String 
+--   deriving(Eq, Show)
+-- Certain edges have a partial typing
+--data InstanceOfE = InstanceOfE String String 
+--   deriving(Eq, Show)
+-- Either: (i) a proxy reference indicating the node represented by the proxy
+-- (ii) The partial type of a node
+-- (iii) The partial type of an edge
+data FrRef = Proxy String String | InstanceOfN String String | InstanceOfE String String
    deriving(Eq, Show)
--- A fragment definition has a name, a SG, and a list of proxy refenrences
-data FrDef = FrDef String SGDef [ProxyRef] 
+-- A fragment definition has a name, a SG, and a list of proxy references
+data FrDef = FrDef String SGDef [FrRef] 
    deriving(Eq, Show)
 
 sgd_name :: SGDef -> String
@@ -91,14 +102,25 @@ cons_sg_fr_sgd (SGDef _ elems) = extract_sg elems
 t_union :: (Eq a1, Eq a2, Eq a3) =>(Set a1, Set a2, Set a3)-> (Set a1, Set a2, Set a3) -> (Set a1, Set a2, Set a3)
 t_union (e1a, e2a, e3a) (e1b, e2b, e3b) = (e1a `union` e1b, e2a `union` e2b, e3a `union` e3b)
 
-ext_proxy_refs::[ProxyRef]->(Set String, Rel String String, Rel String String)
-ext_proxy_refs [] = (nil, nil, nil)
-ext_proxy_refs ((ProxyRef p r):prs) = (singles ("E"++p), singles ("E"++p, p), singles ("E"++p, r)) `t_union` (ext_proxy_refs prs)
+edgId::String->String
+edgId e = "E"++e
+
+gProxyInfo::[FrRef]->(Set String, Rel String String, Rel String String)
+gProxyInfo [] = (nil, nil, nil)
+gProxyInfo ((Proxy p r):rs) = (singles . edgId $ p, singles (edgId p, p), singles (edgId p, r)) `t_union` (gProxyInfo rs)
+gProxyInfo (_:rs) = gProxyInfo rs
+
+gInstanceOfM::[FrRef]->GrM String String
+gInstanceOfM [] = emptyGM
+gInstanceOfM ((InstanceOfN n r):rs) = (consGM (singles (n, r)) nil) `unionGM` gInstanceOfM rs
+gInstanceOfM ((InstanceOfE e r):rs) = (consGM nil (singles (edgId e, edgId r))) `unionGM` gInstanceOfM rs
+gInstanceOfM (_:rs) = gInstanceOfM rs
 
 cons_fr_fr_frd::FrDef->Fr String String
-cons_fr_fr_frd (FrDef _ sgd prs ) = 
-   let (esr, s, t) = ext_proxy_refs prs in
-   consF (cons_sg_fr_sgd sgd) esr s t
+cons_fr_fr_frd (FrDef _ sgd rs ) = 
+   let (esr, s, t) = gProxyInfo rs 
+       et = gInstanceOfM rs in
+   consF (cons_sg_fr_sgd sgd) esr s t et
 
 parse_fin_node::SGNTy->ReadP NodeDef
 parse_fin_node nty= do
@@ -488,7 +510,7 @@ parse_sg = do
    elems<-between (char '{') (char '}') (many parse_sg_elem) 
    return (SGDef sg_nm elems)
 
-parseProxyRef::ReadP ProxyRef
+parseProxyRef::ReadP FrRef
 parseProxyRef = do
    string "ref"
    skipSpaces
@@ -498,7 +520,36 @@ parseProxyRef = do
    skipSpaces
    nnm<-parse_id
    skipSpaces
-   return (ProxyRef pnm nnm)
+   return (Proxy pnm nnm)
+
+parseInstanceOfN::ReadP FrRef
+parseInstanceOfN = do
+   string "iON"
+   skipSpaces
+   nnm<-parse_id
+   skipSpaces
+   string "->"
+   skipSpaces
+   tnnm<-parse_id
+   skipSpaces
+   return (InstanceOfN nnm tnnm)
+
+parseInstanceOfE::ReadP FrRef
+parseInstanceOfE = do
+   string "iOE"
+   skipSpaces
+   enm<-parse_id
+   skipSpaces
+   string "->"
+   skipSpaces
+   tenm<-parse_id
+   skipSpaces
+   return (InstanceOfE enm tenm)
+
+parseFrRef::ReadP FrRef
+parseFrRef = do
+   r <- parseProxyRef <|> parseInstanceOfN  <|> parseInstanceOfE
+   return r
 
 parse_fr :: ReadP FrDef
 parse_fr = do
@@ -510,8 +561,8 @@ parse_fr = do
    skipSpaces
    sg<-parse_sg
    skipSpaces
-   elems<-manyTill parseProxyRef (char '}')
-   return (FrDef fnm sg elems)
+   refs<-manyTill parseFrRef (char '}')
+   return (FrDef fnm sg refs)
 
 loadFrDefFrFile :: FilePath -> IO (Maybe FrDef)
 loadFrDefFrFile fn = do   

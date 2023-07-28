@@ -1,0 +1,16 @@
+fragment F_SCP2 {
+  SG SG_SCP2 {
+  	proxy PSerialised
+    node Composite
+    node Part
+    inh Composite->PSerialised
+    inh Part->PSerialised
+    compu Composite->Part[parts]:1..*
+    node CompositeDepot
+    compu CompositeDepot->Composite[holds]:1..*
+  }
+  ref PSerialised->Serialised
+  iON Composite->Composite1
+  iON Part->Part1
+  iOE parts->parts
+}

@@ -4,17 +4,25 @@ module FrsDraw (wrFrGraphvizDesc, consFrDrawingDesc, FrDrawing) where
 import Relations
 import SGsDraw
 import Frs
+import Gr_Cls
+import Grs
 
-data FrEdge = FrREdge String String String deriving(Show)
-data FrDrawing = FrDrawing String SGDrawing [FrEdge] deriving(Show) 
+data PrEdge = PrEdge String String String 
+    deriving(Show)
+data FrDrawing = FrDrawing String SGDrawing [PrEdge] 
+    deriving(Show) 
 
-consEdge f e = FrREdge e (appl (srcR f) e) (appl (tgtR f) e)
+consEdge :: Fr String String -> String -> PrEdge
+consEdge f e = PrEdge e (appl (srcR f) e) (appl (tgtR f) e)
+consEdges :: Fr String String -> [PrEdge]
 consEdges f = foldr (\e es'->(consEdge f e):es') [] (esR f)
+
 consFrDrawingDesc :: String -> Fr String String -> FrDrawing
-consFrDrawingDesc nm f = FrDrawing nm (consSGDrawingDesc $ fsg f) (consEdges f)
+consFrDrawingDesc nm f = 
+   let sgdr = consSGDrawingDesc (fsg f) (fet f) in
+   FrDrawing nm sgdr (consEdges f)
 
-
-wrPrxEdge (FrREdge nm s t) ns = if t `elem` ns then  "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ "[arrowhead=normalnormal];" else ""
+wrPrxEdge (PrEdge nm s t) ns = if t `elem` ns then  "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ "[arrowhead=normalnormal];" else ""
 wrPrxEdges es ns  = foldr (\e es'-> (wrPrxEdge e ns)++ "\n" ++es') "" es 
 
 wrFrGraphvizDesc::DrawPartKind->FrDrawing->String

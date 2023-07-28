@@ -1,11 +1,11 @@
 digraph {graph[label=F_PVI,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PVI{style=dashed;label=F_PVI;
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
+"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
 "Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
 "Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
-"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
-"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
-"PPerson"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Person<br/>(P)>];
 "City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
 
 "Employee"->"Person"[arrowhead=onormal,arrowsize=2.0];
 "Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];

@@ -14,7 +14,6 @@ import LoadCheckDraw
 import Utils ( option_main_save )
 import Gr_Cls
 import Relations
-import PathExpressions
 
 
 def_path = "FragmentaTests/SGTests/"

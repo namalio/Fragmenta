@@ -1,5 +1,27 @@
-module Relations (Rel, dom_of, ran_of, img, inv, dres, rres, dsub, rsub, override, id_on, rcomp, bcomp, functional, 
-    total, fun_total, pfun, fun_total', fun_pinj, fun_inj, fun_bij, injective, relation, cl_override, mktotal_in, 
+module Relations (Rel
+    , dom_of
+    , ran_of
+    , img
+    , inv
+    , dres
+    , rres
+    , dsub
+    , rsub
+    , override
+    , id_on
+    , rcomp
+    , bcomp
+    , functional
+    , total
+    , tfun
+    , pfun
+    , tfun'
+    , fun_pinj
+    , fun_inj
+    , fun_bij
+    , injective
+    , relation
+    , cl_override, mktotal_in, 
     appl, find_monces, acyclic, trancl, rtrancl, rtrancl_on, reflexive, antireflexive, antireflexive_on, symmetric, 
     transitive, surjective, eq_rel, cross, flatten, tree) where
 
@@ -84,12 +106,14 @@ total r xs = dom_of r ==  xs
 
 range_ok :: Eq b=>Rel a b -> Set b -> Bool
 range_ok r ys = (ran_of r) <= ys
-fun_total :: (Eq a, Eq b)=>Rel a b -> Set a -> Set b -> Bool
-fun_total f xs ys = functional f && total f xs && range_ok f ys
+
+--says whether a function is total
+tfun :: (Eq a, Eq b)=>Rel a b -> Set a -> Set b -> Bool
+tfun f xs ys = functional f && total f xs && range_ok f ys
 --fun_total_seq f xs ys = functional f && total f xs && (gunion . ran_of $ f) `subseteq` ys
 
-fun_total' :: Eq a => Rel a b -> Set a -> Bool
-fun_total' r xs = functional r && total r xs
+tfun' :: Eq a => Rel a b -> Set a -> Bool
+tfun' r xs = functional r && total r xs
 
 injective :: Eq a => Rel b a -> Bool
 injective r = (functional . inv) r
@@ -106,14 +130,14 @@ pfun f xs ys = functional f && relation f xs ys
 fun_pinj :: (Eq b, Eq a) => Rel a b -> Set a -> Set b -> Bool
 fun_pinj f xs ys = injective f && pfun f xs ys
 fun_inj :: (Eq b, Eq a) => Rel a b -> Set a -> Set b -> Bool
-fun_inj f xs ys = injective f && fun_total f xs ys
+fun_inj f xs ys = injective f && tfun f xs ys
 
-inj_fun r xs ys = injective r && fun_total r xs ys
+inj_fun r xs ys = injective r && tfun r xs ys
 --inj_surj_fun r xs ys = injective r && surjective r ys && fun_total r xs ys
 
-total_fun_surj r xs ys = fun_total r xs ys && surjective r ys
+total_fun_surj r xs ys = tfun r xs ys && surjective r ys
 fun_bij :: (Eq a, Eq b) => Rel a b -> Set a -> Set b -> Bool
-fun_bij r xs ys = fun_total r xs ys && injective r && surjective r ys
+fun_bij r xs ys = tfun r xs ys && injective r && surjective r ys
 
 -- Checks that a relation is anti-reflexive
 antireflexive :: Eq a => Rel a a -> Bool

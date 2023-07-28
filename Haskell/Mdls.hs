@@ -35,7 +35,7 @@ consMdl :: GFGr a b -> Rel a (Fr a b) -> Mdl a b
 consMdl gfg fd = Mdl {gfg_ = gfg, fd_ = fd} 
 
 mufs::(Eq a, Eq b)=>Mdl a b->Fr a b
-mufs = union_fs . ran_of . mfd
+mufs = unionFs . ran_of . mfd
 
 from' :: (Eq a, Eq b) => a -> Rel a (Fr a b) -> a
 from' n (Set (gf, f) mf) 
@@ -53,7 +53,7 @@ errs_complyGFG m = if complyGFG m then nile else consSET ("The following proxies
 
 okayMdl :: (Eq a, Eq b) => Mdl a b -> Bool
 okayMdl m = okayG Nothing (mgfg m)  
-   && fun_total' (mfd m) (ns . mgfg $ m) && (disjFs . toList. ran_of . mfd $ m)
+   && tfun' (mfd m) (ns . mgfg $ m) && (disjFs . toList. ran_of . mfd $ m)
    && okayG (Just Total) (mufs m) && complyGFG m
 
 rep_elems m = ran_of . mfd $ m
@@ -61,7 +61,7 @@ rep_elems m = ran_of . mfd $ m
 errsMdl ::(Eq a, Eq b, Show a, Show b)=>String->Mdl a b->[ErrorTree]
 errsMdl id m = 
     let err1 = faultsG id (Nothing) (mgfg m) in
-    let err2 = if fun_total' (mfd m) (ns . mgfg $ m) then nile else consET "Not all GFG fragment nodes have a corresponding fragment." [reportFT' (mfd m) (ns . mgfg $ m)] in
+    let err2 = if tfun' (mfd m) (ns . mgfg $ m) then nile else consET "Not all GFG fragment nodes have a corresponding fragment." [reportFT' (mfd m) (ns . mgfg $ m)] in
     let err3 = if disjFs . toList . ran_of . mfd $ m then nile else consSET ("The fragments are not disjoint; the following nodes are repeated:" ++ (showElems' . toList . rep_ns_of_fs . ran_of . mfd $ m)) in
     let err4 = if disjFs . toList . ran_of . mfd $ m then nile else consSET ("The fragments are not disjoint; the following edges are repeated:" ++ (showElems' . toList . rep_es_of_fs . ran_of . mfd $ m)) in
     let err5 = faultsG id (Just Total) (mufs m) in

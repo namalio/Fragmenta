@@ -16,7 +16,8 @@ module PathExpressions (PEA(..), PE(..), PEC(..)
    , startEA
    , startEAC
    , endEA
-   , endEAC) where
+   , endEAC
+   , fmap2PE) where
 
 import Sets
 import Gr_Cls
@@ -29,6 +30,19 @@ data PEC v e = At (PEA e) | Dres v (PEA e) | Rres (PEA e) v
    deriving (Eq, Show)
 data PE v e = Ec (PEC v e)| SCmp (PEC v e) (PE v e) 
    deriving (Eq, Show)
+
+instance Functor PEA where
+   fmap f (Edg e) = Edg(f e)
+   fmap f (Inv e) = Inv(f e)
+
+fmap2PEC::(a->b)->(c->d)->PEC a c->PEC b d
+fmap2PEC f g (At pea) = At (fmap g pea)
+fmap2PEC f g (Dres v pea) = Dres (f v) (fmap g pea)
+fmap2PEC f g (Rres pea v) = Rres (fmap g pea) (f v)
+
+fmap2PE::(a->b)->(c->d)->PE a c->PE b d
+fmap2PE f g (Ec pec) = Ec (fmap2PEC f g pec)
+fmap2PE f g (SCmp pec pe) = SCmp (fmap2PEC f g pec) (fmap2PE f g pe)
 
 ePEA :: (Eq a) => PEA a -> a
 ePEA (Edg e) = e

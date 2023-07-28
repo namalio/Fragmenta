@@ -1,0 +1,35 @@
+GrwT I_ACP1 {
+   node C1a : Composite1
+   node C1b : Composite1
+   node P1a1 : Part1
+   node P1a2 : Part1
+   node P1b : Part1
+   node C2 : Composite2
+   node P2 : Part2
+   node nmC1a : Name
+   node nmC1b : Name
+   node nmC2 : Name
+   node nmP1a1 : Name
+   node nmP1a2 : Name
+   node nmP1b : Name
+   node nmP2 : Name
+   node sno1a1 : SerialNumber
+   node sno1a2 : SerialNumber
+   node sno1b : SerialNumber
+   node sno2 : SerialNumber
+   edge C1a->P1a1[ps1a1] : parts
+   edge C1a->P1a2[ps1a2] : parts
+   edge C1b->P1b[ps1b] : parts
+   edge C1a->nmC1a : name
+   edge P1a1->nmP1a1 : name
+   edge P1a2->nmP1a2 : name
+   edge C1b->nmC1b : name
+   edge P1b->nmP1b : name
+   edge P1a1->sno1a1 : sno
+   edge P1a2->sno1a2 : sno
+   edge P1b->sno1b : sno
+   edge C2->P2 : parts
+   edge C2->nmC2 : name
+   edge P2->nmP2 : name
+   edge P2->sno2 : sno
+}
