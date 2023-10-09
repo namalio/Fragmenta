@@ -15,26 +15,26 @@ import ErrorAnalysis
 import Utils
 import TheNil
 
-newtype GFGr a b = GFGr {gOf :: Gr a b} deriving (Eq, Show)
+newtype GFGr a b = GFGr {gOf_ :: Gr a b} deriving (Eq, Show)
 
 consGFG::Set a->Set b->Rel b a->Rel b a->GFGr a b
 consGFG ns es s t = GFGr (consG ns es s t)
 
 instance GR GFGr where
    ns :: (Eq a, Eq b) => GFGr a b -> Set a
-   ns = ns . gOf
+   ns = ns . gOf_
    es :: (Eq a, Eq b) => GFGr a b -> Set b
-   es = es . gOf
+   es = es . gOf_
    src :: (Eq a, Eq b) => GFGr a b -> Rel b a
-   src = src . gOf
+   src = src . gOf_
    tgt :: (Eq a, Eq b) => GFGr a b -> Rel b a
-   tgt = tgt . gOf
+   tgt = tgt . gOf_
    empty :: GFGr a b
    empty = consGFG nil nil nil nil
 
 -- the refsOf
 refsOf::(Eq a, Eq b)=> GFGr a b->Rel a a
-refsOf = (trancl . relOfG . gOf)
+refsOf = trancl . relOfG . gOf
 
 okayGFG:: (Eq a, Eq b) => GFGr a b -> Bool
 okayGFG gfg = okayG Nothing (gOf gfg) && acyclicG (restrict gfg $ (es gfg) `sminus` (esId gfg))

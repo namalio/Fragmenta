@@ -1,22 +1,18 @@
 Morphism M_F_CD1 {
 	nodes {
 		ConfigurationDiagram->ArchitectureDiagram
-		PNamed->Manner
+		PNamed->Trait
+		CDElement->PElement
 		CompositionI->Connector
 		BlockI->Part
 		Connector->Connector
 		PortI->Part
-		VTypeRef->VType
+		ATypeRef->VType
 	}
 	edges {
-		HasCompositions->ConsistsOf
-		HasBlocks->ConsistsOf
-		HasConnectors->ConsistsOf
-		Connector_src->Connector_src
-		Connector_tgt->Connector_tgt
+		HasElements->ConsistsOf
 		CompositionI_src->Connector_src
 		CompositionI_tgt->Connector_tgt
-		BlockI_ports->Has
 		Connector_ftype->Has
 	}
 }

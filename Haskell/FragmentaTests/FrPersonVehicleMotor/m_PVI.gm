@@ -20,10 +20,7 @@ Morphism M_PVI_To_PVA {
 	}
 	edges {
 		Owns->Owns
-	  Motor_plateNo->MannerRel
+	  	Motor_plateNo->MannerRel
 		HasWheels->MannerRel
-		HWs_1->MannerRel
-		HWs_2->MannerRel
-		HWs_3->MannerRel
 	}
 }

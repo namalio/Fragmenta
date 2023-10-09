@@ -12,6 +12,7 @@ module Frs(Fr
     , esR
     , fsg
     , fet
+    , fLNs
     , consF
     , unionF
     , disjFs
@@ -21,12 +22,10 @@ module Frs(Fr
     , unionFs
     , reso_f
     , mres
-    , okayETFs
-    , rOkayETFs
     , rEtCompliesF) where
 
 import Gr_Cls
-import Grs
+import Grs ( acyclicG, ogm, relOfG, unionGM, Gr )
 import SGrs
 import Sets
 import Relations
@@ -52,11 +51,11 @@ import SimpleFuns
 import TheNil
 
 data Fr a b = Fr {
-   sg_ :: SGr a b, 
-   esr_ :: Set b,
-   sr_  :: Rel b a,
-   tr_ :: Rel b a,
-   et_ :: GrM a b
+   sg_ :: SGr a b
+   , esr_ :: Set b
+   , sr_  :: Rel b a
+   , tr_ :: Rel b a
+   , et_ :: GrM a b
 } deriving (Eq, Show)
 
 -- Fragment's SG
@@ -367,9 +366,9 @@ instance GM_CHK' GrwET Fr where
 
 -- Checks whether one fragment is extra typed by another, which requires that:
 -- (i) that the extra typing morphism is defined
--- and (ii) and that there is compliance between the underpinning SGs
-okayETFs::(Eq a, Eq b) =>Fr a b->Fr a b->Bool
-okayETFs fs ft = (not . isEmptyGM . fet $ fs) && okETSGs (reso_sg fs, fet fs) (reso_sg ft)
+-- and (ii) and that there is the underpinning SGs are compatible
+okayETCFs::(Eq a, Eq b) =>Fr a b->Fr a b->Bool
+okayETCFs fs ft = (not . isEmptyGM . fet $ fs) && okETSGs (reso_sg fs, fet fs) (reso_sg ft)
 
 -- checks whether a graph with extra typing complies to: 
 -- (i) its type fragment F1,
@@ -379,11 +378,11 @@ okayETFs fs ft = (not . isEmptyGM . fet $ fs) && okETSGs (reso_sg fs, fet fs) (r
 -- (v) the graph's type fragment is an instance of the fragment which is a type of the given extra type graph (okayETFs)
 etCompliesF::(Eq a, Eq b) =>(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->Bool
 etCompliesF (gwet, f1) (gwt, f2) = 
-    okayGM' (Just PartialM) (ggwt gwet, f1)
+    okayGM' (Just PartialM) (gwet, f1)
     && okayGM' (Just PartialM) (gwt, f2) 
-    && domg (get gwet) == domg (fet f1 `ogm` gty gwet) 
-    && okayGM (Just WeakM) (gg gwet, get gwet, gOf gwt)
-    && okayETFs f1 f2
+    && domg (etm gwet) == domg (fet f1 `ogm` ty gwet) 
+    && okayGM (Just WeakM) (gOf gwet, etm gwet, gOf gwt)
+    && okayETCFs f1 f2
 
 --errsWfETFs::(Eq a, Eq b, Show a, Show b)=>String->Fr a b->Fr a b->[ErrorTree]
 --errsWfETFs id fs ft = 
@@ -396,21 +395,33 @@ errsOkayETFs id fs ft =
         err2 = rOkETSGs id (reso_sg fs, fet fs) (reso_sg ft) in
     [err1, err2]
 
-rOkayETFs::(Eq a, Eq b, Show a, Show b)=>String->Fr a b->Fr a b->ErrorTree
-rOkayETFs id fs ft = 
-    let err = if okayETFs fs ft then nile else consET (id ++ " is invalid") (errsOkayETFs id fs ft) in
+rOkayETCFs::(Eq a, Eq b, Show a, Show b)=>String->Fr a b->Fr a b->ErrorTree
+rOkayETCFs id fs ft = 
+    let err = if okayETCFs fs ft then nile else consET (id ++ " is invalid") (errsOkayETFs id fs ft) in
     err
 
-errsEtCompliesF::(Eq a, Eq b, Show a, Show b)=>String->GrwET a b->Fr a b->Fr a b->GrwT a b->[ErrorTree]
-errsEtCompliesF id gwet f1 f2 gwt = 
-    let err1 = faultsGM' id (Just PartialM) (ggwt gwet, f1)
+errsEtCompliesF::(Eq a, Eq b, Show a, Show b)=>String->GrwET a b->Fr a b->GrwT a b->Fr a b->[ErrorTree]
+errsEtCompliesF id gwet f1 gwt f2 = 
+    let err1 = faultsGM' id (Just PartialM) (gwet, f1)
         err2 = faultsGM' id (Just PartialM) (gwt, f2) 
-        err3 = if domg (get gwet) == domg (fet f1 `ogm` gty gwet) then nile else consSET "Extra typing is missing extra typed elements"
-        err4 = faultsGM id (Just WeakM) (gg gwet, get gwet, gOf gwt)
-        err5 = rOkayETFs id f1 f2 in
+        err3 = if domg (etm gwet) == domg (fet f1 `ogm` ty gwet) then nile else consSET "Extra typing is missing extra typed elements"
+        err4 = faultsGM id (Just WeakM) (gOf gwet, etm gwet, gOf gwt)
+        err5 = rOkayETCFs id f1 f2 in
     [err1, err2, err3, err4, err5]
 
 rEtCompliesF::(Eq a, Eq b, Show a, Show b)=>String->(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->ErrorTree
 rEtCompliesF id (gwet, f1) (gwt, f2) = 
-   let errs = errsEtCompliesF id gwet f1 f2 gwt in
+   let errs = errsEtCompliesF id gwet f1 gwt f2 in
    if etCompliesF (gwet, f1) (gwt, f2)  then nile else consET ("Errors with extra typing compliance with " ++ id) errs
+
+instance ET_GM_CHK GrwET GrwT Fr where
+    okayETGM  = etCompliesF 
+    faultsETGM = rEtCompliesF
+
+
+instance GET Fr where
+    etc = fet
+
+instance Ok_ETC_CHK Fr where
+    okETC = okayETCFs
+    faultsETC = rOkayETCFs

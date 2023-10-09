@@ -1,5 +1,7 @@
 GFG IntoSysML_CD_MM {
   fragment F_B1
   fragment F_CD1
+  fragment F_CD2
   F_CD1 references F_B1
+  F_CD2 references F_CD1
 }

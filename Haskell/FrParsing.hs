@@ -2,14 +2,14 @@ module FrParsing (loadFragment, loadSG) where
 
 import Sets ( set, singles, union, Set(..) )
 import Relations
-import Grs ( consG, unionGM )
+import Grs (unionGM )
 import SGrs
 import Frs ( consF, Fr )
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many,empty)
 import TheNil
 import MyMaybe
-import CommonParsing
+import ParsingCommon
 import SGElemTys
 import Mult
 import PathExpressions

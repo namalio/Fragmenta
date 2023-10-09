@@ -1,0 +1,14 @@
+Morphism M_F_CD2 {
+	nodes {
+		CompositionI->Connector
+		PBlockI->Part
+		PNamed2->Trait
+		PConnector->Connector
+		PortI->Part
+	}
+	edges {
+		Connector_src->Connector_src
+		Connector_tgt->Connector_tgt
+		BlockI_ports->Has
+	}
+}

@@ -12,7 +12,6 @@ module Grs (
    , TK(..)
    , MK(..)
    , isKTotal
-   , consG
    , consGM
    , emptyGM
    , fV
@@ -50,16 +49,6 @@ import ErrorAnalysis
 import Utils (reportWF)
 import TheNil
 
-data Gr a b = Gr {
-   ns_ :: Set a, 
-   es_ ::  Set b,
-   src_ :: Rel b a,
-   tgt_ :: Rel b a} 
-   deriving(Eq, Show) 
-
--- constructor
-consG :: Set a -> Set b -> Rel b a -> Rel b a -> Gr a b
-consG ns' es' s t =  Gr {ns_ = ns', es_ = es', src_ = s, tgt_ = t}
 
 -- projection functions
 --nsG :: Gr a b -> [a]
@@ -82,6 +71,7 @@ instance GR Gr where
    tgt Gr {ns_ = _, es_ = _, src_ = _, tgt_ = t} = t
    empty :: Gr a b
    empty = consG nil nil nil nil
+--gOf g = consG (ns g) (es g) (src g) (tgt g)
 
 okG:: (Eq a, Eq b, GR g) => g a b-> Bool
 okG g = tfun (src g) (es g) (ns g) && tfun (tgt g) (es g) (ns g)

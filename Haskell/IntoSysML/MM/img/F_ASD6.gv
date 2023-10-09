@@ -1,18 +1,18 @@
 digraph {graph[label=F_ASD6,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
-"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
 "PBlock"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block<br/>(P)>];
 "PPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Port<br/>(P)>];
 "PVariable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Variable<br/>(P)>];
+"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
+"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
 "BElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElement"];
 "cyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
 "subsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
 "physical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
-"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
 "ComponentKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="ComponentKind\l(enum)"];
 "discrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
 "continuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
-"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
 "PhenomenaKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="PhenomenaKind\l(enum)"];
 
 "System"->"PBlock"[arrowhead=onormal,arrowsize=2.0];

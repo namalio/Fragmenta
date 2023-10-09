@@ -1,16 +1,43 @@
 --------------------------
 -- Project: Fragmenta
 -- Module: 'IntoSysML'
--- Description: Handler module of Into SysML
+-- Description: Handler module of Into SysML ASDs
 -- Author: Nuno Amálio
 --------------------------
-module IntoSysML.IntoSysML(ASD, load_asd_mmi, gName, gASDName, gASDBlocks, gASDVTypes, gASDComps, gBlocPs, 
-   gCVars, gCKind, gCPKind, gTypedNameTy, gInitialisableExp, gVKind, gOFPDeps, gEnumLs, gDTypePTy, gUTypeUnit, gStrtTypeFields, 
-   gCompSrc, gCompTgt, gCompSrcM, gCompTgtM, gMultSMVal, gMultRLb, gMultRUb, gMultValNumN, gInterfaceOps, gOpParams, gOpReturn)
+module IntoSysML.IntoSysMLASD(
+  ASD
+  , load_asd_mmi
+  , gName
+  , gASDName
+  , gASDBlocks
+  , gASDVTypes
+  , gASDComps
+  , gBlocPs
+  , gCVars
+  , gCKind
+  , gCPKind
+  , gTypedNameTy
+  , gInitialisableExp
+  , gVKind
+  , gOFPDeps
+  , gEnumLs
+  , gDTypePTy
+  , gUTypeUnit
+  , gStrtTypeFields
+  , gCompSrc
+  , gCompTgt
+  , gCompSrcM
+  , gCompTgtM
+  , gMultSMVal
+  , gMultRLb
+  , gMultRUb
+  , gMultValNumN
+  , gInterfaceOps
+  , gOpParams
+  , gOpReturn)
 where
 
 import Gr_Cls
-import Grs
 import SGrs
 import GrswT
 import Mdls 
@@ -19,80 +46,88 @@ import Frs
 import IntoSysML.ASD_MM_Names
 import SimpleFuns
 import Relations
-import The_Nil
+import TheNil
 import Sets
 import MyMaybe
 import MMI
 
 type ASD a = GrwT a
 
-load_asd_amm def_path = do
-  mdl<-load_mdl_def def_path "IntoSysML_AAD_MM"
-  return mdl
+load_asd_amm :: String -> IO (String, Mdl String String)
+load_asd_amm def_path = loadMdl def_path "IntoSysML_AAD_MM"
 
-load_asd_cmm def_path = do
-  mdl <- load_mdl_def def_path "IntoSysML_ASD_MM"
-  return mdl
+load_asd_cmm :: String -> IO (String, Mdl String String)
+load_asd_cmm def_path = loadMdl def_path "IntoSysML_ASD_MM"
 
-load_asd_rm def_path = do
-    rm<-load_rm_cmdl_def def_path "IntoSysML_ASD_MM"
-    return rm
+load_asd_rm :: String -> IO (GrM String String)
+load_asd_rm def_path = load_rm_cmdl_def def_path "IntoSysML_ASD_MM"
 
 --nmOfNamed stc n = appl (consRelOfEdge stc CMM_ENamed_name) n
 --nmOfNamed' stc n = if n `elem` (dom_of $ consRelOfEdge stc CMM_ENamed_name) then nmOfNamed stc n else n
   --allButLast $ appl (tgt stc) (the $ img (inv . src $ stc) [n] `intersec` (es_of_ety stc $ show_cmm_e CMM_ENamed_name))
 
+load_asd_mmi :: String -> IO (MMI String String)
 load_asd_mmi def_path = do
-  amm<-load_asd_amm def_path
-  cmm<-load_asd_cmm def_path
+  (_, amm)<-load_asd_amm def_path
+  (_, cmm)<-load_asd_cmm def_path
   rm<-load_asd_rm def_path
-  return (cons_mm_info cmm amm rm (fsg . reso_m $ cmm))
+  return $ consMMI cmm amm rm (fsg . reso_m $ cmm)
 
 -- Gives the relation of an edge in a ASD
-consRelOfEdge asd e = foldr (\e r->(appl (src asd) e, appl (tgt asd) e):r) [] (es_of_ety asd . show_asd_mm_e $ e)
+consRelOfEdge::(GR g, GRM g)=>g String String->IntoSysML_ASD_MM_Es->Rel String String
+consRelOfEdge asd e = foldr (\e r->(appl (src asd) e, appl (tgt asd) e) `intoSet` r) nil (es_of_ety asd . show_asd_mm_e $ e)
 
 -- Gets name of some named node
-gName asd n = appl (consRelOfEdge asd ASD_MM_ENamed_name) n
+gName::(GR g, GRM g)=>g String String->String->String
+gName asd = appl (consRelOfEdge asd ASD_MM_Ename)
 
 -- Gets name of given ASD
+gRoot::(GWT g, GR g)=>g String String->String
 gRoot asd = appl (inv . fV . ty $ asd) "StructureDiagram"
-gASDName asd = (gName asd) . gRoot $ asd
-
--- Gets name of given statechart 
---gStCName stc = appl (consRelOfEdge stc CMM_ENamed_name) "StCModel_"
+gASDName :: (GR g, GRM g, GWT g) => g String String -> String
+gASDName asd = gName asd . gRoot $ asd
 
 
 -- gDescStart stc dnm = the $ img (consRelOfEdge stc CMM_EStarts) [dnm]
 
 -- gDescEnd stc dnm = toMaybeFrLs $ img (consRelOfEdge stc CMM_EEnds) [dnm]
 
+asd_ns_of_nty::(GRM gm) =>SGr String String->gm String String->IntoSysML_ASD_MM_Ns->Set String
 asd_ns_of_nty sg_mm asd nt = ns_of_ntys asd sg_mm [show_asd_mm_n nt]
 
 -- Gets descriptions of a 'StCDef'
 --gDescs stc id = img (consRelOfEdge stc CMM_EHasDesc) [id]
 
 -- Gets blocks
+gASDBlocks :: (GR g, GRM g, GWT g) => g String String -> Set String
 gASDBlocks asd = img (consRelOfEdge asd ASD_MM_EHasBlocks) [gRoot asd]
 
 -- Gets value types
+gASDVTypes :: (GR g, GRM g, GWT g) => g String String -> Set String
 gASDVTypes asd = img (consRelOfEdge asd ASD_MM_EHasVTypes) [gRoot asd]
 
 -- Gets compositions
+gASDComps :: (GR g, GRM g, GWT g) => g String String -> Set String
 gASDComps asd = img (consRelOfEdge asd ASD_MM_EHasCompositions) [gRoot asd]
 
 -- Gets ports of a block
+gBlocPs :: (GR g, GRM g) => g String String -> String -> Set String
 gBlocPs asd bl = img (consRelOfEdge asd ASD_MM_EBlock_ports) [bl]
 
 -- Gets variables  of a component
+gCVars :: (GR g, GRM g) => g String String -> String -> Set String
 gCVars asd c = img (consRelOfEdge asd ASD_MM_EComponent_vars) [c]
 
 -- Gets a component's kind
+gCKind :: (GR g, GRM g) => g String String -> String -> String
 gCKind asd c = appl (consRelOfEdge asd ASD_MM_EComponent_kind) c
 
 -- Gets a compound's phenomena kind
+gCPKind :: (GR g, GRM g) => g String String -> String -> String
 gCPKind asd c = appl (consRelOfEdge asd ASD_MM_ECompound_phenomena) c
 
 -- Gets type of a typed name
+gTypedNameTy :: (GR g, GRM g) => g String String -> String -> String
 gTypedNameTy asd tn = appl (consRelOfEdge asd ASD_MM_ETypedName_type) tn
 
 -- Gets ITN's initialisation
@@ -125,9 +160,11 @@ gOpParams asd op = img (consRelOfEdge asd ASD_MM_EOperation_params) [op]
 gOpReturn asd op = appl (consRelOfEdge asd ASD_MM_EOperation_return) op
 
 -- Gets source of a composition
+gCompSrc :: (GR g, GRM g) => g String String -> String -> String
 gCompSrc asd c = appl (consRelOfEdge asd ASD_MM_EComposition_src) c
 
 -- Gets target of a composition
+gCompTgt :: (GR g, GRM g) => g String String -> String -> String
 gCompTgt asd c = appl (consRelOfEdge asd ASD_MM_EComposition_tgt) c
 
 -- Gets source multiplicity

@@ -6,18 +6,24 @@
 ---------------------------
 module GrswET (
     consGWET
-    , GrwET
+    , GrwET(..)
     , unionGWET
     , ggwt
-    , gty
-    , get
-    , gg) where
+    , get) where
 
-import GrswT ( consGWT, gOf, ty, GrwT )
+import GrswT ( consGWT, gof, GrwT )
 import Relations ( dom_of )
-import Grs
+import Grs ( 
+    emptyGM
+    , fE
+    , fV
+    , TK
+    , unionG
+    , unionGM
+    , Gr )
+    
 import Gr_Cls
-import ErrorAnalysis
+import ErrorAnalysis ( nile, reportSSEq, ErrorTree )
 import Utils ( reportWF )
 
 data GrwET a b = GrwET {
@@ -30,8 +36,8 @@ consGWET g t pt = GrwET  {g_ = consGWT g t, t_ = pt}
 
 ggwt :: GrwET a b -> GrwT a b
 ggwt GrwET  {g_ = g, t_ = _} = g
-gg :: GrwET a b -> Gr a b
-gg GrwET  {g_ = g, t_ = _} = gOf g
+gg :: Eq a=>GrwET a b -> Gr a b
+gg GrwET  {g_ = g, t_ = _} = gof g
 gty :: GrwET a b -> GrM a b
 gty GrwET  {g_ = g, t_ = _} = ty g
 get :: GrwET a b -> GrM a b
@@ -51,6 +57,14 @@ instance GRM GrwET where
     fV = fV . ggwt
     fE = fE . ggwt
 
+instance GWT GrwET where
+    ty = gty
+
+instance GWET GrwET where
+    etm = get
+
+    
+
 -- well-formedness
 okGWET :: (Eq a, Eq b)=>GrwET a b -> Bool
 okGWET gwet = okayG Nothing (ggwt gwet) && (domg gwet <= els gwet)
@@ -62,17 +76,18 @@ errsGWET id gwet =
     let err3 = if (dom_of . fE $ gwet) <= es gwet then nile else reportSSEq (dom_of . fE $ gwet) (es gwet) in
     [err1, err2, err3]
 
-reportGWET :: (Eq a, Eq b, Show a, Show b) => String -> GrwET a b -> ErrorTree
-reportGWET id gwet = reportWF gwet id okGWET (errsGWET id)
+rOkGWET :: (Eq a, Eq b, Show a, Show b) => String -> GrwET a b -> ErrorTree
+rOkGWET id gwet = reportWF gwet id okGWET (errsGWET id)
 --faultsG id Nothing $ ggwt gwet
 
 --is_wf' _ = is_wf_gwt
 --check_wf' id _ = check_wf_gwt id
 
 unionGWET :: (Eq a, Eq b) =>GrwET a b -> GrwET a b -> GrwET a b
-unionGWET gwet1 gwet2 = consGWET (gwet1 `unionG` gwet2) (gwet1 `unionGM` gwet2) (get gwet1 `unionGM` get gwet2)
+unionGWET gwet1 gwet2 = 
+    consGWET (gwet1 `unionG` gwet2) (gwet1 `unionGM` gwet2) (get gwet1 `unionGM` get gwet2)
 
 instance G_WF_CHK GrwET where
-   okayG :: (Eq a, Eq b) => Maybe TK -> GrwET a b -> Bool
+   --okayG :: (Eq a, Eq b) => Maybe TK -> GrwET a b -> Bool
    okayG _ = okGWET
-   faultsG id _ = reportGWET  id
+   faultsG id _ = rOkGWET  id

@@ -1,0 +1,31 @@
+CD ThreeWaterTanks:
+	block S Source {port w WO}
+	block T Tank {
+		port wi WI
+		port wo WO
+		port wlo WO
+		port vi VI
+	}
+	block D Drain {port wi WI}
+	connector : FlowRate @ S.w->T.wi
+	connector : FlowRate @ T.wo->D.wi
+	block WT WaterTank {
+		port vi VI
+		port wlo WLO
+	}
+	composition WTS CSource  : WT->S
+	composition WTT CTank  : WT->T
+	composition WTD CDrain  : WT->D
+	block WTSys WaterTankSys {}
+	block C Controller {
+		port wli WLI
+		port vo VO
+	}
+	connector : OpenClosed @ WT.vi->T.vi
+	connector : Height @ T.wlo->WT.wlo
+	connector : OpenClosed @ C.vo->WT.vi
+	connector : Height @ WT.wlo->C.wli
+	composition WTSysC CController : WTSys->C
+	composition WTSysWT CWaterTank : WTSys->WT
+
+

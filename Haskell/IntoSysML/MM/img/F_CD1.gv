@@ -2,22 +2,21 @@ digraph {graph[label=F_CD1,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_CD1{style=dashed;label=F_CD1;
 "PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
 "ConfigurationDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="ConfigurationDiagram"];
+"CDElement"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>CDElement</I><br/>(A)}>];
+"CompositionI"[shape=record,fillcolor=lightskyblue1,style = filled,label="CompositionI:Composition"];
+"BlockI"[shape=record,fillcolor=lightskyblue1,style = filled,label="BlockI:Block"];
 "Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
-"VTypeRef"[shape=record,fillcolor=lightskyblue1,style = filled,label="VTypeRef"];
-"PortI"[shape=record,fillcolor=lightskyblue1,style = filled,label="PortI"];
-"CompositionI"[shape=record,fillcolor=lightskyblue1,style = filled,label="CompositionI"];
-"BlockI"[shape=record,fillcolor=lightskyblue1,style = filled,label="BlockI"];
+"ATypeRef"[shape=record,fillcolor=lightskyblue1,style = filled,label="ATypeRef:AType"];
 
 "ConfigurationDiagram"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
-"ConfigurationDiagram"->"CompositionI"[label="HasCompositions",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
-"ConfigurationDiagram"->"BlockI"[label="HasBlocks",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
-"ConfigurationDiagram"->"Connector"[label="HasConnectors",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
-"Connector"->"PortI"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
-"Connector"->"PortI"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
-"Connector"->"VTypeRef"[label="Connector_ftype",arrowhead=vee,headlabel="",arrowsize=.5];
-"BlockI"->"PortI"[label="BlockI_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=""];
-"CompositionI"->"BlockI"[label="CompositionI_src",arrowhead=vee,headlabel="",arrowsize=.5];
-"CompositionI"->"BlockI"[label="CompositionI_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"CDElement"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"CompositionI"->"CDElement"[arrowhead=onormal,arrowsize=2.0];
+"BlockI"->"CDElement"[arrowhead=onormal,arrowsize=2.0];
+"Connector"->"CDElement"[arrowhead=onormal,arrowsize=2.0];
+"ConfigurationDiagram"->"CDElement"[label="HasElements",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Connector"->"ATypeRef"[label="Connector_ftype",arrowhead=vee,headlabel="",arrowsize=.5];
+"CompositionI"->"BlockI"[label="CompositionI_src:EComposition_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"CompositionI"->"BlockI"[label="CompositionI_tgt:EComposition_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 

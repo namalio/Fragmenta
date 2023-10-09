@@ -1,4 +1,4 @@
-module MyMaybe(str_of_ostr, appl_f_M, toMaybeP, toMaybeFrLs, applM, boolMaybe, predMaybe,maybeToLs) where
+module MyMaybe(str_of_ostr, toMaybeP, toMaybeFrLs, applM, boolMaybe, predMaybe,maybeToLs) where
 
 import Sets
 import Relations ( img, Rel)
@@ -18,9 +18,9 @@ str_of_ostr (Just s) = s
 --theM::(Maybe a) -> a
 --theM (Just x) = x
 
-appl_f_M::(a->b)->Maybe a->Maybe b
-appl_f_M _ (Nothing) = Nothing
-appl_f_M f (Just x) = Just (f x)
+--appl_f_M::(a->b)->Maybe a->Maybe b
+--appl_f_M _ (Nothing) = Nothing
+--appl_f_M f (Just x) = Just (f x)
 
 toMaybeP::Maybe a->Maybe b->Maybe(a,b)
 toMaybeP Nothing _ = Nothing

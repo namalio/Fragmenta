@@ -1,6 +1,5 @@
-module CommonParsing (
+module ParsingCommon (
    parse_id
-   , parse_spc_id
    , parse_number
    , parseMaybe
    , parse_until_chs
@@ -37,11 +36,11 @@ parse_id = do
    str<-(munch is_val_id_char)
    return (ch:str)
 
-parse_spc_id::ReadP String
-parse_spc_id = do
-   skipSpaces
-   id<-parse_id
-   return (id)
+--parse_spc_id::ReadP String
+--parse_spc_id = do
+--   skipSpaces
+--   id<-parse_id
+--   return (id)
 
 parseMaybe :: ReadP a -> String -> Maybe a
 parseMaybe parser input =
@@ -57,9 +56,9 @@ parse_until_chs chs = do manyTill (satisfy (\ch->True)) (satisfyWLook (\c-> any 
 
 parse_ls_ids ::String->ReadP [String]
 parse_ls_ids sep = do
-   ps<-sepBy (parse_spc_id) (satisfy (\ch->any (ch==) sep))
+   ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep))
    -- parses last id
-   p<-parse_spc_id
+   p<-parse_id
    return (ps++[p])
 
 parse_either_strs::[String]->ReadP String

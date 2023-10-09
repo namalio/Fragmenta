@@ -1,11 +1,11 @@
 digraph {graph[label=F_ASD5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
+"PAType3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType3<br/>(P)>];
 "PValueType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType2<br/>(P)>];
+"PField2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Field2<br/>(P)>];
 "PNamed4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named4<br/>(P)>];
 "Interface"[shape=record,fillcolor=lightskyblue1,style = filled,label="Interface"];
-"PAType3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType3<br/>(P)>];
 "Operation"[shape=record,fillcolor=lightskyblue1,style = filled,label="Operation"];
-"PField2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Field2<br/>(P)>];
 
 "Interface"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
 "Operation"->"PNamed4"[arrowhead=onormal,arrowsize=2.0];

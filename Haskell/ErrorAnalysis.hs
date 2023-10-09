@@ -160,9 +160,11 @@ reportFPI f xs ys =
     if pfun f xs ys then nile else consET "Errors in partial injection" $ (errsR f xs ys) ++ [reportI f]
 
 -- Errors related to a subset constraint
+reportSSEq :: (Eq a, Show a) => Set a -> Set a -> ErrorTree
 reportSSEq r1 r2 =
    if r1 <= r2 then nile else consSET $ "The following are not (or should not be) included: " ++ (showElems' $ r1 `sminus` r2)
 
+reportSEq :: (Eq a, Show a) => Set a -> Set a -> ErrorTree
 reportSEq r1 r2 =
     let err1 = reportSSEq r1 r2 in
     let err2 = reportSSEq r1 r2 in

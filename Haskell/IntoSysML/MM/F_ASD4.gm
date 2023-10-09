@@ -1,6 +1,6 @@
 Morphism M_F_ASD4 {
 	nodes {
-		PInitialisable->Manner
+		PInitialisable->Trait
 		Port->Part
 		APIPort->Part
 		FlowPort->Part

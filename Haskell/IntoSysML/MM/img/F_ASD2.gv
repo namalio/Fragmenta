@@ -1,16 +1,16 @@
 digraph {graph[label=F_ASD2,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD2{style=dashed;label=F_ASD2;
+"PAType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType2<br/>(P)>];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"TypedName"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TypedName</I><br/>(V)}>];
+"Initialisable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Initialisable</I><br/>(V)}>];
+"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
+"Field"[shape=record,fillcolor=lightskyblue1,style = filled,label="Field"];
+"FieldI"[shape=record,fillcolor=lightskyblue1,style = filled,label="FieldI"];
+"Variable"[shape=record,fillcolor=lightskyblue1,style = filled,label="Variable"];
 "var"[shape=cds,fillcolor="#FFF2CC",style = filled,label="var"];
 "parameter"[shape=cds,fillcolor="#FFF2CC",style = filled,label="parameter"];
 "VariableKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="VariableKind\l(enum)"];
-"PAType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType2<br/>(P)>];
-"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
-"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
-"Field"[shape=record,fillcolor=lightskyblue1,style = filled,label="Field"];
-"TypedName"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TypedName</I><br/>(V)}>];
-"FieldI"[shape=record,fillcolor=lightskyblue1,style = filled,label="FieldI"];
-"Variable"[shape=record,fillcolor=lightskyblue1,style = filled,label="Variable"];
-"Initialisable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Initialisable</I><br/>(V)}>];
 
 "var"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
 "parameter"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];

@@ -1,14 +1,14 @@
 Morphism PVM_1 {
 	nodes {
-		 Person->Person
-	   Vehicle->Vehicle
-		 Motor->Vehicle
-		 Employee->Person
-		 Customer->Person
-     PlateNo->Any
+	  Person->Person
+	  Vehicle->Vehicle
+	  Motor->Vehicle
+	  Employee->Person
+	  Customer->Person
+      PlateNo->Any
 	}
 	edges {
-		Owns->Owns
+	  Owns->Owns
 	  Motor_plateNo->MannerRel
 	}
 }

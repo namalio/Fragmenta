@@ -26,9 +26,9 @@ ASD ThreeWaterTanks:
 			in win FlowRate
 			out wout FlowRate {win}
 		}
-	composition ThreeWaterTanks TanksControl1 compulsory 1
-	composition ThreeWaterTanks TanksControl2 compulsory 1
-	composition ThreeWaterTanks Controller compulsory 1
-	composition TanksControl1 Valve compulsory 1
-	composition TanksControl1 WaterTank compulsory 1
-	composition TanksControl2 WaterTank compulsory 2
+	composition CTanksControl1 ThreeWaterTanks->TanksControl1 : compulsory 1
+	composition CTanksControl2 ThreeWaterTanks->TanksControl2 : compulsory 1
+	composition CController ThreeWaterTanks->Controller : compulsory 1
+	composition CValve TanksControl1->Valve : compulsory 1
+	composition CWaterTank1 TanksControl1->WaterTank : compulsory 1
+	composition CWaterTank2 TanksControl2->WaterTank : compulsory 2

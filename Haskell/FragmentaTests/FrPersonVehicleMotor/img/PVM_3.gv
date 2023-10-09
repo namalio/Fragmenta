@@ -10,9 +10,9 @@ subgraph cluster_PVM_3{style=dashed;label=PVM_3;
 "ThreeWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
 "FourWheeler"->"Wheeled"[arrowhead=onormal,arrowsize=2.0];
 "Wheeled"->"Wheel"[label="HasWheels",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
-"TwoWheeler"->"Wheel"[label="HWs_1: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
-"ThreeWheeler"->"Wheel"[label="HWs_2: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
-"FourWheeler"->"Wheel"[label="HWs_3: EHasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+"TwoWheeler"->"Wheel"[label="HWs_1: HasWheels ▼",dir=none,taillabel="0..1",headlabel="2",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2: HasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"FourWheeler"->"Wheel"[label="HWs_3: HasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
 
 }
 }

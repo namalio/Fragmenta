@@ -2,21 +2,27 @@ fragment F_CD1 {
   SG SG_CD1 {
   	proxy PNamed
     node ConfigurationDiagram
+    nodea CDElement
     node CompositionI
     node BlockI
     node Connector
-    node PortI
-    node VTypeRef
+    node ATypeRef
     inh ConfigurationDiagram->PNamed
-    compu ConfigurationDiagram->CompositionI[HasCompositions]
-    compu ConfigurationDiagram->BlockI[HasBlocks]
-    compu ConfigurationDiagram->Connector[HasConnectors]
-    relu Connector->PortI[Connector_src]
-    relu Connector->PortI[Connector_tgt]
-    relu Connector->VTypeRef[Connector_ftype]
-    compu BlockI->PortI[BlockI_ports]
+    inh CDElement->PNamed
+    inh CompositionI->CDElement
+    inh BlockI->CDElement
+    inh Connector->CDElement
+    compu ConfigurationDiagram->CDElement[HasElements]:*
+    relu Connector->ATypeRef[Connector_ftype]
     relu CompositionI->BlockI[CompositionI_src]
     relu CompositionI->BlockI[CompositionI_tgt]
   }
   ref PNamed->Named
+  iON CompositionI->Composition
+  iON BlockI->Block
+  iON PortI->Port
+  iON ATypeRef->AType
+  iOE CompositionI_src->Composition_src
+  iOE CompositionI_tgt->Composition_tgt
+  iOE BlockI_ports->Block_ports
 }

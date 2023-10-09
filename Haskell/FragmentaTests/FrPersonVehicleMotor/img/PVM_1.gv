@@ -1,11 +1,11 @@
 digraph {graph[label=PVM_1,labelloc=tl,labelfontsize=12];
 subgraph cluster_PVM_1{style=dashed;label=PVM_1;
-"PlateNo"[shape=record,fillcolor=lightskyblue1,style = filled,label="PlateNo"];
+"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Person</I><br/>(A)}>];
+"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
+"Motor"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Motor</I><br/>(A)}>];
 "Employee"[shape=record,fillcolor=lightskyblue1,style = filled,label="Employee"];
 "Customer"[shape=record,fillcolor=lightskyblue1,style = filled,label="Customer"];
-"Person"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Person</I><br/>(A)}>];
-"Motor"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Motor</I><br/>(A)}>];
-"Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Vehicle</I><br/>(A)}>];
+"PlateNo"[shape=record,fillcolor=lightskyblue1,style = filled,label="PlateNo"];
 
 "Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
 "Motor"->"PlateNo"[label="Motor_plateNo",arrowhead=vee,headlabel="",arrowsize=.5];

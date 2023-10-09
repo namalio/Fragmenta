@@ -1,11 +1,11 @@
 digraph {graph[label=F_ASD1,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD1{style=dashed;label=F_ASD1;
-"Composition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composition"];
 "StructureDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="StructureDiagram"];
-"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Block</I><br/>(A)}>];
 "PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
-"ValueType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>ValueType</I><br/>(A)}>];
 "PAType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType<br/>(P)>];
+"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Block</I><br/>(A)}>];
+"ValueType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>ValueType</I><br/>(A)}>];
+"Composition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composition"];
 
 "StructureDiagram"->"Block"[label="HasBlocks",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "StructureDiagram"->"ValueType"[label="HasVTypes",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
@@ -13,6 +13,7 @@ subgraph cluster_F_ASD1{style=dashed;label=F_ASD1;
 "StructureDiagram"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "Block"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "ValueType"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Composition"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "ValueType"->"PAType"[arrowhead=onormal,arrowsize=2.0];
 
 }

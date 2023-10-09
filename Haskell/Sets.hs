@@ -20,6 +20,8 @@ module Sets (
    , dups) where
 
 import TheNil
+import GHC.Base(Alternative(..), MonadPlus(..))
+
 data Set a = EmptyS | Set a (Set a) 
 
 instance The Set where
@@ -27,9 +29,7 @@ instance The Set where
    the (x `Set` xs) = x
 
 instance Nil Set where
-   nil :: Set a
    nil = EmptyS
-   isNil :: Eq a => Set a -> Bool
    isNil s = s == EmptyS
 --nilSet :: Set a
 --nilSet = EmptyS
@@ -45,7 +45,7 @@ singles x = x `Set` EmptyS
 joinS::Set a->Set a->Set a
 joinS EmptyS s = s
 joinS s EmptyS = s
-joinS s (y `Set` ys) = Set y (joinS s ys)
+joinS (x `Set` xs) s  = Set x (joinS s xs)
 
 inSet::(Eq a) => a->Set a ->Bool
 inSet x EmptyS = False
@@ -130,6 +130,10 @@ zipS EmptyS _ = EmptyS
 zipS _ EmptyS = EmptyS
 zipS (Set x xs) (Set y ys) = Set (x, y) $ zipS xs ys
 
+concatMapS::(a->Set b)->Set a->Set b
+concatMapS f EmptyS = EmptyS
+concatMapS f (Set x xs) = f x `joinS` (concatMapS f xs)
+
 instance Functor Set where
    fmap :: (a -> b) -> Set a -> Set b
    fmap _ EmptyS = EmptyS
@@ -146,6 +150,18 @@ instance Traversable Set where
    traverse :: Applicative f => (a -> f b) -> Set a -> f (Set b)
    traverse _ EmptyS = pure EmptyS
    traverse f (Set x s) = Set <$> f x <*> traverse f s
+
+instance Monad Set where
+   return = pure
+   s >>= f = concatMapS f s
+
+instance Alternative Set where
+   empty = EmptyS
+   (<|>) = joinS 
+
+instance MonadPlus Set where
+   mzero = empty
+   mplus = (<|>)
 
 -- set difference
 sminus :: Eq a => Set a -> Set a -> Set a

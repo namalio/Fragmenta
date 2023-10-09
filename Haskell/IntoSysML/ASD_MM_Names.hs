@@ -11,17 +11,29 @@ data IntoSysML_ASD_MM_Ns = ASD_MM_Named | ASD_MM_Name | ASD_MM_PNat | ASD_MM_PRe
    | ASD_MM_Mult | ASD_MM_MultValMany | ASD_MM_MultValNum | ASD_MM_Nat | ASD_MM_MultSingle | ASD_MM_MultRange | ASD_MM_MultVal
    deriving (Read, Show, Eq)
 
-data IntoSysML_ASD_MM_Es = ASD_MM_ENamed_name | ASD_MM_EPInterval_lb | ASD_MM_EPInterval_ub | ASD_MM_EHasBlocks | ASD_MM_EHasVTypes | ASD_MM_EHasCompositions 
-   | ASD_MM_EVariable_kind | ASD_MM_ETypedName_type | ASD_MM_EInitialisable_init | ASD_MM_EOutFlowPort_depends | ASD_MM_EAPIPort_kind 
-   | ASD_MM_EInterface_ops | ASD_MM_EOperation_return | ASD_MM_EOperation_params
-   | ASD_MM_EDType_base | ASD_MM_EUnitType_unit | ASD_MM_EHasLiterals | ASD_MM_EStrtType_fields | ASD_MM_EBlock_ports | ASD_MM_EComponent_vars 
-   | ASD_MM_EComponent_kind | ASD_MM_ECompound_phenomena | ASD_MM_EComposition_src | ASD_MM_EComposition_tgt | ASD_MM_EComposition_srcM | ASD_MM_EComposition_tgtM 
-   | ASD_MM_EMultRange_lb | ASD_MM_EMultValNum_n | ASD_MM_EMultSingle_val | ASD_MM_EMultRange_ub | ASD_MM_EHasSystem | ASD_MM_EComposition_tgt_sys 
+data IntoSysML_ASD_MM_Es = ASD_MM_Ename | ASD_MM_EPInterval_lb 
+   | ASD_MM_EPInterval_ub | ASD_MM_EHasBlocks | ASD_MM_EHasVTypes 
+   | ASD_MM_EHasCompositions | ASD_MM_EVariable_kind 
+   | ASD_MM_ETypedName_type | ASD_MM_EInitialisable_init 
+   | ASD_MM_EOutFlowPort_depends | ASD_MM_EAPIPort_kind 
+   | ASD_MM_EInterface_ops | ASD_MM_EOperation_return 
+   | ASD_MM_EOperation_params | ASD_MM_EDType_base 
+   | ASD_MM_EUnitType_unit | ASD_MM_EHasLiterals 
+   | ASD_MM_EStrtType_fields | ASD_MM_EBlock_ports 
+   | ASD_MM_EComponent_vars | ASD_MM_EComponent_kind 
+   | ASD_MM_ECompound_phenomena | ASD_MM_EComposition_src 
+   | ASD_MM_EComposition_tgt | ASD_MM_EComposition_srcM 
+   | ASD_MM_EComposition_tgtM | ASD_MM_EMultRange_lb 
+   | ASD_MM_EMultValNum_n | ASD_MM_EMultSingle_val 
+   | ASD_MM_EMultRange_ub | ASD_MM_EHasSystem 
+   | ASD_MM_EComposition_tgt_sys 
    | ASD_MM_EComposition_src_elem
    deriving (Read, Show, Eq)
 
+show_asd_mm_n :: IntoSysML_ASD_MM_Ns -> String
 show_asd_mm_n nt = drop 7 (show nt)
+show_asd_mm_e :: IntoSysML_ASD_MM_Es -> String
 show_asd_mm_e et = drop 7 (show et)
 
-read_asd_mm :: String -> IntoSysML_ASD_MM_Ns
+read_asd_mm :: (Read a)=>String -> a
 read_asd_mm x = read ("ASD_MM_" ++ x)

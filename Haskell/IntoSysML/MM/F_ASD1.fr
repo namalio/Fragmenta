@@ -12,6 +12,7 @@ fragment F_ASD1 {
     inh StructureDiagram->PNamed
     inh Block->PNamed
     inh ValueType->PNamed
+    inh Composition->PNamed
     inh ValueType->PAType
   }
   ref PNamed->Named

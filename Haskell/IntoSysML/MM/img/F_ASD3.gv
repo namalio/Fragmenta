@@ -1,15 +1,15 @@
 digraph {graph[label=F_ASD3,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD3{style=dashed;label=F_ASD3;
+"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
+"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
 "PPType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PType<br/>(P)>];
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
+"PFieldI"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FieldI<br/>(P)>];
 "DType"[shape=record,fillcolor=lightskyblue1,style = filled,label="DType"];
 "UnitType"[shape=record,fillcolor=lightskyblue1,style = filled,label="UnitType"];
-"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
 "Enumeration"[shape=record,fillcolor=lightskyblue1,style = filled,label="Enumeration"];
-"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
 "Literal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Literal"];
-"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
 "StrtType"[shape=record,fillcolor=lightskyblue1,style = filled,label="StrtType"];
-"PFieldI"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FieldI<br/>(P)>];
 
 "DType"->"PPType"[label="DType_base",arrowhead=vee,headlabel="",arrowsize=.5];
 "DType"->"PValueType"[arrowhead=onormal,arrowsize=2.0];

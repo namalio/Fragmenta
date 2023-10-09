@@ -1,6 +1,6 @@
 ------------------
 -- Project: PCs/Fragmenta
--- Description: Generates the required haskell files with the names defined in a metamodel which are useful for typing
+-- Description: Generates haskell files with names used in metamodel, useful for typing
 -- Author: Nuno Amálio
 -----------------
 import Gr_Cls
@@ -37,33 +37,36 @@ code_concl_cd_mm = "show_cd_mm_n nt = drop 6 (show nt)\n"
     ++ "show_cd_mm_e et = drop 6 (show et)\n"
     ++ "read_cd_mm x = read (\"CD_MM_\" ++ x)"
 
+cons_data_type :: Foldable t => String -> t String -> String
 cons_data_type nm elems = "data " ++ nm ++ " = " ++ (showStrs elems " | ") ++ "\n    deriving (Read, Show, Eq)"
 
 cons_AMM_datatypes = do
-    amdl<-load_mdl_def def_path "IntoSysML_AAD_MM"
+    (_, amdl)<-loadMdl def_path "IntoSysML_AAD_MM"
     let usg = fsg . mufs $ amdl
-    let n_ids = cons_data_type "IntoSysML_AMM_Ns" (map ("AMM_" ++ ) $ (ns usg) `diff` (nsP usg))
-    let e_ids = cons_data_type "IntoSysML_AMM_Es" (map ("AMM_" ++ ) $ es usg `diff` esI usg)
+    let n_ids = cons_data_type "IntoSysML_AMM_Ns" (fmap ("AMM_" ++ ) $ (ns usg) `sminus` (nsP usg))
+    let e_ids = cons_data_type "IntoSysML_AMM_Es" (fmap ("AMM_" ++ ) $ es usg `sminus` esI usg)
     let code = code_preamble_amm ++ n_ids ++ "\n\n" ++ e_ids ++ "\n\n" ++ code_concl_amm ++ "\n"
     writeFile (wr_path ++ "IntoSysML_AMM_Names.hs") code
 
 cons_MM_ASD_datatypes = do
-    mdl<-load_mdl_def def_path "IntoSysML_ASD_MM"
+    (nm_mdl, mdl)<-loadMdl def_path "IntoSysML_ASD_MM"
     let usg = fsg . mufs $ mdl
-    let n_ids = cons_data_type "IntoSysML_ASD_MM_Ns" (map ("ASD_MM_" ++ ) $ (ns usg) `diff` (nsP usg))
-    let e_ids = cons_data_type "IntoSysML_ASD_MM_Es" (map ("ASD_MM_" ++ ) $ es usg `diff` esI usg)
+    let n_ids = cons_data_type "IntoSysML_ASD_MM_Ns" (fmap ("ASD_MM_" ++ ) $ (ns usg) `sminus` (nsP usg))
+    let e_ids = cons_data_type "IntoSysML_ASD_MM_Es" (fmap ("ASD_MM_" ++ ) $ es usg `sminus` esI usg)
     let code = code_preamble_asd_mm ++ n_ids ++ "\n\n" ++ e_ids ++ "\n\n" ++ code_concl_asd_mm ++ "\n"
     writeFile (wr_path ++ "IntoSysML_ASD_MM_Names.hs") code
 
 
+cons_MM_CD_datatypes :: IO ()
 cons_MM_CD_datatypes = do
-    mdl<-load_mdl_def def_path "IntoSysML_CD_MM"
+    (_, mdl)<-loadMdl def_path "IntoSysML_CD_MM"
     let usg = fsg . mufs $ mdl
-    let n_ids = cons_data_type "IntoSysML_CD_MM_Ns" (map ("CD_MM_" ++ ) $ (ns usg) `diff` (nsP usg))
-    let e_ids = cons_data_type "IntoSysML_CD_MM_Es" (map ("CD_MM_" ++ ) $ es usg `diff` esI usg)
+    let n_ids = cons_data_type "IntoSysML_CD_MM_Ns" (fmap ("CD_MM_" ++ ) $ (ns usg) `sminus` (nsP usg))
+    let e_ids = cons_data_type "IntoSysML_CD_MM_Es" (fmap ("CD_MM_" ++ ) $ es usg `sminus` esI usg)
     let code = code_preamble_cd_mm ++ n_ids ++ "\n\n" ++ e_ids ++ "\n\n" ++ code_concl_cd_mm ++ "\n"
     writeFile (wr_path ++ "IntoSysML_CD_MM_Names.hs") code
 
+main :: IO ()
 main = do
     cons_AMM_datatypes
     cons_MM_ASD_datatypes

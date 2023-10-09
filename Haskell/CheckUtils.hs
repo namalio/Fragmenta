@@ -4,17 +4,14 @@ module CheckUtils(
    , check_ty_morphism
    , show_typing_msg
    , show_wf_msg
-   , checkOkayETFs
+   , checkOkETCFs
    , checkETCompliance) where
 
 import Gr_Cls
-import Grs
-import SGrs
-import Utils
-import Frs
-import ShowUtils
-import GrswT
-import GrswET
+import Utils ( evalExpectation )
+import Frs ( rEtCompliesF, Fr )
+import GrswT ( GrwT )
+import GrswET ( GrwET )
 import ErrorAnalysis ( is_nil, showErr, ErrorTree )
 
 show_wf_msg :: String -> ErrorTree -> IO ()
@@ -45,9 +42,9 @@ check_ty_morphism id omk gwt sg b = do
    reportErrs id errs b
 
 -- Checks the extra typing
-checkETCompliance::(Eq a, Eq b, Show a, Show b)=>String->GrwET a b->Fr a b->Fr a b->GrwT a b->Bool->IO ()
-checkETCompliance id gwet f1 f2 gwt b = do
-   let errs = rEtCompliesF id (gwet, f1) (gwt, f2)  
+checkETCompliance::(Eq a, Eq b, Show a, Show b, GWET gi, GWT gi', ET_GM_CHK gi gi' gt)=>String->gi a b->gt a b->gi' a b->gt a b->Bool->IO ()
+checkETCompliance id gwet f1 gwt f2 b = do
+   let errs = faultsETGM id (gwet, f1) (gwt, f2)  
    reportErrs id errs b
 
 show_typing_msg :: ErrorTree -> IO ()
@@ -56,11 +53,11 @@ show_typing_msg errs =
       then putStrLn "The PC is well-typed."
       else putStrLn $ "The PC is ill-typed:\n" ++ (showErr errs) 
 
-checkOkayETFs::(Eq a, Eq b, Show a, Show b)=>(String, Fr a b)->(String,Fr a b)->Bool->IO() 
-checkOkayETFs (nm_fs, fs) (nm_ft, ft) b1 = do
-   let id = "Extra typing of fragment " ++ nm_fs ++ " with respect to " ++ nm_ft
-   let errs = rOkayETFs id fs ft
-   let msgStart =  " Fragment " ++ nm_fs 
+checkOkETCFs::(Eq a, Eq b, Show a, Show b, GET g, Ok_ETC_CHK g)=>(String, g a b)->(String,g a b)->Bool->IO() 
+checkOkETCFs (nm_fs, fs) (nm_ft, ft) b1 = do
+   let id = "Extra typing compatibility of " ++ nm_fs ++ " with respect to " ++ nm_ft
+   let errs = faultsETC id fs ft
+   let msgStart =  nm_fs 
    let msgEndOk = " is ET compatible with " ++ nm_ft 
    let msgEndFail = " is not ET compatible with " ++ nm_ft ++ "\n"
    let b2 = is_nil errs

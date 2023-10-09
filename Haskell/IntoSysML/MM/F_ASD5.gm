@@ -1,8 +1,8 @@
 Morphism M_F_ASD4 {
 	nodes {
 		PValueType2->VType
-		PAType3->Manner
-		PNamed4->Manner
+		PAType3->Trait
+		PNamed4->Trait
 		PField2->Part
 		Interface->VType
 		Operation->Feature

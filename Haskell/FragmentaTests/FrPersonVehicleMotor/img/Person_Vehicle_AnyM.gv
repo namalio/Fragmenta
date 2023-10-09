@@ -2,11 +2,11 @@ digraph {graph[label=Person_Vehicle_AnyM,labelloc=tl,labelfontsize=12];
 subgraph cluster_Person_Vehicle_AnyM{style=dashed;label=Person_Vehicle_AnyM;
 "Person"[shape=record,fillcolor=lightskyblue1,style = filled,label="Person"];
 "Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
-"Any"[shape=record,fillcolor="#CCFFFF",style ="filled,dotted",label=<Any<br/>(O)>];
+"Any"[shape=record,fillcolor=lightskyblue1,style = filled,label="Any"];
 "Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
 
 "Person"->"Vehicle"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
-"Manner"->"Any"[label="MannerRel▼▲",dir=none,taillabel="*",headlabel="*"];
+"Manner"->"Any"[label="MannerRel▼",dir=none,taillabel="*",headlabel="*"];
 "Person"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Vehicle"->"Manner"[arrowhead=onormal,arrowsize=2.0];
 "Any"->"Manner"[arrowhead=onormal,arrowsize=2.0];

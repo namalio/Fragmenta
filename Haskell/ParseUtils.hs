@@ -6,16 +6,18 @@ import SimpleFuns
 words' :: (Char->Bool)-> String -> [String]
 words' isSep [] = []
 words' isSep (xxs@(x:xs))
-  | isSep x  = words' isSep xs
-  | otherwise         =  ys : words' isSep rest
+  | isSep x   = words' isSep xs
+  | otherwise =  ys : words' isSep rest
       where (ys, rest) = break (isSep) xxs
 
+splitAt' :: (a -> Bool) -> [a] -> ([a], [a])
 splitAt' p [] = ([], [])
 splitAt' p (x:xs) 
    | p x = ([], xs)
    | otherwise = (x:ys, ys')
       where (ys, ys') = splitAt' p xs
 
+splitAtStr :: Eq a => [a] -> [a] -> ([a], [a])
 splitAtStr _ [] = ([], [])
 splitAtStr s xs@(x:xs') 
    | s `equalLs` (take (length s) xs) = ([], drop (length s) xs)

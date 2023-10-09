@@ -1,25 +1,25 @@
 digraph {graph[label=IntoSysML_ASD_MM,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_B1{style=dashed;label=F_B1;
-"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
 "Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
 
-"Named"->"Name"[label="Named_name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 subgraph cluster_F_TYS{style=dashed;label=F_TYS;
-"PNat"[shape=record,fillcolor=lightskyblue1,style = filled,label="PNat"];
+"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
+"PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
 "PReal"[shape=record,fillcolor=lightskyblue1,style = filled,label="PReal"];
+"PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
+"PNat"[shape=record,fillcolor=lightskyblue1,style = filled,label="PNat"];
 "PBool"[shape=record,fillcolor=lightskyblue1,style = filled,label="PBool"];
 "PString"[shape=record,fillcolor=lightskyblue1,style = filled,label="PString"];
-"PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
-"PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
-"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
 "AType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>AType</I><br/>(A)}>];
 
 "PNat"->"PInt"[arrowhead=onormal,arrowsize=2.0];
 "PInt"->"PType"[arrowhead=onormal,arrowsize=2.0];
-"PInterval"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PReal"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PInterval"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PBool"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PString"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PInterval"->"PInt"[label="PInterval_lb",arrowhead=vee,headlabel="",arrowsize=.5];
@@ -28,12 +28,12 @@ subgraph cluster_F_TYS{style=dashed;label=F_TYS;
 
 }
 subgraph cluster_F_ASD1{style=dashed;label=F_ASD1;
-"Composition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composition"];
 "StructureDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="StructureDiagram"];
-"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Block</I><br/>(A)}>];
 "PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
-"ValueType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>ValueType</I><br/>(A)}>];
 "PAType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType<br/>(P)>];
+"Block"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Block</I><br/>(A)}>];
+"ValueType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>ValueType</I><br/>(A)}>];
+"Composition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composition"];
 
 "StructureDiagram"->"Block"[label="HasBlocks",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "StructureDiagram"->"ValueType"[label="HasVTypes",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
@@ -41,23 +41,24 @@ subgraph cluster_F_ASD1{style=dashed;label=F_ASD1;
 "StructureDiagram"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "Block"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "ValueType"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Composition"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "ValueType"->"PAType"[arrowhead=onormal,arrowsize=2.0];
 
 }
 
 
 subgraph cluster_F_ASD2{style=dashed;label=F_ASD2;
+"PAType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType2<br/>(P)>];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"TypedName"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TypedName</I><br/>(V)}>];
+"Initialisable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Initialisable</I><br/>(V)}>];
+"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
+"Field"[shape=record,fillcolor=lightskyblue1,style = filled,label="Field"];
+"FieldI"[shape=record,fillcolor=lightskyblue1,style = filled,label="FieldI"];
+"Variable"[shape=record,fillcolor=lightskyblue1,style = filled,label="Variable"];
 "var"[shape=cds,fillcolor="#FFF2CC",style = filled,label="var"];
 "parameter"[shape=cds,fillcolor="#FFF2CC",style = filled,label="parameter"];
 "VariableKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="VariableKind\l(enum)"];
-"PAType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType2<br/>(P)>];
-"Exp"[shape=record,fillcolor=lightskyblue1,style = filled,label="Exp"];
-"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
-"Field"[shape=record,fillcolor=lightskyblue1,style = filled,label="Field"];
-"TypedName"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TypedName</I><br/>(V)}>];
-"FieldI"[shape=record,fillcolor=lightskyblue1,style = filled,label="FieldI"];
-"Variable"[shape=record,fillcolor=lightskyblue1,style = filled,label="Variable"];
-"Initialisable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Initialisable</I><br/>(V)}>];
 
 "var"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
 "parameter"->"VariableKind"[arrowhead=onormal,arrowsize=2.0];
@@ -74,16 +75,16 @@ subgraph cluster_F_ASD2{style=dashed;label=F_ASD2;
 
 
 subgraph cluster_F_ASD3{style=dashed;label=F_ASD3;
+"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
+"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
 "PPType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PType<br/>(P)>];
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
+"PFieldI"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FieldI<br/>(P)>];
 "DType"[shape=record,fillcolor=lightskyblue1,style = filled,label="DType"];
 "UnitType"[shape=record,fillcolor=lightskyblue1,style = filled,label="UnitType"];
-"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
 "Enumeration"[shape=record,fillcolor=lightskyblue1,style = filled,label="Enumeration"];
-"PValueType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType<br/>(P)>];
 "Literal"[shape=record,fillcolor=lightskyblue1,style = filled,label="Literal"];
-"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
 "StrtType"[shape=record,fillcolor=lightskyblue1,style = filled,label="StrtType"];
-"PFieldI"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<FieldI<br/>(P)>];
 
 "DType"->"PPType"[label="DType_base",arrowhead=vee,headlabel="",arrowsize=.5];
 "DType"->"PValueType"[arrowhead=onormal,arrowsize=2.0];
@@ -102,15 +103,15 @@ subgraph cluster_F_ASD3{style=dashed;label=F_ASD3;
 
 
 subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
+"PInitialisable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Initialisable<br/>(P)>];
+"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Port</I><br/>(A)}>];
+"FlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>FlowPort</I><br/>(A)}>];
+"APIPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="APIPort"];
+"InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
+"OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
 "requires"[shape=cds,fillcolor="#FFF2CC",style = filled,label="requires"];
 "provides"[shape=cds,fillcolor="#FFF2CC",style = filled,label="provides"];
 "APIPortKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="APIPortKind\l(enum)"];
-"PInitialisable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Initialisable<br/>(P)>];
-"APIPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="APIPort"];
-"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Port</I><br/>(A)}>];
-"FlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>FlowPort</I><br/>(A)}>];
-"OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
-"InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
 
 "requires"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
 "provides"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
@@ -125,12 +126,12 @@ subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
 }
 
 subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
+"PAType3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType3<br/>(P)>];
 "PValueType2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<ValueType2<br/>(P)>];
+"PField2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Field2<br/>(P)>];
 "PNamed4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named4<br/>(P)>];
 "Interface"[shape=record,fillcolor=lightskyblue1,style = filled,label="Interface"];
-"PAType3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<AType3<br/>(P)>];
 "Operation"[shape=record,fillcolor=lightskyblue1,style = filled,label="Operation"];
-"PField2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Field2<br/>(P)>];
 
 "Interface"->"PValueType2"[arrowhead=onormal,arrowsize=2.0];
 "Operation"->"PNamed4"[arrowhead=onormal,arrowsize=2.0];
@@ -144,19 +145,19 @@ subgraph cluster_F_ASD5{style=dashed;label=F_ASD5;
 
 
 subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
-"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
 "PBlock"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block<br/>(P)>];
 "PPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Port<br/>(P)>];
 "PVariable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Variable<br/>(P)>];
+"System"[shape=record,fillcolor=lightskyblue1,style = filled,label="System"];
+"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
+"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
 "BElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElement"];
 "cyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
 "subsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
 "physical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
-"Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
 "ComponentKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="ComponentKind\l(enum)"];
 "discrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
 "continuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
-"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
 "PhenomenaKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="PhenomenaKind\l(enum)"];
 
 "System"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
@@ -178,18 +179,18 @@ subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
 
 
 subgraph cluster_F_ASD7{style=dashed;label=F_ASD7;
+"PComposition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition<br/>(P)>];
 "PBlock2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Block2<br/>(P)>];
+"Mult"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mult</I><br/>(A)}>];
 "optional"[shape=cds,fillcolor="#FFF2CC",style = filled,label="optional"];
 "compulsory"[shape=cds,fillcolor="#FFF2CC",style = filled,label="compulsory"];
 "MultCompSrc"[shape=record,fillcolor="#FFCCFF",style = filled,label="MultCompSrc\l(enum)"];
-"PComposition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition<br/>(P)>];
-"Mult"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mult</I><br/>(A)}>];
-"MultValMany"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValMany"];
-"MultValNum"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValNum"];
-"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
 "MultSingle"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultSingle"];
 "MultRange"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultRange"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
 "MultVal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>MultVal</I><br/>(A)}>];
+"MultValNum"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValNum"];
+"MultValMany"[shape=record,fillcolor=lightskyblue1,style = filled,label="MultValMany"];
 
 "PComposition"->"PBlock2"[label="Composition_src",arrowhead=vee,headlabel="",arrowsize=.5];
 "PComposition"->"PBlock2"[label="Composition_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
@@ -211,18 +212,24 @@ subgraph cluster_F_ASD7{style=dashed;label=F_ASD7;
 
 subgraph cluster_F_ASD8{style=dashed;label=F_ASD8;
 "PStructureDiagram"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StructureDiagram<br/>(P)>];
-"PSystem"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<System<br/>(P)>];
 "PComposition2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Composition2<br/>(P)>];
+"PSystem"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<System<br/>(P)>];
 "PBElement"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<BElement<br/>(P)>];
 "PAPIPort"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<APIPort<br/>(P)>];
 "PInterface"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Interface<br/>(P)>];
+"Psubsystem"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<subsystem<br/>(P)>];
+"PCompound"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound<br/>(P)>];
 
-"PStructureDiagram"->"PSystem"[label="HasSystem:HasBlocks ▼",dir=none,taillabel="",headlabel="",style=dotted];
-"PComposition2"->"PSystem"[label="Composition_tgt_sys:Composition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"PComposition2"->"PBElement"[label="Composition_src_elem:Composition_src ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
-"PAPIPort"->"PInterface"[label="API_type:TypedName_type ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"PStructureDiagram"->"PSystem"[label="OneSys: HasBlocks ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"PComposition2"->"PSystem"[label="NSCT: Composition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PComposition2"->"PBElement"[label="NBECS: Composition_src ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PBElement"->"Psubsystem"[label="BENSub: Component_kind ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PAPIPort"->"PInterface"[label="API_type: TypedName_type ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"PCompound"->"PCompound"[label="NCompoundsAsParts: ~Composition_src ⨾ Composition_tgt ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 
 }
+
+
 
 
 

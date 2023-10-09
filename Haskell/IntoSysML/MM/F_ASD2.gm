@@ -1,10 +1,10 @@
 Morphism M_F_ASD2 {
 	nodes {
-		PNamed2->Manner
-		PAType2->Manner
+		PNamed2->Trait
+		PAType2->Trait
 		Exp->Feature
-		TypedName->Manner
-		Initialisable->Manner
+		TypedName->Trait
+		Initialisable->Trait
 		Field->Part
 		FieldI->Part
 		Variable->Part

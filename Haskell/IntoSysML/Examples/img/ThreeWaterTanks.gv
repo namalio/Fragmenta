@@ -3,58 +3,42 @@ compound=true;
 rankdir=LR;
 label=ThreeWaterTanks;
 labelloc=t;
-OpenClosed [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr> <td>«Enumeration»<br/>OpenClosed</td></tr><tr><td align="left">– open<br align="left"/>
-– closed<br align="left"/>
-</td> </tr></table>>];
-FlowRate [shape=plain,fillcolor="#99FFFF",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«ValueType»<br/>FlowRate⟹Real</td> </tr> <tr> <td align="left">
-unit = "m3/s"</td> </tr></table>>];
-Area [shape=plain,fillcolor="#99FFFF",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«ValueType»<br/>Area⟹Real</td> </tr> <tr> <td align="left">
-unit = "m3"</td> </tr></table>>];
-Height [shape=plain,fillcolor="#99FFFF",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«ValueType»<br/>Height⟹Real</td> </tr> <tr> <td align="left">
-unit = "meters"</td> </tr></table>>];
-ThreeWaterTanks_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr> <td>«System»<br/>ThreeWaterTanks</td> </tr></table>>];TanksControl1_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«Component»<br/>TanksControl1</td> </tr> <tr> <td align="left">
-kind = subsystem<br align="left"/>phenomena = continuous<br align="left"/>
-</td> </tr></table>>];
-TanksControl2_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«Component»<br/>TanksControl2</td> </tr> <tr> <td align="left">
-kind = subsystem<br align="left"/>phenomena = continuous<br align="left"/>
-</td> </tr></table>>];
-Controller_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«Component»<br/>Controller</td> </tr> <tr> <td align="left">
-kind = cyber<br align="left"/>phenomena = discrete<br align="left"/>
-<I>ports</I><br/>
-out v1 : OpenClosed = closed<br align="left"/></td> </tr></table>>];
-Valve_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«Element»<br/>Valve</td> </tr><tr><td>kind=physical<br align="left"/>
-<I>variables</I><br/>
-v : OpenClosed<br align="left"/>
-<I>ports</I><br/>
-out w : FlowRate→v2<br align="left"/>in v2 : OpenClosed<br align="left"/></td> </tr></table>>];
-WaterTank_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
-<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
-<tr><td>«Element»<br/>WaterTank</td> </tr><tr><td>kind=physical<br align="left"/>
-<I>variables</I><br/>
-parameter r : FlowRate<br align="left"/>
-parameter a : Area<br align="left"/>
-h : Height = 0<br align="left"/>
-<I>ports</I><br/>
-out wout : FlowRate→win<br align="left"/>in win : FlowRate<br align="left"/></td> </tr></table>>];
-ThreeWaterTanks_Block->TanksControl1_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
-ThreeWaterTanks_Block->TanksControl2_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
-ThreeWaterTanks_Block->Controller_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
-TanksControl1_Block->Valve_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
-TanksControl1_Block->WaterTank_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="",taillabel=""];
-TanksControl2_Block->WaterTank_Block[arrowhead=vee,arrowtail=diamond,dir=both,headlabel="2",taillabel=""];
+subgraph WTSys_BlI_ {
+cluster=true;label="WTSys:WaterTankSys";
+WTSys_BlI[shape=plain,fillcolor="#CCFFCC",style = filled,label=self];
+subgraph WT_BlI_ {
+cluster=true;label="WT:WaterTank";
+WT_BlI[shape=plain,fillcolor="#CCFFCC",style = filled,label=self];
+T_BlI[shape=plain,fillcolor="#CCFFCC",style = filled,label="T : Tank"];
+T_vi_PI[shape=circle,label="vi"];
+T_BlI->T_vi_PI[dir=none];
+T_wo_PI[shape=circle,label="wo"];
+T_BlI->T_wo_PI[dir=none];
+T_wi_PI[shape=circle,label="wi"];
+T_BlI->T_wi_PI[dir=none];
+T_wlo_PI[shape=circle,label="wlo"];
+T_BlI->T_wlo_PI[dir=none];
+S_BlI[shape=plain,fillcolor="#CCFFCC",style = filled,label="S : Source"];
+S_w_PI[shape=circle,label="w"];
+S_BlI->S_w_PI[dir=none];
+D_BlI[shape=plain,fillcolor="#CCFFCC",style = filled,label="D : Drain"];
+D_wi_PI[shape=circle,label="wi"];
+D_BlI->D_wi_PI[dir=none];
+}
+WT_wlo_PI[shape=circle,label="wlo"];
+WT_BlI->WT_wlo_PI[dir=none];
+WT_vi_PI[shape=circle,label="vi"];
+WT_BlI->WT_vi_PI[dir=none];
+C_BlI[shape=plain,fillcolor="#CCFFCC",style = filled,label="C : Controller"];
+C_wli_PI[shape=circle,label="wli"];
+C_BlI->C_wli_PI[dir=none];
+C_vo_PI[shape=circle,label="vo"];
+C_BlI->C_vo_PI[dir=none];
+}
+S_S_PI->S_S_PI[label="S_w_T_wi:FlowRate_type"];
+WT_WT_PI->WT_WT_PI[label="WT_vi_T_vi:OpenClosed_type"];
+C_C_PI->C_C_PI[label="C_vo_WT_vi:OpenClosed_type"];
+WT_WT_PI->WT_WT_PI[label="WT_wlo_C_wli:Height_type"];
+T_T_PI->T_T_PI[label="T_wlo_WT_wlo:Height_type"];
+T_T_PI->T_T_PI[label="T_wo_D_wi:FlowRate_type"];
 }

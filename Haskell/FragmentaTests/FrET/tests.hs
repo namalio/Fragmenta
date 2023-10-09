@@ -9,14 +9,15 @@ import Gr_Cls
 import Grs
 import SGrs -- remove later
 import ErrorAnalysis -- remove later
-import Frs
+import Frs ( unionF, Fr )
 import Utils ( option_main_save )
 import Relations
 import CheckUtils
 import LoadCheckDraw
 import Frs ( unionF )
-import GrswET -- remove at some point
--- Based on the Example given on the Models 2015 paper
+import Mdls
+
+-- Based on Example of Models 2015 paper
 def_path = "FragmentaTests/FrET/"
 img_path = "FragmentaTests/FrET/img/"
 
@@ -39,17 +40,20 @@ cons_scpf = do
 
 saveDrawings :: IO ()
 saveDrawings = do
-   draw_def def_path img_path "F_ACP1.fr"
-   draw_def def_path img_path "F_ACP2.fr"
-   draw_def def_path img_path "f_ACP3.fr"
-   draw_def def_path img_path "f_SCP1.fr"
-   draw_def def_path img_path "f_SCP2.fr"
+   draw_mdl def_path img_path "ACP"
+   draw_mdl def_path img_path "SCP"
    draw_def def_path img_path "I_ACP1.gwt"
    draw_def def_path img_path "I_SCP1.gwet"
-   (nm_acpf, acpf)<-cons_acpf
-   saveFrDrawing img_path "F_ACPU" acpf
-   (nm_scpf, scpf)<-cons_scpf
-   saveFrDrawing img_path "F_SCPU" scpf
+   --draw_def def_path img_path "F_ACP2.fr"
+   --draw_def def_path img_path "f_ACP3.fr"
+   --draw_def def_path img_path "f_SCP1.fr"
+   --draw_def def_path img_path "f_SCP2.fr"
+   --draw_def def_path img_path "I_ACP1.gwt"
+   --draw_def def_path img_path "I_SCP1.gwet"
+   --(nm_acpf, acpf)<-cons_acpf
+   --saveFrDrawing img_path "F_ACPU" acpf
+   --(nm_scpf, scpf)<-cons_scpf
+   --saveFrDrawing img_path "F_SCPU" scpf
 
 test1 :: IO ()
 test1 = do
@@ -79,17 +83,20 @@ test1 = do
 
 test2 :: IO ()
 test2 = do
-   putStrLn "Test 2: Well-formedness of the extra typing"
+   putStrLn "Test 2: Well-formedness of extra typing's compatibility"
    (nm_f2, f2)<-loadF def_path "F_ACP2.fr"
    (nm_f4, f4)<-loadF def_path "F_SCP1.fr"
    (nm_f5, f5)<-loadF def_path "f_SCP2.fr"
-   checkOkayETFs (nm_f5, f5) (nm_f2, f2) True
+   (nm_mdl1, mdl1)<-loadMdl def_path "ACP"
+   (nm_mdl2, mdl2)<-loadMdl def_path "SCP"
+   checkOkETCFs (nm_f5, f5) (nm_f2, f2) True
    --putStrLn $ show (fet f5)
    (nm_scpf, scpf)<-cons_scpf
-   checkOkayETFs (nm_scpf, scpf) (nm_f2, f2) True
+   checkOkETCFs ("Fragment " ++ nm_scpf, scpf) ( "Fragment " ++ nm_f2, f2) True
    (nm_acpf, acpf)<-cons_acpf
-   checkOkayETFs (nm_scpf, scpf) (nm_acpf, acpf) True
-   checkOkayETFs (nm_f4, f4) (nm_f2, f2) False
+   checkOkETCFs ("Fragment " ++ nm_scpf, scpf) ("Fragment " ++ nm_acpf, acpf) True
+   checkOkETCFs (nm_f4, f4) (nm_f2, f2) False
+   checkOkETCFs ("Model " ++ nm_mdl2, mdl2) ("Model " ++ nm_mdl1, mdl1) True
 
 test3 :: IO ()
 test3 = do
@@ -102,15 +109,29 @@ test3 = do
    check_report_wf ("GwET " ++ nm_gwt2) Nothing gwt2 True
    check_ty_morphism (nm_gwt1 ++ " ⋑ " ++ nm_acpf) (Just TotalM) gwt1 acpf True
    check_ty_morphism (nm_gwt2 ++ " ⋑ " ++ nm_scpf) (Just TotalM) gwt2 scpf True
-   checkETCompliance ("Extra typing compliance of GwET " ++ nm_gwt2) gwt2 scpf acpf gwt1 True
+   checkETCompliance ("Extra typing compliance of GwET " ++ nm_gwt2) gwt2 scpf gwt1 acpf True
    --putStrLn $ show (get gwt2)
    --putStrLn $ show (ns gwt1)
+
+test4 :: IO ()
+test4 = do
+   putStrLn "Test 4: Instances with Models"
+   (nm_gwt1, gwt1) <- loadGwT def_path "I_ACP1.gwt"
+   (nm_gwt2, gwt2) <- loadGwET def_path "I_SCP1.gwet"
+   --(nm_acpf, acpf)<-cons_acpf
+   --(nm_scpf, scpf)<-cons_scpf
+   (nm_mdl1, mdl1)<-loadMdl def_path "ACP"
+   (nm_mdl2, mdl2)<-loadMdl def_path "SCP"
+   check_report_wf ("Model " ++ nm_mdl1) (Just Total) mdl1 True
+   check_report_wf ("Model " ++ nm_mdl2) (Just Total) mdl2 True
+   checkETCompliance ("Extra typing compliance of GwET " ++ nm_gwt2) gwt2 mdl2 gwt1 mdl1 True
 
 do_main :: IO ()
 do_main = do
    test1
    test2
    test3
+   test4
 
 main :: IO ()
 main = do

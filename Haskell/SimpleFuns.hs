@@ -2,9 +2,9 @@ module SimpleFuns(swap
     , pair_up
     , equalLs
     , quicksort
-    , fst_T
-    , snd_T
-    , thd_T
+    , fstT
+    , sndT
+    , thdT
     , fst_Q
     , mapT
     , applyPToP
@@ -13,6 +13,7 @@ module SimpleFuns(swap
     , toIdxC
     , combineTwAppend
     , combineTwInsert
+    , combineTwIntoS
     , combineQwInsert
     , combineQwIntoS
     , combineQwAppend
@@ -40,12 +41,12 @@ ext_P_to_T::(a,b)->c->(a,b,c)
 ext_P_to_T (x, y) z = (x, y, z)
 
 -- Projections for triples
-fst_T :: (a, b, c) -> a
-fst_T (x, _, _) = x
-snd_T :: (a, b, c) -> b
-snd_T (_, y, _) = y
-thd_T :: (a, b, c) -> c
-thd_T (_, _, z) = z
+fstT :: (a, b, c) -> a
+fstT (x, _, _) = x
+sndT :: (a, b, c) -> b
+sndT (_, y, _) = y
+thdT :: (a, b, c) -> c
+thdT (_, _, z) = z
 
 -- Projections for quadruples
 fst_Q :: (a, b, c, d) -> a
@@ -54,9 +55,10 @@ fst_Q (x, _, _, _) = x
 -- Combines triples with an operator
 combineTwOp op (x, y, z) (x', y' , z') = (op x x', op y y', op z z')
 combineTwAppend = combineTwOp (++) 
-combineTwInsert :: (Ord a1, Ord a2, Ord a3) =>(a1, a2, a3) -> ([a1], [a2], [a3]) -> ([a1], [a2], [a3])
+combineTwInsert::(Ord a1, Ord a2, Ord a3) =>(a1, a2, a3) -> ([a1], [a2], [a3]) -> ([a1], [a2], [a3])
 combineTwInsert (x, y, z) (x', y' , z') = (insert x x', insert y y', insert z z')
-
+combineTwIntoS::(Eq a, Eq b, Eq c)=>(a, b, c) -> (Set a, Set b, Set c) -> (Set a, Set b, Set c)
+combineTwIntoS (x, y, z) (x', y' , z') =(x `intoSet` x', y `intoSet` y', z `intoSet` z')
 -- A quadruple with empty lists
 nilQl :: ([a1], [a2], [a3], [a4])
 nilQl = ([], [], [], [])

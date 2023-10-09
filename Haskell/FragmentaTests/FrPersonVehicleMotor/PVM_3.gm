@@ -8,8 +8,5 @@ Morphism PVM_3 {
 	}
 	edges {
 		HasWheels->MannerRel
-		HWs_1->MannerRel
-		HWs_2->MannerRel
-		HWs_3->MannerRel
 	}
 }

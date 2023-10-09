@@ -4,7 +4,6 @@
 -- Description: Fragmenta's models (Mdls)
 -- Author: Nuno Amálio
 ---------------------------
-{-# LANGUAGE MultiParamTypeClasses #-}
 module Mdls (Mdl, consMdl, mgfg, mfd, mufs, from, reso_m)
 where
 
@@ -13,9 +12,10 @@ import Grs
 import SGrs 
 import GFGrs 
 import Frs 
-import GrswT
+import GrswT ( GrwT )
+import GrswET ( GrwET )
 import Relations
-import Sets
+import Sets 
 import ErrorAnalysis 
 import Utils
 import ShowUtils
@@ -153,3 +153,30 @@ instance GM_CHK' GrwT Mdl where
    faultsGM' id (Just WeakM) (gwt, mdl)    = faultsGM' id (Just WeakM) (gwt, mufs mdl)
    faultsGM' id (Just PartialM) (gwt, mdl) = report_compliesm id gwt mdl
    faultsGM' id (Just TotalM) (gwt, mdl)   = report_compliesm id gwt mdl
+
+okayETCMdls::(Eq a, Eq b) =>Mdl a b->Mdl a b->Bool
+okayETCMdls mdls mdlt = okETC (mufs mdls) (mufs mdlt)
+
+rOkayETCMdls::(Eq a, Eq b, Show a, Show b)=>String->Mdl a b->Mdl a b->ErrorTree
+rOkayETCMdls id mdls mdlt = 
+    let err = if okETC (mufs mdls) (mufs mdlt) then nile else consET (id ++ " is invalid") [faultsETC id (mufs mdls) (mufs mdlt)] in
+    err
+
+etCompliesMdl::(Eq a, Eq b) =>(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->Bool
+etCompliesMdl (gwet, mdls) (gwt, mdlt) = okayETGM (gwet, mufs mdls) (gwt, mufs mdlt)
+
+rEtCompliesMdl::(Eq a, Eq b, Show a, Show b)=>String->(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->ErrorTree
+rEtCompliesMdl id (gwet, mdls) (gwt, mdlt) = 
+   let err = faultsETGM id (gwet, mufs mdls) (gwt, mufs mdlt) in
+   if etCompliesMdl (gwet, mdls) (gwt, mdlt)  then nile else consET ("Errors in model extra typing compliance with " ++ id) [err]
+
+instance ET_GM_CHK GrwET GrwT Mdl where
+    okayETGM  = etCompliesMdl 
+    faultsETGM = rEtCompliesMdl
+
+instance GET Mdl where
+    etc = fet . mufs
+
+instance Ok_ETC_CHK Mdl where
+    okETC = okayETCMdls
+    faultsETC = rOkayETCMdls

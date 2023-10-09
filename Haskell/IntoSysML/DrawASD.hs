@@ -1,26 +1,20 @@
 ------------------------------
 -- Project: Fragmenta
--- Module: 'IntoSysMLDraw'
--- Description: Module that deals with the drawing of ASDs as graphviz descriptions
+-- Module: 'DrawASD'
+-- Description: Module that deals with the drawing of SysML ASDs via graphviz
 -- Author: Nuno Amálio
 -----------------------------
-module IntoSysML.ASDsDraw(wrASDAsGraphviz, drawASD) where
+module IntoSysML.DrawASD(wrASDAsGraphviz, drawASD) where
  
-import IntoSysML.IntoSysML
-import SGrs
+import IntoSysML.IntoSysMLASD
 import Gr_Cls
-import Grs
-import GrswT
-import Sets
 import Relations
-import ShowUtils
-import The_Nil
 import MyMaybe
 import IntoSysML.ASD_MM_Names
 import ParseUtils
 import MMI
 import IntoSysML.ASDCommon
-import CommonParsing
+import ParsingCommon
 import SimpleFuns
 
    
@@ -34,14 +28,19 @@ data Block = BSystem BlockDef | BElement Component | BCompound Component Phenome
 data ASDDrawing = ASDDrawing Name [Block] [VTypeDef] [Composition] 
    deriving(Eq, Show) 
 
+gComponentNm :: Component -> Name
 gComponentNm (Component bd _ _) = gBlockDefNm bd
+gBlockDefPs :: BlockDef -> [Port]
 gBlockDefPs (BlockDef _ ps) = ps
+gBlockDefNm :: BlockDef -> Name
 gBlockDefNm (BlockDef nm _) = nm 
 
 
 -- Gets the type of a primitive type node string
+gPty :: String -> String
 gPty p_str = fst . (splitAtStr "_PTy") $ p_str
 
+consATy :: (GR g, GRM g) => g String String -> String -> AType
 consATy asd id = 
    let p_str = gPty id in
    if p_str == id then ATypeId $ gName asd id else ATypeP (read $ replace '_' ' ' p_str)
@@ -70,17 +69,23 @@ consBlock mmi asd b =
         consBlocka (ASD_MM_Compound) = consCompound asd b
 
 -- enumerations
+consEnum :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consEnum asd e = VTypeEnum (gName asd e) (foldl (\ls l->(gName asd l):ls) [] (gEnumLs asd e))
 -- derived types (DTypes)
+consDType :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consDType asd dt = DType (gName asd dt) (read $ gPty $ gDTypePTy asd dt)
 -- unit types (UType)
+consUType :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consUType asd ut = UType (gName asd ut) (read $ gPty $ gDTypePTy asd ut) (gUTypeUnit asd ut)
 -- structural types
+consStrtType :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consStrtType asd st = VTypeStrt (gName asd st) $ foldl (\itns itn->(consFieldI asd itn):itns) [] $ gStrtTypeFields asd st
 -- interface
+consInterface :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consInterface asd i = Interface (gName asd i) $ foldl (\ops op-> (consOp asd op):ops) [] $ gInterfaceOps asd i
 
 -- The VType constructor
+consVType :: (GWT g, GR g, GRM g) => p -> g String String -> String -> VTypeDef
 consVType mmi asd tnm = consVTypea (read_asd_mm $ appl (fV . ty $ asd) tnm) 
   where consVTypea (ASD_MM_Enumeration) = consEnum asd tnm
         consVTypea (ASD_MM_DType) = consDType asd tnm
@@ -88,6 +93,7 @@ consVType mmi asd tnm = consVTypea (read_asd_mm $ appl (fV . ty $ asd) tnm)
         consVTypea (ASD_MM_StrtType) = consStrtType asd tnm
         consVTypea (ASD_MM_Interface) = consInterface asd tnm
 
+gVal :: String ->String
 gVal vstr = fst . (splitAtStr "_Val") $ vstr
 
 consMVal asd mv = consMVala (read_asd_mm $ appl (fV .ty $ asd) mv)
@@ -98,7 +104,8 @@ consMult asd m = consMulta (read_asd_mm $ appl (fV .ty $ asd) m)
                      consMulta (ASD_MM_MultRange) = MultR (read . gVal $ gMultRLb asd m) (consMVal asd (gMultRUb asd m)) 
 
 -- Composition
-consComp asd c = Composition (gCompSrc asd c) (gCompTgt asd c) (read $ gCompSrcM asd c) (consMult asd $ gCompTgtM asd c)
+consComp :: (GR g, GRM g, GWT g) => g String String -> String -> Composition
+consComp asd c = Composition (gName asd c) (gCompSrc asd c) (gCompTgt asd c) (read $ gCompSrcM asd c) (consMult asd $ gCompTgtM asd c)
 
 drawASD mmi asd = 
   let bls = foldl (\bs bnm->(consBlock mmi asd bnm):bs) [] (gASDBlocks asd) in
@@ -112,9 +119,11 @@ wrMUV (MultN n) b = if n == 1 then if b then "1" else "" else show n
 wrMult (MultR n mv)  = (show n) ++ ".." ++ (wrMUV mv True)
 wrMult (MultS mv) = (wrMUV mv) False
 
+wrMultCS :: MultCompSrc -> String
 wrMultCS (Optional) = "0..1"
 wrMultCS (Compulsory) = ""
 
+gExp :: String -> String
 gExp estr = fst . (splitAtStr ":Exp") $ estr
 
 wrPty (PInterval lb ub) = (show lb) ++ ".." ++ (show ub) 
@@ -134,9 +143,12 @@ wrPorts ps = if null ps then "" else "<I>ports</I><br/>\n" ++ (foldl (\str p-> (
          wrDeps ASD_MM_OutFlowPort deps = if null deps then "" else "→" 
                                         ++ (foldl (\d_str d->d ++ (if null d_str then "" else ", ") ++ d_str) "" deps)
 
+wrVariable :: Variable -> String
 wrVariable (Variable itn vk) = (if vk == Parameter then "parameter " else  "") ++ (wrInitialisable itn)
+wrVariables :: Foldable t => t Variable -> String
 wrVariables vs = if null vs then "" else "<I>variables</I><br/>\n" ++ foldl (\str v-> (wrVariable v) ++ "<br align=\"left\"/>\n" ++ str) "" vs
 
+wrBCompound :: Show k => Component -> k -> String
 wrBCompound (Component bd vs ck) pk = 
    let nm = gBlockDefNm bd in
    (blockId nm) ++ " [shape=plain,fillcolor=\"#99FFFF\",style = filled,label=<\n"
@@ -146,15 +158,18 @@ wrBCompound (Component bd vs ck) pk =
    ++ (wrVariables vs) ++ (wrPorts . gBlockDefPs $ bd) 
    ++ "</td> </tr></table>>];\n" 
 
+wrBSystem :: BlockDef -> String
 wrBSystem (BlockDef nm ps) = (blockId nm) ++ " [shape=plain,fillcolor=\"#99FFFF\",style = filled,label=<\n"
    ++ "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n"
    ++ "<tr> <td>«System»<br/>" ++ nm ++ "</td> </tr>"
    ++ (if null ps then "" else ("<tr> <td>\n" ++ (wrPorts ps) ++ "</td> </tr>"))
    ++ "</table>>];" 
 
+wrComponent :: Component -> String
 wrComponent (Component bd vs ck) = "<tr><td>kind="++ (lower_fst . show $ ck) ++ "<br align=\"left\"/>\n" 
    ++ (wrVariables vs) ++ (wrPorts . gBlockDefPs $ bd) 
 
+wrBElement :: Component ->String
 wrBElement c =
    let nnm = blockId . gComponentNm $ c in
    nnm ++ " [shape=plain,fillcolor=\"#99FFFF\",style = filled,label=<\n"
@@ -201,33 +216,36 @@ wrUType nm pt u = nm ++ " [shape=plain,fillcolor=\"#FFD5A3\",style = filled,labe
    ++ "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n"
    ++ "<tr><td>«ValueType»<br/>"++nm++"⟹" ++ (tail . show $ pt) ++ "</td> </tr> <tr> <td align=\"left\">\n" 
    ++ "unit = " ++ (show u) ++ "</td> </tr></table>>];"
+wInterface :: String -> [Operation] -> String
 wInterface nm os = 
    nm ++ " [shape=plain,fillcolor=\"#FCF1A6\",style = filled,label=<\n"
    ++ "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n"
    ++ "<tr> <td>«Interface»<br/>" ++ nm ++ "</td> </tr>" ++ (wrOps os)
    ++ "</td></tr></table>>];"
 
+wrVT :: VTypeDef -> String
 wrVT (VTypeEnum nm ls) = (wrEnumeration nm ls) ++ "\n"
 wrVT (VTypeStrt nm ps) = (wrVTStrt nm ps) ++ "\n" 
 wrVT (DType nm pt) = (wrDType nm pt) ++ "\n" 
-wrVT (UType nm pt u) = (wrUType nm pt u) ++ "\n" 
-wrVT (Interface nm os) = (wInterface nm os) ++ "\n" 
+wrVT (UType nm pt u) = wrUType nm pt u ++ "\n" 
+wrVT (Interface nm os) = wInterface nm os ++ "\n" 
 
-
+wrBlock::Block -> String
 wrBlock (BSystem bd) = wrBSystem bd 
 wrBlock (BElement c) = wrBElement c
 wrBlock (BCompound c pk) = wrBCompound c pk
 
-wrComposition (Composition nms nmt ms mt) = 
-   let nm = "C_" ++ nms ++ "->" ++ nmt in
-   nms ++ "->" ++ nmt ++ "[arrowhead=vee,arrowtail=diamond,dir=both,headlabel=\""++ (wrMult mt) ++"\",taillabel=\""++ (wrMultCS ms) ++"\"];\n"
+wrComposition ::Composition->String
+wrComposition (Composition nm nms nmt ms mt) = 
+   nms ++ "->" ++ nmt ++ "[arrowhead=vee,arrowtail=diamond,dir=both,label=\""++nm++"\",headlabel=\""++ (wrMult mt) ++"\",taillabel=\""++ (wrMultCS ms) ++"\"];\n"
 
-
-wrASDDrawing sg_mm asd (ASDDrawing nm bls vts cs) = "digraph {\ncompound=true;\nrankdir=LR;\nlabel=" ++ nm ++ ";\n" 
+wrASDDrawing ::  (GR g, GRM g, GWT g) => g String String -> ASDDrawing->String
+wrASDDrawing asd (ASDDrawing nm bls vts cs) = "digraph {\ncompound=true;\nrankdir=LR;\nlabel=" ++ nm ++ ";\n" 
    ++ "labelloc=t;\n" ++ (foldl (\str vt->(wrVT vt) ++ str) "" vts)
    ++ (foldl (\str b->(wrBlock b) ++ str) "" bls) 
    ++ (foldl (\str c->(wrComposition c) ++ str) "" cs) 
    ++ "}"
    
 
-wrASDAsGraphviz mmi asd = wrASDDrawing (mmi_sg_cmm mmi) asd $ drawASD mmi asd
+wrASDAsGraphviz :: (GR g, GRM g, GWT g) => MMI a b -> g String String -> String
+wrASDAsGraphviz mmi asd = wrASDDrawing asd $ drawASD mmi asd

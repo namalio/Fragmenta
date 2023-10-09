@@ -6,11 +6,9 @@ Morphism M_F_ASD8 {
 		PBElement->Part
 		PAPIPort->Part
         PInterface->VType
+        Psubsystem->Feature
+        PCompound->Part
 	}
 	edges {
-		HasSystem->ConsistsOf
-		Composition_tgt_sys->Connector_tgt
-		Composition_src_elem->Connector_src
-		API_type->Has
 	}
 }

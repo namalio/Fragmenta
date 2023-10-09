@@ -1,11 +1,11 @@
 Morphism M_F_ASD1 {
 	nodes {
 		StructureDiagram->ArchitectureDiagram
-     	PNamed->Manner
+     	PNamed->Trait
      	Block->Part
      	Composition->Connector
      	ValueType->VType
-     	PAType->Manner
+     	PAType->Trait
 	}
 	edges {
 	   HasBlocks->ConsistsOf

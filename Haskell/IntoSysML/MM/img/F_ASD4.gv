@@ -1,14 +1,14 @@
 digraph {graph[label=F_ASD4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
+"PInitialisable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Initialisable<br/>(P)>];
+"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Port</I><br/>(A)}>];
+"FlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>FlowPort</I><br/>(A)}>];
+"APIPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="APIPort"];
+"InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
+"OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
 "requires"[shape=cds,fillcolor="#FFF2CC",style = filled,label="requires"];
 "provides"[shape=cds,fillcolor="#FFF2CC",style = filled,label="provides"];
 "APIPortKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="APIPortKind\l(enum)"];
-"PInitialisable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Initialisable<br/>(P)>];
-"APIPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="APIPort"];
-"Port"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Port</I><br/>(A)}>];
-"FlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>FlowPort</I><br/>(A)}>];
-"OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
-"InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
 
 "requires"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
 "provides"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];

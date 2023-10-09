@@ -1,18 +1,18 @@
 digraph {graph[label=F_TYS,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_TYS{style=dashed;label=F_TYS;
-"PNat"[shape=record,fillcolor=lightskyblue1,style = filled,label="PNat"];
+"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
+"PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
 "PReal"[shape=record,fillcolor=lightskyblue1,style = filled,label="PReal"];
+"PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
+"PNat"[shape=record,fillcolor=lightskyblue1,style = filled,label="PNat"];
 "PBool"[shape=record,fillcolor=lightskyblue1,style = filled,label="PBool"];
 "PString"[shape=record,fillcolor=lightskyblue1,style = filled,label="PString"];
-"PInterval"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInterval"];
-"PInt"[shape=record,fillcolor=lightskyblue1,style = filled,label="PInt"];
-"PType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PType</I><br/>(A)}>];
 "AType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>AType</I><br/>(A)}>];
 
 "PNat"->"PInt"[arrowhead=onormal,arrowsize=2.0];
 "PInt"->"PType"[arrowhead=onormal,arrowsize=2.0];
-"PInterval"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PReal"->"PType"[arrowhead=onormal,arrowsize=2.0];
+"PInterval"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PBool"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PString"->"PType"[arrowhead=onormal,arrowsize=2.0];
 "PInterval"->"PInt"[label="PInterval_lb",arrowhead=vee,headlabel="",arrowsize=.5];

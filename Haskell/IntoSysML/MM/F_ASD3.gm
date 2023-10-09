@@ -8,7 +8,7 @@ Morphism M_F_ASD3 {
 		Literal->Feature
 		StrtType->VType
 		PName->Feature
-		PNamed3->Manner
+		PNamed3->Trait
 		PFieldI->Part
 	}
 	edges {

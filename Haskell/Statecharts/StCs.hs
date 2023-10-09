@@ -23,30 +23,30 @@ import Relations (appl, dom_of, img, rcomp)
 import TheNil
 import Sets ( intersec )
 import MyMaybe ( applM )
-import MMI ( cons_mm_info )
+import MMI ( cons_mm_info, MMI )
 
 type StC a b = GrwT a b
 
-load_stcs_amm def_path = do
-  mdl<-load_mdl_def def_path "StCs_AMM"
-  return mdl
+load_stcs_amm :: String -> IO (String, Mdl String String)
+load_stcs_amm def_path = loadMdl def_path "StCs_AMM"
 
-load_stcs_cmm def_path = do
-  mdl <- load_mdl_def def_path "StCs_MM"
-  return mdl
+load_stcs_cmm :: String -> IO (String, Mdl String String)
+load_stcs_cmm def_path = loadMdl def_path "StCs_MM"
 
-load_stcs_rm def_path = do
-    rm<-load_rm_cmdl_def def_path "StCs_MM"
-    return rm
+load_stcs_rm :: String -> IO (GrM String String)
+load_stcs_rm def_path = load_rm_cmdl_def def_path "StCs_MM"
 
-nmOfNamed stc n = appl (consRelOfEdge stc CMM_ENamed_name) n
+nmOfNamed :: (GR gm, GRM gm) => gm String String -> String -> String
+nmOfNamed stc = appl (consRelOfEdge stc CMM_ENamed_name)
+nmOfNamed' :: (GR gm, GRM gm) => gm String String -> String -> String
 nmOfNamed' stc n = 
    if n `elem` (dom_of $ consRelOfEdge stc CMM_ENamed_name) then nmOfNamed stc n else n
    --allButLast $ appl (tgt stc) (the $ img (inv . src $ stc) [n] `intersec` (es_of_ety stc $ show_cmm_e CMM_ENamed_name))
 
+load_stcs_mmi :: String -> IO (MMI String String)
 load_stcs_mmi def_path = do
-  amm<-load_stcs_amm def_path
-  cmm<-load_stcs_cmm def_path
+  (_, amm)<-load_stcs_amm def_path
+  (_, cmm)<-load_stcs_cmm def_path
   rm<-load_stcs_rm def_path
   return (cons_mm_info cmm amm rm (fsg . reso_m $ cmm))
 

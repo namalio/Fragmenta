@@ -44,26 +44,18 @@ where
 import Sets (Set(..), sminus, gunion, intersec, union, singles, set, intoSet, toList, rest, filterS )
 import Relations
 import Gr_Cls
-    ( GRM(..),
-      MK(..),
-      TK(..),
-      GrM,
-      GM_CHK(..),
-      G_WF_CHK(..),
-      GM_CHK'(..),
-      GR(empty, src, es, ns, tgt) )
 import Grs
 import ErrorAnalysis
 import ShowUtils ( showElems, showElems', showEdges, showNodes )
 import SGElemTys
-    ( sgety_set,
-      sgnty_set,
-      SGED(Duni, Dbi),
-      SGETy(..),
-      SGNTy(..) )
+    (sgety_set
+    , sgnty_set
+    , SGED(Duni, Dbi)
+    , SGETy(..)
+    , SGNTy(..) )
 import Mult
 import MyMaybe
-import GrswT ( consGWT, ty, gOf, GrwT )
+import GrswT ( consGWT, GrwT )
 import PathExpressions
 import TheNil
 import SimpleFuns (pair_up)
@@ -488,6 +480,7 @@ subsume_sg sg sub
 --allowed_edge_refs (Erel _) = [Erel Bi, Erel Uni]
 --allowed_edge_refs (Ewander) = [Erel Bi, Erel Uni,Ecomp Bi, Ecomp Uni,Ewander]
 
+commute_sgm_src::(GRM gm, Eq a, Eq b) => (SGr a b, gm a b, SGr a b) -> (Rel b a, Rel b a)
 commute_sgm_src (sgs, m, sgt) = 
    let lhs = (fV m) `bcomp` (srcstm sgs) in  
    let rhs = (srcstm sgt) `bcomp` (fE m) in
@@ -549,10 +542,10 @@ errs_sgm_common (gs, m, gt) =
        err3 = if morphism_sgm_commutes_tgt (gs, m, gt) then nile else errors_commuting (commute_sgm_tgt (gs, m, gt)) "target" in
    errs ++ [err1, err2, err3]
 
-errOkSGM :: (Show b, Show a, GRM gm, Eq a, Eq b) =>(SGr a b, gm a b, SGr a b) -> [ErrorTree]
+errOkSGM :: (Show b, Show a, GRM gm, Eq a, Eq b)=>(SGr a b, gm a b, SGr a b)->[ErrorTree]
 errOkSGM (gs, m, gt) = 
    let errs1 = errs_sgm_common (gs, m, gt) in
-   let err2 = if ihh_sgm_ok (gs, m, gt) then nile else consSET "Problems in the commuting of the inheritance relation" in
+   let err2 = if ihh_sgm_ok (gs, m, gt) then nile else consSET "Problems in commuting of inheritance relation" in
    errs1 ++ [err2]
 
 rOkSGM::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> GrM a b->SGr a b->ErrorTree
@@ -561,37 +554,37 @@ rOkSGM nm sgs gm sgt = reportWF (sgs, gm, sgt) nm okSGM errOkSGM
 -- Totalises a morphism for the derived edges
 -- totaliseForDer m sg = cons_gm (fV m) ((mktotal_in (dres (eb sg) (esD sg)) (esC sg)) `rcomp` (fE m))
 
-commute_gm_src::(Eq a, Eq b) => (GrwT a b, SGr a b) ->(Rel b a, Rel b a)
-commute_gm_src (gwt, sg) = 
-   let lhs = (fV gwt) `bcomp` (src gwt) in  
-   let rhs = (srcstm sg) `bcomp` (fE  gwt) in
+commute_gm_src::(Eq a, Eq b, GR g, GRM g) => (g a b, SGr a b) ->(Rel b a, Rel b a)
+commute_gm_src (g, sg) = 
+   let lhs = (fV g) `bcomp` (src g) in  
+   let rhs = (srcstm sg) `bcomp` (fE  g) in
    (lhs, rhs)
 
 -- Checks whether the source function commutes for morphisms from Gs to SGs
-morphism_gm_commutes_src::(Eq a, Eq b) => (GrwT a b, SGr a b) -> Bool
-morphism_gm_commutes_src (gwt, sg) = 
-   let (lhs, rhs) = commute_gm_src (gwt, sg) in
+morphism_gm_commutes_src::(Eq a, Eq b, GR g, GRM g) => (g a b, SGr a b) -> Bool
+morphism_gm_commutes_src (g, sg) = 
+   let (lhs, rhs) = commute_gm_src (g, sg) in
    lhs  <= rhs
 
-commute_gm_tgt::(Eq a, Eq b) => (GrwT a b, SGr a b) ->(Rel b a, Rel b a)
-commute_gm_tgt (gwt, sg) = 
-   let lhs = (fV gwt) `bcomp` (tgt gwt) in  
-   let rhs = (tgtstm sg) `bcomp` (fE gwt) in
+commute_gm_tgt::(Eq a, Eq b, GR g, GRM g) => (g a b, SGr a b) ->(Rel b a, Rel b a)
+commute_gm_tgt (g, sg) = 
+   let lhs = (fV g) `bcomp` (tgt g) 
+       rhs = (tgtstm sg) `bcomp` (fE g) in
    (lhs, rhs)
 
 -- Checks whether the target function commutes for morphisms from Gs to SGs
-morphism_gm_commutes_tgt::(Eq a, Eq b) => (GrwT a b, SGr a b) -> Bool
-morphism_gm_commutes_tgt (gwt, sg) = 
-   let (lhs, rhs) = commute_gm_tgt (gwt, sg) in
+morphism_gm_commutes_tgt::(Eq a, Eq b, GR g, GRM g) => (g a b, SGr a b) -> Bool
+morphism_gm_commutes_tgt (g, sg) = 
+   let (lhs, rhs) = commute_gm_tgt (g, sg) in
    lhs  <= rhs
 
-is_wf_gwt_sg:: (Eq a, Eq b) => (GrwT a b, SGr a b) -> Bool
+is_wf_gwt_sg:: (Eq a, Eq b, GR g, GRM g, GWT g) => (g a b, SGr a b) -> Bool
 is_wf_gwt_sg (gwt, sg) = okay_gm_common (gOf gwt, ty gwt, sg)
    && tfun (fE gwt) (es gwt) (esA sg)
    && morphism_gm_commutes_src (gwt, sg)
    && morphism_gm_commutes_tgt (gwt, sg)
 
-errors_gwt_sg::(Eq a, Eq b, Show a, Show b) => (GrwT a b, SGr a b) -> [ErrorTree]
+errors_gwt_sg::(Eq a, Eq b, Show a, Show b, GR g, GRM g, GWT g) => (g a b, SGr a b) -> [ErrorTree]
 errors_gwt_sg (gwt, sg) =
    let errs1 = errs_gm_common (gOf gwt, ty gwt, sg) in
    let err2 = if tfun (fE gwt) (es gwt) (esA sg) then nile else consET ("Function 'fE' is ill defined." ++ (show $ fE gwt)++ (show $ esA sg)) [reportFT (fE gwt) (es gwt) (esA sg)] in
@@ -599,6 +592,7 @@ errors_gwt_sg (gwt, sg) =
    let err4 = if morphism_gm_commutes_tgt (gwt, sg) then nile else errors_commuting (commute_gm_tgt (gwt, sg)) "target" in 
    errs1 ++ [err2, err3, err4]
 
+check_wf_gwt_sg :: (Eq a, Eq b, GR g, GRM g, GWT g, Show a, Show b) =>String -> g a b -> SGr a b -> ErrorTree
 check_wf_gwt_sg nm gwt sg = reportWF (gwt, sg) nm (is_wf_gwt_sg) (errors_gwt_sg)
 
 -- Gets instance nodes of a set of meta-nodes, which are obtained via the given morphism
@@ -846,33 +840,39 @@ no_instances_of_abstract_tnodes m sgt = null (img (inv $ fV m) $ nsTys sgt [Nabs
 -- ET Compatability with respect to extra typing
 
 -- multiplicities of source SG must be included in those of target SG
-mssgsLEq :: (GRM gm, Eq a, Eq b) =>SGr a b ->gm a b ->SGr a b->b-> Bool
-mssgsLEq sgs m sgt e = appl (srcma sgt) e <= appl (srcma sgs `bcomp` fE m) e
-                     && appl (tgtm sgt) e <= appl (tgtm sgs `bcomp` fE m) e
+mssgsLEq :: (GRM gm, Eq a, Eq b) =>SGr a b ->gm a b ->SGr a b->(b, b)-> Bool
+mssgsLEq sgs m sgt (e, e') = appl (srcma sgs) e <= appl (srcma sgt) e'
+                       && appl (tgtm sgs) e <= appl (tgtm sgt) e'
 
 -- Compliance of multiplicities for extra typing
 etCompliesM::(GRM gm, Eq a, Eq b)=>(SGr a b, gm a b)->SGr a b ->Bool 
-etCompliesM (sgs, m) sgt = all (mssgsLEq sgs m sgt) (dom_of . fE $ m)
+etCompliesM (sgs, m) sgt = all (mssgsLEq sgs m sgt) (fE m)
    --dres (srcma sgt) (dom_of . fE $ m) <= (srcma sgs `bcomp` fE m)
    -- && dres (tgtm sgt) (dom_of . fE $ m) <= (tgtm sgs `bcomp` fE m)
    --
 
 retCompliesM :: (GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 retCompliesM (sgs, m) sgt = 
-   if (sgs, m) `etCompliesM` sgt then nile else consSET $ "Errors with multiplicity strict refinement. The following edes fail to comply with the multplicity restrictions of the target SG:" ++ (showElems' es)
-   where es = filterS (not . mssgsLEq sgs m sgt) (dom_of . fE $ m)
+   if (sgs, m) `etCompliesM` sgt then nile else consSET $ "Errors with multiplicity strict refinement. The following edes fail to comply with the multplicity restrictions of the target SG:" ++ (showElems' esm)
+   where es = filterS (not . mssgsLEq sgs m sgt) (fE m)
+         esm = foldr (\(e, e') es'->((e, appl (srcma sgs) e, appl (tgtm sgs) e), (e', appl (srcma sgt) e', appl (tgtm sgs) e')):es') nil es
 
 -- For extra typing compliance, node types must be preserved 
-sgsNtyEq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> a -> Bool
-sgsNtyEq sgs m sgt n  = appl (nty sgs) n == appl (nty sgt `bcomp` fV m) n
+sgsNtyEq :: (Eq a, Eq b) =>SGr a b->a-> Bool
+sgsNtyEq sgt n = appl (nty sgt) n `elem` [Nnrml, Nabst, Nvirt]
 
-etCompliesNty::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
-etCompliesNty (sgs, m) sgt = dres (nty sgs) (dom_of . fV $ m) == (nty sgt `bcomp` fV m) --all (msgsNtyEq sgs m sgt) 
+okTNtys::(GRM gm, Eq a, Eq b) =>gm a b->SGr a b-> Bool
+okTNtys m sgt = img (nty sgt) (ran_of . fV $ m) <= set [Nnrml, Nabst, Nvirt]
+   --dres (nty sgs) (dom_of . fV $ m) == (nty sgt `bcomp` fV m) --all (msgsNtyEq sgs m sgt) 
 
-retCompliesNty::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
-retCompliesNty (sgs, m) sgt = 
-   if (sgs, m) `etCompliesNty` sgt then nile else consSET $ "Certain source nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)
-   where ns_n_ref = filterS (not . sgsNtyEq sgs m sgt) (dom_of . fV $ m)
+rOkNtys::(GRM gm, Eq a, Eq b, Show a) =>gm a b->SGr a b-> ErrorTree
+rOkNtys m sgt = if okTNtys m sgt then nile else consSET $ "The types of certain target nodes are not allowed for extra typing: " ++ (showNodes ns_n_ref)
+   where ns_n_ref = filterS (not . sgsNtyEq sgt) (ran_of . fV $ m)
+
+--retCompliesNty::(GRM gm, Eq a, Eq b, Show a, Show b)=>(SGr a b, gm a b)->SGr a b->ErrorTree
+--retCompliesNty (sgs, m) sgt = 
+--   if (sgs, m) `etCompliesNty` sgt then nile else consSET $ "Certain source nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)
+--   where ns_n_ref = filterS (not . sgsNtyEq sgs sgt) (fV m)
 
 -- For extra typing compliance, edge types must be preserved 
 sgsEtyEq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> b -> Bool
@@ -930,7 +930,8 @@ rOkPSGM id (sgs, m, sgt) = reportWF (sgs, m, sgt) id okPSGM errsOkPSGM
 -- and (iii) node and (iv) edge types
 okETSGs::(Eq a, Eq b) =>(SGr a b, GrM a b) -> SGr a b -> Bool
 okETSGs (sgs, m) sgt = okPSGM (sgs, m, sgt) 
-   && (sgs, m) `etCompliesM` sgt &&  (sgs, m) `etCompliesNty` sgt 
+   && (sgs, m) `etCompliesM` sgt 
+   && okTNtys m sgt 
    && (sgs, m) `etCompliesEty` sgt
 
 errsOkayETSGs::(Eq a, Eq b, Show a, Show b)=>String->(SGr a b, GrM a b, SGr a b)->[ErrorTree]
@@ -938,7 +939,7 @@ errsOkayETSGs id (sgs, m, sgt) =
    let errs = errsOkPSGM (sgs, m, sgt)
    --if pfun (fV m) (ns sgs) (ns sgt) then nile else consET "Function 'fV' is ill defined." [reportPF (fV m) (ns sgs) (ns sgt)] in
        err2 = retCompliesM (sgs, m) sgt 
-       err3 = retCompliesNty (sgs, m) sgt 
+       err3 = rOkNtys m sgt 
        err4 = retCompliesEty  (sgs, m) sgt in
    errs ++ [err2, err3, err4]
 

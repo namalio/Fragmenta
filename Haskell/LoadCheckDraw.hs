@@ -15,8 +15,8 @@ module LoadCheckDraw(
     , loadGwET
     , loadF
     , loadM
-    , load_gfg_def
-    , load_mdl_def
+    , loadGFG
+    , loadMdl
     , load_rm_cmdl_def
     , saveSGDrawing
     , saveFrDrawing
@@ -27,10 +27,10 @@ module LoadCheckDraw(
 where
 
 import Gr_Cls ( emptyGM, GR(ns), GrM )
-import GrParsing ( loadGraph )
+import ParsingG ( loadGraph )
 import qualified GwTParsing as GwtP (loadGwT)
 import qualified GwETParsing as GwetP (loadGwET)
-import GFGrParsing ( loadGFG )
+import qualified ParsingGFG as GFGP  ( loadGFG )
 import GrsDraw
 import SGsDraw
 import FrsDraw
@@ -48,7 +48,7 @@ import TheNil
 import MyMaybe
 import qualified FrParsing as FP (loadSG, loadFragment)
 import Control.Monad(forM, forM_, when)
-import MorphismParsing
+import ParsingGM
 import MdlDraw
 import Mdls
 import Relations
@@ -125,6 +125,18 @@ def_kind fnm =
         "fr" -> Fr
         "gfg" -> GFG
 
+load_def :: String-> String-> IO
+     (Maybe
+        (String,
+         Either
+           (Gr String String)
+           (Either
+              (SGr String String)
+              (Either
+                 (GrwT String String)
+                 (Either
+                    (GrwET String String)
+                    (Either (Fr String String) (GFGr String String)))))))
 load_def path fnm = do
     d<-case (def_kind fnm) of
         Graph -> load_gen path fnm loadGraph wrapG
@@ -132,7 +144,7 @@ load_def path fnm = do
         GwT -> load_gen path fnm GwtP.loadGwT wrapGwT
         GwET -> load_gen path fnm GwetP.loadGwET wrapGwET
         Fr -> load_gen path fnm FP.loadFragment wrapFr
-        GFG -> load_gen path fnm loadGFG wrapGFG
+        GFG -> load_gen path fnm GFGP.loadGFG wrapGFG
     return d
 
 loadSG::FilePath->String->IO(String, SGr String String)
@@ -165,20 +177,22 @@ loadF path fnm = do
     let (nm, f) = unwrapFrWithinP d
     return (nm, f)
 
-load_gfg_def :: String -> String -> IO (String, GFGr String String)
-load_gfg_def path fnm = do 
+loadGFG :: String -> String -> IO (String, GFGr String String)
+loadGFG path fnm = do 
     d<- load_def path fnm
     return (unwrapGFGWithinP d)
 
-load_mdl_def path nm = do 
-    (_, gfg)<-load_gfg_def path (nm ++ ".gfg")
+loadMdl :: String -> String -> IO (String, Mdl String String)
+loadMdl path nm = do 
+    (nm_mdl, gfg)<-loadGFG path (nm ++ ".gfg")
     fd <- forM (ns gfg) (\fn-> do
         (_, f)<-loadF path (fn ++ ".fr")
         return (fn, f))
-    return $ consMdl gfg fd
+    return $ (nm_mdl, consMdl gfg fd)
 
+load_rm_cmdl_def :: String -> String -> IO (GrM String String)
 load_rm_cmdl_def path nm = do 
-    (_, gfg)<-load_gfg_def path (nm ++ ".gfg")
+    (_, gfg)<-loadGFG path (nm ++ ".gfg")
     mds <- forM (ns gfg) (\fn-> do
         (_,m)<-loadM path (fn ++ ".gm")
         return m)
@@ -208,7 +222,7 @@ draw_to_file path nm pg = do
 
 draw_mdl :: String -> String -> String -> IO ()
 draw_mdl dpath ipath mnm = do
-    mdl<-load_mdl_def dpath mnm
+    (_, mdl)<-loadMdl dpath mnm
     saveGFGDrawing ipath (mnm ++ "_gfg") (mgfg mdl)
     forM_ (ns . mgfg $ mdl) (\fn-> do 
         saveFrDrawing ipath (fn) $ appl (mfd mdl) fn)
@@ -253,12 +267,13 @@ saveGwETDrawing path nm gwet = do
    let draw_src = wrGwETAsGraphviz nm gwet
    writeFile (path ++ nm ++ ".gv") draw_src
 
-saveGFGDrawing::(GR g, Eq a)=>[Char] ->String ->g String a -> IO ()
+saveGFGDrawing::(GR g, Eq a)=>String ->String ->g String a -> IO ()
 saveGFGDrawing path nm gfg = do
    putStrLn "Writing GraphViz file" 
    let draw_src = wrGFGAsGraphviz nm gfg 
    writeFile (path ++ nm ++ ".gv") draw_src
 
+saveDrawingWithMdlFrs :: String -> String -> Mdl String String -> IO ()
 saveDrawingWithMdlFrs path nm mdl = do
    let draw_src = wrMdlAsGraphviz nm mdl
    writeFile (path ++ nm ++ "_Mdl.gv") draw_src

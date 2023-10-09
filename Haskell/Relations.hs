@@ -21,14 +21,16 @@ module Relations (Rel
     , fun_bij
     , injective
     , relation
-    , cl_override, mktotal_in, 
-    appl, find_monces, acyclic, trancl, rtrancl, rtrancl_on, reflexive, antireflexive, antireflexive_on, symmetric, 
+    , cl_override
+    , mktotal_in
+    , appl
+    , find_monces, acyclic, trancl, rtrancl, rtrancl_on, reflexive, antireflexive, antireflexive_on, symmetric, 
     transitive, surjective, eq_rel, cross, flatten, tree) where
 
 import SimpleFuns ( pair_up, swap )
 import Sets ( Set(..), set, filterS, zipS, singles, union, gunion, intersec, intoSet, sminus, toList,
             first )
-import TheNil
+import TheNil ( Nil(nil) )
 
 type Rel a b = Set (a, b)
 

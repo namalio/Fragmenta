@@ -14,7 +14,7 @@ import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many, empty)
 import TheNil
 import MyMaybe
-import CommonParsing
+import ParsingCommon
 import Sets ( singles, set )
 import Gr_Cls
 

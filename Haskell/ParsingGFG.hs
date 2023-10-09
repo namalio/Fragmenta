@@ -4,12 +4,12 @@
 -- Description: Module responsible for parsing Fragmenta's Global Fragment Graphs (GFGs)
 -- Author: Nuno Amálio
 --------------------------
-module GFGrParsing(loadGFG) where
+module ParsingGFG(loadGFG) where
 
 import GFGrs
 import Sets
 import Relations
-import CommonParsing
+import ParsingCommon
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many)
 import TheNil

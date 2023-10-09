@@ -13,9 +13,9 @@ import GrswET
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many, empty)
 import TheNil
-import CommonParsing ( parseMaybe, parse_id )
+import ParsingCommon ( parseMaybe, parse_id )
 import Sets ( singles, set )
-import Gr_Cls ( GR(empty) )
+import Gr_Cls 
 
 -- A node element has a name and a type
 -- An edge definition has an optional name, a source and a target node (Strings), and a type (another string)

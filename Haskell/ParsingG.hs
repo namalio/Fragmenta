@@ -1,13 +1,21 @@
-module GrParsing (loadGraph) where
+module ParsingG (loadGraph) where
 
 import Relations
 import Sets ( singles, set )
-import Grs ( consG, Gr, unionG )
+import Grs (Gr, unionG )
 import Text.ParserCombinators.ReadP
+    ( ReadP,
+      (<++),
+      between,
+      char,
+      many,
+      readP_to_S,
+      skipSpaces,
+      string )
 import Control.Applicative hiding (many,empty)
 import TheNil
 import MyMaybe
-import CommonParsing
+import ParsingCommon
 import Gr_Cls
 
 -- A Node has a name 
