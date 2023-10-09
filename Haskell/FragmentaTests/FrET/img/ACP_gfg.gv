@@ -1,0 +1,8 @@
+digraph {graph[label=ACP_gfg,labelloc=tl,labelfontsize=12];
+"F_ACP1"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_ACP1"];
+"F_ACP2"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_ACP2"];
+"F_ACP3"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_ACP3"];
+
+"F_ACP2"->"F_ACP1"[label=" ",arrowhead=veevee];
+"F_ACP3"->"F_ACP2"[label=" ",arrowhead=veevee];
+}

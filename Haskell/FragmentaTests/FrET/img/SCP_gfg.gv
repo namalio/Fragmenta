@@ -1,0 +1,6 @@
+digraph {graph[label=SCP_gfg,labelloc=tl,labelfontsize=12];
+"F_SCP1"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_SCP1"];
+"F_SCP2"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_SCP2"];
+
+"F_SCP2"->"F_SCP1"[label=" ",arrowhead=veevee];
+}

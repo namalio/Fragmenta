@@ -1,0 +1,16 @@
+digraph {graph[label=SCP_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_SCP_rf{style=dashed;label=SCP_rf;
+"Composite"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composite:Composite1"];
+"Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part:Part1"];
+"CompositeDepot"[shape=record,fillcolor=lightskyblue1,style = filled,label="CompositeDepot"];
+"SerialNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="SerialNumber"];
+"Serialised"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Serialised</I><br/>(V)}>];
+
+"Serialised"->"SerialNumber"[label="sno▼",dir=none,taillabel="0..1",headlabel=""];
+"CompositeDepot"->"Composite"[label="holds",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"Composite"->"Part"[label="parts:Eparts",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"Part"->"Serialised"[arrowhead=onormal,arrowsize=2.0];
+"Composite"->"Serialised"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

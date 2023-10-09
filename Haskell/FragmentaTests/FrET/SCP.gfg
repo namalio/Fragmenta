@@ -1,0 +1,5 @@
+GFG SCP {
+  fragment F_SCP1
+  fragment F_SCP2
+  F_SCP2 references F_SCP1
+}

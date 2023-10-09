@@ -1,0 +1,7 @@
+GFG ACP {
+  fragment F_ACP1
+  fragment F_ACP2
+  fragment F_ACP3
+  F_ACP2 references F_ACP1
+  F_ACP3 references F_ACP2
+}

@@ -1,0 +1,38 @@
+digraph {graph[label=ACP,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_ACP1{style=dashed;label=F_ACP1;
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+
+"Named"->"Name"[label="name▼",dir=none,taillabel="0..1",headlabel=""];
+
+}
+subgraph cluster_F_ACP2{style=dashed;label=F_ACP2;
+"Composite"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Composite</I><br/>(V)}>];
+"Part"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Part</I><br/>(V)}>];
+"Composite1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composite1"];
+"Composite2"[shape=record,fillcolor=lightskyblue1,style = filled,label="Composite2"];
+"Part1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part1"];
+"Part2"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part2"];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+
+"Composite"->"Part"[label="parts",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="1..*"];
+"Composite1"->"Composite"[arrowhead=onormal,arrowsize=2.0];
+"Composite2"->"Composite"[arrowhead=onormal,arrowsize=2.0];
+"Part1"->"Part"[arrowhead=onormal,arrowsize=2.0];
+"Part2"->"Part"[arrowhead=onormal,arrowsize=2.0];
+"Composite"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Part"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Composite1"->"Part1"[label="CPs1: parts ▼",dir=none,taillabel="",headlabel="1..*",style=dotted];
+"Composite2"->"Part2"[label="CPs2: parts ▼",dir=none,taillabel="",headlabel="1..*",style=dotted];
+
+}
+
+subgraph cluster_F_ACP3{style=dashed;label=F_ACP3;
+"PPart"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Part<br/>(P)>];
+"SerialNumber"[shape=record,fillcolor=lightskyblue1,style = filled,label="SerialNumber"];
+
+"PPart"->"SerialNumber"[label="sno▼",dir=none,taillabel="0..1",headlabel=""];
+
+}
+
+}
