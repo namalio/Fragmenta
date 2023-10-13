@@ -7,7 +7,7 @@
 
 module IntoSysML.IntoSysMLCD(
     CDG
-    , loadMMI
+    , loadCDMMI
     , gName
     , gEty
     , gRoot
@@ -50,8 +50,8 @@ loadCMM = flip loadMdl "IntoSysML_CD_MM"
 loadRM :: String -> IO (GrM String String)
 loadRM def_path = load_rm_cmdl_def def_path "IntoSysML_CD_MM"
 
-loadMMI :: String -> IO (MMI String String)
-loadMMI def_path = do
+loadCDMMI :: String -> IO (MMI String String)
+loadCDMMI def_path = do
   (_, amm)<-loadAMM def_path
   (_, cmm)<-loadCMM def_path
   rm<-loadRM def_path
@@ -123,13 +123,13 @@ gSrcP::(GR g, GRM g, GWT g) => g String String->String->(String, String)
 gSrcP cd cr = 
     let s = appl (consRelOfEdge cd CD_MM_EConnector_src) cr 
         (sBl, r) = splitAt' (=='_') s 
-        (sp, _) = splitAt' (=='_') s in
+        (sp, _) = splitAt' (=='_') r in
     (sBl, sp)
 
 -- Gets target port of a connector 
 gTgtP::(GR g, GRM g, GWT g) => g String String->String->(String, String)
 gTgtP cd cr = 
-    let s = appl (consRelOfEdge cd CD_MM_EConnector_src) cr
+    let s = appl (consRelOfEdge cd CD_MM_EConnector_tgt) cr
         (tBl, r) = splitAt' (== '_') s
-        (tp, _) = splitAt' (== '_') s in
+        (tp, _) = splitAt' (== '_') r in
     (tBl, tp)

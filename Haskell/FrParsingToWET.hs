@@ -81,5 +81,8 @@ joinNP p pi = consPIWET (p `intoSet` nsm pi) (esm pi) (sf pi) (tf pi) (nsem pi) 
 joinNET::Eq a=>(a,a)->PInfoWET a->PInfoWET a
 joinNET p pi = consPIWET (nsm pi) (esm pi) (sf pi) (tf pi) (p `intoSet` nsem pi) (esem pi)
 
+--joinEET::Eq a=>(a,a)->PInfoWET a->PInfoWET a
+--joinEET p pi = consPIWET (nsm pi) (esm pi) (sf pi) (tf pi) (nsem pi) (p `intoSet` esem pi)
+
 gJoin::Eq a=>[PInfoWET a]->PInfoWET a
 gJoin = foldl join emptyPIWET

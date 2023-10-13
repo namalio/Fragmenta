@@ -23,7 +23,7 @@ consGFGNode n = GFGNode n
 consGFGNodes g = foldr (\n ns'->(consGFGNode n):ns') [] (ns g)
 consGFGDrawingDesc g = GFGDrawing (consGFGNodes g) (consGFGEdges g)
 
-wrEdge (GFGEdge s t) = "\"" ++ s ++ "\"->\"" ++ t ++ "\"[label=\" \",arrowhead=veevee];"
+wrEdge (GFGEdge s t) = "\"" ++ s ++ "\"->\"" ++ t ++ "\"[label=\" \",dir=forward,arrowhead=vee];"
 wrEdges es  = foldr (\e es'-> (wrEdge e)++ "\n" ++es') "" es 
 
 wrNode (GFGNode nm) =  "\"" ++ nm ++ "\"" ++"[shape=oval,fillcolor=\"#FFCCCC\",style =\"filled\",label=\""++nm++"\"];"

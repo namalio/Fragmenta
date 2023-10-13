@@ -4,7 +4,15 @@
 -- Description: Fragmenta's models (Mdls)
 -- Author: Nuno Amálio
 ---------------------------
-module Mdls (Mdl, consMdl, mgfg, mfd, mufs, from, reso_m)
+module Mdls (
+    Mdl, 
+    consMdl, 
+    mgfg, 
+    mfd, 
+    mufs, 
+    from, 
+    reso_m,
+    fet) -- remove later
 where
 
 import Gr_Cls

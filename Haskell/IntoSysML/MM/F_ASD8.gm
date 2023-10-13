@@ -5,7 +5,7 @@ Morphism M_F_ASD8 {
 		PSystem->Part
 		PBElement->Part
 		PAPIPort->Part
-        PInterface->VType
+        PInterface->Type
         Psubsystem->Feature
         PCompound->Part
 	}

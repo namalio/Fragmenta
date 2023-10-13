@@ -1,12 +1,12 @@
 Morphism M_F_ASD3 {
 	nodes {
-		PValueType->VType
-		PPType->Feature
-		DType->VType
-		UnitType->VType
-		Enumeration->VType
+		PValueType->Type
+		PPType->Type
+		DType->Type
+		UnitType->Type
+		Enumeration->Type
 		Literal->Feature
-		StrtType->VType
+		StrtType->Type
 		PName->Feature
 		PNamed3->Trait
 		PFieldI->Part

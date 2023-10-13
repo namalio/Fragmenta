@@ -50,8 +50,8 @@ okGWT gwt =
 errsGWT :: (Show a, Show b, Eq b, Eq a) => String -> GrwT a b -> [ErrorTree]
 errsGWT id gwt = 
     let err1 = faultsG id Nothing $ gOf gwt 
-        err2 = if (dom_of . fV $ gwt) == ns gwt then nile else reportSEq (dom_of . fV $ gwt) (ns gwt) 
-        err3 = if (dom_of . fE $ gwt) == es gwt then nile else reportSEq (dom_of . fE $ gwt) (es gwt) in
+        err2 = if (dom_of . fV $ gwt) == ns gwt then nile else reportSEq "" (dom_of . fV $ gwt) (ns gwt) 
+        err3 = if (dom_of . fE $ gwt) == es gwt then nile else reportSEq "" (dom_of . fE $ gwt) (es gwt) in
     [err1, err2, err3]
 
 rOkGWT :: (Eq a, Eq b, Show a, Show b) => String -> GrwT a b -> ErrorTree

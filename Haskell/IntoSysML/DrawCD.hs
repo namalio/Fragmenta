@@ -1,10 +1,11 @@
 ------------------------------
 -- Project: Fragmenta
 -- Module: 'DrawASD'
--- Description: Module that deals with the drawing of SysML ASDs via graphviz
+-- Description: Module that deals with drawing of SysML ASDs via graphviz
 -- Author: Nuno Amálio
 -----------------------------
-module IntoSysML.DrawCD(drawCD,mkCDDrawing) where
+module IntoSysML.DrawCD(
+   drawCD) where
  
 import IntoSysML.IntoSysMLCD
 import SGrs
@@ -35,7 +36,7 @@ mkCDDrawing::MMI String String->CDG String String->CDDrawing
 mkCDDrawing mmi cd =
    let cr = gCompRel cd
        rs = dom_of cr `sminus` ran_of cr
-       cs = map (mkConnector cd) $ toList (gConnectors (gCRSG mmi) cd)  in
+       cs = map (mkConnector cd) $ toList (gConnectors (gCRSG mmi) cd) in
    CDDrawing (gCDName cd) (mkMultiTrees mmi cd rs cr) cs
 
 mkMultiTrees::MMI String String->CDG String String->Set String->Rel String String->[MultiTree BlockI]
@@ -79,7 +80,7 @@ mkBlI cd bnm =
 -- Constructs a connector
 mkConnector::CDG String String->String->Connector
 mkConnector cd cnm =
-   Connector (gName cd cnm) (gFlowTy cd cnm) (gSrcP cd cnm) (gTgtP cd cnm)
+   Connector (gName cd cnm) (fst . splitAt' (=='_') $ gFlowTy cd cnm) (gSrcP cd cnm) (gTgtP cd cnm)
 
 wrPortI::String->PortI->String
 wrPortI blNm (PortI nm _) = 
@@ -119,7 +120,7 @@ wrConnector::Connector->String
 wrConnector (Connector nm ty (sBl, sp) (tBl, tp)) =
    let spId = portIId sBl sp 
        tpId = portIId tBl tp in
-   spId ++ "->" ++ tpId ++ "[label=\"" ++ nm ++ ":" ++ ty ++ "\"];\n"
+   spId ++ "->" ++ tpId ++ "[label=\"" ++ ty ++ "\"];\n"
 
 wrCDAsGraphviz :: CDDrawing->String
 wrCDAsGraphviz (CDDrawing nm ts cs) = "digraph {\ncompound=true;\nrankdir=LR;\nlabel=" ++ nm ++ ";\n" 

@@ -4,8 +4,8 @@ Morphism M_F_ASD1 {
      	PNamed->Trait
      	Block->Part
      	Composition->Connector
-     	ValueType->VType
-     	PAType->Trait
+     	ValueType->Type
+     	PAType->Type
 	}
 	edges {
 	   HasBlocks->ConsistsOf

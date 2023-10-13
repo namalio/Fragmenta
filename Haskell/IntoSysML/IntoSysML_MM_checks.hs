@@ -46,6 +46,7 @@ check_fragments = do
     (nm_f7, f7)<-loadF def_path "F_ASD7.fr"
     (nm_f8, f8)<-loadF def_path "F_ASD8.fr"
     (nm_fcd1, fcd1)<-loadF def_path "F_CD1.fr"
+    (nm_fcd2, fcd2)<-loadF def_path "F_CD2.fr"
     check_report_wf nm_af (Just Total) af True
     check_report_wf nm_fb1 (Just Partial) fb1 True
     check_report_wf nm_ft (Just Partial) ft True
@@ -58,6 +59,7 @@ check_fragments = do
     check_report_wf nm_f7 (Just Partial) f7 True
     check_report_wf nm_f8 (Just Partial) f8 True
     check_report_wf nm_fcd1 (Just Partial) fcd1 True
+    check_report_wf nm_fcd2 (Just Partial) fcd2 True
 
 check_morphisms = do
     (nm_af, af)<-loadF def_path "F_AAD.fr"
@@ -73,6 +75,7 @@ check_morphisms = do
     (nm_f7, f7)<-loadF def_path "F_ASD7.fr"
     (nm_f8, f8)<-loadF def_path "F_ASD8.fr"
     (nm_fcd1, fcd1)<-loadF def_path "F_CD1.fr"
+    (nm_fcd2, fcd2)<-loadF def_path "F_CD2.fr"
     --(nm_f8, f8)<-loadF def_path "F_ASD8.fr"
     --check_report_wf nm_af (Just Total) af True
     --check_report_wf nm_f1 (Just Partial) f1 True
@@ -89,6 +92,7 @@ check_morphisms = do
     (nm_m7, m7)<-loadM def_path "F_ASD7.gm"
     (nm_m8, m8)<-loadM def_path "F_ASD8.gm"
     (nm_mcd1, mcd1)<-loadM def_path "F_CD1.gm"
+    (nm_mcd2, mcd2)<-loadM def_path "F_CD2.gm"
     --(nm_m8, m8)<-load_morphism_def def_path "F_ASD8.gm"
     check_morphism ("Morphism '" ++ nm_mb1 ++ "' (Partial)") (Just PartialM) fb1 mb1 af True
     check_morphism ("Morphism '" ++ nm_mt ++ "' (Partial)") (Just PartialM) ft mt af True
@@ -101,6 +105,7 @@ check_morphisms = do
     check_morphism ("Morphism '" ++ nm_m7 ++ "' (Partial)") (Just PartialM) f7 m7 af True
     check_morphism ("Morphism '" ++ nm_m8 ++ "' (Partial)") (Just PartialM) f8 m8 af True
     check_morphism ("Morphism '" ++ nm_mcd1 ++ "' (Partial)") (Just PartialM) fcd1 mcd1 af True
+    check_morphism ("Morphism '" ++ nm_mcd2 ++ "' (Partial)") (Just PartialM) fcd2 mcd2 af True
     --check_morphism ("Morphism '" ++ nm_m8 ++ "' (Partial)") (Just PartialM) f8 m8 af True
 
 check_ASD_overall::IO ()

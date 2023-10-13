@@ -22,7 +22,8 @@ module ErrorAnalysis(
   , showErr
   , reportSSEq
   , reportSEq
-  , reportR) where
+  , reportR
+  , reportSPEq) where
 
 import Relations
 import Sets ( sminus, gunion, Set ) 
@@ -164,8 +165,14 @@ reportSSEq :: (Eq a, Show a) => Set a -> Set a -> ErrorTree
 reportSSEq r1 r2 =
    if r1 <= r2 then nile else consSET $ "The following are not (or should not be) included: " ++ (showElems' $ r1 `sminus` r2)
 
-reportSEq :: (Eq a, Show a) => Set a -> Set a -> ErrorTree
-reportSEq r1 r2 =
-    let err1 = reportSSEq r1 r2 in
-    let err2 = reportSSEq r1 r2 in
-    if r1 == r2 then nile else consET "The sets are unequal." [err1, err2]
+reportSEq :: (Eq a, Show a) => String->Set a -> Set a -> ErrorTree
+reportSEq sk r1 r2 = -- sk is set kind
+    let err1 = reportSSEq r1 r2 
+        err2 = reportSSEq r2 r1 in
+    if r1 == r2 then nile else consET ("The " ++ sk ++ " sets are unequal.") [err1, err2]
+
+reportSPEq :: (Eq a, Eq b, Show a, Show b) => (Set a, Set b) -> (Set a, Set b) -> ErrorTree
+reportSPEq ps1@(ds1, rs1) ps2@(ds2, rs2) = 
+  let err1 = reportSEq "first" ds1 ds2
+      err2 = reportSEq "second" rs1 rs2 in
+      if ps1 == ps2 then nile else consET "The two pairs with sets are unequal." [err1, err2]

@@ -3,7 +3,7 @@ subgraph cluster_IntoSysML_AAD_MM_rf{style=dashed;label=IntoSysML_AAD_MM_rf;
 "ArchitectureDiagram"[shape=record,fillcolor=lightskyblue1,style = filled,label="ArchitectureDiagram"];
 "Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
 "PElement"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PElement</I><br/>(A)}>];
-"VType"[shape=record,fillcolor=lightskyblue1,style = filled,label="VType"];
+"Type"[shape=record,fillcolor=lightskyblue1,style = filled,label="Type"];
 "Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part"];
 "Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
 "Feature"[shape=record,fillcolor=lightskyblue1,style = filled,label="Feature"];
@@ -15,7 +15,7 @@ subgraph cluster_IntoSysML_AAD_MM_rf{style=dashed;label=IntoSysML_AAD_MM_rf;
 "Feature"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "Part"->"PElement"[arrowhead=onormal,arrowsize=2.0];
 "Connector"->"PElement"[arrowhead=onormal,arrowsize=2.0];
-"VType"->"PElement"[arrowhead=onormal,arrowsize=2.0];
+"Type"->"PElement"[arrowhead=onormal,arrowsize=2.0];
 "Connector"->"Part"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
 "Connector"->"Part"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
 

@@ -116,7 +116,7 @@ connectorId::String->String
 connectorId nm = nm ++ "_Connector"
 
 typeId::String->String
-typeId nm = nm ++ "_type"
+typeId nm = nm ++ "_Type"
 
 -- Gets identifier of element in graph
 gElemGId::CDElem->String
@@ -135,13 +135,13 @@ nmPI snm nm =
 
 -- name of an edge from a node
 enmFrN::String->String
-enmFrN n = "E"++n
+enmFrN n = "E_"++n
 
 portIPI::String->String->PortI->PInfoWET String
 portIPI nmBl blTy (PortI nm tnm) = 
    let nnm = portIId nmBl nm 
        nPI = (nnm, show_cd_mm_n CD_MM_PortI) in
-   gJoin [singleNP nPI, singleNET (nnm, tnId blTy tnm), nmPI nnm nm]
+   gJoin [singleNP nPI, singleNET (nnm, tnId (blockId blTy) tnm), nmPI nnm nm]
 
 portsIPI::String->String->[PortI]->PInfoWET String
 portsIPI nmBl blTy ps = 
@@ -149,49 +149,60 @@ portsIPI nmBl blTy ps =
        ep p = (enm_l p, show_cd_mm_e CD_MM_EBlockI_ports)
        sp p = (enm_l p, blockIId nmBl)
        tp p = (enm_l p, portIId nmBl $ gPtINm p) 
-       es_et p = (enm_l p, tnId blTy (gPtINm p) ++ "_port")
+       es_et p = (enm_l p, enmFrN $ tnId (blockId blTy) (gPtITy p) ++ "_port")
        es_m = foldl (\pi p->gJoin[singleEPs (ep p) (sp p) (tp p), singleEET $ es_et p, pi]) emptyPIWET ps in
    foldl (\pi p->pi `join` (portIPI nmBl blTy p)) emptyPIWET ps `join` es_m
        
 -- extracts the parsing info of a CD element
-piFrCDElem::CDElem->PInfoWET String 
-piFrCDElem (ElemB (BlockI nm tnm ps)) = 
+piFrCDElem::CDElem->Rel String String->(PInfoWET String, Rel String String) 
+piFrCDElem (ElemB (BlockI nm tnm ps)) r = 
    let nnm = blockIId nm in
-   gJoin[nmPI nnm nm, singleNET (nnm, blockId tnm)
+   (gJoin[nmPI nnm nm, singleNET (nnm, blockId tnm)
       , singleNP (nnm, show_cd_mm_n CD_MM_BlockI)
-      , portsIPI nm tnm ps]
-piFrCDElem (ElemCn (CompositionI nm tynm snm tnm)) = 
+      , portsIPI nm tnm ps], r `union` singles (nm, tnm))
+piFrCDElem (ElemCn (CompositionI nm tynm snm tnm)) r = 
    let nnm = compositionIId nm
        nPI = (nnm, show_cd_mm_n CD_MM_CompositionI) 
-       enm_s = enmFrN $ snm ++ "_" ++ tnm ++ "_src" 
-       enm_t = enmFrN $ snm ++ "_" ++ tnm ++ "_tgt" 
+       enm_s = enmFrN $ nnm ++ "_src" 
+       enm_t = enmFrN $ nnm ++ "_tgt" 
        es_s = singleEPs (enm_s, show_cd_mm_e CD_MM_ECompositionI_src) (enm_s, nnm) (enm_s, blockIId snm)
-       es_t = singleEPs (enm_t, show_cd_mm_e CD_MM_ECompositionI_tgt) (enm_t, nnm) (enm_t, blockIId tnm) in
-   gJoin[singleNP nPI, nmPI nnm nm, singleNET (nnm, compositionId tynm), es_s, es_t]
-piFrCDElem (ElemCr cr@(Connector nm tnm _ _)) = 
-   let nnm = connectorId . gCrNm $ cr
+       es_t = singleEPs (enm_t, show_cd_mm_e CD_MM_ECompositionI_tgt) (enm_t, nnm) (enm_t, blockIId tnm) 
+       et_n = singleNET (nnm, compositionId tynm)
+       et_es1 = singleEET (enm_s, enmFrN $ appl r snm ++ "_" ++ appl r tnm ++ "_src") 
+       et_es2 = singleEET (enm_t, enmFrN $ appl r snm ++ "_" ++ appl r tnm ++ "_tgt") in
+   (gJoin[singleNP nPI, nmPI nnm nm, es_s, es_t, et_n, et_es1, et_es2], r)
+piFrCDElem (ElemCr (Connector nm tnm (sBl, spnm) (tBl, tpnm))) r = 
+   let nnm = connectorId (sBl ++ "_" ++ spnm ++ "_" ++ tBl ++ "_" ++ tpnm)
        ntnm = typeId tnm
        nPI1 = singleNP (nnm, show_cd_mm_n CD_MM_Connector) 
        nPI2 = singleNP (ntnm, show_cd_mm_n CD_MM_ATypeRef) 
-       (sBl, spnm) = gCrSPInfo cr
-       (tBl, tpnm) = gCrTPInfo cr
-       enm1 = enmFrN $ gCrNm cr ++ "_src" 
-       enm2 = enmFrN $ gCrNm cr ++ "_tgt"
-       enm3 = enmFrN $ gCrNm cr ++ "_ftype"
+       enm1 = enmFrN $ nnm ++ "_src" 
+       enm2 = enmFrN $ nnm ++ "_tgt"
+       enm3 = enmFrN $ nnm ++ "_ftype"
        es1 = singleEPs (enm1, show_cd_mm_e CD_MM_EConnector_src) (enm1, nnm) (enm1, portIId sBl spnm)
        es2 = singleEPs (enm2, show_cd_mm_e CD_MM_EConnector_tgt) (enm2, nnm) (enm2, portIId tBl tpnm) 
-       es3 = singleEPs (enm3, show_cd_mm_e CD_MM_EConnector_ftype) (enm3, nnm) (enm3, ntnm) in
-   gJoin [nmPI nnm $ gCrNm cr, nPI1, nPI2, es1, es2, es3]
+       es3 = singleEPs (enm3, show_cd_mm_e CD_MM_EConnector_ftype) (enm3, nnm) (enm3, ntnm) 
+       et_n = singleNET (ntnm, ntnm) in
+       --et_es1 = singleEET (enm1, enmFrN $ appl r sBl ++ "_" ++ appl r tBl ++ "_src") 
+       --et_es2 = singleEET (enm2, enmFrN $ appl r sBl ++ "_" ++ appl r tBl ++ "_tgt") in
+   (gJoin [nmPI nnm nm, nPI1, nPI2, es1, es2, es3, et_n], r)
 
+
+piFrCDElems::[CDElem]->Rel String String->PInfoWET String 
+piFrCDElems [] _ = emptyPIWET
+piFrCDElems (e:es) r = 
+   let (pi, r') = piFrCDElem e r in
+   pi `join` piFrCDElems es r'
+
+-- PI of a given list of elements
 piElems::String->[CDElem]->PInfoWET String 
 piElems rnm es = 
-   let elsPI = foldr(\e pi->piFrCDElem e `join` pi) emptyPIWET es
-       enm tnm = enmFrN $ rnm ++ "_" ++ tnm 
+   let enm tnm = enmFrN $ rnm ++ "_" ++ tnm 
        emp tnm = (enm tnm, show_cd_mm_e CD_MM_EHasElements) 
        esp tnm = (enm tnm, rootId rnm)
        etp tnm gnm = (enm tnm, gnm)
        npi tnm gnm = singleEPs (emp tnm) (esp tnm) (etp tnm gnm) in
-   foldr(\e pi-> npi (gElemNm e) (gElemGId e) `join` pi) elsPI es
+   foldr(\e pi-> npi (gElemNm e) (gElemGId e) `join` pi) (piFrCDElems es nil) es
 
 -- PI of root element
 rootInfo::String->PInfoWET String

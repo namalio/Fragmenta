@@ -34,7 +34,8 @@ gAMM (MMI _ amm _ _) = amm
 -- extracts refinement morphism
 gRM::MMI a b->GrM a b
 gRM (MMI _ _ rm _) = rm
--- extracts resolved sg of concrete metamodel
+
+-- extracts metamodel's concrete and resolved SG 
 gCRSG::MMI a b->SGr a b
 gCRSG  (MMI _ _ _ sgcmm) = sgcmm
 -- extracts the graph with typing 

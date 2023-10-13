@@ -1,13 +1,13 @@
 Morphism M_F_TYS {
 	nodes {
-		PType->Feature
-     	PReal->Feature
-     	PBool->Feature
-     	PString->Feature
-     	PNat->Feature
-     	PInt->Feature
-     	PInterval->Feature
-     	AType->Trait
+		PType->Type
+     	PReal->Type
+     	PBool->Type
+     	PString->Type
+     	PNat->Type
+     	PInt->Type
+     	PInterval->Type
+     	AType->Type
 	}
 	edges {
 		PInterval_lb->Has

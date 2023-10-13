@@ -1,10 +1,10 @@
-Morphism M_F_ASD4 {
+Morphism M_F_ASD5 {
 	nodes {
-		PValueType2->VType
-		PAType3->Trait
+		PValueType2->Type
+		PAType3->Type
 		PNamed4->Trait
 		PField2->Part
-		Interface->VType
+		Interface->Type
 		Operation->Feature
 	}
 	edges {

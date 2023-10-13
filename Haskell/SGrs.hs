@@ -1244,6 +1244,7 @@ instance GM_CHK' GrwT SGr where
 --    check_wf_gm' = check_wf_tyss
 
 --Gets instance nodes of particular node type given a type sg and a morphism
+ns_of_ntys :: (GRM gm, Eq a, Eq b, Foldable t) => gm a b -> SGr a b->t a -> Set a
 ns_of_ntys m sg ns = img (inv . fV $ m) (img (inv . inhst $ sg) ns)
 
 --Gets instance edges of particular node type given a morphism

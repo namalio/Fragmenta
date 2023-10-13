@@ -35,10 +35,10 @@ C_BlI->C_wli_PI[dir=none];
 C_vo_PI[shape=circle,label="vo"];
 C_BlI->C_vo_PI[dir=none];
 }
-S_S_PI->S_S_PI[label="S_w_T_wi:FlowRate_type"];
-WT_WT_PI->WT_WT_PI[label="WT_vi_T_vi:OpenClosed_type"];
-C_C_PI->C_C_PI[label="C_vo_WT_vi:OpenClosed_type"];
-WT_WT_PI->WT_WT_PI[label="WT_wlo_C_wli:Height_type"];
-T_T_PI->T_T_PI[label="T_wlo_WT_wlo:Height_type"];
-T_T_PI->T_T_PI[label="T_wo_D_wi:FlowRate_type"];
+S_w_PI->T_wi_PI[label="FlowRate"];
+WT_vi_PI->T_vi_PI[label="OpenClosed"];
+C_vo_PI->WT_vi_PI[label="OpenClosed"];
+WT_wlo_PI->C_wli_PI[label="Height"];
+T_wlo_PI->WT_wlo_PI[label="Height"];
+T_wo_PI->D_wi_PI[label="FlowRate"];
 }

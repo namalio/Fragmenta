@@ -492,21 +492,21 @@ qurRoot nm  =
 
 -- Identifier of a value type node in a graph
 vtyId :: String -> String
-vtyId nm = nm  ++ "_VT"
+vtyId nm = nm  ++ "_Type"
 
 -- Identifier of an element in a graph
 elemId :: ASDElem -> String
 elemId e@(ElemVT _) = vtyId . gElemNm $ e 
 elemId e@(ElemB _) = blockId . gElemNm $ e
-elemId (ElemC c) = compositionId (gCNm c ++ "_" ++ (gCSrc c) ++ "_" ++ (gCTgt c)) 
+elemId (ElemC c) = compositionId (gCNm c) -- ++ "_" ++ (gCSrc c) ++ "_" ++ (gCTgt c)) 
 
 -- builds name of an edge from a node
-mkenm_frn::String->String
-mkenm_frn n = "E"++n
+enmFrn::String->String
+enmFrn n = "E_"++n
 
 ptId::PType->String
-ptId (PInterval n1 n2) = "PInterval" ++ "_" ++ (show n1) ++ "_" ++ (show n2) ++ "_PTy"
-ptId pt = show pt ++ "_PTy"
+ptId (PInterval n1 n2) = "PInterval" ++ "_" ++ (show n1) ++ "_" ++ (show n2) ++ "_Type"
+ptId pt = show pt ++ "_Type"
 
 atyId::AType->String
 atyId (ATypeP pt) = ptId pt
@@ -527,10 +527,10 @@ qur_ns_es_ptype::PType->QuadURel String
 qur_ns_es_ptype pt@(PInterval n1 n2) = 
    let pt_nm = ptId pt 
        ns_m = singles (pt_nm, show_asd_mm_n ASD_MM_PInterval) 
-       es_m = (set [(mkenm_frn $ pt_nm ++ "_lb", show_asd_mm_e ASD_MM_EPInterval_lb), 
-               (mkenm_frn $ pt_nm ++ "_ub", show_asd_mm_e ASD_MM_EPInterval_ub)],
-               set [(mkenm_frn $ pt_nm ++ "_lb", pt_nm), (mkenm_frn $ pt_nm ++ "_ub", pt_nm)],
-               set [(mkenm_frn $ pt_nm ++ "_lb", ptId PInt), (mkenm_frn $ pt_nm ++ "_ub", ptId PInt)]) in
+       es_m = (set [(enmFrn $ pt_nm ++ "_lb", show_asd_mm_e ASD_MM_EPInterval_lb), 
+               (enmFrn $ pt_nm ++ "_ub", show_asd_mm_e ASD_MM_EPInterval_ub)],
+               set [(enmFrn $ pt_nm ++ "_lb", pt_nm), (enmFrn $ pt_nm ++ "_ub", pt_nm)],
+               set [(enmFrn $ pt_nm ++ "_lb", ptId PInt), (enmFrn $ pt_nm ++ "_ub", ptId PInt)]) in
    (qurOneTpl ns_m es_m) `join` qur_ns_es_ptype (PInt)
 qur_ns_es_ptype pt =  
   let pt_nm = ptId pt 
@@ -542,7 +542,7 @@ qur_ns_es_ptype pt =
 qurTN :: String->TypedName->IntoSysML_ASD_MM_Ns->QuadURel String
 qurTN cnm (TypedName nm nty) n_mm_ty = 
    let nnm = vtnId cnm nm n_mm_ty 
-       enm_t = mkenm_frn $ nnm ++ "_type"
+       enm_t = enmFrn $ nnm ++ "_Type"
        nty_id = atyId nty 
        ns_m = (nnm, show_asd_mm_n n_mm_ty)
        es_m = (enm_t, show_asd_mm_e ASD_MM_ETypedName_type)
@@ -560,7 +560,7 @@ qurITN :: String-> Initialisable-> IntoSysML_ASD_MM_Ns->QuadURel String
 qurITN cnm (Initialisable nm nty ie) n_mm_ty = 
    let nnm = vtnId cnm nm n_mm_ty
        iq = qurTN cnm (TypedName nm nty) n_mm_ty
-       enm_i = mkenm_frn $ nnm ++ "_init" 
+       enm_i = enmFrn $ nnm ++ "_init" 
        nty_id = atyId nty
        ns_m = if null ie then nil else singles (expId ie, show_asd_mm_n ASD_MM_Exp) 
        es_m = (if null ie then nil else singles (enm_i, show_asd_mm_e ASD_MM_EInitialisable_init), 
@@ -572,14 +572,14 @@ qurPort :: String -> Port -> QuadURel String
 qurPort cnm po@(InFlowPort itn) = qurITN cnm itn (gPoMTy po)
 qurPort cnm po@(OutFlowPort itn deps) = 
   let iqs = qurITN cnm itn (gPoMTy po) 
-      enm d = mkenm_frn $ cnm ++ "_" ++ (gITNNm itn) ++ "_depends_" ++ d 
+      enm d = enmFrn $ cnm ++ "_" ++ (gITNNm itn) ++ "_depends_" ++ d 
       es_m = foldl (\t d->((enm d, show_asd_mm_e ASD_MM_EOutFlowPort_depends), 
                           (enm d, vtnId cnm (gITNNm itn) $ gPoMTy po), 
                           (enm d, tnId cnm d)) `combineTwIntoS` t) (nil, nil, nil) deps in
   (qurOneTpl nil es_m) `join` iqs
 qurPort cnm po@(APIPort itn k) = 
    let iq = qurITN cnm itn (gPoMTy po) 
-       enm_k = mkenm_frn $ cnm ++ "_" ++ (gITNNm itn) ++ "_kind" 
+       enm_k = enmFrn $ cnm ++ "_" ++ (gITNNm itn) ++ "_kind" 
        ns_m = (show k, show_asd_mm_n $ read_asd_mm . lower_fst . show $ k)
        pid = (tnId cnm) . gITNNm $ itn 
        es_m = ((enm_k, show_asd_mm_e ASD_MM_EAPIPort_kind), (enm_k, pid), (enm_k, show k)) in
@@ -595,7 +595,7 @@ qurVariable cnm (Variable itn vk)  =
   let iq =  qurITN cnm itn ASD_MM_Variable 
       ns_m = (show vk, show_asd_mm_n $ read_asd_mm . lower_fst . show $ vk) 
       vid = varId cnm . gITNNm $ itn 
-      enm_k = mkenm_frn $ vid ++ "_kind" 
+      enm_k = enmFrn $ vid ++ "_kind" 
       es_m = ((enm_k, show_asd_mm_e ASD_MM_EVariable_kind), (enm_k, vid), (enm_k, show vk)) in
   singleQUR (makeQFrTFst ns_m es_m) `join` iq
 
@@ -603,7 +603,7 @@ qurVariable cnm (Variable itn vk)  =
 qurPorts :: Foldable t =>String-> t Port->QuadURel String
 qurPorts nmBl ps = 
   let iqs = foldl (\qur p->qurPort nmBl p `join` qur) nilQUR ps
-      enm_l p = mkenm_frn $ tnId nmBl (gPoNm p) ++ "_port" 
+      enm_l p = enmFrn $ tnId nmBl (gPoNm p) ++ "_port" 
       es_m = foldl (\esml p->((enm_l p, show_asd_mm_e ASD_MM_EBlock_ports), 
                              (enm_l p, nmBl), 
                              (enm_l p, tnId nmBl $ gPoNm p)) 
@@ -623,8 +623,8 @@ qurComponent nm c bl_mty =
    let iqs = qurBlock nm bl_mty (gCFps c) 
        iqs' = foldl (\qs v->qurVariable nm v `join` qs) iqs $ gCVs c 
        ns_m = singles (show . gCK $ c, show_asd_mm_n $ read_asd_mm . lower_fst  . show . gCK $ c) 
-       enm_k = mkenm_frn $ (blockId nm) ++ "_kind" 
-       enm_v v = mkenm_frn $ (blockId nm) ++ "_" ++ ((varId nm) . gITNNm . gVarITN $ v)
+       enm_k = enmFrn $ (blockId nm) ++ "_kind" 
+       enm_v v = enmFrn $ (blockId nm) ++ "_" ++ ((varId nm) . gITNNm . gVarITN $ v)
        es_m = (singles (enm_k, show_asd_mm_e ASD_MM_EComponent_kind), 
                singles (enm_k, blockId nm), singles (enm_k, show . gCK $ c)) 
        es_m' = foldl (\vs v->((enm_v v, show_asd_mm_e ASD_MM_EComponent_vars), (enm_v v, blockId nm), 
@@ -641,7 +641,7 @@ valId n = (show n) ++ "_Val"
 qurMultVal :: MultVal -> QuadURel String
 qurMultVal mv@(MultN n) =
   let ns_m = set [(mvalId mv, show_asd_mm_n ASD_MM_MultValNum), (valId n, show_asd_mm_n ASD_MM_Nat)] in
-  let enm = mkenm_frn $ mvalId mv in
+  let enm = enmFrn $ mvalId mv in
   let es_m = (singles (enm, show_asd_mm_e ASD_MM_EMultValNum_n), singles (enm, mvalId mv), singles (enm, (show n) ++ "_Val")) in
   qurOneTpl ns_m es_m 
 
@@ -653,21 +653,21 @@ qurMult :: Mult-> QuadURel String
 qurMult m@(MultS mv) = 
   let nnm = multId m 
       ns_m = (nnm, show_asd_mm_n ASD_MM_MultSingle) 
-      enm = mkenm_frn $ nnm ++ "_val" 
+      enm = enmFrn $ nnm ++ "_val" 
       es_m = ((enm, show_asd_mm_e ASD_MM_EMultSingle_val), (enm, nnm), (enm, mvalId mv)) in
   singleQUR (makeQFrTFst ns_m es_m) `join` (qurMultVal mv)
 qurMult m@(MultR mvs mvt) = 
   let nnm = multId m 
       ns_m = set [(nnm, show_asd_mm_n ASD_MM_MultRange), (valId mvs, show_asd_mm_n ASD_MM_Nat)]
-      enm1 = mkenm_frn $ nnm ++ "_lb" 
-      enm2 = mkenm_frn $ nnm ++ "_ub" 
+      enm1 = enmFrn $ nnm ++ "_lb" 
+      enm2 = enmFrn $ nnm ++ "_ub" 
       es_m = (set [(enm1, show_asd_mm_e ASD_MM_EMultRange_lb), (enm2, show_asd_mm_e ASD_MM_EMultRange_ub)], 
               set [(enm1, nnm), (enm2, nnm)], set [(enm1, valId mvs), (enm2, mvalId mvt)]) in
   (qurOneTpl ns_m es_m) `join` (qurMultVal mvt)
 
 qurHas ::String->String->IntoSysML_ASD_MM_Es->QuadURel String
 qurHas rnm tnm mty =
-  let enm = mkenm_frn $ rnm ++ "_" ++ tnm 
+  let enm = enmFrn $ rnm ++ "_" ++ tnm 
       q = (nil, singles (enm, show_asd_mm_e mty)
          , singles (enm, rnm)
          , singles (enm, tnm)) in
@@ -678,8 +678,8 @@ qurOperation inm (Operation nm ps aty) =
   let nnm = opId inm nm 
       q = foldl (\qur f->(qurField inm f) `join` qur) nilQUR ps 
       ns_m = singles (nnm, show_asd_mm_n ASD_MM_Operation) 
-      enm_ps k = mkenm_frn $ nnm ++ "_params_" ++ (show k) 
-      enm_ret = mkenm_frn $ nnm ++ "_return" 
+      enm_ps k = enmFrn $ nnm ++ "_params_" ++ (show k) 
+      enm_ret = enmFrn $ nnm ++ "_return" 
       tq = if is_ATy_a_Pty aty then qur_ns_es_ptype (gATyPTy aty) else nilQUR 
       es_m_0 = foldl(\ts p->((enm_ps $ (length . fstT $ ts) + 1, show_asd_mm_e ASD_MM_EOperation_params), 
                (enm_ps $ (length . fstT $ ts) + 1, nnm), 
@@ -693,25 +693,25 @@ qurElem rnm (ElemVT (DType nm pt)) =
   let nnm = vtyId nm 
       q0 = qur_ns_es_ptype pt
       ns_m = (nnm, show_asd_mm_n ASD_MM_DType)
-      es_m = ((mkenm_frn $ nnm ++ "_base", show_asd_mm_e ASD_MM_EDType_base),
-              (mkenm_frn $ nnm ++ "_base", nnm),
-              (mkenm_frn $ nnm ++ "_base", ptId pt)) in
+      es_m = ((enmFrn $ nnm ++ "_base", show_asd_mm_e ASD_MM_EDType_base),
+              (enmFrn $ nnm ++ "_base", nnm),
+              (enmFrn $ nnm ++ "_base", ptId pt)) in
   gJoin [qurNm nnm nm, singleQUR $ makeQFrTFst ns_m es_m, q0
             , qurHas rnm nnm ASD_MM_EHasVTypes]
 qurElem rnm (ElemVT (UType nm pt unm)) = 
   let nnm = vtyId nm in
   let q0 = qur_ns_es_ptype pt in
   let ns_m = set [(nnm, show_asd_mm_n ASD_MM_UnitType), (unm, show_asd_mm_n ASD_MM_Name)]  in 
-  let es_m = (set [(mkenm_frn $ nnm ++ "_base_", show_asd_mm_e ASD_MM_EDType_base),
-              (mkenm_frn $ nnm ++ "_unit_", show_asd_mm_e ASD_MM_EUnitType_unit)],
-              set [(mkenm_frn $ nnm ++ "_base_", nnm), (mkenm_frn $ nnm ++ "_unit_", nnm)],
-              set [(mkenm_frn $ nnm ++ "_base_", ptId pt), (mkenm_frn $ nnm ++ "_unit_", unm)]) in
+  let es_m = (set [(enmFrn $ nnm ++ "_base_", show_asd_mm_e ASD_MM_EDType_base),
+              (enmFrn $ nnm ++ "_unit_", show_asd_mm_e ASD_MM_EUnitType_unit)],
+              set [(enmFrn $ nnm ++ "_base_", nnm), (enmFrn $ nnm ++ "_unit_", nnm)],
+              set [(enmFrn $ nnm ++ "_base_", ptId pt), (enmFrn $ nnm ++ "_unit_", unm)]) in
   gJoin [qurNm nnm nm, qur $ makeQFrTFst ns_m es_m, q0, qurHas rnm nnm ASD_MM_EHasVTypes]
 qurElem rnm (ElemVT (VTypeStrt nm ps)) = 
   let nnm = vtyId nm in
   -- build graph portion for properties
   let qps = foldl (\q (FieldI itn)->(qurITN nm itn ASD_MM_FieldI) `join` q) nilQUR ps 
-      enm_f k = mkenm_frn $ nnm ++ "_fields_" ++ (show k) 
+      enm_f k = enmFrn $ nnm ++ "_fields_" ++ (show k) 
       ns_m = singles (nnm, show_asd_mm_n ASD_MM_StrtType) 
       es_m = foldl (\t (FieldI itn)->((enm_f $ (length . fstT $ t) + 1, show_asd_mm_e ASD_MM_EStrtType_fields), 
                             (enm_f $ (length . fstT $ t) + 1, nnm), (enm_f $ (length . fstT $ t) + 1, (tnId nm) . gITNNm $ itn)) 
@@ -722,7 +722,7 @@ qurElem rnm (ElemVT (VTypeEnum nm ls)) =
        qls = foldr (\l q->gJoin [qurNm (literalId nm l) l
                             , qur $ makeQFrTFst (singles (literalId nm l, show_asd_mm_n ASD_MM_Literal)) (nil, nil, nil)
                             , q]) nilQUR ls 
-       enm_l k = mkenm_frn $ nnm ++ "_literals" ++ (show k) 
+       enm_l k = enmFrn $ nnm ++ "_literals" ++ (show k) 
        ns_m = singles (nnm, show_asd_mm_n ASD_MM_Enumeration) 
        es_m = foldr (\l t->((enm_l (length . fstT $ t), show_asd_mm_e ASD_MM_EHasLiterals), 
                             (enm_l (length . fstT $ t), nnm), (enm_l (length . fstT $ t), literalId nm l)) 
@@ -731,7 +731,7 @@ qurElem rnm (ElemVT (VTypeEnum nm ls)) =
 qurElem rnm (ElemVT (Interface nm ops)) =
    let nnm = vtyId nm 
        ns_m = singles (nnm, show_asd_mm_n ASD_MM_Interface) 
-       enm k =  mkenm_frn $ nnm ++ "_ops_" ++ (show k)
+       enm k =  enmFrn $ nnm ++ "_ops_" ++ (show k)
        iq = foldl (\qs op->qurOperation nm op `join` qs) nilQUR ops
        es_m = foldl (\lts op->((enm $ (length . fstT $ lts) + 1, show_asd_mm_e ASD_MM_EInterface_ops), 
                   (enm $ (length . fstT $ lts) + 1, nnm), (enm $ (length . fstT $ lts) + 1, opId nm $ gOpNm op)) `combineTwIntoS` lts) (nil, nil, nil) ops in 
@@ -740,10 +740,10 @@ qurElem rnm (ElemVT (Interface nm ops)) =
 qurElem rnm e@(ElemC c) =
   let nnm = elemId e 
       ns_m = set [(nnm, show_asd_mm_n ASD_MM_Composition), (show $ gCSrcM c, show_asd_mm_n $ read_asd_mm . lower_fst . show . gCSrcM $ c)]
-      enm_s = mkenm_frn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_src" 
-      enm_t = mkenm_frn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_tgt" 
-      enm_sm = mkenm_frn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_srcM"
-      enm_tm = mkenm_frn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_tgtM"
+      enm_s = enmFrn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_src" 
+      enm_t = enmFrn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_tgt" 
+      enm_sm = enmFrn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_srcM"
+      enm_tm = enmFrn $ (gCSrc c) ++ "_" ++ (gCTgt c) ++ "_tgtM"
       es_m = (set [(enm_s, show_asd_mm_e ASD_MM_EComposition_src), 
                (enm_t, show_asd_mm_e ASD_MM_EComposition_tgt),
                (enm_sm, show_asd_mm_e ASD_MM_EComposition_srcM), 
@@ -764,7 +764,7 @@ qurElem rnm (ElemB (BCompound nm pk c)) =
   let iqs = qurComponent nm c ASD_MM_Compound in
   let nnm = blockId nm in
   let ns_m = singles (show pk, show_asd_mm_n . read_asd_mm . lower_fst  . show  $ pk) in
-  let enm_p = mkenm_frn $ nnm ++ "_phenomena" in
+  let enm_p = enmFrn $ nnm ++ "_phenomena" in
   let es_m = (singles (enm_p, show_asd_mm_e ASD_MM_ECompound_phenomena), singles (enm_p, nnm), singles (enm_p, show pk)) in
   gJoin [qurOneTpl ns_m es_m, iqs, qurHas rnm nnm ASD_MM_EHasBlocks]
 
@@ -772,9 +772,9 @@ qurElem rnm (ElemB (BCompound nm pk c)) =
 --   let enm = elemId elem in
 --   let (nty, ety) = gNETyForElem elem in
 --   let ns_m_i = [(enm, show_asd_mm_n nty)] in 
---   let es_m_i = ([(mkenm_frn $ rnm ++ "_" ++ enm, show_asd_mm_e ety)], 
---                 [(mkenm_frn $ rnm ++ "_" ++ enm, rnm)], 
---                 [(mkenm_frn $ rnm ++ "_" ++ enm, enm)]) in
+--   let es_m_i = ([(enmFrn $ rnm ++ "_" ++ enm, show_asd_mm_e ety)], 
+--                 [(enmFrn $ rnm ++ "_" ++ enm, rnm)], 
+--                 [(enmFrn $ rnm ++ "_" ++ enm, enm)]) in
 --   let names_q = (mk_nm_info_q enm (gElemNm elem)) `combineQwInsert` nilQl in
 --   names_q `combineQwUnion` (makeQFrTFst ns_m_i es_m_i) `combineQwUnion` (gwT_InnerElem elem)
 

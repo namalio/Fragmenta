@@ -27,6 +27,9 @@ import IntoSysML.DrawASD
 import IntoSysML.DrawCD
 import SimpleFuns
 import MMI
+import Relations -- remove later
+import IntoSysML.IntoSysML_CD_MM_Names
+import Mdls --remove later
 
 mm_path   = "IntoSysML/MM/"
 intosyml_path = "IntoSysML/Examples/"
@@ -46,7 +49,7 @@ check_ASD_MM = do
 
 check_CD_MM :: IO ()
 check_CD_MM = do
-    mmi<-loadMMI mm_path
+    mmi<-loadCDMMI mm_path
     check_report_wf "IntoSysML_AMM" (Just Total) (gAMM mmi) True
     check_report_wf "IntoSysML_MM" (Just Total) (gCMM mmi) True
     check_morphism "Refinement of 'IntoSysML_MM' by 'IntoSysML_AMM'" (Just TotalM) (gCMM mmi) (gRM mmi) (gAMM mmi) True
@@ -59,11 +62,23 @@ checkWF nm nmk csg d = do
         show_wf_msg (nmk ++ " " ++ nm) errs
     return (is_nil errs)
 
+checkET::(GWET g, GWT g', Eq a, Eq b, Show a, Show b, ET_GM_CHK g g' gt)
+    =>String ->String ->g a b -> g' a b ->gt a b->gt a b-> IO Bool
+checkET nm nmk d dt mdl mdlt = do
+    let errs = faultsETGM nm (d, mdl) (dt, mdlt)
+    unless (is_nil errs) $ do
+        show_wf_msg (nmk ++ " " ++ nm) errs
+    return (is_nil errs)
+
 checkWFASD :: MMI String String -> ASD String String -> IO Bool
 checkWFASD mmi asd = checkWF (gASDName asd) "ASD" (gCMM mmi) asd
 
-checkWFCD :: MMI String String -> CDG String String -> IO Bool
-checkWFCD mmi cd = checkWF (gCDName cd) "CD" (gCMM mmi) (ggwt cd)
+checkWFCD :: MMI String String ->MMI String String -> CDG String String -> ASD String String -> IO Bool
+checkWFCD mmi mmit cd asd = do
+    b<-checkWF (gCDName cd) "CD" (gCMM mmi) (ggwt cd)
+    if b then 
+        checkET (gCDName cd) "CD" cd asd (gCMM mmi) (gCMM mmit) 
+    else return False
 
 loadAndCheckASD::String->String->MMI String String->IO (Maybe (GrwT String String))
 loadAndCheckASD asd_path fnm mmi = do
@@ -71,10 +86,11 @@ loadAndCheckASD asd_path fnm mmi = do
   b <- checkWFASD mmi asd 
   return (boolMaybe b asd)
 
-loadAndCheckCD::String->String->MMI String String->IO (Maybe (GrwET String String))
-loadAndCheckCD spath fnm mmi = do
+loadAndCheckCD::FilePath->FilePath->FilePath->MMI String String->MMI String String->IO (Maybe (GrwET String String))
+loadAndCheckCD spath fnm fnmt mmi mmit = do
   cd <- loadCD (spath ++ fnm)
-  b <- checkWFCD mmi cd 
+  asd <- loadASD (spath ++ fnmt)
+  b <- checkWFCD mmi mmit cd asd 
   return (boolMaybe b cd)
 
 writeASDDrawingToFile ::String->MMI String String->ASD String String -> IO ()
@@ -104,10 +120,11 @@ check_draw_asd spath img_path mmi fn = do
    when (isSomething oasd) $ do
       drawASDToFile img_path mmi (the oasd)
 
-cdCheckDraw :: FilePath -> FilePath -> MMI String String -> FilePath -> IO ()
-cdCheckDraw path img_path mmi fn = do
-   putStrLn $ "Processing '" ++ fn ++ "'" 
-   ocd<-loadAndCheckCD path fn mmi 
+cdCheckDraw :: FilePath -> FilePath -> MMI String String 
+    -> MMI String String ->FilePath ->FilePath -> IO ()
+cdCheckDraw path img_path mmi mmit fn1 fnt = do
+   putStrLn $ "Processing '" ++ fn1 ++ "'" 
+   ocd<-loadAndCheckCD path fn1 fnt  mmi mmit
    when (isSomething ocd) $ drawCDToFile img_path mmi (the ocd)
 
 check_draw_3WTs :: IO ()
@@ -122,8 +139,9 @@ check_draw_WTs = do
 
 check_draw_CD_WTs :: IO ()
 check_draw_CD_WTs = do
-    mmi<-loadMMI mm_path
-    cdCheckDraw intosyml_path intosyml_img_path mmi "water_tanks.cd"
+    mmi<-loadCDMMI mm_path
+    mmit<-load_asd_mmi mm_path
+    cdCheckDraw intosyml_path intosyml_img_path mmi mmit "water_tanks.cd" "water_tanks.asd"
 
 check_thermostat :: IO ()
 check_thermostat = do
@@ -138,13 +156,32 @@ check_cash_machine = do
 
 test :: IO ()
 test = do
-    mmi<-load_asd_mmi mm_path
+    mmi<-loadCDMMI mm_path
     cd<-loadCD (intosyml_path ++ "water_tanks.cd") -- >>= print
-    print cd
+    --print (ty cd)
+    let m = fet . mufs . gCMM $ mmi
+    print (etm cd)
+    print (m `ogm` ty cd)
+    print (domg $ etm cd)
+    print (domg $ m `ogm` ty cd)
+    --mmi<-load_asd_mmi mm_path
+    --loadASD (intosyml_path ++ "water_tanks.asd") >>= print
     --print $ foldr (\c cs->gName cd c:cs) [] (gASDComps asd)
     --print $ mkCDDrawing mmi cd
     -- Problem in 'gConnectors' (try out 'nsNty')
     --print (gConnectors (gCRSG mmi) cd)
+    --print (gSrcP cd "T_wo_D_wi_Connector")
+    --print (gTgtP cd "T_wo_D_wi_Connector")
+    --print (appl (consRelOfEdge cd CD_MM_EConnector_src) "T_wo_D_wi_Connector")
+    --print (nsNTy (gCRSG mmi) cd CD_MM_Connector)
+    --print (ns_of_ntys cd (gCRSG mmi) [show_cd_mm_n CD_MM_Connector])
+    --print (img (inv . fV $ ty cd) [show_cd_mm_n CD_MM_Connector])
+    --print (img (inv . inhst $ gCRSG mmi) [show_cd_mm_n CD_MM_Connector])
+    --print (nsNTy (gCRSG mmi) cd CD_MM_Name)
+    --print (nsNTy (gCRSG mmi) cd CD_MM_PortI)
+    --print (nsNTy (gCRSG mmi) cd CD_MM_ATypeRef)
+    --print (nsNTy (gCRSG mmi) cd CD_MM_Named)
+    --print (nsNTy (gCRSG mmi) cd CD_MM_ConfigurationDiagram)
     --putStrLn $ show $ gMainDescs stc 
     --putStrLn $ show $ gDescInfo (stc_sg_cmm mmi) stc (gMainDescNode stc)
     --putStrLn $ show $ gTransitionInfo stc "BuzzingToMuted"

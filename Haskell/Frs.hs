@@ -366,7 +366,7 @@ instance GM_CHK' GrwET Fr where
 
 -- Checks whether one fragment is extra typed by another, which requires that:
 -- (i) that the extra typing morphism is defined
--- and (ii) and that there is the underpinning SGs are compatible
+-- and (ii) and that the underpinning SGs are compatible
 okayETCFs::(Eq a, Eq b) =>Fr a b->Fr a b->Bool
 okayETCFs fs ft = (not . isEmptyGM . fet $ fs) && okETSGs (reso_sg fs, fet fs) (reso_sg ft)
 
@@ -404,7 +404,9 @@ errsEtCompliesF::(Eq a, Eq b, Show a, Show b)=>String->GrwET a b->Fr a b->GrwT a
 errsEtCompliesF id gwet f1 gwt f2 = 
     let err1 = faultsGM' id (Just PartialM) (gwet, f1)
         err2 = faultsGM' id (Just PartialM) (gwt, f2) 
-        err3 = if domg (etm gwet) == domg (fet f1 `ogm` ty gwet) then nile else consSET "Extra typing is missing extra typed elements"
+        s1 = domg (etm gwet)
+        s2 = domg (fet f1 `ogm` ty gwet)
+        err3 = if s1 == s2 then nile else consET "Extra typing is missing extra typed elements" [reportSPEq s1 s2]
         err4 = faultsGM id (Just WeakM) (gOf gwet, etm gwet, gOf gwt)
         err5 = rOkayETCFs id f1 f2 in
     [err1, err2, err3, err4, err5]

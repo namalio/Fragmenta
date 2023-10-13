@@ -20,7 +20,6 @@ fragment F_CD1 {
   ref PNamed->Named
   iON CompositionI->Composition
   iON BlockI->Block
-  iON PortI->Port
   iON ATypeRef->AType
   iOE CompositionI_src->Composition_src
   iOE CompositionI_tgt->Composition_tgt

@@ -3,7 +3,7 @@ fragment F_AAD {
     node ArchitectureDiagram
     virtual Trait
     nodea PElement
-    node VType
+    node Type
     node Part
     node Connector
     node Feature
@@ -14,7 +14,7 @@ fragment F_AAD {
     inh Feature->Trait
     inh Part->PElement
     inh Connector->PElement
-    inh VType->PElement
+    inh Type->PElement
     relu Connector->Part[Connector_src]
     relu Connector->Part[Connector_tgt]
   }

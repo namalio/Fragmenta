@@ -6,8 +6,7 @@ Morphism M_F_CD1 {
 		CompositionI->Connector
 		BlockI->Part
 		Connector->Connector
-		PortI->Part
-		ATypeRef->VType
+		ATypeRef->Type
 	}
 	edges {
 		HasElements->ConsistsOf

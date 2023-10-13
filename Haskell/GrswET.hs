@@ -29,7 +29,7 @@ import Utils ( reportWF )
 data GrwET a b = GrwET {
     g_ :: GrwT a b
     , t_ :: GrM a b
-    } deriving(Eq, Show) 
+} deriving(Eq, Show) 
 
 consGWET :: Gr a b -> GrM a b -> GrM a b ->GrwET a b
 consGWET g t pt = GrwET  {g_ = consGWT g t, t_ = pt}
@@ -62,8 +62,6 @@ instance GWT GrwET where
 
 instance GWET GrwET where
     etm = get
-
-    
 
 -- well-formedness
 okGWET :: (Eq a, Eq b)=>GrwET a b -> Bool

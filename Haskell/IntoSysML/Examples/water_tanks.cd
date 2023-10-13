@@ -1,4 +1,4 @@
-CD ThreeWaterTanks:
+CD WaterTanks:
 	block S Source {port w WO}
 	block T Tank {
 		port wi WI
