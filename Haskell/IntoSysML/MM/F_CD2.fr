@@ -4,7 +4,7 @@ fragment F_CD2 {
     node PortI
     proxy PBlockI
     proxy PConnector
-    compu PBlockI->PortI[BlockI_ports]:*
+    compu PBlockI->PortI[ports]:*
     inh PortI->PNamed2
     relu PConnector->PortI[Connector_src]
     relu PConnector->PortI[Connector_tgt]
@@ -13,5 +13,5 @@ fragment F_CD2 {
   ref PBlockI->BlockI
   ref PConnector->Connector
   iON PortI->Port
-  iOE BlockI_ports->Block_ports
+  iOE ports->Block_ports
 }

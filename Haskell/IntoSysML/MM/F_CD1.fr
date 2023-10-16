@@ -23,5 +23,4 @@ fragment F_CD1 {
   iON ATypeRef->AType
   iOE CompositionI_src->Composition_src
   iOE CompositionI_tgt->Composition_tgt
-  iOE BlockI_ports->Block_ports
 }

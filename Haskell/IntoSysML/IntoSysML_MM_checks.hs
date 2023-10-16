@@ -11,6 +11,7 @@ def_path = "IntoSysML/MM/"
 img_path :: String
 img_path = "IntoSysML/MM/img/"
 
+saveDrawings :: IO ()
 saveDrawings = do
    draw_mdl def_path img_path "IntoSysML_AAD_MM"
    draw_mdl def_path img_path "IntoSysML_ASD_MM"

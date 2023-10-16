@@ -146,7 +146,7 @@ portIPI nmBl blTy (PortI nm tnm) =
 portsIPI::String->String->[PortI]->PInfoWET String
 portsIPI nmBl blTy ps = 
    let enm_l p = enmFrN $ (portIId nmBl $ gPtINm p) ++ "_port" 
-       ep p = (enm_l p, show_cd_mm_e CD_MM_EBlockI_ports)
+       ep p = (enm_l p, show_cd_mm_e CD_MM_Eports)
        sp p = (enm_l p, blockIId nmBl)
        tp p = (enm_l p, portIId nmBl $ gPtINm p) 
        es_et p = (enm_l p, enmFrN $ tnId (blockId blTy) (gPtITy p) ++ "_port")

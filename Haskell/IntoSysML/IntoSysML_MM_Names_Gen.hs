@@ -40,6 +40,7 @@ code_concl_cd_mm = "show_cd_mm_n nt = drop 6 (show nt)\n"
 cons_data_type :: Foldable t => String -> t String -> String
 cons_data_type nm elems = "data " ++ nm ++ " = " ++ (showStrs elems " | ") ++ "\n    deriving (Read, Show, Eq)"
 
+cons_AMM_datatypes :: IO ()
 cons_AMM_datatypes = do
     (_, amdl)<-loadMdl def_path "IntoSysML_AAD_MM"
     let usg = fsg . mufs $ amdl
@@ -48,6 +49,7 @@ cons_AMM_datatypes = do
     let code = code_preamble_amm ++ n_ids ++ "\n\n" ++ e_ids ++ "\n\n" ++ code_concl_amm ++ "\n"
     writeFile (wr_path ++ "IntoSysML_AMM_Names.hs") code
 
+cons_MM_ASD_datatypes :: IO ()
 cons_MM_ASD_datatypes = do
     (nm_mdl, mdl)<-loadMdl def_path "IntoSysML_ASD_MM"
     let usg = fsg . mufs $ mdl

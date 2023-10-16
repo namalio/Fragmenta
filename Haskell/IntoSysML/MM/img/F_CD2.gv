@@ -5,7 +5,7 @@ subgraph cluster_F_CD2{style=dashed;label=F_CD2;
 "PBlockI"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<BlockI<br/>(P)>];
 "PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
 
-"PBlockI"->"PortI"[label="BlockI_ports:EBlock_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PBlockI"->"PortI"[label="ports:EBlock_ports",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PortI"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
 "PConnector"->"PortI"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
 "PConnector"->"PortI"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];

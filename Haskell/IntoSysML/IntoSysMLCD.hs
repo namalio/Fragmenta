@@ -100,7 +100,7 @@ isConnector sg_mm cd n = n `elem` nsNTy sg_mm cd CD_MM_Connector
 
 -- Gets the ports of a block instance
 gBlIPorts :: (GR g, GRM g) => g String String -> String -> Set String
-gBlIPorts cd bln = img (consRelOfEdge cd CD_MM_EBlockI_ports) [bln]
+gBlIPorts cd bln = img (consRelOfEdge cd CD_MM_Eports) [bln]
 
 -- Gets source block of a composition
 gCompISrc :: (GR g, GRM g, GWT g) =>g String String ->String-> String
