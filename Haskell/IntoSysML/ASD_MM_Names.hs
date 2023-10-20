@@ -1,4 +1,6 @@
-module IntoSysML.ASD_MM_Names (IntoSysML_ASD_MM_Ns(..), IntoSysML_ASD_MM_Es(..), show_asd_mm_n, show_asd_mm_e, read_asd_mm)
+module IntoSysML.ASD_MM_Names (
+   IntoSysML_ASD_MM_Ns(..)
+   , IntoSysML_ASD_MM_Es(..), show_asd_mm_n, show_asd_mm_e, read_asd_mm)
 where
 
 data IntoSysML_ASD_MM_Ns = ASD_MM_Named | ASD_MM_Name | ASD_MM_PNat | ASD_MM_PReal | ASD_MM_PBool | ASD_MM_PString | ASD_MM_PType | ASD_MM_PInterval 

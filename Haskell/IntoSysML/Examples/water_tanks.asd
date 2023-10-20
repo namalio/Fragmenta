@@ -1,7 +1,7 @@
-ASD WaterTanks:
+ASD WaterTanks_ASD:
 	enum OpenClosed : open closed
 	utype FlowRate Real m3/s
-	utype Area Real m3
+	utype Area Real m2
 	utype Height Real meters
 	element Source physical 
 		ports {
@@ -16,7 +16,7 @@ ASD WaterTanks:
 			in WI FlowRate
 			in VI OpenClosed
 			out WO FlowRate {WI, VI} 
-			out WL Height {}
+			out WLO Height {}
 		}
 	compound WaterTank continuous subsystem
 		vars {
@@ -31,7 +31,7 @@ ASD WaterTanks:
 	compound Controller discrete cyber
 		ports {
 			in WLI Height
-			out VO OpenClosed "closed" {}
+			out VO OpenClosed "closed" {WLI}
 		}
 	system WaterTankSys
 	composition CWaterTank WaterTankSys->WaterTank : compulsory 1

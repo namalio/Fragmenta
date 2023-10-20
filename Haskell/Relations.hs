@@ -24,8 +24,17 @@ module Relations (Rel
     , cl_override
     , mktotal_in
     , appl
-    , find_monces, acyclic, trancl, rtrancl, rtrancl_on, reflexive, antireflexive, antireflexive_on, symmetric, 
-    transitive, surjective, eq_rel, cross, flatten, tree) where
+    , find_monces
+    , acyclic
+    , trancl
+    , rtrancl, rtrancl_on, reflexive, antireflexive, antireflexive_on
+    , symmetric
+    , transitive
+    , surjective
+    , eq_rel
+    , cross
+    , flatten
+    , tree) where
 
 import SimpleFuns ( pair_up, swap )
 import Sets ( Set(..), set, filterS, zipS, singles, union, gunion, intersec, intoSet, sminus, toList,

@@ -83,7 +83,8 @@ gName asd = appl (consRelOfEdge asd ASD_MM_Ename)
 
 -- Gets name of given ASD
 gRoot::(GWT g, GR g)=>g String String->String
-gRoot asd = appl (inv . fV . ty $ asd) "StructureDiagram"
+gRoot asd = appl (inv . fV . ty $ asd) (show_asd_mm_n ASD_MM_StructureDiagram)
+
 gASDName :: (GR g, GRM g, GWT g) => g String String -> String
 gASDName asd = gName asd . gRoot $ asd
 
@@ -134,18 +135,23 @@ gTypedNameTy asd tn = appl (consRelOfEdge asd ASD_MM_ETypedName_type) tn
 gInitialisableExp asd itn = applM (consRelOfEdge asd ASD_MM_EInitialisable_init) itn
 
 -- Gets variable's kind
+gVKind :: (GR g, GRM g) => g String String -> String -> String
 gVKind asd v = appl (consRelOfEdge asd ASD_MM_EVariable_kind) v
 
 -- Gets dependencies of an outflow port
+gOFPDeps :: (GR g, GRM g) => g String String -> String -> Set String
 gOFPDeps asd fp = img (consRelOfEdge asd ASD_MM_EOutFlowPort_depends) [fp]
 
 -- Gets literals of an enumeration
+gEnumLs :: (GR g, GRM g) => g String String -> String -> Set String
 gEnumLs asd e = img (consRelOfEdge asd ASD_MM_EHasLiterals) [e]
 
 -- Gets primitive type of a derived type (DTYpe)
+gDTypePTy :: (GR g, GRM g) => g String String -> String -> String
 gDTypePTy asd dt = appl (consRelOfEdge asd ASD_MM_EDType_base) dt
 
 -- Gets unit of a union type (UType)
+gUTypeUnit :: (GR g, GRM g) => g String String -> String -> String
 gUTypeUnit asd ut = appl (consRelOfEdge asd ASD_MM_EUnitType_unit) ut
 
 -- Gets fields of a structural type

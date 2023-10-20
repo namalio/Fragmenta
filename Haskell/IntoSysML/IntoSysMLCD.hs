@@ -16,7 +16,10 @@ module IntoSysML.IntoSysMLCD(
     , isBlockI
     , isCompositionI
     , isConnector
+    , gCDPorts
+    , gCDPortsRel
     , gBlIPorts
+    , gBlIOfPort
     , gCompISrc 
     , gCompITgt
     , gCompRel
@@ -89,8 +92,16 @@ gCDElems cd = img (consRelOfEdge cd CD_MM_EHasElements) [gRoot cd]
 gConnectors::GRM g=>SGr String String->g String String -> Set String
 gConnectors sg_mm cd = nsNTy sg_mm cd CD_MM_Connector
 
+-- Gets block instance elements
+gBlIs::GRM g=>SGr String String->g String String -> Set String
+gBlIs sg_mm cd = nsNTy sg_mm cd CD_MM_BlockI
+
+-- Gets Relation between Connectors
+--gConnectorsRel::(GR g, GRM g)=>g String String -> Rel String String
+--gConnectorsRel cd = (consRelOfEdge cd CD_MM_EConnector_tgt) `rcomp` inv (consRelOfEdge cd CD_MM_EConnector_src)  
+
 isBlockI :: GRM gm => SGr String String -> gm String String -> String -> Bool
-isBlockI sg_mm cd n = n `elem` nsNTy sg_mm cd CD_MM_BlockI
+isBlockI sg_mm cd n = n `elem` gBlIs sg_mm cd 
 
 isCompositionI :: GRM gm => SGr String String -> gm String String -> String -> Bool
 isCompositionI sg_mm cd n = n `elem` nsNTy sg_mm cd CD_MM_CompositionI
@@ -98,9 +109,21 @@ isCompositionI sg_mm cd n = n `elem` nsNTy sg_mm cd CD_MM_CompositionI
 isConnector :: GRM gm => SGr String String -> gm String String -> String -> Bool
 isConnector sg_mm cd n = n `elem` nsNTy sg_mm cd CD_MM_Connector
 
--- Gets the ports of a block instance
+-- Gets ports relation
+gCDPortsRel::(GR g, GRM g) =>g String String -> Rel String String
+gCDPortsRel cd = inv (consRelOfEdge cd CD_MM_EConnector_src) `rcomp` (consRelOfEdge cd CD_MM_EConnector_tgt)  
+
+-- Gets all ports of a CD
+gCDPorts :: (GR g, GRM g) => SGr String String->g String String -> Set String
+gCDPorts sg_mm cd = nsNTy sg_mm cd CD_MM_PortI
+
+-- Gets ports of a block instance in a CD
 gBlIPorts :: (GR g, GRM g) => g String String -> String -> Set String
 gBlIPorts cd bln = img (consRelOfEdge cd CD_MM_Eports) [bln]
+
+-- Gets block instance of a port in a CD
+gBlIOfPort:: (GR g, GRM g) => g String String -> String -> String
+gBlIOfPort cd = appl (inv $ consRelOfEdge cd CD_MM_Eports)
 
 -- Gets source block of a composition
 gCompISrc :: (GR g, GRM g, GWT g) =>g String String ->String-> String

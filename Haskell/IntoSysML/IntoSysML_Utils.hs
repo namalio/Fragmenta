@@ -27,9 +27,7 @@ import IntoSysML.DrawASD
 import IntoSysML.DrawCD
 import SimpleFuns
 import MMI
-import Relations -- remove later
-import IntoSysML.IntoSysML_CD_MM_Names
-import Mdls --remove later
+import IntoSysML.CheckCD
 
 mm_path   = "IntoSysML/MM/"
 intosyml_path = "IntoSysML/Examples/"
@@ -76,9 +74,16 @@ checkWFASD mmi asd = checkWF (gASDName asd) "ASD" (gCMM mmi) asd
 checkWFCD :: MMI String String ->MMI String String -> CDG String String -> ASD String String -> IO Bool
 checkWFCD mmi mmit cd asd = do
     b<-checkWF (gCDName cd) "CD" (gCMM mmi) (ggwt cd)
-    if b then 
-        checkET (gCDName cd) "CD" cd asd (gCMM mmi) (gCMM mmit) 
-    else return False
+    b1<-if b then checkET (gCDName cd) "CD" cd asd (gCMM mmi) (gCMM mmit) else return False
+    if b1 
+        then if checkPDG (gCRSG mmi) asd cd
+             then return True
+             else do
+                putStrLn "The ports dependency graph has a cycle"
+                return False
+        else return False
+
+
 
 loadAndCheckASD::String->String->MMI String String->IO (Maybe (GrwT String String))
 loadAndCheckASD asd_path fnm mmi = do
@@ -117,11 +122,10 @@ check_draw_asd :: FilePath -> FilePath -> MMI String String -> FilePath -> IO ()
 check_draw_asd spath img_path mmi fn = do
    putStrLn $ "Processing '" ++ fn ++ "'" 
    oasd <- loadAndCheckASD spath fn mmi 
-   when (isSomething oasd) $ do
-      drawASDToFile img_path mmi (the oasd)
+   when (isSomething oasd) $ drawASDToFile img_path mmi (the oasd)
 
-cdCheckDraw :: FilePath -> FilePath -> MMI String String 
-    -> MMI String String ->FilePath ->FilePath -> IO ()
+cdCheckDraw::FilePath->FilePath->MMI String String 
+    -> MMI String String->FilePath->FilePath-> IO ()
 cdCheckDraw path img_path mmi mmit fn1 fnt = do
    putStrLn $ "Processing '" ++ fn1 ++ "'" 
    ocd<-loadAndCheckCD path fn1 fnt  mmi mmit
@@ -142,6 +146,7 @@ check_draw_CD_WTs = do
     mmi<-loadCDMMI mm_path
     mmit<-load_asd_mmi mm_path
     cdCheckDraw intosyml_path intosyml_img_path mmi mmit "water_tanks.cd" "water_tanks.asd"
+    
 
 check_thermostat :: IO ()
 check_thermostat = do
@@ -158,16 +163,21 @@ test :: IO ()
 test = do
     mmi<-loadCDMMI mm_path
     cd<-loadCD (intosyml_path ++ "water_tanks.cd") -- >>= print
-    --print (ty cd)
-    let m = fet . mufs . gCMM $ mmi
-    print (etm cd)
-    print (m `ogm` ty cd)
-    print (domg $ etm cd)
-    print (domg $ m `ogm` ty cd)
+    asd<-loadASD (intosyml_path ++ "water_tanks.asd")
+    savePDGDrawing intosyml_img_path (gCRSG mmi) asd cd
+    --print (gCDPorts (gCRSG mmi) cd)
+    --print (etm cd)
+    --let m = fet . mufs . gCMM $ mmi
+    --print (etm cd)
+    --print (m `ogm` ty cd)
+    --print (domg $ etm cd)
+    --print (domg $ m `ogm` ty cd)
     --mmi<-load_asd_mmi mm_path
-    --loadASD (intosyml_path ++ "water_tanks.asd") >>= print
+    --asd<-loadASD (intosyml_path ++ "test_asd.asd") -- >>= print
+    --print asd
+    --print (gDTypePTy asd "Area_Type")
     --print $ foldr (\c cs->gName cd c:cs) [] (gASDComps asd)
-    --print $ mkCDDrawing mmi cd
+    --print $ drawASD mmi asd
     -- Problem in 'gConnectors' (try out 'nsNty')
     --print (gConnectors (gCRSG mmi) cd)
     --print (gSrcP cd "T_wo_D_wi_Connector")
@@ -182,9 +192,4 @@ test = do
     --print (nsNTy (gCRSG mmi) cd CD_MM_ATypeRef)
     --print (nsNTy (gCRSG mmi) cd CD_MM_Named)
     --print (nsNTy (gCRSG mmi) cd CD_MM_ConfigurationDiagram)
-    --putStrLn $ show $ gMainDescs stc 
-    --putStrLn $ show $ gDescInfo (stc_sg_cmm mmi) stc (gMainDescNode stc)
-    --putStrLn $ show $ gTransitionInfo stc "BuzzingToMuted"
-    --putStrLn $ show $ gMutableStateDescs stc "ProcessingSt"
-    --putStrLn $ getStCName stc
-    --putStrLn $ show $ getMainDescInfo (stc_sg_cmm mmi) stc
+   

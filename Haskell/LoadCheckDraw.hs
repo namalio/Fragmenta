@@ -213,7 +213,7 @@ draw_def dpath ipath fnm = do
 draw_to_file::String->String->PossibleG String String->IO()
 draw_to_file path nm pg = do
     case (pg_kind pg) of
-        Graph->saveGDrawing path nm $ unwrapG pg
+        Graph->saveGDrawing path nm True $ unwrapG pg
         SG->saveSGDrawing path nm $ unwrapSG pg
         GwT->saveGwTDrawing path nm $ unwrapGwT pg
         GwET->saveGwETDrawing path nm $ unwrapGwET pg
@@ -232,6 +232,7 @@ draw_mdl dpath ipath mnm = do
     saveFrDrawing ipath (mnm ++ "_rf") rf
     saveDrawingWithMdlFrs ipath mnm  mdl
 
+saveSGDrawing :: (Eq a, Eq b, Show a, Show b) =>String -> String -> SGr a b -> IO ()
 saveSGDrawing path nm sg = do
    putStrLn "Writing the GraphViz file" 
    let draw_src = wrSGGraphvizDesc nm StandAlone (consSGDrawingDesc sg emptyGM)
@@ -249,10 +250,10 @@ saveFrDrawing path nm f = do
    let draw_src = wrFrGraphvizDesc StandAlone (consFrDrawingDesc nm f) 
    writeFile (path ++ nm ++ ".gv") draw_src
 
-saveGDrawing :: GR g => String -> String -> g String String -> IO ()
-saveGDrawing path nm g = do
+saveGDrawing :: GR g => FilePath -> String ->Bool->g String String -> IO ()
+saveGDrawing path nm b g = do
    putStrLn "Writing the graph's GraphViz file..." 
-   let draw_src = wrGAsGraphviz nm g
+   let draw_src = wrGAsGraphviz nm b g
    writeFile (path ++ nm ++ ".gv") draw_src
 
 saveGwTDrawing::String->String->GrwT String String->IO ()

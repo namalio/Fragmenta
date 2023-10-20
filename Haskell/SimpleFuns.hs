@@ -6,6 +6,7 @@ module SimpleFuns(swap
     , sndT
     , thdT
     , fst_Q
+    , mapP
     , mapT
     , applyPToP
     , butLast
@@ -78,6 +79,9 @@ combineQwInsert (x, y, z, w) (x', y' , z', w') = (insert x x', insert y y', inse
 combineQwIntoS (x, y, z, w) (x', y' , z', w') = (x `intoSet` x', y `intoSet` y', z `intoSet` z', w `intoSet` w')
 
 -- Maps a function onto a triple
+mapP :: (a -> b) -> (a, a) -> (b, b)
+mapP f (x, y) = (f x, f y)
+mapT :: (a -> c) -> (a, a, a) -> (c, c, c)
 mapT f (x, y, z) = (f x, f y, f z)
 
 -- Indexing within  a list

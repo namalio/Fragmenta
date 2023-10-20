@@ -1,7 +1,7 @@
 ASD Example:
 	enum OpenClosed : open closed
 	utype FlowRate Real m3/s
-	utype Area Real m3
+	utype Area Real m2
 	utype Height Real meters
 	system ThreeWaterTanks 
 	compound TanksControl1 continuous subsystem

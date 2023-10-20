@@ -25,25 +25,29 @@ consGDrawingDesc :: GR g => g String String -> GDrawing
 consGDrawingDesc g = GDrawing (consNodes g) (consEdges g)
 
 wrEdgeSettings::String->String
-wrEdgeSettings nm = "[" ++ (wrEdgeSettings' $ tail nm) ++ "];"
+wrEdgeSettings nm = "[" ++ (wrEdgeSettings' nm) ++ "];"
 wrEdgeSettings'::String->String
-wrEdgeSettings' enm = "label=\""++enm++"▼\",arrowhead=vee"
-wrEdge :: GEdge->String
-wrEdge (GEdge nm s t) = "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ (wrEdgeSettings nm)
-wrEdges :: Foldable t =>t GEdge->String
-wrEdges es = foldr (\e es'-> (wrEdge e)++ "\n" ++es') "" es 
+wrEdgeSettings' "" = "arrowhead=vee"
+wrEdgeSettings' enm = "label=\""++tail enm++"\",arrowhead=vee"
+wrEdge :: Bool->GEdge->String
+wrEdge b (GEdge nm s t) = 
+   let nm' = if b then nm else "" in
+   "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ (wrEdgeSettings nm')
+wrEdges :: Foldable t =>Bool->t GEdge->String
+wrEdges b = foldr (\e es'-> (wrEdge b e)++ "\n" ++es') ""
 
 wrNode ::GNode ->String
 wrNode (GNode nm) =  "\"" ++ nm ++ "\"" ++"[shape=box,fillcolor=\"#CCFFFF\",style = filled,label=\""++nm++"\"];"
 wrNodes :: Foldable t=>t GNode->String
-wrNodes ns  = foldr (\n ns'-> (wrNode n)++ "\n" ++ns') "" ns
+wrNodes = foldr (\n ns'-> wrNode n ++ "\n" ++ns') ""
 
-wrGGraphvizDesc::String->GDrawing->String
-wrGGraphvizDesc nm (GDrawing ns es) = 
+-- Boolean indicates whether edge labels are visible
+wrGGraphvizDesc::String->Bool->GDrawing->String
+wrGGraphvizDesc nm b (GDrawing ns es) = 
    let intro = "digraph {graph[label=" ++ nm ++ ",labelloc=tl,labelfontsize=12];\n" in
    let end = "}" in
-   intro ++ (wrNodes ns) ++ "\n" ++ (wrEdges es) ++ end
+   intro ++ (wrNodes ns) ++ "\n" ++ (wrEdges b es) ++ end
 
 
-wrGAsGraphviz ::GR g=>String->g String String->String
-wrGAsGraphviz nm g = wrGGraphvizDesc nm $ consGDrawingDesc g
+wrGAsGraphviz ::GR g=>String->Bool->g String String->String
+wrGAsGraphviz nm b g = wrGGraphvizDesc nm b $ consGDrawingDesc g

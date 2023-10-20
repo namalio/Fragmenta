@@ -1,7 +1,7 @@
 digraph {
 compound=true;
 rankdir=LR;
-label=WaterTanks;
+label=WaterTanks_CD;
 labelloc=t;
 subgraph WTSys_BlI_ {
 cluster=true;label="WTSys:WaterTankSys";

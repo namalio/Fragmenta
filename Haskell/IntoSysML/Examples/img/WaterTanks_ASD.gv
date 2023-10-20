@@ -1,0 +1,58 @@
+digraph {
+compound=true;
+rankdir=LR;
+label=WaterTanks_ASD;
+labelloc=t;
+FlowRate [shape=plain,fillcolor="#FFD5A3",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«ValueType»<br/>FlowRate⟹Real</td> </tr> <tr> <td align="left">
+unit = "m3/s"</td> </tr></table>>];
+Height [shape=plain,fillcolor="#FFD5A3",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«ValueType»<br/>Height⟹Real</td> </tr> <tr> <td align="left">
+unit = "meters"</td> </tr></table>>];
+Area [shape=plain,fillcolor="#FFD5A3",style = filled,label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«ValueType»<br/>Area⟹Real</td> </tr> <tr> <td align="left">
+unit = "m2"</td> </tr></table>>];
+OpenClosed [shape=plain,fillcolor="#FCDC0D",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«Enumeration»<br/>OpenClosed</td></tr><tr><td align="left">– closed<br align="left"/>
+– open<br align="left"/>
+</td> </tr></table>>];
+Drain_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Element»<br/>Drain</td> </tr><tr><td>kind=physical<br align="left"/>
+<I>ports</I><br/>
+in WI : FlowRate<br align="left"/></td> </tr></table>>];
+WaterTank_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Component»<br/>WaterTank</td> </tr> <tr> <td align="left">
+kind = subsystem<br align="left"/>phenomena = continuous<br align="left"/>
+<I>variables</I><br/>
+parameter r : FlowRate<br align="left"/>
+parameter a : Area<br align="left"/>
+h : Height = 0<br align="left"/>
+<I>ports</I><br/>
+in VI : OpenClosed<br align="left"/>out WLO : Height<br align="left"/></td> </tr></table>>];
+WaterTankSys_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr> <td>«System»<br/>WaterTankSys</td> </tr></table>>];Controller_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Component»<br/>Controller</td> </tr> <tr> <td align="left">
+kind = cyber<br align="left"/>phenomena = discrete<br align="left"/>
+<I>ports</I><br/>
+in WLI : Height<br align="left"/>out VO : OpenClosed = closed←WLI<br align="left"/></td> </tr></table>>];
+Tank_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Element»<br/>Tank</td> </tr><tr><td>kind=physical<br align="left"/>
+<I>ports</I><br/>
+out WLO : Height<br align="left"/>out WO : FlowRate←VI, WI<br align="left"/>in VI : OpenClosed<br align="left"/>in WI : FlowRate<br align="left"/></td> </tr></table>>];
+Source_Block [shape=plain,fillcolor="#99FFFF",style = filled,label=<
+<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+<tr><td>«Element»<br/>Source</td> </tr><tr><td>kind=physical<br align="left"/>
+<I>ports</I><br/>
+out WO : FlowRate<br align="left"/></td> </tr></table>>];
+WaterTankSys_Block->Controller_Block[arrowhead=vee,arrowtail=diamond,dir=both,label="CController",headlabel="",taillabel=""];
+WaterTank_Block->Tank_Block[arrowhead=vee,arrowtail=diamond,dir=both,label="CTank",headlabel="",taillabel=""];
+WaterTank_Block->Drain_Block[arrowhead=vee,arrowtail=diamond,dir=both,label="CDrain",headlabel="",taillabel=""];
+WaterTank_Block->Source_Block[arrowhead=vee,arrowtail=diamond,dir=both,label="CSource",headlabel="",taillabel=""];
+WaterTankSys_Block->WaterTank_Block[arrowhead=vee,arrowtail=diamond,dir=both,label="CWaterTank",headlabel="",taillabel=""];
+}

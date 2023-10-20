@@ -131,16 +131,22 @@ is_ATy_a_Pty :: AType -> Bool
 is_ATy_a_Pty (ATypeP _) = True
 is_ATy_a_Pty _ = False
 
+gATyPTy :: AType -> PType
 gATyPTy (ATypeP pt) = pt 
 
 -- Gets name of a property
+gTNNm :: TypedName -> Name
 gTNNm (TypedName nm _) = nm
 -- Gets type of a property
+gTNTy :: TypedName -> AType
 gTNTy (TypedName _ ty) = ty
 
 -- Gets initialisation of an initialisable
+gITNNm :: Initialisable -> Name
 gITNNm (Initialisable nm _ _) = nm 
+gITNTy :: Initialisable -> AType
 gITNTy (Initialisable _ ty _) = ty 
+gITNInit :: Initialisable -> Exp
 gITNInit (Initialisable _ _ ie) = ie
 
 -- Functions to retrieve name of a port

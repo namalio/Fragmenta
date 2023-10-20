@@ -1,0 +1,22 @@
+digraph {graph[label=pdg_WaterTanks_CD,labelloc=tl,labelfontsize=12];
+"S_w"[shape=box,fillcolor="#CCFFFF",style = filled,label="S_w"];
+"D_wi"[shape=box,fillcolor="#CCFFFF",style = filled,label="D_wi"];
+"C_vo"[shape=box,fillcolor="#CCFFFF",style = filled,label="C_vo"];
+"C_wli"[shape=box,fillcolor="#CCFFFF",style = filled,label="C_wli"];
+"WT_vi"[shape=box,fillcolor="#CCFFFF",style = filled,label="WT_vi"];
+"WT_wlo"[shape=box,fillcolor="#CCFFFF",style = filled,label="WT_wlo"];
+"T_wi"[shape=box,fillcolor="#CCFFFF",style = filled,label="T_wi"];
+"T_wo"[shape=box,fillcolor="#CCFFFF",style = filled,label="T_wo"];
+"T_wlo"[shape=box,fillcolor="#CCFFFF",style = filled,label="T_wlo"];
+"T_vi"[shape=box,fillcolor="#CCFFFF",style = filled,label="T_vi"];
+
+"S_w"->"T_wi"[arrowhead=vee];
+"C_vo"->"WT_vi"[arrowhead=vee];
+"T_wlo"->"WT_wlo"[arrowhead=vee];
+"T_wo"->"D_wi"[arrowhead=vee];
+"WT_wlo"->"C_wli"[arrowhead=vee];
+"WT_vi"->"T_vi"[arrowhead=vee];
+"T_wi"->"T_wo"[arrowhead=vee];
+"T_vi"->"T_wo"[arrowhead=vee];
+"C_wli"->"C_vo"[arrowhead=vee];
+}

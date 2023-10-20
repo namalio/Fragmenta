@@ -24,7 +24,6 @@ import IntoSysML.ASDCommon
 import ParsingCommon
 import SimpleFuns
 import IntoSysML.ASCD
-import IntoSysML.IntoSysMLCD
 
 data MultiTree a = MultiTree a [MultiTree a]
    deriving (Eq, Show)
@@ -90,7 +89,7 @@ wrPortI blNm (PortI nm _) =
    ++ blId ++ "->" ++ id ++ "[dir=none];\n"
 
 wrPortIs::String->[PortI]->String
-wrPortIs blNm ps = foldr (\p s->wrPortI blNm p ++ s) "" ps
+wrPortIs blNm = foldr (\p s->wrPortI blNm p ++ s) ""
 
 wrBlINode::BlockI->String
 wrBlINode (BlockI nm tnm ps) = 

@@ -38,22 +38,28 @@ gBlockDefNm (BlockDef nm _) = nm
 
 -- Gets the type of a primitive type node string
 gPty :: String -> String
-gPty p_str = fst . (splitAtStr "_PTy") $ p_str
+gPty = fst . (splitAt' (=='_')) 
 
 consATy :: (GR g, GRM g) => g String String -> String -> AType
 consATy asd id = 
-   let p_str = gPty id in
-   if p_str == id then ATypeId $ gName asd id else ATypeP (read $ replace '_' ' ' p_str)
+   let tnm = gName asd id in
+   if not . null $ tnm then ATypeId tnm else ATypeP (read . gPty $ id) -- $ replace '_' ' ' p_str)
+
+consTN :: (GR g, GRM g) => g String String -> String -> TypedName
 consTN asd tn = TypedName (gName asd tn) (consATy asd $ gTypedNameTy asd tn) 
+
+consITN :: (GR g, GRM g) => g String String -> String -> Initialisable
 consITN asd itn = Initialisable (gName asd itn) (consATy asd $ gTypedNameTy asd itn) (str_of_ostr $ gInitialisableExp asd itn) 
 consFieldI asd itn = FieldI $ consITN asd itn
 consVariable asd v = Variable (consITN asd v) (read $ gVKind asd v)
 consInFP asd itn = InFlowPort (consITN asd itn)
 consOutFP asd itn = OutFlowPort (consITN asd itn) $ foldl (\ifps ifp->(gName asd ifp):ifps) [] (gOFPDeps asd itn)
 consAPIP asd itn = APIPort (consITN asd itn)
+
+consFP :: (GWT g, GR g, GRM g) => g String String -> String -> Port
 consFP asd fp = consFPa (read_asd_mm $ appl (fV . ty $ asd) fp)
-  where consFPa (ASD_MM_InFlowPort) = consInFP asd fp
-        consFPa (ASD_MM_OutFlowPort) = consOutFP asd fp
+  where consFPa ASD_MM_InFlowPort = consInFP asd fp
+        consFPa ASD_MM_OutFlowPort = consOutFP asd fp
 
 consOp asd op = Operation (gName asd op) (foldl (\ops o->(consTN asd o):ops) [] (gOpParams asd op)) (consATy asd $ gOpReturn asd op) -- Here
 consBlockDef asd b = BlockDef (gName asd b) $ foldl (\fps fp->(consFP asd fp):fps) []  (gBlocPs asd b) 
@@ -61,7 +67,9 @@ consBSystem asd b = BSystem $ consBlockDef asd b
 consBComponent asd c = Component (consBlockDef asd c) (foldl (\vs v->(consVariable asd v):vs) [] (gCVars asd c)) (read $ gCKind asd c)
 consBElement asd be = BElement (consBComponent asd be)
 consCompound asd c = BCompound (consBComponent asd c) (read $ gCPKind asd c)
+
 -- The compound constructor
+consBlock :: (GR g, GRM g, GWT g) => p -> g String String -> String -> Block
 consBlock mmi asd b = 
   consBlocka (read_asd_mm $ appl (fV . ty $ asd) b) 
   where consBlocka (ASD_MM_System) = consBSystem asd b
@@ -71,15 +79,19 @@ consBlock mmi asd b =
 -- enumerations
 consEnum :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consEnum asd e = VTypeEnum (gName asd e) (foldl (\ls l->(gName asd l):ls) [] (gEnumLs asd e))
+
 -- derived types (DTypes)
 consDType :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consDType asd dt = DType (gName asd dt) (read $ gPty $ gDTypePTy asd dt)
+
 -- unit types (UType)
 consUType :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consUType asd ut = UType (gName asd ut) (read $ gPty $ gDTypePTy asd ut) (gUTypeUnit asd ut)
+
 -- structural types
 consStrtType :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consStrtType asd st = VTypeStrt (gName asd st) $ foldl (\itns itn->(consFieldI asd itn):itns) [] $ gStrtTypeFields asd st
+
 -- interface
 consInterface :: (GR g, GRM g) => g String String -> String -> VTypeDef
 consInterface asd i = Interface (gName asd i) $ foldl (\ops op-> (consOp asd op):ops) [] $ gInterfaceOps asd i
@@ -97,8 +109,8 @@ gVal :: String ->String
 gVal vstr = fst . (splitAtStr "_Val") $ vstr
 
 consMVal asd mv = consMVala (read_asd_mm $ appl (fV .ty $ asd) mv)
-                where consMVala (ASD_MM_MultValMany) = MMany
-                      consMVala (ASD_MM_MultValNum) = MultN (read . gVal $ gMultValNumN asd mv)
+                where consMVala ASD_MM_MultValMany = MMany
+                      consMVala ASD_MM_MultValNum = MultN (read . gVal $ gMultValNumN asd mv)
 consMult asd m = consMulta (read_asd_mm $ appl (fV .ty $ asd) m)
                where consMulta (ASD_MM_MultSingle) = MultS $ consMVal asd (gMultSMVal asd m)
                      consMulta (ASD_MM_MultRange) = MultR (read . gVal $ gMultRLb asd m) (consMVal asd (gMultRUb asd m)) 
@@ -107,6 +119,7 @@ consMult asd m = consMulta (read_asd_mm $ appl (fV .ty $ asd) m)
 consComp :: (GR g, GRM g, GWT g) => g String String -> String -> Composition
 consComp asd c = Composition (gName asd c) (gCompSrc asd c) (gCompTgt asd c) (read $ gCompSrcM asd c) (consMult asd $ gCompTgtM asd c)
 
+drawASD :: (GR g, GRM g, GWT g) => MMI String String -> g String String -> ASDDrawing
 drawASD mmi asd = 
   let bls = foldl (\bs bnm->(consBlock mmi asd bnm):bs) [] (gASDBlocks asd) in
   let vts = foldl (\ts tnm->(consVType mmi asd tnm):ts) [] (gASDVTypes asd) in
@@ -140,7 +153,7 @@ wrPorts ps = if null ps then "" else "<I>ports</I><br/>\n" ++ (foldl (\str p-> (
    where wrPMTy ASD_MM_InFlowPort = "in "
          wrPMTy ASD_MM_OutFlowPort = "out "
          wrDeps ASD_MM_InFlowPort _ = ""
-         wrDeps ASD_MM_OutFlowPort deps = if null deps then "" else "→" 
+         wrDeps ASD_MM_OutFlowPort deps = if null deps then "" else "←" 
                                         ++ (foldl (\d_str d->d ++ (if null d_str then "" else ", ") ++ d_str) "" deps)
 
 wrVariable :: Variable -> String
@@ -247,5 +260,5 @@ wrASDDrawing asd (ASDDrawing nm bls vts cs) = "digraph {\ncompound=true;\nrankdi
    ++ "}"
    
 
-wrASDAsGraphviz :: (GR g, GRM g, GWT g) => MMI a b -> g String String -> String
+wrASDAsGraphviz :: (GR g, GRM g, GWT g) => MMI String String -> g String String -> String
 wrASDAsGraphviz mmi asd = wrASDDrawing asd $ drawASD mmi asd

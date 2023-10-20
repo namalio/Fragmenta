@@ -1,9 +1,9 @@
-CD WaterTanks:
+CD WaterTanks_CD:
 	block S Source {port w WO}
 	block T Tank {
 		port wi WI
 		port wo WO
-		port wlo WO
+		port wlo WLO
 		port vi VI
 	}
 	block D Drain {port wi WI}
@@ -14,8 +14,8 @@ CD WaterTanks:
 		port wlo WLO
 	}
 	composition WTS CSource  : WT->S
-	composition WTT CTank  : WT->T
-	composition WTD CDrain  : WT->D
+	composition WTT CTank    : WT->T
+	composition WTD CDrain   : WT->D
 	block WTSys WaterTankSys {}
 	block C Controller {
 		port wli WLI
