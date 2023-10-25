@@ -1,21 +1,17 @@
 fragment F_PW6 {
   SG SG_PW6 {
-    proxy PPetRoom3
-    proxy PEnsuiteRoom
-    proxy Pdisadvantaged
-    proxy Pprivileged
-    proxy Preptiles
-    proxy Pmiddleclass
-    derived PPetRoom3->Pdisadvantaged[PRA <-> Hosts ▷ Reptile⨾ pstatus]:0;0
-    derived PEnsuiteRoom->Pprivileged[ERP <-> Hosts ⨾ pstatus]:0..1;0..2
-    derived PEnsuiteRoom->Pmiddleclass[ERNMC <-> Hosts ⨾ pstatus]:0;0
-    derived PEnsuiteRoom->Pdisadvantaged[ERND <-> Hosts ⨾ pstatus]:0;0
-    derived PEnsuiteRoom->Preptiles[ERNR <-> zone]:0;0
+    proxy PPetRoom2
+    proxy PHotelZone
+    node EnsuiteRoom
+    proxy PToilet
+    inh EnsuiteRoom->PPetRoom2
+    rel PToilet->PPetRoom2[Serves]:1..*;*
+    derived PToilet->EnsuiteRoom[Serves1 <-> Serves]:1;0..1
+    path PToilet->PHotelZone[THZ1 <-> Serves⨾zone]
+    path PToilet->PHotelZone[THZ2 <-> zone]
+    dependency THZ1->THZ2
   }
-  ref PPetRoom3->PetRoom
-  ref PEnsuiteRoom->EnsuiteRoom
-  ref Pdisadvantaged->disadvantaged
-  ref Pprivileged->privileged
-  ref Preptiles->reptiles
-  ref Pmiddleclass->middleclass
+  ref PPetRoom2->PetRoom
+  ref PHotelZone->HotelZone
+  ref PToilet->Toilet
 }

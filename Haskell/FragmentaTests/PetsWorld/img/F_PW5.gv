@@ -1,30 +1,29 @@
 digraph {graph[label=F_PW5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW5{style=dashed;label=F_PW5;
-"PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
-"Grooming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Grooming"];
+"PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
+"HotelGroup"[shape=record,fillcolor=lightskyblue1,style = filled,label="HotelGroup"];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"PLocatable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Locatable<br/>(P)>];
+"PPetRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom<br/>(P)>];
+"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
 "PFacility"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Facility<br/>(P)>];
-"PPetRoom2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom2<br/>(P)>];
-"EnsuiteRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnsuiteRoom"];
-"Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
-"PHotelZone"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelZone<br/>(P)>];
+"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
 
-"PPetRoom2"->"PNat"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
-"EnsuiteRoom"->"PPetRoom2"[arrowhead=onormal,arrowsize=2.0];
-"Toilet"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
-"Grooming"->"PFacility"[arrowhead=onormal,arrowsize=2.0];
-"Toilet"->"PPetRoom2"[label="Serves▼",dir=none,taillabel="1..*",headlabel="*"];
-"Toilet"->"EnsuiteRoom"[label="Serves1: EServes ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
-"N_THZ1"[shape=none,label="N_THZ1 ➝ EServes ⨾ Ezone"];
-"N_THZ1"->"Toilet"[arrowhead=dot,style=dotted];
-"N_THZ1"->"PHotelZone"[arrowhead=vee,style=dotted];
-
-"N_THZ2"[shape=none,label="N_THZ2 ➝ Ezone"];
-"N_THZ2"->"Toilet"[arrowhead=dot,style=dotted];
-"N_THZ2"->"PHotelZone"[arrowhead=vee,style=dotted];
-
-"N_THZ1"->"N_THZ2"[arrowhead=normal,style=dashed, label = "="];
+"PetHotel"->"HotelGroup"[label="OfGroup▼",dir=none,taillabel="*",headlabel="0..1"];
+"PetHotel"->"PPHCard"[label="lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetHotel"->"PFacility"[label="facilities",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PetHotel"->"PPetRoom"[label="rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PPetRoom"->"Nat"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"Nat"[label="PHCard_points",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"PHCardId"[label="cid▼",dir=none,taillabel="0..1",headlabel=""];
+"PetHotel"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"PetHotel"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
+"HotelGroup"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"HotelGroup"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
 
 }
+
 
 
 

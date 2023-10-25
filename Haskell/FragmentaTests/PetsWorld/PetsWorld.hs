@@ -15,8 +15,6 @@ import LoadCheckDraw
 import CheckUtils
     ( check_morphism, check_report_wf, check_ty_morphism )
 import Mdls
-import Relations
-import Sets
 import Utils ( option_main_save )
 import PathExpressions
 
@@ -29,16 +27,17 @@ saveDrawings = do
    draw_mdl def_path img_path "M_PW"
    draw_def def_path img_path "PWI1.gwt"
 
+load_mdl :: IO ((String, Mdl String String), (String, Mdl String String), GrM String String)
 load_mdl = do
-   amdl<-load_mdl_def def_path "M_AHW"
-   cmdl<-load_mdl_def def_path "M_PW"
+   amdlp<-loadMdl def_path "M_AHW"
+   cmdlp<-loadMdl def_path "M_PW"
    rms<-load_rm_cmdl_def def_path "M_PW"
-   return (amdl, cmdl, rms)
+   return (amdlp, cmdlp, rms)
 
 do_main :: IO ()
 do_main = do 
-   (amdl, cmdl, rms)<- load_mdl 
-   check_report_wf "M_AHW" (Just Total) amdl True
+   ((amdl_nm, amdl), (cmdl_nm ,cmdl),  rms)<- load_mdl 
+   check_report_wf amdl_nm (Just Total) amdl True
    --putStrLn . show $  (pe . fsg . mufs $ cmdl)
    --putStrLn . show $  (esD . fsg . mufs $ cmdl)
    --let sg = fsg . mufs $ cmdl 
@@ -47,8 +46,8 @@ do_main = do
    --putStrLn . show $ appl (pe sg)  (head . esD $ sg)
    --putStrLn . show $ srcPE g (appl (pe sg)  (head . esD $ sg))
    --putStrLn . show $ is_wf (Just Total) cmdl
-   check_report_wf "M_PW" (Just Total) cmdl True
-   check_morphism "Refinement of M_AHW by M_PW " (Just TotalM) cmdl rms amdl True
+   check_report_wf cmdl_nm (Just Total) cmdl True
+   check_morphism ("Refinement of " ++ amdl_nm ++ " by " ++ cmdl_nm) (Just TotalM) cmdl rms amdl True
 
 check_fs_and_ms :: IO ()
 check_fs_and_ms = do 
@@ -81,7 +80,7 @@ check_fs_and_ms = do
 
 check_instances :: IO ()
 check_instances = do 
-   (amdl, cmdl, rms)<- load_mdl 
+   ((_, amdl), (_ ,cmdl),  rms)<- load_mdl 
    (nm_g1, gwt1)<-loadGwT def_path "PWI1.gwt"
    (nm_g2, gwt2)<-loadGwT def_path "PWI2.gwt"
    check_report_wf nm_g1 (Just Total) gwt1 True

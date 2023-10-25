@@ -11,10 +11,12 @@ Morphism F_PW3 {
      dogs->Other
      reptiles->Other
      cats->Other
+     Facility->Room
+     Toilet->Room
+     Grooming->Room
   }
   edges {
     Hosts->Hosts
-    zone->AnyRel
     roomid->AnyRel
   }
 }

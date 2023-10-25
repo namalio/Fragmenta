@@ -1,24 +1,29 @@
 fragment F_PW5 {
   SG SG_PW5 {
-    proxy PNat
-    proxy PPetRoom2
-    proxy PHotelZone
+    node PetHotel
+    node HotelGroup
+    proxy PNamed
+    proxy PLocatable
+    proxy PPetRoom
+    proxy PPHCard
     proxy PFacility
-    node EnsuiteRoom
-    node Toilet
-    node Grooming
-    relu PPetRoom2->PNat[rcapacity]
-    inh EnsuiteRoom->PPetRoom2
-    inh Toilet->PFacility
-    inh Grooming->PFacility
-    rel Toilet->PPetRoom2[Serves]:1..*;*
-    derived Toilet->EnsuiteRoom[Serves1 <-> Serves]:1;0..1
-    path Toilet->PHotelZone[THZ1 <-> Serves⨾zone]
-    path Toilet->PHotelZone[THZ2 <-> zone]
-    dependency THZ1->THZ2
+    node PHCardId
+    node Nat
+    rel PetHotel->HotelGroup[OfGroup]:*;0..1
+    compu PetHotel->PPHCard[lcards]:*
+    compu PetHotel->PFacility[facilities]:*
+    compu PetHotel->PPetRoom[rooms]:*
+    relu PPetRoom->Nat[rcapacity]
+    relu PPHCard->Nat[PHCard_points]
+    rel PPHCard->PHCardId[cid]:0..1;1
+    inh PetHotel->PNamed
+    inh PetHotel->PLocatable
+    inh HotelGroup->PNamed
+    inh HotelGroup->PLocatable
   }
-  ref PNat->Nat
-  ref PPetRoom2->PetRoom
-  ref PHotelZone->HotelZone
+  ref PNamed->Named
+  ref PLocatable->Locatable
+  ref PPetRoom->PetRoom
   ref PFacility->Facility
+  ref PPHCard->PHCard
 }

@@ -1,9 +1,9 @@
 digraph {graph[label=F_AH,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_AH{style=dashed;label=F_AH;
-"Room"[shape=record,fillcolor=lightskyblue1,style = filled,label="Room"];
-"Hotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Hotel"];
 "Guest"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guest"];
 "Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
+"Room"[shape=record,fillcolor=lightskyblue1,style = filled,label="Room"];
+"Hotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Hotel"];
 "Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
 
 "Room"->"Guest"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];

@@ -1,30 +1,23 @@
 digraph {graph[label=F_PW4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW4{style=dashed;label=F_PW4;
-"PPetRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom<br/>(P)>];
-"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
-"PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
-"PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
-"PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
-"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
-"HotelGroup"[shape=record,fillcolor=lightskyblue1,style = filled,label="HotelGroup"];
-"PLocatable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Locatable<br/>(P)>];
-"Facility"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Facility</I><br/>(A)}>];
 "PHotelRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelRoom<br/>(P)>];
+"PDog"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Dog<br/>(P)>];
+"PReptile"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reptile<br/>(P)>];
+"PCat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Cat<br/>(P)>];
+"dogs"[shape=cds,fillcolor="#FFF2CC",style = filled,label="dogs"];
+"reptiles"[shape=cds,fillcolor="#FFF2CC",style = filled,label="reptiles"];
+"cats"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cats"];
+"HotelZone"[shape=record,fillcolor="#FFCCFF",style = filled,label="HotelZone\l(enum)"];
 
-"PetHotel"->"HotelGroup"[label="PartOfGroup▼",dir=none,taillabel="*",headlabel="0..1"];
-"PetHotel"->"PPHCard"[label="lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"PetHotel"->"Facility"[label="facilities",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"PetHotel"->"PPetRoom"[label="rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"PPHCard"->"Nat"[label="PHCard_points",arrowhead=vee,headlabel="",arrowsize=.5];
-"PPHCard"->"PHCardId"[label="PHCard_id",arrowhead=vee,headlabel="",arrowsize=.5];
-"PetHotel"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
-"PetHotel"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
-"HotelGroup"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
-"HotelGroup"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
-"Facility"->"PHotelRoom"[arrowhead=onormal,arrowsize=2.0];
+"dogs"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
+"reptiles"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
+"cats"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
+"PHotelRoom"->"HotelZone"[label="zone",arrowhead=vee,headlabel="",arrowsize=.5];
+"PDog"->"dogs"[label="S1: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"PReptile"->"reptiles"[label="S2: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"PCat"->"cats"[label="S3: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
 
 }
-
 
 
 

@@ -1,16 +1,17 @@
 digraph {graph[label=F_PW2,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW2{style=dashed;label=F_PW2;
+"PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
+"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
+"Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
+"Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
 "privileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
 "middleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
 "disadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
 "PetStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="PetStatus\l(enum)"];
-"PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
-"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
-"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
-"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
-"Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
-"Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
-"Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
+"NoPrivilege"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NoPrivilege</I><br/>(V)}>];
 
 "privileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
 "middleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
@@ -22,6 +23,8 @@ subgraph cluster_F_PW2{style=dashed;label=F_PW2;
 "Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 "Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
 "Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"middleclass"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"disadvantaged"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
 
 }
 

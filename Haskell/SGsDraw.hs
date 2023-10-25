@@ -52,7 +52,7 @@ consNodes::(Eq a, Eq b, Show a)=>SGr a b->GrM String String->[SGNode]
 consNodes sg etm = foldr (\n ns'->(consNode sg n etm):ns') [] (ns sg)
 
 consDeps::(Eq a, Eq b, Show a, Show b)=>SGr a b ->[(String, String)]
-consDeps sg = foldr (\(e1, e2) ds'->(show e1, show e2):ds') [] (ds sg)
+consDeps sg = foldr (\(e1, e2) ds'->(slimShow e1, slimShow e2):ds') [] (ds sg)
 consSGDrawingDesc::(Eq a, Eq b, Show a, Show b)=>SGr a b ->GrM a b->SGDrawing
 consSGDrawingDesc sg etm = 
    let m2 = consGM (strP <$> fV etm) (strP <$> fE etm) 
