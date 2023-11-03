@@ -25,8 +25,8 @@ sgety_set = set $ [Einh, Eder, Epath] ++ [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]
 
 -- Order which dictates allowed inheritance relations 
 nty_lti:: SGNTy->SGNTy->Bool
-nty_lti nt1 nt2 = nt1 /= Nprxy && (nt2 /= Nval)
-    && ((nt2 `elem` [Nenum, Nvirt] && nt1 == Nval) || nt2 == Nprxy  || nt1 == Nnrml 
+nty_lti nt1 nt2 = nt1 /= Nprxy && (nt2 /= Nval) -- proxies may not inherit and values may not be inherited
+    && (nt2 == Nprxy  || nt1 == Nnrml -- removed previous 1st disjuct: (nt2 `elem` [Nenum, Nvirt] && nt1 == Nval) || 
        || (nt1 == Nenum && nt2 == Nvirt) || (set [nt1, nt2] <= set [Nvirt, Nabst]))
     
 
