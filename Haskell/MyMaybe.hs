@@ -1,4 +1,12 @@
-module MyMaybe(str_of_ostr, toMaybeP, toMaybeFrLs, applM, boolMaybe, predMaybe,maybeToLs) where
+module MyMaybe(
+    str_of_ostr
+    , toMaybeP
+    , toMaybeFrLs
+    , applM
+    , boolMaybe
+    , predMaybe
+    , maybeToLs
+    , maybeToSet) where
 
 import Sets
 import Relations ( img, Rel)
@@ -34,8 +42,13 @@ maybeFrSet :: Set a -> Maybe a
 maybeFrSet EmptyS = Nothing
 maybeFrSet (Set x _) = Just x
 
-maybeToLs (Nothing) = []
+maybeToLs :: Maybe a -> [a]
+maybeToLs Nothing = []
 maybeToLs (Just x) = [x]
+
+maybeToSet :: Maybe a -> Set a
+maybeToSet Nothing = EmptyS
+maybeToSet (Just x) = singles x
 
 applM :: (Eq a, Eq b) => Rel a b -> a -> Maybe b
 applM r x = maybeFrSet $ img r [x] 

@@ -208,14 +208,6 @@ inhst sg = rtrancl_on (inh sg) (ns sg)
 srcma :: (Eq a, Eq b) => SGr a b -> Rel b Mult
 srcma sg = (srcm sg) `override` ((esTys sg [Ecomp Duni] `cross` (singles  .singles $ msole_k 1)) `override` (esTys sg [Erel Duni] `cross` (singles  .singles $ msole_many)))
 
--- src relation which takes wander edges into account
---srcr::(Eq a, Eq b)=>SGr a b->Rel b a
---srcr sg = src sg `union` (dres (tgt sg) (esW sg))
-
--- tgt relation which takes wander edges into account
---tgtr::(Eq a, Eq b)=>SGr a b->Rel b a
---tgtr sg = tgt sg `union` (dres (src sg) (esW sg))
-
 -- src* relations: base and final definitions
 srcstr :: (Foldable t, Eq a, Eq b) => SGr a b -> t b->Rel b a
 srcstr sg es = dres (src sg) es 
@@ -1214,11 +1206,11 @@ checkTyCompliesMult gwt sg =
 
 -- Checks that numeric constraints are satisfied for natural numbers
 
--- Gets the natural number node instances
+-- Gets natural number node instances
 natIs::(Eq a, Eq b, GNumSets a)=>GrwT a b->Set a
 natIs gwt = img (inv . fV $ gwt) (singles nNatS)
 
--- Checks that a node complies to the natural number contraints
+-- Checks that a node complies to the natural number constraints
 okNatI::(Read a, GNodesNumConv a)=>a->Bool
 okNatI nn = isSomething on && the on >= 0
    where on = toInt nn
@@ -1273,8 +1265,7 @@ errIReals gwt =
    if okIReals gwt then nile else consSET emsg
 
 -- Checks that a GWT complies to the numeric constraints set by the type
-okINumbers::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)
-   =>GrwT a b->Bool
+okINumbers::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->Bool
 okINumbers gwt = okINats gwt && okIInts gwt && okIReals gwt
 
 rOp::(Eq a, Ord a)=>SGVCEOP->a->a->Bool
@@ -1286,22 +1277,46 @@ rOp Lt n1 n2 = n1 < n2
 rOp Gt n1 n2 = n1 > n2
 
 toNum::SGr a b->gm a b->a->Maybe (Either Int Float)
-toNum sg t n = if n `elem` 
+toNum sg t n = 
+   let cond = n `elem` dom_of (fV t) && ((appl (fV t) n, nNatS) `elem` inhst sg || (appl (fV t) n, nNatS) `elem` inhst sg) in
+   if cond then fmap Left (toInt n) else fmap Right (toReal n)
 
 satisfiesACnt::GRM gm=>SGr a b->gm a b->a->SGVCEOP->a->Bool
 satisfiesACnt sg t ns op nt = 
-   let ons = toNum
-   rOp op ns nt
+   let ons = toNum sg t ns 
+       ont = toNum sg t nt 
+       bothInt = isInt ons && isInt ont 
+       bothReal = isReal ons && isReal ont in
+   if bothInt then rOp op (gInt ons) (gInt ont) else bothReal && rOp op (gReal ons) (gReal ont)
+   where
+      isInt (Just (Left _)) = True
+      isInt _ = False
+      isReal (Just (Right _)) = True
+      isReal _ = False
+      gInt (Just (Left n)) = n
+      gReal (Just (Right x)) = x
 
-satisfiesVCEECnt::SGr a b->GrwT a b->b->Bool
+satisfiesVCEECnt::(Eq a, Eq b)=>SGr a b->GrwT a b->b->Bool
 satisfiesVCEECnt sg gwt vce = 
+   let ns e = appl (tgt gwt) e
+       op = fst . appl (vcei sg) $ vce 
+       nt = appl (tgt sg) vce in
+   all (\e->satisfiesACnt sg (ty gwt) (ns e) op nt) (img (inv . fE $ gwt) (maybeToSet . snd . appl (vcei sg) $ vce))
+
+satisfiesVCENCnt::(Eq a, Eq b)=>SGr a b->GrwT a b->b->Bool
+satisfiesVCENCnt sg gwt vce = 
+   let op = fst . appl (vcei sg) $ vce 
+       nt = appl (tgt sg) vce in
+   all (\n->satisfiesACnt sg (ty gwt) n op nt) (img (inv . fV $ gwt) $ singles (appl (src sg) $ vce))
 
 ivcesOk::(Eq a, Eq b)=>SGr a b->GrwT a b->Bool
-ivcesOk sg gwt
+ivcesOk sg gwt = 
+   let cond e = (isVCEECnt sg e `implies` satisfiesVCEECnt sg gwt e) && (isVCENCnt sg e `implies` satisfiesVCENCnt sg gwt e) in
+   all cond (esVCnt sg)
 
 -- Compliance with constraits of a SG type
 tyCompliesCnts::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->SGr a b->Bool
-tyCompliesCnts gwt sg = okINumbers gwt
+tyCompliesCnts gwt sg = okINumbers gwt && ivcesOk sg gwt
 
 checkTyCompliesCnts::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a) 
    => GrwT a b -> SGr a b -> ErrorTree
