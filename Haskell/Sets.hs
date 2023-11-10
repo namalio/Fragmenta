@@ -25,12 +25,13 @@ import GHC.Base(Alternative(..), MonadPlus(..))
 data Set a = EmptyS | Set a (Set a) 
 
 instance The Set where
-   the :: Eq a => Set a -> a
+   the :: Set a -> a
    the (x `Set` xs) = x
 
 instance Nil Set where
    nil = EmptyS
-   isNil s = s == EmptyS
+   isNil EmptyS = True
+   isNil _ = False
 --nilSet :: Set a
 --nilSet = EmptyS
 

@@ -43,18 +43,18 @@ instance GWT GrwT where
     ty = t'
 
 -- well-formedness
-okGWT :: (Eq a, Eq b)=>GrwT a b -> Bool
+okGWT :: (Eq a, Eq b, GNumSets a)=>GrwT a b -> Bool
 okGWT gwt = 
     okayG Nothing (gOf gwt) && domg gwt == els gwt 
 
-errsGWT :: (Show a, Show b, Eq b, Eq a) => String -> GrwT a b -> [ErrorTree]
+errsGWT :: (Show a, Show b, Eq b, Eq a, GNumSets a) => String -> GrwT a b -> [ErrorTree]
 errsGWT id gwt = 
     let err1 = faultsG id Nothing $ gOf gwt 
         err2 = if (dom_of . fV $ gwt) == ns gwt then nile else reportSEq "" (dom_of . fV $ gwt) (ns gwt) 
         err3 = if (dom_of . fE $ gwt) == es gwt then nile else reportSEq "" (dom_of . fE $ gwt) (es gwt) in
     [err1, err2, err3]
 
-rOkGWT :: (Eq a, Eq b, Show a, Show b) => String -> GrwT a b -> ErrorTree
+rOkGWT :: (Eq a, Eq b, Show a, Show b, GNumSets a) => String -> GrwT a b -> ErrorTree
 rOkGWT id gwt = reportWF gwt id okGWT (errsGWT id)
 
 

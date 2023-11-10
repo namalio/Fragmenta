@@ -10,19 +10,17 @@ module ParsingCommon (
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
 import MyMaybe ( str_of_ostr )
+import ParseUtils
 
 is_letter::Char->Bool
 is_letter ch = (ch>='a' && ch<='z') || (ch>='A' && ch<='Z')
 
-is_digit::Char->Bool
-is_digit ch = (ch>='0' && ch<='9') 
-
 is_val_id_char::Char->Bool
-is_val_id_char ch = is_letter ch || is_digit ch || ch == '_'
+is_val_id_char ch = is_letter ch || isDigit ch || ch == '_'
 
 parse_number::ReadP String
 parse_number = do
-   n<- (many1 . satisfy) is_digit
+   n<- (many1 . satisfy) isDigit
    return n
 
 -- parse_fst_letter_of_id ::ReadP String

@@ -5,7 +5,7 @@
 -- Description: Module responsible for parsing Fragmenta's Graphs with Typing (GwTs)
 -- Author: Nuno Amálio
 --------------------------
-module GwTParsing (loadGwT) where
+module ParsingGwT (loadGwT) where
 
 import Relations
 import Grs
@@ -25,6 +25,7 @@ data GwTElem = ElemN String String | ElemE String String String  String
 data GwTDef = GwTDef String [GwTElem] 
    deriving(Eq, Show)
 
+gwtd_name :: GwTDef -> String
 gwtd_name (GwTDef nm _) = nm
 
 extract_elem::GwTElem->GrwT String String
@@ -44,7 +45,7 @@ parse_gwt_node::ReadP GwTElem
 parse_gwt_node = do
    string "node"
    skipSpaces
-   nm<-parse_id
+   nm<-parse_until_chs " :"
    skipSpaces
    string ":"
    skipSpaces
@@ -65,7 +66,7 @@ parse_gwt_edge = do
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   tn<-parse_until_chs " :["
    skipSpaces
    enm<-parse_edge_name
    skipSpaces
@@ -95,8 +96,6 @@ parse_gwt = do
 --   let elems = parseTo parseElem (tail ls) in
 --   PCDef pcnm st elems
 
-
-
 loadGwTDefFrFile :: FilePath -> IO (Maybe GwTDef)
 loadGwTDefFrFile fn = do   
     contents <- readFile fn
@@ -123,9 +122,18 @@ loadGwT fn = do
          return(Just (gwtd_name gd, cons_gwt_fr_gd gd))
    return ogwt
 
+test1 :: [(GwTDef, String)]
 test1 = readP_to_S parse_gwt test_gwt
+
 test2 = readP_to_S parse_gwt_node "node A : TA\n"
 
-test3 = do
+test3 :: GrwT String String
+test3 = 
+   cons_gwt_fr_gd (the $ parseMaybe parse_gwt test_gwt) 
+
+test4 :: [(GwTElem, String)]
+test4 = readP_to_S parse_gwt_node "node v-20: Nat"
+
+test5 = do
    g<-loadGwT "Tests/CarWheels/G_Car_Wheels_I1.gwt"
    putStrLn $ show g

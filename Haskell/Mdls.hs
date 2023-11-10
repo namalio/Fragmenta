@@ -11,8 +11,7 @@ module Mdls (
     mfd, 
     mufs, 
     from, 
-    reso_m,
-    fet) -- remove later
+    reso_m) 
 where
 
 import Gr_Cls
@@ -91,7 +90,7 @@ reso_m::(Eq a, Eq b)=>Mdl a b->Fr a b
 reso_m = reso_f . mufs
 
 -- Checks that a morphism between models is well-formed 
-okayMGM :: (Eq a, Eq b) => (Mdl a b, GrM a b, Mdl a b) -> Bool
+okayMGM :: (Eq a, Eq b, GNodesNumConv a) => (Mdl a b, GrM a b, Mdl a b) -> Bool
 okayMGM (mdls, m, mdlt) = okayGM Nothing (mufs mdls, m, mufs mdlt)
 
 -- Checks that a source model accompanied by a set of morphisms is model-morphism compliant to another model
@@ -101,7 +100,7 @@ errsMGM nm (mdls, m, mdlt) =
     let err = faultsGM nm (Just WeakM) (mufs mdls, m, mufs mdlt) in
     [err]
 
-reportMGM :: (Eq a, Eq b, Show a, Show b) =>String-> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
+reportMGM :: (Eq a, Eq b, Show a, Show b, GNodesNumConv a) =>String-> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
 reportMGM nm (mdls, m, mdlt) = reportWF (mdls, m, mdlt) nm okayMGM (errsMGM nm)
 
 -- Checks that one model refines another
@@ -125,21 +124,23 @@ report_mrefines nm (mdls, ms, mdlt) = reportWF (mdls, ms, mdlt) nm (appl mrefine
 --check_wf_mgm' id (Just TotalM)   = (\(mdlc, m, mdla)-> check_mrefines id (mdlc, [m], mdla))
 
 instance GM_CHK Mdl Mdl where
-   okayGM :: (Eq a, Eq b) => Maybe MK -> (Mdl a b, GrM a b, Mdl a b) -> Bool
+   --okayGM :: (Eq a, Eq b) => Maybe MK -> (Mdl a b, GrM a b, Mdl a b) -> Bool
    okayGM Nothing      = okayMGM
    okayGM (Just WeakM) = okayMGM
    okayGM (Just PartialM) = \(mdlc, m, mdla)-> (mdlc, [m]) `mrefines` mdla
    okayGM (Just TotalM)   = \(mdlc, m, mdla)-> (mdlc, [m]) `mrefines` mdla
-   faultsGM :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
+   --faultsGM :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
    faultsGM id Nothing         = reportMGM id
    faultsGM id (Just WeakM)    = reportMGM id
    faultsGM id (Just PartialM) = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
    faultsGM id (Just TotalM) = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
 
-ty_compliesm::(Eq a, Eq b)=>GrwT a b->Mdl a b->Bool
+ty_compliesm::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)
+    =>GrwT a b->Mdl a b->Bool
 ty_compliesm gwt mdl = okayGM' (Just PartialM) (gwt, mufs mdl) 
 
-report_compliesm::(Eq a, Eq b, Show a, Show b)=>String->GrwT a b->Mdl a b->ErrorTree
+report_compliesm::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)
+    =>String->GrwT a b->Mdl a b->ErrorTree
 report_compliesm id gwt mdl = faultsGM' id (Just PartialM) (gwt,  mufs mdl)
 
 --is_wf_ty Nothing (gwt, mdl)         = okayGM Nothing (gwt, mufs mdl)
@@ -170,10 +171,12 @@ rOkayETCMdls id mdls mdlt =
     let err = if okETC (mufs mdls) (mufs mdlt) then nile else consET (id ++ " is invalid") [faultsETC id (mufs mdls) (mufs mdlt)] in
     err
 
-etCompliesMdl::(Eq a, Eq b) =>(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->Bool
+etCompliesMdl::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a) 
+    =>(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->Bool
 etCompliesMdl (gwet, mdls) (gwt, mdlt) = okayETGM (gwet, mufs mdls) (gwt, mufs mdlt)
 
-rEtCompliesMdl::(Eq a, Eq b, Show a, Show b)=>String->(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->ErrorTree
+rEtCompliesMdl::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)
+    =>String->(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->ErrorTree
 rEtCompliesMdl id (gwet, mdls) (gwt, mdlt) = 
    let err = faultsETGM id (gwet, mufs mdls) (gwt, mufs mdlt) in
    if etCompliesMdl (gwet, mdls) (gwt, mdlt)  then nile else consET ("Errors in model extra typing compliance with " ++ id) [err]

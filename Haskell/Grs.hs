@@ -117,8 +117,8 @@ restrictNs g vs =
 -- Subtracts nodes from a graph 
 subtractNs :: (GR g, Eq b, Eq a) => g a b -> Set a -> Gr a b
 subtractNs g vs = 
-   let ns' = (ns g) `sminus` vs in
-   let es' = (es g) `sminus` esIncident g vs in
+   let ns' = ns g `sminus` vs in
+   let es' = es g `sminus` esIncident g vs in
    let s = dsub (src g) (esIncident g vs) in
    let t = dsub (tgt g) (esIncident g vs) in
    consG ns' es' s t

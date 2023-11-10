@@ -15,6 +15,8 @@ module Gr_Cls(
    , Gr(..)
    , Ok_ETC_CHK(..)
    , GET(..)
+   , GNodesNumConv(..)
+   , GNumSets(..)
    , consG
    , gOf
    , consGM
@@ -74,8 +76,8 @@ codg:: (Eq a, Eq b, GRM gm)=> gm a b->(Set a, Set b)
 codg gm = (ran_of . fV $ gm, ran_of . fE $ gm) 
 
 class G_WF_CHK g where
-   okayG::(Eq a, Eq b) =>Maybe TK->g a b-> Bool
-   faultsG::(Eq a, Eq b, Show a, Show b) =>String->Maybe TK->g a b-> ErrorTree
+   okayG::(Eq a, Eq b, GNumSets a) =>Maybe TK->g a b-> Bool
+   faultsG::(Eq a, Eq b, Show a, Show b, GNumSets a) =>String->Maybe TK->g a b-> ErrorTree
 
 data GrM a b = GrM {mV_ :: Rel a a, mE_:: Rel b b} deriving(Eq, Show) 
 
@@ -108,12 +110,14 @@ instance GRM GrM where
    fE GrM {mV_ = _, mE_ = ef} = ef
 
 class GM_CHK g g' where
-   okayGM::(Eq a, Eq b)=>Maybe MK->(g a b, GrM a b, g' a b)->Bool 
-   faultsGM::(Eq a, Eq b, Show a, Show b) => String->Maybe MK->(g a b, GrM a b, g' a b)->ErrorTree
+   okayGM::(Eq a, Eq b, GNodesNumConv a)
+      =>Maybe MK->(g a b, GrM a b, g' a b)->Bool 
+   faultsGM::(Eq a, Eq b, Show a, Show b, GNodesNumConv a)
+      => String->Maybe MK->(g a b, GrM a b, g' a b)->ErrorTree
 
 class GM_CHK' g g' where
-   okayGM'::(Eq a, Eq b)=>Maybe MK->(g a b, g' a b)->Bool 
-   faultsGM'::(Eq a, Eq b, Show a, Show b) => String->Maybe MK->(g a b, g' a b)->ErrorTree
+   okayGM'::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>Maybe MK->(g a b, g' a b)->Bool 
+   faultsGM'::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a) => String->Maybe MK->(g a b, g' a b)->ErrorTree
 
 class GWT gwt where
    ty:: GR gwt=>gwt a b->GrM a b
@@ -129,18 +133,15 @@ class Ok_ETC_CHK gt where
    faultsETC::(Eq a, Eq b, Show a, Show b, GET gt)=>String->gt a b->gt a b->ErrorTree
 
 class ET_GM_CHK gi gi' gt where
-   okayETGM::(Eq a, Eq b, GWET gi, GWT gi')=>(gi a b, gt a b)->(gi' a b, gt a b)->Bool 
-   faultsETGM::(Eq a, Eq b, Show a, Show b, GWET gi, GWT gi')=>String->(gi a b, gt a b)->(gi' a b, gt a b)->ErrorTree
--- data GrMSs a = GrMSs {fV_ :: [(a, a)], fE_:: [(a, Int, a)]} deriving(Eq, Show) 
--- cons_gmss fv fe = GrMSs {fV_ = fv, fE_ = fe}
--- empty_gmss = cons_gmss [] []
--- fV_gmss GrMSs {fV_ = vf, fE_ = _} = vf
--- fE_gmss GrMSs {fV_ = _, fE_ = ef} = ef
+   okayETGM::(Eq a, Eq b, Read a, GWET gi, GWT gi', GNodesNumConv a, GNumSets a)=>(gi a b, gt a b)->(gi' a b, gt a b)->Bool 
+   faultsETGM::(Eq a, Eq b, Read a, Show a, Show b, GWET gi, GWT gi', GNodesNumConv a, GNumSets a)=>String->(gi a b, gt a b)->(gi' a b, gt a b)->ErrorTree
 
--- class GRM' gm where
---    fV' :: Eq a=> gm a->[(a, a)]
---    fE' :: Eq a=> gm a->[(a, Int, a)]
+-- Numerical conversion for graphs
+class GNodesNumConv a where
+   toInt::Read a=>a->Maybe Int
+   toReal::Read a=>a->Maybe Float
 
--- instance GRM' GrMSs where
---    fV' = fV_gmss
---    fE' = fE_gmss
+class GNumSets a where
+   nNatS::Eq a=>a
+   nIntS::Eq a=>a
+   nRealS::Eq a=>a

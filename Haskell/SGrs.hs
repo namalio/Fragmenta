@@ -62,6 +62,9 @@ import SimpleFuns (pair_up)
 import Logic ( implies )
 import Utils ( reportWF )
 
+data SGVCEOP = Eq | Neq | Leq | Geq | Lt | Gt
+   deriving (Eq, Show)
+
 -- Structural graphs (SGs)
 data SGr a b = SGr {
    g_sg_ :: Gr a b
@@ -71,26 +74,39 @@ data SGr a b = SGr {
    , tgtm_ :: Rel b Mult
    , p_ :: Rel b (PE a b)
    , d_ :: Rel b b
+   , vc_ :: Rel b ((SGVCEOP, Maybe b))
 } deriving (Show, Eq)
 
 g_sg :: SGr a b -> Gr a b
-g_sg SGr {g_sg_ = g, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _} = g
+g_sg SGr {g_sg_ = g, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _, vc_ = _} 
+   = g
 nty :: SGr a b -> Rel a SGNTy
-nty SGr {g_sg_ = _, nty_ = nt, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _} = nt
+nty SGr {g_sg_ = _, nty_ = nt, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _, vc_ = _} 
+   = nt
 ety :: SGr a b -> Rel b SGETy
-ety SGr {g_sg_ = _, nty_ = _, ety_ = et, srcm_ = _, tgtm_ = _, p_ = _, d_ = _} = et
+ety SGr {g_sg_ = _, nty_ = _, ety_ = et, srcm_ = _, tgtm_ = _, p_ = _, d_ = _, vc_ = _} 
+   = et
 srcm :: SGr a b -> Rel b Mult
-srcm SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = sm, tgtm_ = _, p_ = _, d_ = _} = sm
+srcm SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = sm, tgtm_ = _, p_ = _, d_ = _, vc_ = _} 
+   = sm
 tgtm :: SGr a b -> Rel b Mult
-tgtm SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = tm, p_ = _, d_ = _} = tm
+tgtm SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = tm, p_ = _, d_ = _, vc_ = _} 
+   = tm
 pe :: SGr a b -> Rel b (PE a b)
-pe SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = p, d_ = _} = p
+pe SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = p, d_ = _, vc_ = _} 
+   = p
 ds :: SGr a b -> Rel b b
-ds SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = d} = d
+ds SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = d, vc_ = _} 
+   = d
+vcei :: SGr a b -> Rel b (SGVCEOP, Maybe b)
+vcei SGr {g_sg_ = _, nty_ = _, ety_ = _, srcm_ = _, tgtm_ = _, p_ = _, d_ = _, vc_ = vc}
+   = vc
 
 -- A SG constructor
-consSG :: Gr a b-> Rel a SGNTy-> Rel b SGETy-> Rel b Mult-> Rel b Mult-> Rel b (PE a b)-> Rel b b-> SGr a b
-consSG g nt et sm tm p d = SGr {g_sg_ = g, nty_ = nt, ety_ = et, srcm_ = sm, tgtm_ = tm, p_ = p, d_ = d}
+consSG::Gr a b->Rel a SGNTy->Rel b SGETy->Rel b Mult->Rel b Mult->Rel b (PE a b)
+   ->Rel b b->Rel b (SGVCEOP, Maybe b)-> SGr a b
+consSG g nt et sm tm p d vc = 
+   SGr {g_sg_ = g, nty_ = nt, ety_ = et, srcm_ = sm, tgtm_ = tm, p_ = p, d_ = d, vc_ = vc}
 
 instance GR SGr where
    ns :: (Eq a, Eq b) => SGr a b -> Set a
@@ -102,15 +118,15 @@ instance GR SGr where
    tgt :: (Eq a, Eq b) => SGr a b -> Rel b a
    tgt = tgt . g_sg
    empty :: SGr a b
-   empty = consSG empty nil nil nil nil nil nil
+   empty = consSG empty nil nil nil nil nil nil nil
 
 -- Gets edges of certain types
 esTys::(Eq a, Eq b, Foldable t)=>SGr a b->t SGETy->Set b
-esTys sg ets = img (inv . ety $ sg) ets
+esTys sg = img (inv . ety $ sg)
 
 -- Gets nodes of certain types
 nsTys::(Eq a, Foldable t)=>SGr a b->t SGNTy->Set a
-nsTys sg nts = img (inv . nty $ sg) nts
+nsTys sg = img (inv . nty $ sg)
 
 -- Gets proxy nodes
 nsP :: Eq a=>SGr a b -> Set a
@@ -120,13 +136,13 @@ nsP = (flip nsTys) [Nprxy]
 nsN :: Eq a=>SGr a b -> Set a
 nsN = (flip nsTys) [Nnrml]
 
--- Gets optional nodes
---nsO :: Eq a=>SGr a b -> Set a
---nsO = (flip nsTys) [Nopt]
-
 -- Gets virtual nodes
-nsV :: Eq a=>SGr a b1 -> Set a
-nsV = (flip nsTys) [Nvirt]
+nsVi :: Eq a=>SGr a b1 -> Set a
+nsVi = (flip nsTys) [Nvirt]
+
+-- Gets value nodes
+nsVa :: Eq a=>SGr a b -> Set a
+nsVa = (flip nsTys) [Nval]
 
 -- Gets the ethereal nodes
 nsEther :: Eq a=>SGr a b -> Set a
@@ -152,17 +168,21 @@ esD = (flip esTys) [Eder]
 esPa::(Eq a, Eq b)=>SGr a b->Set b
 esPa = (flip esTys) [Epath]
 
+-- Gets the path constraint edges
+esPaCnt::(Eq a, Eq b)=>SGr a b->Set b
+esPaCnt sg = esD sg `union` esPa sg
+
+-- Gets the value constraint edges
+esVCnt::(Eq a, Eq b)=>SGr a b->Set b
+esVCnt = (flip esTys) [Evcnt]
+
 -- Gets the constraint edges
 esCnt::(Eq a, Eq b)=>SGr a b->Set b
-esCnt sg = (esD sg) `union` (esPa sg)
+esCnt sg = esPaCnt sg `union` esVCnt sg
 
--- Gets connection edges (association + wander)
---esC::(Eq a, Eq b)=>SGr a b->Set b
---esC sg = (esA sg) `union` (esW sg)
-
--- Gets multiplicity edges (connection + derived)
+-- Gets multiplicity edges (association + derived)
 esM::(Eq a, Eq b)=>SGr a b->Set b
-esM sg = (esA sg) `union` esD sg
+esM sg = esA sg `union` esD sg
 
 -- Gets relation between path nodes as defined by path dependency edges
 --ds::(Eq a, Eq b)=>SGr a b->[(a, a)]
@@ -202,7 +222,7 @@ srcstr sg es = dres (src sg) es
 
 -- src* relations: base and final definitions
 srcst :: (Eq a, Eq b) => SGr a b ->Rel b a
-srcst sg = (srcstr sg $ esA sg `union` esCnt sg) `rcomp` (inv . inhst $ sg)
+srcst sg = (srcstr sg $ esA sg `union` esPaCnt sg) `rcomp` (inv . inhst $ sg)
 
 -- version used in morphisms
 srcstm :: (Eq a, Eq b) => SGr a b ->Rel b a
@@ -213,7 +233,7 @@ tgtstr :: (Foldable t, Eq a, Eq b) => SGr a b ->t b->Rel b a
 tgtstr sg es = dres (tgt sg) es
 
 tgtst :: (Eq a, Eq b) => SGr a b ->Rel b a
-tgtst sg = (tgtstr sg $ esA sg `union` esCnt sg) `rcomp` (inv $ inhst sg)
+tgtst sg = (tgtstr sg $ esA sg `union` esPaCnt sg) `rcomp` (inv $ inhst sg)
 
 -- version used in morphisms
 tgtstm :: (Eq a, Eq b) => SGr a b ->Rel b a
@@ -261,10 +281,11 @@ nodeopt_ok sg n = all isMultLbZ (img (srcma sg) (img (inv . src $ sg) [n]))
 --all (nodeopt_ok sg) $ nsO sg
 
 -- Function that checks that a list of multiplicies are well-formed
+mults_wf :: Set (Set MultC) -> Bool
 mults_wf = all multwf
 
 -- Checks whether a SG is well-formed either totally or partially
-okaySGz::(Eq a, Eq b)=>SGr a b->Bool
+okaySGz::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
 okaySGz sg = okayG Nothing (g_sg sg)
    && tfun (nty sg) (ns sg) (sgnty_set) 
    && tfun (ety sg) (es sg) (sgety_set)
@@ -272,11 +293,11 @@ okaySGz sg = okayG Nothing (g_sg sg)
    && (dom_of . tgtm $ sg) <= es sg
 
 -- Checks whether a SG is well-formed partially
-okaySG::(Eq a, Eq b)=>SGr a b->Bool
+okaySG::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
 okaySG sg = okaySGz sg
    && mults_wf (ran_of . srcm $ sg) && mults_wf (ran_of . tgtm $ sg) 
    && tfun' (srcma sg) (esM sg) && tfun' (tgtm sg) (esM sg)
-   && (dom_of . pe $ sg) == esCnt sg
+   && (dom_of . pe $ sg) == esPaCnt sg
    && antireflexive_on (ds sg) (esPa sg) 
    && mult_etys_ok sg 
 --   && optsVoluntary sg 
@@ -297,16 +318,16 @@ derOk::(Eq a, Eq b)=>SGr a b->Bool
 derOk sg = all (derEOk sg) (esD sg)
 
 okPEASrc :: (Eq a, Eq b) => SGr b a -> b -> PEA a -> Bool
-okPEASrc sg v (Edg e) = (e, v) `elem` (srcst sg)
-okPEASrc sg v (Inv e) = (e, v) `elem` (tgtst sg)
+okPEASrc sg v (Edg e) = (e, v) `elem` srcst sg
+okPEASrc sg v (Inv e) = (e, v) `elem` tgtst sg
 
 okPEATgt :: (Eq a, Eq b) => SGr b a -> b -> PEA a -> Bool
-okPEATgt sg v (Edg e) = (e, v) `elem` (tgtst sg)
-okPEATgt sg v (Inv e) = (e, v) `elem` (srcst sg)
+okPEATgt sg v (Edg e) = (e, v) `elem` tgtst sg
+okPEATgt sg v (Inv e) = (e, v) `elem` srcst sg
 
 okPEA :: (GR g, Eq a, Eq b) => g b a -> PEA a -> Bool
-okPEA sg (Edg e) = e `elem` (es sg)
-okPEA sg (Inv e) = e `elem` (es sg)
+okPEA sg (Edg e) = e `elem` es sg
+okPEA sg (Inv e) = e `elem` es sg
 
 okPEC :: (Eq a, Eq b) => SGr b a -> PEC b a -> Bool
 okPEC sg (At pea) = okPEA sg pea
@@ -317,25 +338,46 @@ okPE :: (Eq a, Eq b) => SGr b a -> PE b a -> Bool
 okPE sg (Ec pe) = okPEC sg pe 
 okPE sg (SCmp pec pe) = 
    let g = restrict (g_sg sg) $ esA sg in
-   okPEC sg pec && okPE sg pe && (tgtPEC g pec, srcPE g pe) `elem` ((inhst sg) `union` (inv . inhst $ sg))
+   okPEC sg pec && okPE sg pe 
+   && (tgtPEC g pec, srcPE g pe) `elem` (inhst sg `union` (inv . inhst $ sg))
 
-esCntOk :: (Eq b1, Eq b2) => SGr b2 b1 -> b1 -> Bool
+isVCEECnt::Eq b=>SGr a b ->b->Bool
+isVCEECnt sg vce = isSomething (snd . appl (vcei sg) $ vce)
+
+isVCENCnt::Eq b=>SGr a b ->b->Bool
+isVCENCnt sg vce = isNil (snd . appl (vcei sg) $ vce)
+
+isNumeric::(Eq a, Eq b, GNumSets a)=>SGr a b ->a->Bool
+isNumeric sg n = 
+   (n, nNatS) `elem` inhst sg || (n, nIntS) `elem` inhst sg || (n, nRealS) `elem` inhst sg
+
+eVCntOk::(Eq a, Eq b, GNumSets a)=>SGr a b->b->Bool
+eVCntOk sg vce = 
+   let ns = appl (tgt sg) (the . snd . appl (vcei sg) $ vce) in
+   isVCEECnt sg vce `implies` ((appl (tgt sg) vce, ns) `elem` inhst sg && isNumeric sg ns)
+   && isVCENCnt sg vce `implies` ((appl (tgt sg) vce, appl (src sg) vce) `elem` inhst sg && isNumeric sg (appl (src sg) vce))
+
+-- Checks that the value constraint edges are well-formed in a total setting
+esVCntsOk::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
+esVCntsOk sg = all (eVCntOk sg) (esVCnt sg)
+
+esCntOk :: (Eq a, Eq b) => SGr a b -> b -> Bool
 esCntOk sg e = okPE sg (appl (pe sg) e)
-esCntsOk::(Eq a, Eq b)=>SGr a b->Bool
-esCntsOk sg = derOk sg && all (esCntOk sg) (esCnt sg) 
-   
+esCntsOk::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
+esCntsOk sg = derOk sg && all (esCntOk sg) (esPaCnt sg) && esVCntsOk sg
 
 -- Whether an inheritance hierarchy of a SG without virtual nodes forms a tree (single-inheritance model)
 inhMinus :: (Eq b2, Eq a) => SGr a b2 -> Rel a a
-inhMinus sg = relOfG $ subtractNs (inhG sg) (nsV sg)
+inhMinus sg = relOfG $ subtractNs (inhG sg) (nsVi sg)
 isInhTree :: (Eq a, Eq b) => SGr a b -> Bool
 isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg) 
 
 -- WF of total SGs
-okayTSG::(Eq a, Eq b)=>SGr a b->Bool
+okayTSG::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
 okayTSG sg = okaySG sg && etherealInherited sg 
    && esCntsOk sg && isInhTree sg 
 
+check_mult_etys_ok :: (Show a, Show b, Eq a, Eq b, GNumSets a) => SGr a b -> ErrorTree
 check_mult_etys_ok sg = 
    if mult_etys_ok sg then nile else consSET $ "Certain edges have incorrect multiplicities:"++ (showEdges err_es)
    where err_es = foldr (\e es->if edge_multOk sg e then es else (e:es)) [] (esM sg)
@@ -345,7 +387,7 @@ check_mult_etys_ok sg =
 --   if optsVoluntary sg then nile else consSET $ "Optional nodes engaged in compulsory relations:" ++ (showElems' err_opts)
 --   where err_opts = foldr (\n ns-> if nodeopt_ok sg n then ns else n:ns) [] (nsO sg)
 
-errsSGz::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
+errsSGz::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsSGz sg = 
    let err1 = err_prepend "The underlying graph is malformed." (faultsG "SG" Nothing $ g_sg sg)
        err2 = err_prepend "Function 'nty' is not total. " $ reportFT (nty sg) (ns sg) (sgnty_set)
@@ -354,7 +396,7 @@ errsSGz sg =
        err5 = err_prepend "Target multplicity function is not total. " $ reportFT' (tgtm sg) (esM sg) in
    [err1, err2, err3, err4, err5]
 
-rOkaySGz::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
+rOkaySGz::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
 rOkaySGz nm sg = reportWF sg nm okaySGz errsSGz
 
 rInhOk::(Eq a, Eq b, Show a, Show b)=>SGr a b->ErrorTree
@@ -364,7 +406,7 @@ rInhOk sg =
    if inhOk sg then nile else consET "Errors in the inheritance hierarchy." [errs1, errs2]
    where err_inh_pairs = filterS (not . inh_nty_ok sg) (inh sg)
 
-errsSG::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
+errsSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsSG sg = 
    let errs = errsSGz sg in
    let err1 = if mults_wf (ran_of $ srcm sg) then nile else consSET "Well-formedness errors in edge source multiplicities." in
@@ -374,7 +416,7 @@ errsSG sg =
    let err4 = rInhOk sg in
    errs ++ [err1, err2, err3, err4]
 
-rOkaySG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
+rOkaySG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
 rOkaySG nm sg = reportWF sg nm okaySG errsSG
 
 rEtherealInherited sg = 
@@ -382,6 +424,7 @@ rEtherealInherited sg =
    where isInherited n = n `elem` (ran_of $ inh sg)
          ens_n_inh = filterS (not . isInherited)(nsEther sg) 
 
+rIsInhTree :: (Eq a, Eq b, Show a) => SGr a b -> ErrorTree
 rIsInhTree sg = 
    let msg1 = "The inheritance is not single." in
    let msg2 = "The inheritance hierarchy without virtual nodes is not a tree. " in
@@ -396,12 +439,12 @@ rDerOk sg =
        des_bad = foldr (\e ms->(cons_ems_src e) ++ (cons_ems_tgt e) ++ ms) [] (esD sg) in
    if derOk sg then nile else consSET $ "Errors in the following derived edges: " ++ (showElems' des_bad)
 
-rEsCntsOk :: (Eq a, Show a,Eq b, Show b)=>SGr a b -> ErrorTree
+rEsCntsOk :: (Eq a, Show a,Eq b, Show b, GNumSets a)=>SGr a b -> ErrorTree
 rEsCntsOk sg = 
    if esCntsOk sg then nile else consSET $ "Errors in the following constraint edges: " ++ (showElems' esCnts_nOk) ++ (show $ srcst sg) ++ (show $ tgtst sg)
-   where esCnts_nOk = filterS (not . (esCntOk sg)) (esCnt sg) 
+   where esCnts_nOk = filterS (not . esCntOk sg) (esCnt sg) 
 
-errsTSG::(Eq a, Eq b, Show a, Show b)=>SGr a b-> [ErrorTree]
+errsTSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsTSG sg = 
    let err1 = faultsG "SG" (Just Partial) sg in
    let err2 = rIsInhTree sg in
@@ -410,7 +453,7 @@ errsTSG sg =
    let err5 = rEsCntsOk sg in 
    [err1, err2, err3, err4, err5]
 
-rOkayTSG::(Eq a, Eq b, Show a, Show b)=>String->SGr a b-> ErrorTree
+rOkayTSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
 rOkayTSG nm sg = reportWF sg nm okayTSG errsTSG
 
 --okaySG' :: (Eq a, Eq b) => Maybe TK -> SGr a b -> Bool
@@ -423,11 +466,10 @@ rOkayTSG nm sg = reportWF sg nm okayTSG errsTSG
 --check_wf_sg' id _            = check_wf_sg id  
 
 instance G_WF_CHK SGr where
-   okayG :: (Eq a, Eq b) => Maybe TK -> SGr a b -> Bool
    okayG (Just Total) = okayTSG 
    okayG (Just Partial) = okaySG 
    okayG Nothing = okaySGz
-   faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> SGr a b -> ErrorTree
+   --faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> SGr a b -> ErrorTree
    faultsG id (Just Total) = rOkayTSG id
    faultsG id (Just Partial) = rOkaySG id 
    faultsG id Nothing = rOkaySGz id
@@ -446,16 +488,24 @@ unionSG sg1 sg2 =
    let u_tgtm = (tgtm sg1) `union` (tgtm sg2) in
    let u_pe = (pe sg1) `union` (pe sg2) in
    let u_ds = (ds sg1) `union` (ds sg2) in
-   consSG ug u_nty u_ety u_srcm u_tgtm u_pe u_ds
+   let u_vceis = (vcei sg1) `union` (vcei sg2) in
+   consSG ug u_nty u_ety u_srcm u_tgtm u_pe u_ds u_vceis
 
 unionSGs :: (Eq b, Eq a) => [SGr a b] -> SGr a b
 unionSGs sgs = 
-   consSG (unionGs $ map g_sg sgs) (gunion $ map nty sgs) (gunion $ map ety sgs) (gunion $ map srcm sgs) (gunion $ map tgtm sgs) (gunion $ map pe sgs) (gunion $ map ds sgs)
+   consSG (unionGs $ map g_sg sgs) 
+      (gunion $ map nty sgs) 
+      (gunion $ map ety sgs) 
+      (gunion $ map srcm sgs) 
+      (gunion $ map tgtm sgs) 
+      (gunion $ map pe sgs) 
+      (gunion $ map ds sgs)
+      (gunion $ map vcei sgs)
 
 -- SG subsumption
 subsume_sg :: (Eq a, Eq b)=>SGr a b-> Rel a a -> SGr a b
 subsume_sg sg sub 
-   | pfun sub (nsP sg) (ns sg) = consSG s_g (dsub (nty sg) ((dom_of sub) `sminus` (ran_of sub))) (ety sg) (srcm sg) (tgtm sg) (pe sg) (ds sg) 
+   | pfun sub (nsP sg) (ns sg) = consSG s_g (dsub (nty sg) ((dom_of sub) `sminus` (ran_of sub))) (ety sg) (srcm sg) (tgtm sg) (pe sg) (ds sg) (vcei sg)
    | otherwise = sg
    where s_g = subsumeG (g_sg sg) sub 
 
@@ -487,6 +537,7 @@ commute_sgm_src (sgs, m, sgt) =
    (lhs, rhs)
 
 -- Checks whether the source function commutes for morphisms between SGs
+morphism_sgm_commutes_src :: (GRM gm, Eq a, Eq b) => (SGr a b, gm a b, SGr a b) -> Bool
 morphism_sgm_commutes_src (sgs, m, sgt) = 
    let (lhs, rhs) = commute_sgm_src (sgs, m, sgt) in
    lhs  <= rhs
@@ -604,8 +655,8 @@ ies::(Foldable t, Eq a,  Eq b, GRM gm)=>gm a b->t b->Set b
 ies m mes = img (inv . fE $ m) mes
 
 -- Builds instance graph restricted to the instances of a set of meta-edges
-igRMEs::(Foldable t, Eq a, Eq b)=>GrwT a b->t b->Gr a b
-igRMEs gwt mes = (gOf gwt) `restrict` (ies (ty gwt) mes)
+igRMEs::(Foldable t, Eq a, Eq b, GRM g, GR g, GWT g)=>g a b->t b->Gr a b
+igRMEs gwt mes =  gwt `restrict` (ies (ty gwt) mes)
 
 -- Builds instance graph restricted to the instances of set of meta-nodes and -edges
 igRMNsEs::(Foldable t, Eq a, Eq b)=>GrwT a b->SGr a b->t a->t b->Gr a b
@@ -796,7 +847,7 @@ okRefinedIn (sga, me) (sgc, m) =
    let r = (inhst sgc) `rcomp` (relOfG $ igRMEs (consGWT (g_sg sgc) m) [me]) `rcomp` (inv . inhst $ sgc) in
    let s = (ins m sga $ img (src sga) [me]) `sminus`  (nsEther sgc `sminus` dom_of r) in
    let t = (ins m sga $ img (tgt sga) [me]) `sminus` (nsEther sgc `sminus` ran_of r) in
-   (relation r s t) && (not . null) (img (nty sga) ((nsIncident sga [me]) `sminus` (nsV sga))) `implies` (not . null $ r)
+   (relation r s t) && (not . null) (img (nty sga) ((nsIncident sga [me]) `sminus` (nsVi sga))) `implies` (not . null $ r)
 -- && (not . null $ r) 
 
 -- Total SG refinement conditions
@@ -811,6 +862,7 @@ tsg_refines (sgc, m) sga =
 
 -- Errors checking
 -- errors of SG refinement of abstract nodes
+check_tsg_refines_ans :: (Show a, GRM gm, Eq a, Eq b) =>gm a b -> SGr a b -> ErrorTree
 check_tsg_refines_ans m sga = 
    if m `tsg_refines_ans` sga then nile else consSET $ "The following normal nodes are not refined: " ++ (showNodes nns_n_ref)
    where nns_n_ref = filterS (\nn-> not $ is_refined m sga nn) (nsTys sga $ singles Nnrml)
@@ -993,27 +1045,28 @@ instance GM_CHK SGr SGr where
 -- SG Type conformance
 
 -- Instances of compounds are not allowed to share parts
-ty_complies_pns::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
-ty_complies_pns gwt sg = injective $ relOfG (igRMEs gwt (esTys sg [Ecomp Dbi, Ecomp Duni]))
+tyCompliesPNS::(Eq a, Eq b, GRM g, GR g, GWT g)=>g a b->SGr a b->Bool
+tyCompliesPNS gwt sg = injective $ relOfG (igRMEs gwt (esTys sg [Ecomp Dbi, Ecomp Duni]))
 
-check_ty_complies_pns::(Eq a, Eq b, Show a, Show b)=>GrwT a b->SGr a b->ErrorTree
-check_ty_complies_pns gwt sg = 
+checkTyCompliesPNS::(Eq a, Eq b, Show a, Show b, GRM g, GR g, GWT g)=>g a b->SGr a b->ErrorTree
+checkTyCompliesPNS gwt sg = 
    let r = relOfG $ igRMEs gwt (esTys sg [Ecomp Dbi, Ecomp Duni]) in
-   if gwt `ty_complies_pns` sg then nile else consET "Parts are being shared by compounds:" [reportI r]
+   if gwt `tyCompliesPNS` sg then nile else consET "Parts are being shared by compounds:" [reportI r]
 
 -- Instances of ethereal nodes are not allowed
 insEther :: (GRM gm, Eq a, Eq b) => gm a b -> SGr a b ->Set a
-insEther gwt sg = img ((inv . fV) $ gwt) $ nsEther sg
+insEther gwt sg = img (inv . fV $ gwt) $ nsEther sg
 
-ty_complies_fi::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
-ty_complies_fi gwt sg = null $ insEther gwt sg
+-- Forbidden instances (FI)
+tyCompliesFI::(Eq a, Eq b, GRM g)=>g a b->SGr a b->Bool
+tyCompliesFI gwt sg = null $ insEther gwt sg
 
 insEtherPairs :: (GRM gm, Eq a, Eq b) => gm a b -> SGr a b ->Rel a a
-insEtherPairs gwt sg = foldr (\ne ps->fmap ((flip pair_up) ne) (img ((inv . fV) $ gwt) (singles ne)) `union` ps) nil $ nsEther sg
+insEtherPairs gwt sg = foldr (\ne ps->fmap (flip pair_up $ ne) (img ((inv . fV) $ gwt) (singles ne)) `union` ps) nil $ nsEther sg
 
-check_ty_complies_fi :: (Eq a, Eq b, Show a)=>GrwT a b -> SGr a b -> ErrorTree
-check_ty_complies_fi gwt sg = 
-   if ty_complies_fi gwt sg then nile else consSET $ "Error! There are the following ethereal nodes instances:" ++ (show_pairs (insEtherPairs gwt sg))
+checkTyCompliesFI :: (Eq a, Eq b, Show a, GRM g)=>g a b -> SGr a b -> ErrorTree
+checkTyCompliesFI gwt sg = 
+   if tyCompliesFI gwt sg then nile else consSET $ "Error! There are the following ethereal nodes instances:" ++ (show_pairs (insEtherPairs gwt sg))
    where show_pairs EmptyS = ""
          show_pairs (p `Set` ps) = (showP p)++(show_pairs ps) 
          showP (x, y) = (show x)++ "->" ++(show y)
@@ -1043,8 +1096,8 @@ multComp m1 m2
    | isMultVal_k m1 0 || isMultVal_k m2 0 = singles (msole_k 0)
    | isMultVal_k m1 1 = m2
    | isMultVal_k m2 1 = m1
-   | isMultOpt m1 = (msole_k 0) `intoSet` m2
-   | isMultOpt m2 = (msole_k 0) `intoSet` m1
+   | isMultOpt m1 = msole_k 0 `intoSet` m2
+   | isMultOpt m2 = msole_k 0 `intoSet` m1
    | isMultRange m1 && isMultRange m2 = singles $ (the m1) `mult_mr` (the m2)
    | isMultEither m2 = multComp m1 (singles $ the m2) `union` multComp m1 (rest m2)
    | isMultEither m1 = multComp (singles $ the m1) m2 `union` multComp (rest m1) m2
@@ -1150,48 +1203,148 @@ checkMEMultOk sg me gwt =
    let t = ins gwt sg $ img (tgtstMultOk sg me) [rtgtPE $ ape sg me] in
    check_multOk me r s t (appl (srcma sg) me) (appl (tgtm sg) me)
 
--- Multiplicity compliance of all connection and derived edges
-ty_complies_mult::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
-ty_complies_mult gwt sg = all (\me->meMultOk sg me gwt) $ esM sg
+-- Multiplicity compliance of all multiplicity edges (association plus derived edges)
+tyCompliesMult::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
+tyCompliesMult gwt sg = all (\me->meMultOk sg me gwt) $ esM sg
 
-check_ty_complies_mult :: (Eq a, Eq b, Show a, Show b) => GrwT a b -> SGr a b -> ErrorTree
-check_ty_complies_mult gwt sg = 
-   if ty_complies_mult gwt sg then nile else consET "Multiplicity breached in instance model." errs
+checkTyCompliesMult :: (Eq a, Eq b, Show a, Show b) => GrwT a b -> SGr a b -> ErrorTree
+checkTyCompliesMult gwt sg = 
+   if tyCompliesMult gwt sg then nile else consET "Multiplicity breached in instance model." errs
    where errs = foldr (\me errs ->(checkMEMultOk sg me gwt):errs) [] (esM sg)
 
-ty_complies::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
-ty_complies gwt sg = is_wf_gwt_sg (gwt, sg) && gwt `ty_complies_mult` sg &&  gwt `ty_complies_fi` sg && gwt `ty_complies_pns` sg 
+-- Checks that numeric constraints are satisfied for natural numbers
 
-check_ty_complies::(Eq a, Eq b, Show a, Show b)=>String->GrwT a b->SGr a b->ErrorTree
-check_ty_complies id gwt sg =
-   let err1 = check_wf_gwt_sg id gwt sg in
-   let err2 = check_ty_complies_mult gwt sg in
-   let err3 = check_ty_complies_fi gwt sg in
-   let err4 = check_ty_complies_pns gwt sg in
-   if gwt `ty_complies` sg then nile else consET "The graph does not comply to its SG type" [err1, err2, err3, err4]
+-- Gets the natural number node instances
+natIs::(Eq a, Eq b, GNumSets a)=>GrwT a b->Set a
+natIs gwt = img (inv . fV $ gwt) (singles nNatS)
 
-is_wf_ty::(Eq a, Eq b)=>(Maybe MK)->(GrwT a b, SGr a b)->Bool
+-- Checks that a node complies to the natural number contraints
+okNatI::(Read a, GNodesNumConv a)=>a->Bool
+okNatI nn = isSomething on && the on >= 0
+   where on = toInt nn
+
+okINats::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->Bool
+okINats gwt = all okNatI (natIs gwt)
+
+errINats::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a)
+   =>GrwT a b -> ErrorTree
+errINats gwt = 
+   let errNs  = filterS (not . okNatI) (natIs gwt)
+       emsg = "Instance nodes which fail to satisfy the natural number constraints:" ++ (showElems' errNs) in
+   if okINats gwt then nile else consSET emsg
+
+-- Checks that numeric constraints are satisfied for integers 
+
+-- Gets the integer node instances
+intIs::(Eq a, Eq b, GNumSets a)=>GrwT a b->Set a
+intIs gwt = img (inv . fV $ gwt) (singles nIntS)
+
+-- Checks that a node complies to the integer contraints
+okIntI::(Read a, GNodesNumConv a)=>a->Bool
+okIntI = isSomething . toInt
+
+okIInts::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->Bool
+okIInts gwt = all okIntI (intIs gwt)
+
+errIInts::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a)
+   =>GrwT a b -> ErrorTree
+errIInts gwt = 
+   let errIs  = filterS (not . okIntI) (intIs gwt)
+       emsg = "Instance nodes which fail to satisfy the integer constraints:" ++ (showElems' errIs) in
+   if okIInts gwt then nile else consSET emsg
+
+-- Checks that numeric constraints are satisfied for reals
+-- Gets the reals node instances
+realIs::(Eq a, Eq b, GNumSets a)=>GrwT a b->Set a
+realIs gwt = img (inv . fV $ gwt) (singles nRealS)
+
+-- Checks that a node complies to the real contraints
+okRealI::(Read a, GNodesNumConv a)=>a->Bool
+okRealI = isSomething . toReal
+
+okIReals::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->Bool
+okIReals gwt = all okRealI (realIs gwt)
+
+errIReals::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a)
+   =>GrwT a b -> ErrorTree
+errIReals gwt = 
+   let errIs  = filterS (not . okRealI) (realIs gwt)
+       emsg = "Instance nodes which fail to satisfy the real number constraints:" ++ (showElems' errIs) in
+   if okIReals gwt then nile else consSET emsg
+
+-- Checks that a GWT complies to the numeric constraints set by the type
+okINumbers::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)
+   =>GrwT a b->Bool
+okINumbers gwt = okINats gwt && okIInts gwt && okIReals gwt
+
+rOp::(Eq a, Ord a)=>SGVCEOP->a->a->Bool
+rOp Eq n1 n2 = n1 == n2
+rOp Neq n1 n2 = n1 /= n2
+rOp Leq n1 n2 = n1 <= n2
+rOp Geq n1 n2 = n1 >= n2
+rOp Lt n1 n2 = n1 < n2
+rOp Gt n1 n2 = n1 > n2
+
+toNum::SGr a b->gm a b->a->Maybe (Either Int Float)
+toNum sg t n = if n `elem` 
+
+satisfiesACnt::GRM gm=>SGr a b->gm a b->a->SGVCEOP->a->Bool
+satisfiesACnt sg t ns op nt = 
+   let ons = toNum
+   rOp op ns nt
+
+satisfiesVCEECnt::SGr a b->GrwT a b->b->Bool
+satisfiesVCEECnt sg gwt vce = 
+
+ivcesOk::(Eq a, Eq b)=>SGr a b->GrwT a b->Bool
+ivcesOk sg gwt
+
+-- Compliance with constraits of a SG type
+tyCompliesCnts::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->SGr a b->Bool
+tyCompliesCnts gwt sg = okINumbers gwt
+
+checkTyCompliesCnts::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a) 
+   => GrwT a b -> SGr a b -> ErrorTree
+checkTyCompliesCnts gwt sg  = 
+   let err1 = errINats gwt 
+       err2 = errIInts gwt
+       err3 = errIReals gwt 
+       el = [err1, err2, err3] in
+   if tyCompliesCnts gwt sg then nile else consET "Numeric constraints of SG type breached in instance model." el
+
+tyComplies::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->SGr a b->Bool
+tyComplies gwt sg = 
+   is_wf_gwt_sg (gwt, sg) && gwt `tyCompliesMult` sg 
+   &&  gwt `tyCompliesFI` sg && gwt `tyCompliesPNS` sg 
+   && gwt `tyCompliesCnts` sg
+
+checkTyComplies::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)
+   =>String->GrwT a b->SGr a b->ErrorTree
+checkTyComplies id gwt sg =
+   let err1 = check_wf_gwt_sg id gwt sg 
+       err2 = checkTyCompliesMult gwt sg 
+       err3 = checkTyCompliesFI gwt sg 
+       err4 = checkTyCompliesPNS gwt sg 
+       err5 = checkTyCompliesCnts gwt sg in 
+   if gwt `tyComplies` sg then nile else consET "The graph does not comply to its SG type" [err1, err2, err3, err4, err5]
+
+is_wf_ty::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)
+   =>(Maybe MK)->(GrwT a b, SGr a b)->Bool
 is_wf_ty Nothing          = is_wf_gwt_sg 
 is_wf_ty (Just WeakM)     = is_wf_gwt_sg 
-is_wf_ty (Just PartialM)  = (\(gwt, sg)->gwt `ty_complies` sg)
-is_wf_ty (Just TotalM)    = (\(gwt, sg)->gwt  `ty_complies` sg)
+is_wf_ty (Just PartialM)  = (\(gwt, sg)->gwt `tyComplies` sg)
+is_wf_ty (Just TotalM)    = (\(gwt, sg)->gwt `tyComplies` sg)
 
-check_wf_ty id Nothing (gwt, sg) =check_wf_gwt_sg id gwt sg
+check_wf_ty ::(Show a, Show b, Read a, Eq a, Eq b, GNodesNumConv a, GNumSets a)=> 
+   String -> Maybe MK -> (GrwT a b, SGr a b) -> ErrorTree
+check_wf_ty id Nothing (gwt, sg) = check_wf_gwt_sg id gwt sg
 check_wf_ty id (Just WeakM) (gwt, sg) = check_wf_gwt_sg id gwt sg
-check_wf_ty id (Just PartialM) (gwt, sg) = check_ty_complies id gwt sg
-check_wf_ty id (Just TotalM) (gwt, sg) = check_ty_complies id gwt sg
+check_wf_ty id (Just PartialM) (gwt, sg) = checkTyComplies id gwt sg
+check_wf_ty id (Just TotalM) (gwt, sg) = checkTyComplies id gwt sg
 
 instance GM_CHK' GrwT SGr where
    okayGM' = is_wf_ty
    faultsGM' = check_wf_ty
-
---is_wf_gwtss_sg:: Eq a => (GrwTSs a, SGr a) -> Bool
---is_wf_gwtss_sg (g, sg) = fun_total (fV g) (ans g) (ns sg)  
---   && fun_total (fE g) (es g) (esC sg)
---   && img (fE g) (ses g) `subseteq` (esSeq sg) 
---   && ((fV g) `bcomp` (src g)) `subseteq` ((srcst sg) `bcomp` (fE  g))
---   && ((fV g) `bcomp` (tgtext g)) `subseteq` ((tgtst sg) `bcomp` (fE  g))
-
 
 -- Checks whether the target function commutes for morphisms from Gs to SGs
 -- morphism_gm_commutes_tgt_ss::Eq a => (GrwTSs a, SGr a) -> Bool

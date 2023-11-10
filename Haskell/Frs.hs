@@ -246,17 +246,19 @@ instance G_WF_CHK Fr where
    faultsG id (Just Total) f   = rOkayTF id f --okayTF (errsTF id)
 
 -- morphism resolution operation
+mres :: (GRM gm, Eq a, Eq b) =>gm a b -> (Fr a b, Fr a b) -> GrM a b
 mres m (fs, ft) = 
     let mv = (inv $ (cl_override $ res fs) `mktotal_in` (fLNs fs)) `rcomp` ((fV m) `rcomp` ((cl_override $ res ft) `mktotal_in` (fLNs ft))) in
     consGM mv (fE m)
 
 -- Checks that a morphism between fragments is well-formed 
-okayFGM :: (GRM gm, Eq a, Eq b) => (Fr a b, gm a b, Fr a b) -> Bool
+okayFGM :: (GRM gm, Eq a, Eq b, GNodesNumConv a) => (Fr a b, gm a b, Fr a b) -> Bool
 okayFGM (fs, m, ft) = tfun (fV m) (fLNs fs) (fLNs ft) 
     && tfun (fE m) (fEsA fs) (fEsA ft)
     && okayGM (Just WeakM) (reso_sg fs, mres m (fs, ft), reso_sg ft)
 
-errsFGM :: (Eq a, Eq b, Show a, Show b, GRM gm) =>(Fr a b, gm a b, Fr a b) -> [ErrorTree]
+errsFGM :: (Eq a, Eq b, Show a, Show b, GRM gm, GNodesNumConv a) 
+    =>(Fr a b, gm a b, Fr a b) -> [ErrorTree]
 errsFGM (fs, m, ft) = 
     let err1 = if tfun (fV m) (fLNs fs) (fLNs ft) then nile 
         else consET "Function 'fV' is not total" [reportFT (fV m) (fLNs fs) (fLNs ft)] in
@@ -265,32 +267,34 @@ errsFGM (fs, m, ft) =
     let err3 = faultsGM "Resolved Morphism between SGs of resolved fragments" (Just WeakM) (reso_sg fs, mres m (fs, ft), reso_sg ft) in
     [err1, err2, err3]
 
-reportFGM::(GRM gm, Eq a, Eq b, Show a, Show b)=>String->(Fr a b, gm a b, Fr a b)->ErrorTree
+reportFGM::(GRM gm, Eq a, Eq b, Show a, Show b, GNodesNumConv a)=>String->(Fr a b, gm a b, Fr a b)->ErrorTree
 reportFGM nm (fs, m, ft) = reportWF (fs, m, ft) nm okayFGM errsFGM
 
 -- Partial fragment refinement
-frefines::(Eq a, Eq b, GRM gm)=>(Fr a b, gm a b)->Fr a b->Bool
+frefines::(Eq a, Eq b, GRM gm, GNodesNumConv a)=>(Fr a b, gm a b)->Fr a b->Bool
 frefines (fc, m) fa = okayFGM (fc, m, fa) 
     && sg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
 
-errs_frefines::(Eq a, Eq b, Show a, Show b, GRM gm) =>String->(Fr a b, gm a b)->Fr a b->[ErrorTree]
+errs_frefines::(Eq a, Eq b, Show a, Show b, GRM gm, GNodesNumConv a) =>String->(Fr a b, gm a b)->Fr a b->[ErrorTree]
 errs_frefines nm (fc, m) fa =
     let err1 = reportFGM nm (fc, m, fa) in
     let errs2 = errs_sg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa) in
     (err1:errs2)
 
-report_frefines :: (Eq a, Eq b, GRM gm, Show a, Show b) =>String-> (Fr a b, gm a b, Fr a b) -> ErrorTree
+report_frefines :: (Eq a, Eq b, GRM gm, Show a, Show b, GNodesNumConv a) 
+    =>String-> (Fr a b, gm a b, Fr a b) -> ErrorTree
 report_frefines nm (fc, m, fa) = reportWF (fc, m, fa) nm (appl frefines) (appl $ errs_frefines nm)
     where appl f = (\(fc, m, fa)->f (fc, m) fa)
 
 -- Total fragment refinement
-tfrefines::(GRM gm, Eq a, Eq b)=>(Fr a b, gm a b)->Fr a b->Bool
+tfrefines::(GRM gm, Eq a, Eq b, GNodesNumConv a)=>(Fr a b, gm a b)->Fr a b->Bool
 tfrefines (fc, m) fa = okayFGM (fc, m, fa) 
     && okayG (Just Total) fc 
     && okayG (Just Total) fa
     && tsg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
 
-errs_tfrefines :: (Eq a, Eq b, Show a, Show b, GRM gm) =>String -> (Fr a b, gm a b) -> Fr a b -> [ErrorTree]
+errs_tfrefines :: (Eq a, Eq b, Show a, Show b, GRM gm, GNodesNumConv a) 
+    =>String -> (Fr a b, gm a b) -> Fr a b -> [ErrorTree]
 errs_tfrefines nm (fc, m) fa =
     let err1 = reportFGM nm (fc, m, fa) in
     let err2 = rOkayTF "Fragment concrete" fc in
@@ -312,21 +316,21 @@ report_tfrefines nm (fc, m, fa) = reportWF (fc, m, fa) nm (appl tfrefines) (appl
 --check_wf_fgm' id (Just TotalM)   = check_tfrefines id
 
 instance GM_CHK Fr Fr where
-   okayGM :: (Eq a, Eq b) => Maybe MK -> (Fr a b, GrM a b, Fr a b) -> Bool
+   --okayGM :: (Eq a, Eq b) => Maybe MK -> (Fr a b, GrM a b, Fr a b) -> Bool
    okayGM Nothing      = okayFGM
    okayGM (Just WeakM) = okayFGM
    okayGM (Just PartialM) = \(fc, m, fa)->frefines (fc, m) fa
    okayGM (Just TotalM) = \(fc, m, fa)-> tfrefines (fc, m) fa
-   faultsGM :: (Eq a, Eq b, Show a, Show b) =>String-> Maybe MK->(Fr a b, GrM a b, Fr a b)->ErrorTree
+   --faultsGM :: (Eq a, Eq b, Show a, Show b) =>String-> Maybe MK->(Fr a b, GrM a b, Fr a b)->ErrorTree
    faultsGM id Nothing         = reportFGM id
    faultsGM id (Just WeakM)    = reportFGM id
    faultsGM id (Just PartialM) = report_frefines id
    faultsGM id (Just TotalM)   = report_tfrefines id
 
-gwtCompliesf::(Eq a, Eq b)=>GrwT a b->Fr a b->Bool
+gwtCompliesf::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->Fr a b->Bool
 gwtCompliesf gwt f = okayGM' (Just PartialM) (gwt, reso_sg f)
 
-rgwtCompliesf::(Eq a, Eq b, Show a, Show b)=>String->GrwT a b->Fr a b->ErrorTree
+rgwtCompliesf::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)=>String->GrwT a b->Fr a b->ErrorTree
 rgwtCompliesf id gwt f = faultsGM' id (Just PartialM) (gwt, reso_sg f)
 
 --is_wf_ty::(Eq a, Eq b)=>(Maybe MK)->(GrwT a b, Fr a b)->Bool
@@ -341,24 +345,22 @@ rgwtCompliesf id gwt f = faultsGM' id (Just PartialM) (gwt, reso_sg f)
 --check_wf_ty id (Just TotalM) (gwt, f) = check_ty_compliesf id gwt f
 
 instance GM_CHK' GrwT Fr where
-   okayGM' :: (Eq a, Eq b) => Maybe MK -> (GrwT a b, Fr a b) -> Bool
    okayGM' Nothing (gwt, f)      = okayGM' Nothing (gwt, reso_sg f)
    okayGM' (Just WeakM) (gwt, f) = okayGM' (Just WeakM) (gwt,  reso_sg f) 
    okayGM' (Just PartialM) (gwt, f) = gwt `gwtCompliesf` f
    okayGM' (Just TotalM) (gwt, f)   = gwt  `gwtCompliesf` f
-   faultsGM' :: (Eq a, Eq b, Show a, Show b) =>String ->Maybe MK ->(GrwT a b, Fr a b)->ErrorTree
    faultsGM' id Nothing (gwt, f) = faultsGM' id Nothing (gwt,  reso_sg f)
    faultsGM' id (Just WeakM) (gwt, f) = faultsGM' id  (Just WeakM) (gwt,  reso_sg f)
    faultsGM' id (Just PartialM) (gwt, f) = rgwtCompliesf id gwt f
    faultsGM' id (Just TotalM) (gwt, f) = rgwtCompliesf id gwt f
 
 instance GM_CHK' GrwET Fr where
-   okayGM' :: (Eq a, Eq b) => Maybe MK -> (GrwET a b, Fr a b) -> Bool
+   --okayGM' :: (Eq a, Eq b, GNodesNumConv a, GNumSets) => Maybe MK -> (GrwET a b, Fr a b) -> Bool
    okayGM' Nothing (gwet, f) = okayGM' Nothing (ggwt gwet, reso_sg f)
    okayGM' (Just WeakM) (gwet, f) = okayGM' (Just WeakM) (ggwt gwet,  reso_sg f) 
    okayGM' (Just PartialM) (gwet, f) = ggwt gwet `gwtCompliesf` f
    okayGM' (Just TotalM) (gwet, f)   = ggwt gwet  `gwtCompliesf` f
-   faultsGM' :: (Eq a, Eq b, Show a, Show b) =>String ->Maybe MK ->(GrwET a b, Fr a b)->ErrorTree
+   --faultsGM' :: (Eq a, Eq b, Show a, Show b) =>String ->Maybe MK ->(GrwET a b, Fr a b)->ErrorTree
    faultsGM' id Nothing (gwet, f) = faultsGM' id Nothing (ggwt gwet,  reso_sg f)
    faultsGM' id (Just WeakM) (gwet, f) = faultsGM' id  (Just WeakM) (ggwt gwet,  reso_sg f)
    faultsGM' id (Just PartialM) (gwet, f) = rgwtCompliesf id (ggwt gwet) f
@@ -376,7 +378,7 @@ okayETCFs fs ft = (not . isEmptyGM . fet $ fs) && okETSGs (reso_sg fs, fet fs) (
 -- (iii) the domain of the extra typing morphism is the same as the domain of the typing morphism composed with the fragemnt's extra typing,
 -- (iv) the extra typing is a partial morphism from the instance graph into the type graph,
 -- (v) the graph's type fragment is an instance of the fragment which is a type of the given extra type graph (okayETFs)
-etCompliesF::(Eq a, Eq b) =>(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->Bool
+etCompliesF::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a) =>(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->Bool
 etCompliesF (gwet, f1) (gwt, f2) = 
     okayGM' (Just PartialM) (gwet, f1)
     && okayGM' (Just PartialM) (gwt, f2) 
@@ -400,7 +402,8 @@ rOkayETCFs id fs ft =
     let err = if okayETCFs fs ft then nile else consET (id ++ " is invalid") (errsOkayETFs id fs ft) in
     err
 
-errsEtCompliesF::(Eq a, Eq b, Show a, Show b)=>String->GrwET a b->Fr a b->GrwT a b->Fr a b->[ErrorTree]
+errsEtCompliesF::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)=>
+    String->GrwET a b->Fr a b->GrwT a b->Fr a b->[ErrorTree]
 errsEtCompliesF id gwet f1 gwt f2 = 
     let err1 = faultsGM' id (Just PartialM) (gwet, f1)
         err2 = faultsGM' id (Just PartialM) (gwt, f2) 
@@ -411,7 +414,8 @@ errsEtCompliesF id gwet f1 gwt f2 =
         err5 = rOkayETCFs id f1 f2 in
     [err1, err2, err3, err4, err5]
 
-rEtCompliesF::(Eq a, Eq b, Show a, Show b)=>String->(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->ErrorTree
+rEtCompliesF::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)
+    =>String->(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->ErrorTree
 rEtCompliesF id (gwet, f1) (gwt, f2) = 
    let errs = errsEtCompliesF id gwet f1 gwt f2 in
    if etCompliesF (gwet, f1) (gwt, f2)  then nile else consET ("Errors with extra typing compliance with " ++ id) errs

@@ -67,7 +67,8 @@ ext_mult_s e m = singles (e, m)
 
 
 extract_elem::SGElem->SGr String String
-extract_elem (ElemN (NodeDef n nty)) = consSG (consG (singles n) nil nil nil) (singles (n, nty)) nil nil nil nil nil
+extract_elem (ElemN (NodeDef n nty)) = 
+   consSG (consG (singles n) nil nil nil) (singles (n, nty)) nil nil nil nil nil
 extract_elem (ElemE (EdgeDef e s t ety m1 m2 pe)) = 
    let e' = nm_of_edge ety e s t in 
    let sm = ext_mult_s e' m1 in
@@ -597,7 +598,7 @@ loadFragment fn = do
          return (Nothing)
       else do
          let frd = the fr_def
-         return(Just (frd_fname frd,cons_fr_fr_frd frd)) -- This as a function here.
+         return(Just (frd_fname frd, cons_fr_fr_frd frd)) -- This as a function here.
    return ofr 
 
 loadSG :: FilePath -> IO (Maybe (String, SGr String String))

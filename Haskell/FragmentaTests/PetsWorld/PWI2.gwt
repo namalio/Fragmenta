@@ -13,7 +13,7 @@ GrwT PetRoomWorld_I2 {
 	edge GPHS->UK:country
 	edge GPHS->Bath:city
 	edge GPHS->GoodPetHotels:name
-	edge PH->GPHS:PartOfGroup
+	edge PH->GPHS:OfGroup
 	node F1: Toilet
 	node T1 : RoomId
 	edge F1->T1:roomid
@@ -56,7 +56,7 @@ GrwT PetRoomWorld_I2 {
 	edge K->Kopek : name
 	node d_04_05_2015 : Date
 	node disadvantaged : disadvantaged
-	edge K->disadvantaged :pstatus
+	edge K->disadvantaged : pstatus
 	edge PR2->G:Hosts
 	edge K->d_04_05_2015:dob
 	node F3: Toilet
@@ -64,10 +64,10 @@ GrwT PetRoomWorld_I2 {
 	node T3:RoomId
 	edge F3->T3:roomid
 	node PR3:PetRoom
-	node T3:RoomId
+	node R3:RoomId
 	node v20: Nat
 	edge PR3->v20:rcapacity
-	edge PR3->T3:roomid
+	edge PR3->R3:roomid
 	edge PH->PR3:rooms
 	node reptiles : reptiles
 	edge PR3->reptiles:zone

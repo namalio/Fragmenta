@@ -1,7 +1,27 @@
 
-module ParseUtils(wrSepElems, words', splitAt', splitAtStr, do_indent) where
+module ParseUtils(
+   wrSepElems
+   , words'
+   , splitAt'
+   , splitAtStr
+   , do_indent
+   , isDigit
+   , isInt
+   , isReal) where
 
 import SimpleFuns
+
+isDigit::Char->Bool
+isDigit ch = ch `elem` ['0'..'9'] 
+
+isInt :: String -> Bool
+isInt s = 
+   (not . null $ s) && (head s == '-' || isDigit (head s)) &&  all isDigit (tail s)
+
+isReal :: String -> Bool
+isReal s = 
+   let (wn, dn) = splitAt' (=='.') s in
+   (null wn || isInt wn) && isInt dn
 
 words' :: (Char->Bool)-> String -> [String]
 words' isSep [] = []

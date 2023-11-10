@@ -18,10 +18,10 @@ sgnty_set = set [Nnrml, Nabst, Nprxy, Nenum, Nval, Nvirt]
 -- The association edge direction
 data SGED = Dbi | Duni  deriving (Eq, Show)
 
-data SGETy = Einh | Ecomp SGED | Erel SGED  | Eder | Epath deriving (Show, Eq)
+data SGETy = Einh | Ecomp SGED | Erel SGED  | Eder | Epath | Evcnt deriving (Show, Eq)
 
 sgety_set :: Set SGETy
-sgety_set = set $ [Einh, Eder, Epath] ++ [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
+sgety_set = set $ [Einh, Eder, Epath, Evcnt] ++ [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
 
 -- Order which dictates allowed inheritance relations 
 nty_lti:: SGNTy->SGNTy->Bool
@@ -75,5 +75,5 @@ instance Ord SGETy where
     (<=) :: SGETy -> SGETy -> Bool
     (<=) (Ecomp _) (Erel Dbi)      = True
     (<=) (Ecomp Duni) (Erel Duni)  = True
-    (<=) ety1 ety2                 = (not $ set [ety1, ety2] <= set [Einh, Eder, Epath]) && (ety1 `ety_eq` ety2) 
+    (<=) ety1 ety2                 = (not $ set [ety1, ety2] <= set [Einh, Eder, Epath, Evcnt]) && (ety1 `ety_eq` ety2) 
     --(<=) = ety_leq

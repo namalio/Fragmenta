@@ -31,18 +31,21 @@ check_report_wf id otk g b = do
    let errs = faultsG id otk g 
    reportErrs id errs b
 
-check_morphism::(Eq a, Eq b, Show a, Show b, GM_CHK g g')=>String->Maybe MK->g a b->GrM a b->g' a b->Bool->IO()
+check_morphism::(Eq a, Eq b, Show a, Show b, GM_CHK g g', GNodesNumConv a)
+   =>String->Maybe MK->g a b->GrM a b->g' a b->Bool->IO()
 check_morphism id omk gs m gt b = do 
    let errs = faultsGM id omk (gs, m, gt) 
    reportErrs id errs b
 
-check_ty_morphism :: (GM_CHK' g g', Eq a, Eq b, Show a, Show b) =>String -> Maybe MK -> g a b -> g' a b -> Bool -> IO ()
+check_ty_morphism :: (GM_CHK' g g', Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a) 
+   =>String -> Maybe MK -> g a b -> g' a b -> Bool -> IO ()
 check_ty_morphism id omk gwt sg b = do 
    let errs = faultsGM' id omk (gwt, sg) 
    reportErrs id errs b
 
 -- Checks the extra typing
-checkETCompliance::(Eq a, Eq b, Show a, Show b, GWET gi, GWT gi', ET_GM_CHK gi gi' gt)=>String->gi a b->gt a b->gi' a b->gt a b->Bool->IO ()
+checkETCompliance::(Eq a, Eq b, Read a, Show a, Show b, GWET gi, GWT gi', ET_GM_CHK gi gi' gt, GNodesNumConv a, GNumSets a)
+   =>String->gi a b->gt a b->gi' a b->gt a b->Bool->IO ()
 checkETCompliance id gwet f1 gwt f2 b = do
    let errs = faultsETGM id (gwet, f1) (gwt, f2)  
    reportErrs id errs b

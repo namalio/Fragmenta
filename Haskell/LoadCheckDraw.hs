@@ -28,7 +28,7 @@ where
 
 import Gr_Cls ( emptyGM, GR(ns), GrM )
 import ParsingG ( loadGraph )
-import qualified GwTParsing as GwtP (loadGwT)
+import qualified ParsingGwT as GwtP (loadGwT)
 import qualified GwETParsing as GwetP (loadGwET)
 import qualified ParsingGFG as GFGP  ( loadGFG )
 import GrsDraw
