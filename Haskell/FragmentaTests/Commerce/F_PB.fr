@@ -1,0 +1,22 @@
+fragment F_PB {
+  SG SG_PB {
+    node Book
+    proxy PProduct
+    proxy PNat3
+    proxy PNamed
+    node Author
+    node Country
+    value 10
+    inh Book->PProduct
+    inh V10->PNat3
+    inh Book->PNamed
+    inh Author->PNamed
+    relu Book->PNat3[year]
+    relu Book->Author[authors]:1..*
+    relu Author->Country[country]
+    vcnt Book->V10[bvat_eq: vat =]
+  }
+  ref PProduct->Product
+  ref PNat3->Nat
+  ref PNamed->Named
+}

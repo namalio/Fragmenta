@@ -1,21 +1,18 @@
 Morphism F_PW1 {
 	nodes {
 	 Name->Other
-	 Named->Manner
-	 PetOwner->Other
-     Pet->Guest
-     PHCard->Other
-	 Locatable->Manner
-     Country->Other
-     City->Other
+	 Named->Trait
      Date->Other
+     Nat->Other
+     Nat1->Other
+     V31->Other
+     V1->Other
+     V12->Other
 	}
 	edges {
 	   name->AnyRel
-	   city->AnyRel
-	   country->AnyRel
-       dob->AnyRel
-       Owns->AnyRel
-       Holds->AnyRel
+	   day->AnyRel
+	   month->AnyRel
+	   year->AnyRel
 	}
 }

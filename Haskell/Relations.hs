@@ -36,7 +36,7 @@ module Relations (Rel
     , flatten
     , tree) where
 
-import SimpleFuns ( pair_up, swap )
+import SimpleFuns ( pairUp, swap )
 import Sets ( Set(..), set, filterS, zipS, singles, union, gunion, intersec, intoSet, sminus, toList,
             first )
 import TheNil ( Nil(nil) )
@@ -97,7 +97,7 @@ override s r = dsub s (dom_of r) `union` r
 
 
 rcomp::(Eq a, Eq b, Eq c)=>Rel a b-> Rel b c->Rel a c
-rcomp r1 r2 = foldr (\(x, y) r'-> fmap (pair_up x) (img r2 $ singles y) `union` r') nil r1
+rcomp r1 r2 = foldr (\(x, y) r'-> fmap (pairUp x) (img r2 $ singles y) `union` r') nil r1
 --rcomp0 r1 r2 
 
 -- backwards relation composition
@@ -127,13 +127,13 @@ tfun' :: Eq a => Rel a b -> Set a -> Bool
 tfun' r xs = functional r && total r xs
 
 injective :: Eq a => Rel b a -> Bool
-injective r = (functional . inv) r
+injective = functional . inv
 
 surjective :: Eq b => Rel a b -> Set b -> Bool
-surjective r ys = ys == (ran_of r)
+surjective r ys = ys == ran_of r
 
 relation :: (Eq a, Eq b) => Rel a b -> Set a -> Set b -> Bool
-relation r xs ys = (dom_of r) <= xs && range_ok r ys
+relation r xs ys = dom_of r <= xs && range_ok r ys
 pfun :: (Eq a, Eq b) => Rel a b -> Set a -> Set b -> Bool
 pfun f xs ys = functional f && relation f xs ys
 
@@ -209,8 +209,8 @@ find_monces r = foldr (\x xs->if length (img r $ singles x) > 1 then x `intoSet`
 
 cross :: (Eq a, Eq b) => Set a -> Set b -> Set (a, b)
 cross EmptyS _ = nil
-cross (Set x a) b = (fmap (pair_up x) b) `union` (cross a b)
+cross (Set x a) b = (fmap (pairUp x) b) `union` (cross a b)
 
 flatten :: (Eq a, Eq b)=>Set (a, [b]) -> Set (a, b)
 flatten EmptyS = EmptyS
-flatten (Set (x, ys) r) = (set $ map (pair_up x) ys) `union` (flatten r)
+flatten (Set (x, ys) r) = (set $ map (pairUp x) ys) `union` (flatten r)

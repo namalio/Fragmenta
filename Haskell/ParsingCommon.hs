@@ -1,27 +1,26 @@
 module ParsingCommon (
    parse_id
-   , parse_number
+   , parseNumber
    , parseMaybe
    , parse_until_chs
    , parse_ls_ids
    , capitalise_fst
-   , lower_fst) where
+   , lower_fst
+   , parseIdLoose) where
 
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
 import MyMaybe ( str_of_ostr )
 import ParseUtils
 
-is_letter::Char->Bool
-is_letter ch = (ch>='a' && ch<='z') || (ch>='A' && ch<='Z')
+isLetter::Char->Bool
+isLetter ch = ch `elem` ['a'..'z'] || ch `elem` ['A'..'Z']
 
 is_val_id_char::Char->Bool
-is_val_id_char ch = is_letter ch || isDigit ch || ch == '_'
+is_val_id_char ch = isLetter ch || isDigit ch || ch == '_'
 
-parse_number::ReadP String
-parse_number = do
-   n<- (many1 . satisfy) isDigit
-   return n
+parseNumber::ReadP String
+parseNumber = (many1 . satisfy) isDigit
 
 -- parse_fst_letter_of_id ::ReadP String
 -- parse_fst_letter_of_id = do
@@ -30,9 +29,12 @@ parse_number = do
 
 parse_id::ReadP String
 parse_id = do
-   ch<- satisfy (is_letter)
-   str<-(munch is_val_id_char)
+   ch<- satisfy (isLetter)
+   str<-munch is_val_id_char
    return (ch:str)
+
+parseIdLoose::ReadP String
+parseIdLoose = munch is_val_id_char
 
 --parse_spc_id::ReadP String
 --parse_spc_id = do

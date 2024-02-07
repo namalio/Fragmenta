@@ -1,6 +1,6 @@
-module FrParsing (loadFragment, loadSG) where
+module ParsingFr (loadFragment, loadSG) where
 
-import Sets ( set, singles, union, Set(..) )
+import Sets ( intoSet, set, singles, union, Set(..) ) 
 import Relations
 import Grs (unionGM )
 import SGrs
@@ -14,19 +14,24 @@ import SGElemTys
 import Mult
 import PathExpressions
 import Gr_Cls
+import SimpleFuns
 
 -- Edge definition: optional name, source and a target nodes (Strings), edge type, two optional multiplicities, an optional path expression
 data EdgeDef = EdgeDef String String String SGETy Mult Mult (Maybe (PE String String)) 
    deriving(Eq, Show)
 data EdgeDep = EdgeDep String String
    deriving(Eq, Show)
+-- Value constraint edge: A name, a source and a target, an optional edge name and an operator
+data EdgeVCnt = EdgeVCnt String String String String SGVCEOP
+   deriving(Eq, Show)
 -- A Node has a name and a type
 data NodeDef = NodeDef String SGNTy 
    deriving(Eq, Show)
--- Enumeration cluster: a name and associated values
+-- Enumeration cluster: name and associated values
 data ClEnum = ClEnum String [String]
    deriving(Eq, Show)
 data SGElem = ElemN NodeDef | ElemE EdgeDef | ElemD EdgeDep | ElemClE ClEnum 
+   | ElemECnt EdgeVCnt
    deriving(Eq, Show)
 data SGDef = SGDef String [SGElem] 
    deriving(Eq, Show)
@@ -48,8 +53,8 @@ data FrRef = Proxy String String | InstanceOfN String String | InstanceOfE Strin
 data FrDef = FrDef String SGDef [FrRef] 
    deriving(Eq, Show)
 
-sgd_name :: SGDef -> String
-sgd_name (SGDef nm _) = nm
+sgdName :: SGDef -> String
+sgdName (SGDef nm _) = nm
 
 frd_sg_def :: FrDef -> SGDef
 frd_sg_def (FrDef _ sgd _) = sgd
@@ -66,26 +71,40 @@ ext_mult_s _ EmptyS = nil
 ext_mult_s e m = singles (e, m)
 
 
-extract_elem::SGElem->SGr String String
-extract_elem (ElemN (NodeDef n nty)) = 
-   consSG (consG (singles n) nil nil nil) (singles (n, nty)) nil nil nil nil nil
-extract_elem (ElemE (EdgeDef e s t ety m1 m2 pe)) = 
+
+extractElem::SGElem->SGr String String
+extractElem (ElemN (NodeDef n nty)) = 
+   consSG (consG (singles n') nil nil nil) (singles (n', nty)) nil nil nil nil nil nil
+   where nnm n_ Nval = "V" ++ n_
+         nnm n_ _ = n_
+         n' = nnm n nty
+extractElem (ElemE (EdgeDef e s t ety m1 m2 pe)) = 
    let e' = nm_of_edge ety e s t in 
    let sm = ext_mult_s e' m1 in
    let tm = ext_mult_s e' m2 in
    let pei = if ety `elem` [Eder, Epath] then singles (e', the pe) else nil in
-   consSG (consG (set [s, t]) (singles e') (singles (e', s)) (singles (e', t))) nil (singles (e', ety)) sm tm pei nil
+   consSG (consG nil (singles e') (singles (e', s)) (singles (e', t))) nil (singles (e', ety)) sm tm pei nil nil
    where nm_of_edge Einh _ s t = "EI" ++ s ++ "_" ++ t
          nm_of_edge _ enm s t = "E"++ (if null enm then s ++ "_" ++ t else enm)
-extract_elem (ElemD (EdgeDep se te)) =  consSG empty nil nil nil nil nil (singles (nm_e se, nm_e te))
+extractElem (ElemD (EdgeDep se te)) =  consSG empty nil nil nil nil nil (singles (nm_e se, nm_e te)) nil
    where nm_e e = "E"++ e
-extract_elem (ElemClE (ClEnum ne vs)) = 
-   let f_nty = Set (ne, Nenum) (set $ map (\v->(v, Nval)) vs) in
-   let f_ety = set (map (\v->("EI"++v, Einh)) vs) in
-   consSG (consG (Set ne (set vs)) (set $ map (\v->"EI"++v) vs) (set $ map (\v->("EI"++v, v)) vs) (set $ map (\v->("EI"++v, ne)) vs)) f_nty f_ety nil nil nil nil
+extractElem (ElemClE (ClEnum ne vs)) = 
+   let nvs = fmap ("V"++) vs
+       f_nty = (ne, Nenum) `intoSet` set (map (`pairUp` Nval) nvs) 
+       f_ety = set (map (\v->("EI"++v, Einh)) nvs)
+       g = consG (ne `intoSet` set nvs) (set $ map ("EI"++) nvs) (set $ map (\v->("EI"++v, v)) nvs) (set $ map (\v->("EI"++v, ne)) nvs) in
+   consSG g f_nty f_ety nil nil nil nil nil
+extractElem (ElemECnt (EdgeVCnt en s t e op)) = 
+   let e' =  nmEdge en
+       e_ = if null e then "" else "E"++ e
+       es = singles e'
+       g = consG nil es (singles (e', s)) (singles (e', t)) 
+       fEty = fmap (`pairUp` Evcnt) es in
+   consSG g nil fEty nil nil nil nil (fmap (`pairUp` (op, maybeFrString e_)) es) 
+   where nmEdge enm = "E" ++ enm 
 
 extract_sg::[SGElem]->SGr String String
-extract_sg = foldl (\sg e-> sg `unionSG` (extract_elem e)) empty
+extract_sg = foldl (\sg e-> sg `unionSG` extractElem e) empty
 
 --extract_sg ((ElemN (NodeDef n nty)):es) = (cons_sg (cons_g [n] [] [] []) [(n, nty)] [] [] []) `union_sg` (extract_sg es)
 --extract_sg ((ElemE (EdgeDef e s t ety om1 om2)):es) = 
@@ -113,8 +132,8 @@ gProxyInfo (_:rs) = gProxyInfo rs
 
 gInstanceOfM::[FrRef]->GrM String String
 gInstanceOfM [] = emptyGM
-gInstanceOfM ((InstanceOfN n r):rs) = (consGM (singles (n, r)) nil) `unionGM` gInstanceOfM rs
-gInstanceOfM ((InstanceOfE e r):rs) = (consGM nil (singles (edgId e, edgId r))) `unionGM` gInstanceOfM rs
+gInstanceOfM ((InstanceOfN n r):rs) = consGM (singles (n, r)) nil `unionGM` gInstanceOfM rs
+gInstanceOfM ((InstanceOfE e r):rs) = consGM nil (singles (edgId e, edgId r)) `unionGM` gInstanceOfM rs
 gInstanceOfM (_:rs) = gInstanceOfM rs
 
 cons_fr_fr_frd::FrDef->Fr String String
@@ -157,6 +176,13 @@ parse_nvirt = do
    n<-parse_fin_node Nvirt
    return n
 
+parse_nval::ReadP NodeDef
+parse_nval = do
+   string "value"
+   skipSpaces
+   nm<-parseIdLoose
+   return (NodeDef nm Nval)
+
 --parse_nopt::ReadP NodeDef
 --parse_nopt = do
 --   string "opt"
@@ -166,7 +192,7 @@ parse_nvirt = do
 
 parse_sg_node::ReadP NodeDef
 parse_sg_node = do
-   n<-parse_noden <|> parse_nodea <|> parse_proxy <|>  parse_nvirt 
+   n<-parse_noden <|> parse_nodea <|> parse_proxy <|>  parse_nvirt <|> parse_nval
 -- <|> parse_nopt 
    return n
 
@@ -182,7 +208,7 @@ parse_mult_many = do
 
 parse_mult_val::ReadP MultVal
 parse_mult_val = do
-   n<-parse_number
+   n<-parseNumber
    return (Val $ read n)
 
 parse_smult::ReadP MultVal
@@ -192,7 +218,7 @@ parse_smult = do
 
 parse_range_mult::ReadP MultC
 parse_range_mult = do
-   n<-parse_number
+   n<-parseNumber
    skipSpaces
    string ".."
    skipSpaces
@@ -415,6 +441,71 @@ parse_path = do
    skipSpaces
    return (EdgeDef e s t Epath nil nil (Just pe))
 
+parse_vcOpEq::ReadP SGVCEOP
+parse_vcOpEq = do
+   string "="
+   skipSpaces
+   return (Eq)
+
+parse_vcOpNeq::ReadP SGVCEOP
+parse_vcOpNeq = do
+   string "≠"
+   skipSpaces
+   return (Neq)
+
+parse_vcOpLeq::ReadP SGVCEOP
+parse_vcOpLeq = do
+   string "≤"
+   skipSpaces
+   return (Leq)
+
+parse_vcOpGeq::ReadP SGVCEOP
+parse_vcOpGeq = do
+   string "≥"
+   skipSpaces
+   return (Geq)
+
+parse_vcOpLt::ReadP SGVCEOP
+parse_vcOpLt = do
+   string "<"
+   skipSpaces
+   return (Lt)
+
+parse_vcOpGt::ReadP SGVCEOP
+parse_vcOpGt = do
+   string ">"
+   skipSpaces
+   return (Gt)
+
+parse_vcOp::ReadP SGVCEOP
+parse_vcOp = do
+   op <- parse_vcOpEq <|> parse_vcOpNeq <|> parse_vcOpLeq <|> parse_vcOpGeq <|> parse_vcOpLt <|> parse_vcOpGt 
+   return op
+
+parse_vce::ReadP EdgeVCnt
+parse_vce = do
+   string "vcnt"
+   skipSpaces
+   s<-parse_id 
+   skipSpaces
+   string "->"
+   skipSpaces
+   t<-parse_id
+   skipSpaces
+   char '['
+   skipSpaces
+   en<-parse_id
+   skipSpaces
+   char ':'
+   skipSpaces
+   e<-parse_id <++ (return "")
+   skipSpaces
+   op<-parse_vcOp
+   skipSpaces
+   char ']'
+   skipSpaces
+   return (EdgeVCnt en s t e op)
+
 parse_compu::ReadP EdgeDef
 parse_compu = do
    string "compu"
@@ -443,7 +534,8 @@ parse_inh = do
 
 parse_sg_edge::ReadP EdgeDef
 parse_sg_edge = do
-   e <- parse_rel <|> parse_relu  <|> parse_comp  <|> parse_compu  <|> parse_inh <|> parse_der <|> parse_path 
+   e <- parse_rel <|> parse_relu  <|> parse_comp  <|> parse_compu  <|> parse_inh 
+      <|> parse_der <|> parse_path
    return e
 
 end_of_sep_term::ReadP ()
@@ -496,10 +588,15 @@ parse_sg_ED = do
    e<-parse_edge_dep
    return (ElemD e)
 
+parse_sg_VCE::ReadP SGElem
+parse_sg_VCE = do
+   e <- parse_vce
+   return (ElemECnt e)
+
 parse_sg_elem::ReadP SGElem
 parse_sg_elem = do
    skipSpaces
-   e<-parse_sg_elemN <|> parse_sg_elemE <|> parse_sg_enumE <|> parse_sg_ED 
+   e<-parse_sg_elemN <|> parse_sg_elemE <|> parse_sg_enumE <|> parse_sg_ED <|> parse_sg_VCE
    return e
 
 parse_sg::ReadP SGDef
@@ -611,7 +708,7 @@ loadSG fn = do
          return (Nothing)
       else do
          let sgd = the sg_def
-         return(Just (sgd_name sgd, cons_sg_fr_sgd sgd))
+         return(Just (sgdName sgd, cons_sg_fr_sgd sgd))
    return osg
 
 test1 :: IO ()

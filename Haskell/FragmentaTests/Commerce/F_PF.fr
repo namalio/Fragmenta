@@ -1,0 +1,18 @@
+fragment F_PF {
+  SG SG_PF {
+    node Food
+    proxy PNat4
+    value 4
+    proxy PProduct2
+    proxy PNamed2
+    inh Food->PProduct2
+    inh Food->PNamed2
+    inh V4->PNat4
+    enum FoodGroup: FruitVeg, Starchy, Dairy, Fat, Protein
+    relu Food->FoodGroup[category]
+    vcnt Food->V4[fvat_eq: vat =]
+  }
+  ref PProduct2->Product
+  ref PNat4->Nat
+  ref PNamed2->Named
+}

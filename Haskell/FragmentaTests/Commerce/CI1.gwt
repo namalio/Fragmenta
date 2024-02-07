@@ -1,0 +1,63 @@
+GrwT CI1 {
+	node bO : Book
+	node Othelo : Name
+	edge bO->Othelo:name
+	node pO : Euro
+	node v30: Nat
+	node v0: Nat
+	edge pO->v30:euros
+	edge pO->v0:cents
+	edge bO->pO:price
+	node v1603 : Nat
+	edge bO->v1603:year
+	node v10:Percentage
+	edge bO->v10:vat
+	node aWS : Author
+	node William_Shakespeare : Name
+	edge bO->aWS:authors
+	edge aWS->William_Shakespeare:name
+	node England:Country
+	edge aWS->England:country
+	node bBD : Book
+	edge bBD->v10:vat
+	node The_Book_of_disquiet : Name
+	edge bBD->The_Book_of_disquiet:name
+	node aFP:Author
+	edge bBD->aFP:authors
+	node Fernando_Pessoa : Name
+	edge aFP->Fernando_Pessoa: name
+	node Portugal:Country
+	edge aFP->Portugal:country
+	node v1982 : Nat
+	edge bBD->v1982 : year
+	node pBD : Euro
+	node v25: Nat
+	node v55: Nat
+	edge pBD->v25:euros
+	edge pBD->v55:cents
+	edge bBD->pBD:price
+	node fB : Food
+	node Banana : Name
+	edge fB->Banana:name
+	node v4: Percentage
+	edge fB->v4:vat
+	node vFruitVeg : VFruitVeg
+	edge fB->vFruitVeg :category
+	node pB : Euro
+	node v85: Nat
+	edge pB->v0:euros
+	edge pB->v85:cents
+	edge fB->pB:price
+	node fGY : Food
+	node Great_Yoghurt : Name
+	edge fGY->Great_Yoghurt:name
+	edge fGY->v4:vat
+	node vDairy : VDairy
+	edge fGY->vDairy :category
+	node pGY : Euro
+	node v1: Nat
+	node v6: Nat
+	edge pGY->v1:euros
+	edge pGY->v6:cents
+	edge fGY->pGY:price
+}

@@ -5,17 +5,17 @@ fragment F_AH {
     node Element
     node DepthElement
     node Attribute
-    virtual Manner
+    virtual Trait
     virtual Definition
     compu Description->Element[Contains]:*
-    inh Description->Manner
-    inh Element->Manner
-    rel Manner->Attribute[Has]:*;*
+    inh Description->Trait
+    inh Element->Trait
+    rel Trait->Attribute[Has]:*;*
     rel Element->Element[RelatedTo]:*;*
     rel Attribute->Attribute[AssociatedWith]:*;*
     compu Definition->Description[HasDesc]:*
     inh Model->Definition
-    inh Model->Manner
+    inh Model->Trait
     inh DepthElement->Element
     inh DepthElement->Definition
   }

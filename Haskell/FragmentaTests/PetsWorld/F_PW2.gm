@@ -1,19 +1,19 @@
 Morphism F_PW2 {
-  nodes {
-    PPet->Guest
-    Dog->Guest
-    Cat->Guest
-    Chamaeleon->Guest
-    Gecko->Guest
-    Mammal->Guest
-    Reptile->Guest
-    PetStatus->Other
-    privileged->Other
-    middleclass->Other
-    disadvantaged->Other
-    NoPrivilege->Other
-  }
-  edges {
-    pstatus->AnyRel
-  }
+	nodes {
+	 PNamed->Trait
+	 PetOwner->Other
+     Pet->Guest
+     PHCard->Other
+	 Locatable->Trait
+     Country->Other
+     City->Other
+     PDate->Other
+	}
+	edges {
+	   city->AnyRel
+	   country->AnyRel
+       dob->AnyRel
+       Owns->AnyRel
+       Holds->AnyRel
+	}
 }

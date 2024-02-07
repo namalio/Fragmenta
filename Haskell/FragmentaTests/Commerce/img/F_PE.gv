@@ -1,0 +1,21 @@
+digraph {graph[label=F_PE,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PE{style=dashed;label=F_PE;
+"Percentage"[shape=record,fillcolor=lightskyblue1,style = filled,label="Percentage"];
+"PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
+"V100"[shape=cds,fillcolor="#FFF2CC",style = filled,label="100"];
+"Euro"[shape=record,fillcolor=lightskyblue1,style = filled,label="Euro"];
+"V99"[shape=cds,fillcolor="#FFF2CC",style = filled,label="99"];
+
+"Percentage"->"PNat"[arrowhead=onormal,arrowsize=2.0];
+"V100"->"PNat"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"V100"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"Euro"->"PNat"[label="cents",arrowhead=vee,headlabel="",arrowsize=.5];
+"Euro"->"PNat"[label="euros",arrowhead=vee,headlabel="",arrowsize=.5];
+"V99"->"PNat"[arrowhead=onormal,arrowsize=2.0];
+"Euro"->"V99"[arrowhead=vee,style=dashed,label="cents ≤"];
+
+
+}
+
+}

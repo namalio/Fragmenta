@@ -1,0 +1,11 @@
+Morphism F_PP {
+	nodes {
+	 PPercentage->Percentage
+	 Product->Product
+	 PEuro->Currency
+	}
+	edges {
+	   vat->vat
+	   price->price
+	}
+}

@@ -4,9 +4,18 @@
 -- Description: Handler module of StCs
 -- Author: Nuno Amálio
 --------------------------
-module Statecharts.StCs(StC, load_stcs_mmi, 
-       gStCName, gDescInfo, gTransitionInfo, gDescs, gMainDescs, nmOfNamed, nmOfNamed',
-       isMutableStatewInner, gCMMStTy, gInnerStart)
+module Statecharts.StCs(StC
+   , load_stcs_mmi
+   , gStCName
+   , gDescInfo
+   , gTransitionInfo
+   , gDescs
+   , gMainDescs
+   , nmOfNamed
+   , nmOfNamed'
+   , isMutableStatewInner
+   , gCMMStTy
+   , gInnerStart)
 where
 
 import Gr_Cls
@@ -23,7 +32,7 @@ import Relations (appl, dom_of, img, rcomp)
 import TheNil
 import Sets ( intersec )
 import MyMaybe ( applM )
-import MMI ( cons_mm_info, MMI )
+import MMI ( consMMI, MMI )
 
 type StC a b = GrwT a b
 
@@ -48,7 +57,7 @@ load_stcs_mmi def_path = do
   (_, amm)<-load_stcs_amm def_path
   (_, cmm)<-load_stcs_cmm def_path
   rm<-load_stcs_rm def_path
-  return (cons_mm_info cmm amm rm (fsg . reso_m $ cmm))
+  return (consMMI cmm amm rm (fsg . reso_m $ cmm))
 
 -- Gives the relation of an edge in a statechart
 consRelOfEdge stc e = foldr (\e r->(appl (src stc) e, appl (tgt stc) e) `intoSet` r) nil (es_of_ety stc $ show_cmm_e e)
@@ -81,6 +90,7 @@ gInnerStart sg_mm stc s =
    the $ (img r [s]) `intersec` (stc_ns_of_nty sg_mm stc CMM_StartState)
 
 -- Gets information about some description of given statechart 
+gDescInfo :: (GR gm, GRM gm) =>SGr String String-> gm String String -> String -> (Set String, Set String)
 gDescInfo sg_mm stc desc_nm = 
    let elems = img (consRelOfEdge stc CMM_EContains) [desc_nm] in
    let elems_st = elems `intersec` (stc_ns_of_nty sg_mm stc CMM_State) in

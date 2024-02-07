@@ -4,4 +4,6 @@ SG SG_Vehicle_Parts {
    node Part
    comp Composite->Part[HasParts]:0..1;*
    inh Vehicle->Composite
+   node Other
+   rel Vehicle->Other[ORel]:*;*
 }

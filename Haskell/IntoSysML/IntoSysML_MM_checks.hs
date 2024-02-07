@@ -5,6 +5,7 @@ import CheckUtils
 import Utils
 import SGrs
 import Relations
+import NumString
 
 def_path :: String
 def_path = "IntoSysML/MM/"
@@ -62,6 +63,7 @@ check_fragments = do
     check_report_wf nm_fcd1 (Just Partial) fcd1 True
     check_report_wf nm_fcd2 (Just Partial) fcd2 True
 
+check_morphisms :: IO ()
 check_morphisms = do
     (nm_af, af)<-loadF def_path "F_AAD.fr"
     (nm_fb1, fb1)<-loadF def_path "F_B1.fr"

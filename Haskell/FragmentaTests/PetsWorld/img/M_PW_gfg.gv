@@ -6,6 +6,7 @@ digraph {graph[label=M_PW_gfg,labelloc=tl,labelfontsize=12];
 "F_PW5"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW5"];
 "F_PW6"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW6"];
 "F_PW7"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW7"];
+"F_PW8"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PW8"];
 
 "F_PW2"->"F_PW1"[label=" ",dir=forward,arrowhead=vee];
 "F_PW3"->"F_PW2"[label=" ",dir=forward,arrowhead=vee];
@@ -13,4 +14,5 @@ digraph {graph[label=M_PW_gfg,labelloc=tl,labelfontsize=12];
 "F_PW5"->"F_PW4"[label=" ",dir=forward,arrowhead=vee];
 "F_PW6"->"F_PW5"[label=" ",dir=forward,arrowhead=vee];
 "F_PW7"->"F_PW6"[label=" ",dir=forward,arrowhead=vee];
+"F_PW8"->"F_PW7"[label=" ",dir=forward,arrowhead=vee];
 }

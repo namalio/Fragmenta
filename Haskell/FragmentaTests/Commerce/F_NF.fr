@@ -1,0 +1,7 @@
+fragment F_NF {
+  SG SG_NF {
+    node Nat
+    virtual Feature
+    inh Nat->Feature
+  }
+}

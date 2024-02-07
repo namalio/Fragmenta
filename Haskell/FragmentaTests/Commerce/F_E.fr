@@ -1,0 +1,12 @@
+fragment F_E {
+  SG SG_E {
+    proxy PNat2
+    node Euro
+    relu Euro->PNat2[cents]
+    relu Euro->PNat2[euros]
+    value 99
+    inh V99->PNat2
+    vcnt Euro->V99[cents_leq: cents ≤]
+  }
+  ref PNat2->Nat
+}

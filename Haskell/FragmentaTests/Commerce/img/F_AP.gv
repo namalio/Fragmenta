@@ -1,0 +1,19 @@
+digraph {graph[label=F_AP,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_AP{style=dashed;label=F_AP;
+"OtherF"[shape=record,fillcolor=lightskyblue1,style = filled,label="OtherF"];
+"Product"[shape=record,fillcolor=lightskyblue1,style = filled,label="Product"];
+"PFeature"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feature<br/>(P)>];
+"PPercentage"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Percentage<br/>(P)>];
+"Currency"[shape=record,fillcolor=lightskyblue1,style = filled,label="Currency"];
+
+"OtherF"->"PFeature"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"Currency"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PPercentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"PFeature"->"PFeature"[label="HasAttributes▼",dir=none,taillabel="*",headlabel="*"];
+"Product"->"PFeature"[arrowhead=onormal,arrowsize=2.0];
+"Currency"->"PFeature"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+
+}

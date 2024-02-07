@@ -1,0 +1,21 @@
+fragment F_PW8 {
+  SG SG_PW8 {
+    proxy PPetRoom3
+    proxy PEnsuiteRoom
+    proxy Pdisadvantaged
+    proxy Pprivileged
+    proxy Preptiles
+    proxy Pmiddleclass
+    derived PPetRoom3->Pdisadvantaged[PRA <-> Hosts ▷ Reptile⨾ pstatus]:0;0
+    derived PEnsuiteRoom->Pprivileged[ERP <-> Hosts ⨾ pstatus]:0..1;0..2
+    derived PEnsuiteRoom->Pmiddleclass[ERNMC <-> Hosts ⨾ pstatus]:0;0
+    derived PEnsuiteRoom->Pdisadvantaged[ERND <-> Hosts ⨾ pstatus]:0;0
+    derived PEnsuiteRoom->Preptiles[ERNR <-> zone]:0;0
+  }
+  ref PPetRoom3->PetRoom
+  ref PEnsuiteRoom->EnsuiteRoom
+  ref Pdisadvantaged->Vdisadvantaged
+  ref Pprivileged->Vprivileged
+  ref Preptiles->Vreptiles
+  ref Pmiddleclass->Vmiddleclass
+}

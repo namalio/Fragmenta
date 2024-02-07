@@ -22,27 +22,33 @@ GrwT PetRoomWorld_I2 {
 	node R1 : RoomId
 	edge PR1->R1:roomid
 	edge PH->PR1: rooms
-	node cats : cats
+	node cats : Vcats
 	edge PR1->cats : zone
 	edge F1->cats : zone
 	edge F1->PR1 : Serves
-	node v2: Nat
+	node v2: Nat1
 	edge PR1->v2:rcapacity
 	node G : Cat
 	node Gato : Name
-	node d_07_01_2009 : Date
+	node dobG : Date
+	node v7 : Nat1
+	node v1 : Nat1
+	node v2009 : Nat
+	edge dobG->v7:day
+	edge dobG->v1:month
+	edge dobG->v2009:year
 	edge G->Gato : name
-	node privileged : privileged
+	node privileged : Vprivileged
 	edge G->privileged : pstatus
-	edge G->d_07_01_2009 : dob
+	edge G->dobG : dob
 	node PR2:PetRoom
 	edge PH->PR2:rooms
-	node v10: Nat
+	node v10: Nat1
 	edge PR2->v10:rcapacity
 	node F2: Toilet
 	edge PH->F2:facilities
 	edge PH->PR2:rooms
-	node dogs : dogs
+	node dogs : Vdogs
 	edge F2->dogs:zone
 	edge PR2->dogs:zone
 	edge F2->PR2:Serves
@@ -54,31 +60,43 @@ GrwT PetRoomWorld_I2 {
 	edge PR1->K:Hosts
 	node Kopek : Name
 	edge K->Kopek : name
-	node d_04_05_2015 : Date
-	node disadvantaged : disadvantaged
+	node dK : Date
+	node v4 : Nat1
+	node v5 : Nat1
+	node v2015 : Nat
+	edge dK->v4:day
+	edge dK->v5:month
+	edge dK->v2015:year
+	node disadvantaged : Vdisadvantaged
 	edge K->disadvantaged : pstatus
 	edge PR2->G:Hosts
-	edge K->d_04_05_2015:dob
+	edge K->dK:dob
 	node F3: Toilet
 	edge PH->F3:facilities
 	node T3:RoomId
 	edge F3->T3:roomid
 	node PR3:PetRoom
 	node R3:RoomId
-	node v20: Nat
-	edge PR3->v20:rcapacity
+	node v0: Nat1
+	edge PR3->v0:rcapacity
 	edge PR3->R3:roomid
 	edge PH->PR3:rooms
-	node reptiles : reptiles
+	node reptiles : Vreptiles
 	edge PR3->reptiles:zone
 	edge F3->reptiles:zone
 	edge F3->PR3:Serves
 	node L : Chamaeleon
 	node Lagartixa : Name
 	edge L->Lagartixa : name
-	node d_17_11_2018 : Date
-	edge L->d_17_11_2018:dob
-	node middleclass : middleclass
+	node dL : Date
+	node v17 : Nat1
+	node v13 : Nat1
+	node v2018 : Nat
+	edge dL->v17:day
+	edge dL->v13:month
+	edge dL->v2018:year
+	edge L->dL:dob
+	node middleclass : Vmiddleclass
 	edge L->middleclass :pstatus
 	edge PR3->L:Hosts
 	node PO_P:PetOwner

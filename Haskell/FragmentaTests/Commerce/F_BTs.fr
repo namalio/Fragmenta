@@ -1,0 +1,8 @@
+fragment F_BTs {
+  SG SG_N {
+    node Nat
+    node Name
+    virtual Named
+    relu Named->Name[name]
+  }
+}

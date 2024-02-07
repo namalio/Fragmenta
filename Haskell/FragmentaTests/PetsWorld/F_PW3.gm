@@ -1,22 +1,19 @@
 Morphism F_PW3 {
   nodes {
-     HotelZone->Other
-     HotelRoom->Room
-     RoomId->Other
-     PetRoom->Room
-     PPet2->Guest
-     PDog->Guest
-     PReptile->Guest
-     PCat->Guest
-     dogs->Other
-     reptiles->Other
-     cats->Other
-     Facility->Room
-     Toilet->Room
-     Grooming->Room
+    PPet->Guest
+    Dog->Guest
+    Cat->Guest
+    Chamaeleon->Guest
+    Gecko->Guest
+    Mammal->Guest
+    Reptile->Guest
+    PetStatus->Other
+    Vprivileged->Other
+    Vmiddleclass->Other
+    Vdisadvantaged->Other
+    NoPrivilege->Other
   }
   edges {
-    Hosts->Hosts
-    roomid->AnyRel
+    pstatus->AnyRel
   }
 }

@@ -110,9 +110,9 @@ instance GRM GrM where
    fE GrM {mV_ = _, mE_ = ef} = ef
 
 class GM_CHK g g' where
-   okayGM::(Eq a, Eq b, GNodesNumConv a)
+   okayGM::(Eq a, Eq b, GNodesNumConv a, GNumSets a)
       =>Maybe MK->(g a b, GrM a b, g' a b)->Bool 
-   faultsGM::(Eq a, Eq b, Show a, Show b, GNodesNumConv a)
+   faultsGM::(Eq a, Eq b, Show a, Show b, GNodesNumConv a, GNumSets a)
       => String->Maybe MK->(g a b, GrM a b, g' a b)->ErrorTree
 
 class GM_CHK' g g' where

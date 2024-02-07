@@ -46,7 +46,7 @@ import SGrs
 import ParseUtils
 import TheNil
 import MyMaybe
-import qualified FrParsing as FP (loadSG, loadFragment)
+import qualified ParsingFr as FP (loadSG, loadFragment)
 import Control.Monad(forM, forM_, when)
 import ParsingGM
 import MdlDraw

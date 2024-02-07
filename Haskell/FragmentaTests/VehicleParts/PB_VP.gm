@@ -5,9 +5,13 @@ Morphism M_PB_VP {
        CPair->Composite
        X->Part
        Y->Part
+	   BrakeType->Other
+	   VRim->Other
+	   VDisk->Other
 	}
 	edges {
 	   CPair_fst->HasParts
 	   CPair_snd->HasParts
+	   brakes->ORel
 	}
 }

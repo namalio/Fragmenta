@@ -8,6 +8,7 @@
 module SGElemTys (SGNTy(..), SGETy(..), SGED(..), sgnty_set, sgety_set) where
 
 import Sets ( set, Set )
+import Logic
 
 data SGNTy = Nnrml | Nabst | Nprxy | Nenum | Nval | Nvirt
    deriving (Eq, Show)
@@ -23,11 +24,13 @@ data SGETy = Einh | Ecomp SGED | Erel SGED  | Eder | Epath | Evcnt deriving (Sho
 sgety_set :: Set SGETy
 sgety_set = set $ [Einh, Eder, Epath, Evcnt] ++ [e d | e<-[Ecomp, Erel], d<-[Duni, Dbi]]
 
--- Order which dictates allowed inheritance relations 
+-- Dictates allowed inheritance relations 
 nty_lti:: SGNTy->SGNTy->Bool
 nty_lti nt1 nt2 = nt1 /= Nprxy && (nt2 /= Nval) -- proxies may not inherit and values may not be inherited
-    && (nt2 == Nprxy  || nt1 == Nnrml -- removed previous 1st disjuct: (nt2 `elem` [Nenum, Nvirt] && nt1 == Nval) || 
-       || (nt1 == Nenum && nt2 == Nvirt) || (set [nt1, nt2] <= set [Nvirt, Nabst]))
+    && (nt1 `elem` [Nvirt, Nabst]) `implies` (nt2 `elem` [Nvirt, Nabst, Nprxy])
+    && (nt1 == Nenum) `implies` (nt2 `elem` [Nvirt, Nprxy])
+    -- && (nt2 == Nprxy  || nt1 == Nnrml -- removed previous 1st disjuct: (nt2 `elem` [Nenum, Nvirt] && nt1 == Nval) || 
+    --   || (nt1 == Nenum && nt2 == Nvirt) || (set [nt1, nt2] <= set [Nvirt, Nabst]))
     
 
 -- Ordering underpinning the compliance of refinement relations; says which node types can be refinement related

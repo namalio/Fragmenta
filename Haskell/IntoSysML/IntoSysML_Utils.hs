@@ -28,6 +28,7 @@ import IntoSysML.DrawCD
 import SimpleFuns
 import MMI
 import IntoSysML.CheckCD
+import NumString
 
 mm_path   = "IntoSysML/MM/"
 intosyml_path = "IntoSysML/Examples/"
@@ -53,14 +54,15 @@ check_CD_MM = do
     check_morphism "Refinement of 'IntoSysML_MM' by 'IntoSysML_AMM'" (Just TotalM) (gCMM mmi) (gRM mmi) (gAMM mmi) True
 
 --checkWF::MMI String->ASD String->IO(Bool)
-checkWF :: (GM_CHK' g g', Eq a, Eq b, Show a, Show b) =>String ->String ->g' a b -> g a b -> IO Bool
+checkWF :: (GM_CHK' g g', Eq a, Eq b, GNodesNumConv a, GNumSets a, Read a, Show a, Show b) 
+    =>String ->String ->g' a b -> g a b -> IO Bool
 checkWF nm nmk csg d = do
     let errs = faultsGM' nm (Just TotalM) (d, csg)
     unless (is_nil errs) $ do
         show_wf_msg (nmk ++ " " ++ nm) errs
     return (is_nil errs)
 
-checkET::(GWET g, GWT g', Eq a, Eq b, Show a, Show b, ET_GM_CHK g g' gt)
+checkET::(GWET g, GWT g', Eq a, Eq b, GNodesNumConv a, GNumSets a, Read a, Show a, Show b, ET_GM_CHK g g' gt)
     =>String ->String ->g a b -> g' a b ->gt a b->gt a b-> IO Bool
 checkET nm nmk d dt mdl mdlt = do
     let errs = faultsETGM nm (d, mdl) (dt, mdlt)

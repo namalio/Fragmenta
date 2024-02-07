@@ -4,13 +4,13 @@ fragment F_AH {
     node Other
     node Room
     node Hotel
-    virtual Manner
+    virtual Trait
     rel Room->Guest[Hosts]:0..1;*
     compu Hotel->Room[Hotel_rooms]:*
-    rel Manner->Manner[AnyRel]:*;*
-    inh Room->Manner
-    inh Hotel->Manner
-    inh Guest->Manner
-    inh Other->Manner
+    rel Trait->Trait[AnyRel]:*;*
+    inh Room->Trait
+    inh Hotel->Trait
+    inh Guest->Trait
+    inh Other->Trait
   }
 }

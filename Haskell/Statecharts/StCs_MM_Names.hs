@@ -2,7 +2,7 @@ module Statecharts.StCs_MM_Names (StCs_AMM_Ns(..), StCs_AMM_Es(..), StCs_CMM_Ns(
     show_amm_n, show_amm_e, show_cmm_n, show_cmm_e, read_cmm)
 where
 
-data StCs_AMM_Ns = AMM_Attribute | AMM_Element | AMM_DepthElement | AMM_Manner | AMM_Definition 
+data StCs_AMM_Ns = AMM_Attribute | AMM_Element | AMM_DepthElement | AMM_Trait | AMM_Definition 
    | AMM_Description | AMM_Model
     deriving (Read, Show, Eq)
 

@@ -64,17 +64,17 @@ instance GWET GrwET where
     etm = get
 
 -- well-formedness
-okGWET :: (Eq a, Eq b)=>GrwET a b -> Bool
+okGWET :: (Eq a, Eq b, GNumSets a)=>GrwET a b -> Bool
 okGWET gwet = okayG Nothing (ggwt gwet) && (domg gwet <= els gwet)
 
-errsGWET :: (Show a, Show b, Eq b, Eq a) => String -> GrwET a b -> [ErrorTree]
+errsGWET :: (Show a, Show b, Eq b, Eq a, GNumSets a) => String -> GrwET a b -> [ErrorTree]
 errsGWET id gwet = 
     let err1 = faultsG id Nothing (ggwt gwet) in
     let err2 = if (dom_of . fV $ gwet) <= ns gwet then nile else reportSSEq (dom_of . fV $ gwet) (ns gwet) in
     let err3 = if (dom_of . fE $ gwet) <= es gwet then nile else reportSSEq (dom_of . fE $ gwet) (es gwet) in
     [err1, err2, err3]
 
-rOkGWET :: (Eq a, Eq b, Show a, Show b) => String -> GrwET a b -> ErrorTree
+rOkGWET :: (Eq a, Eq b, Show a, Show b, GNumSets a) => String -> GrwET a b -> ErrorTree
 rOkGWET id gwet = reportWF gwet id okGWET (errsGWET id)
 --faultsG id Nothing $ ggwt gwet
 

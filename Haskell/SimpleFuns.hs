@@ -1,5 +1,5 @@
 module SimpleFuns(swap
-    , pair_up
+    , pairUp
     , equalLs
     , quicksort
     , fstT
@@ -34,8 +34,8 @@ import TheNil
 swap :: (b, a) -> (a, b)
 swap (x, y) = (y, x)
 
-pair_up::a->b->(a,b)
-pair_up x y = (x, y)
+pairUp::a->b->(a,b)
+pairUp x y = (x, y)
 
 -- Extends a pair to a triple
 ext_P_to_T::(a,b)->c->(a,b,c)

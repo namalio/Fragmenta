@@ -1,0 +1,11 @@
+Morphism F_PW8 {
+	nodes {
+       PPetRoom3->Room
+	   PEnsuiteRoom->Room
+	   Pdisadvantaged->Other
+	   Pprivileged->Other
+	   Preptiles->Other
+	   Pmiddleclass->Other
+  }
+  edges {}
+}

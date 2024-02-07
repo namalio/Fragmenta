@@ -2,21 +2,22 @@ fragment F_PW1 {
   SG SG_PW1 {
     virtual Named
     node Name
-    nodea Pet
     node Date
-    node PetOwner
-    virtual Locatable
-    node Country
-    node City
-    node PHCard
+    node Nat
+    node Nat1
+    value 31 
+    value 1
+    value 12
     rel Named->Name[name]:0..1;1
-    relu Locatable->Country[country]
-    relu Locatable->City[city]
-    relu Pet->Date[dob]
-    rel PetOwner->Pet[Owns]:1;*
-    rel PetOwner->PHCard[Holds]:1;*
-    inh Pet->Named
-    inh PetOwner->Named
-    inh PetOwner->Locatable
+    relu Date->Nat1[day]
+    relu Date->Nat1[month]
+    relu Date->Nat[year]
+    inh Nat1->Nat
+    inh V31->Nat
+    inh V1->Nat
+    inh V12->Nat
+    vcnt Nat1->V1[nat1_geq: ≥]
+    vcnt Date->V31[day_leq: day ≤]
+    vcnt Date->V12[month_leq: month ≤]
   }
 }

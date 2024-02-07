@@ -6,7 +6,10 @@ module MyMaybe(
     , boolMaybe
     , predMaybe
     , maybeToLs
-    , maybeToSet) where
+    , maybeToSet
+    , maybeFrSet
+    , maybeFrLs
+    , maybeFrString) where
 
 import Sets
 import Relations ( img, Rel)
@@ -41,6 +44,14 @@ toMaybeFrLs (n:_) = Just n
 maybeFrSet :: Set a -> Maybe a
 maybeFrSet EmptyS = Nothing
 maybeFrSet (Set x _) = Just x
+
+maybeFrLs :: [a] -> Maybe a
+maybeFrLs [] = Nothing
+maybeFrLs (x:_) = Just x
+
+maybeFrString :: String -> Maybe String
+maybeFrString "" = Nothing
+maybeFrString s = Just s
 
 maybeToLs :: Maybe a -> [a]
 maybeToLs Nothing = []

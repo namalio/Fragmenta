@@ -18,4 +18,8 @@ SG SG_Pair_Bicycle_Car {
    derived Bicycle->Wheel[Bi_b<->CPair_snd]:0..1;1
    derived Car->SideMirror[Car_l<->CPair_fst]:0..1;1
    derived Car->SideMirror[Car_r<->CPair_snd]:0..1;1
+   node Nat
+   node Name
+   relu Car->Nat[kilometers]
+   relu Bicycle->Name[brand]
 }

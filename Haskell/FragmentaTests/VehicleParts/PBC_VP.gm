@@ -7,9 +7,13 @@ Morphism M_PBC_VP {
        Y->Part
        Car->Vehicle
        SideMirror->Part
+	   Nat->Other
+	   Name->Other
 	}
 	edges {
 	   CPair_fst->HasParts
 	   CPair_snd->HasParts
+	   kilometers->ORel
+	   brand->ORel
 	}
 }

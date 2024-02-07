@@ -3,10 +3,30 @@ digraph {graph[label=SG_Vehicle_Wheels,labelloc=tl,labelfontsize=12];
 "Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
 "Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
 "ThreeWheeler"[shape=record,fillcolor=lightskyblue1,style = filled,label="ThreeWheeler"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Nat2To5"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat2To5"];
+"V2"[shape=cds,fillcolor="#FFF2CC",style = filled,label="2"];
+"V5"[shape=cds,fillcolor="#FFF2CC",style = filled,label="5"];
+"V4"[shape=cds,fillcolor="#FFF2CC",style = filled,label="4"];
 
 "Vehicle"->"Wheel"[label="HasWheels",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Car"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
 "ThreeWheeler"->"Vehicle"[arrowhead=onormal,arrowsize=2.0];
-"Car"->"Wheel"[label="HWs_1: "EHasWheels" ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
-"ThreeWheeler"->"Wheel"[label="HWs_2: "EHasWheels" ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"Car"->"Wheel"[label="HWs_1: HasWheels ▼",dir=none,taillabel="0..1",headlabel="4",style=dotted];
+"ThreeWheeler"->"Wheel"[label="HWs_2: HasWheels ▼",dir=none,taillabel="0..1",headlabel="3",style=dotted];
+"Nat2To5"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V2"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V5"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Nat2To5"->"V2"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"Nat2To5"->"V5"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"Vehicle"->"Nat2To5"[label="noDoors",arrowhead=vee,headlabel="",arrowsize=.5];
+"ThreeWheeler"->"V2"[arrowhead=vee,style=dashed,label="noDoors ="];
+
+"Car"->"V2"[arrowhead=vee,style=dashed,label="noDoors ≠"];
+
+"V4"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"V4"[arrowhead=vee,style=dashed,label="noDoors ≠"];
+
 }

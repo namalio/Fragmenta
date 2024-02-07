@@ -1,15 +1,15 @@
 Morphism F_PW4 {
   nodes {
-     HotelZone->Other
-     PHotelRoom->Room
-     PDog->Guest
-     PReptile->Guest
-     PCat->Guest
-     dogs->Other
-     reptiles->Other
-     cats->Other
+     HotelRoom->Room
+     RoomId->Other
+     PetRoom->Room
+     PPet2->Guest
+     Facility->Room
+     Toilet->Room
+     Grooming->Room
   }
   edges {
-    zone->AnyRel
+    Hosts->Hosts
+    roomid->AnyRel
   }
 }

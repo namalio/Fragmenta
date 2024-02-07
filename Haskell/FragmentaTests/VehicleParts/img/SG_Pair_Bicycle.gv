@@ -4,12 +4,18 @@ digraph {graph[label=SG_Pair_Bicycle,labelloc=tl,labelfontsize=12];
 "Y"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Y</I><br/>(V)}>];
 "Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
 "Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
+"BrakeType"[shape=record,fillcolor="#FFCCFF",style = filled,label="BrakeType\l(enum)"];
+"VRim"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Rim"];
+"VDisk"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Disk"];
 
 "CPair"->"X"[label="CPair_fst▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
 "CPair"->"Y"[label="CPair_snd▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
 "Bicycle"->"CPair"[arrowhead=onormal,arrowsize=2.0];
 "Wheel"->"X"[arrowhead=onormal,arrowsize=2.0];
 "Wheel"->"Y"[arrowhead=onormal,arrowsize=2.0];
-"Bicycle"->"Wheel"[label="Bi_f: "ECPair_fst" ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
-"Bicycle"->"Wheel"[label="Bi_b: "ECPair_snd" ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Bicycle"->"Wheel"[label="Bi_f: CPair_fst ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Bicycle"->"Wheel"[label="Bi_b: CPair_snd ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"VRim"->"BrakeType"[arrowhead=onormal,arrowsize=2.0];
+"VDisk"->"BrakeType"[arrowhead=onormal,arrowsize=2.0];
+"Bicycle"->"BrakeType"[label="brakes",arrowhead=vee,headlabel="",arrowsize=.5];
 }

@@ -101,7 +101,6 @@ instance Eq a => Eq (Set a) where
    (==) = seteq  
 
 instance Show a => Show (Set a) where
-   show :: Show a => Set a -> String
    show s = "{" ++ foldr (\e str->show e ++ if null str then "" else "," ++ str) "" s ++ "}"
 
 instance Foldable Set where

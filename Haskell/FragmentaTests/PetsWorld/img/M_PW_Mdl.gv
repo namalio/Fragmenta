@@ -2,26 +2,52 @@ digraph {graph[label=M_PW,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW1{style=dashed;label=F_PW1;
 "Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
 "Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
-"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Pet</I><br/>(A)}>];
 "Date"[shape=record,fillcolor=lightskyblue1,style = filled,label="Date"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Nat1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat1"];
+"V31"[shape=cds,fillcolor="#FFF2CC",style = filled,label="31"];
+"V1"[shape=cds,fillcolor="#FFF2CC",style = filled,label="1"];
+"V12"[shape=cds,fillcolor="#FFF2CC",style = filled,label="12"];
+
+"Named"->"Name"[label="name▼",dir=none,taillabel="0..1",headlabel=""];
+"Date"->"Nat1"[label="day",arrowhead=vee,headlabel="",arrowsize=.5];
+"Date"->"Nat1"[label="month",arrowhead=vee,headlabel="",arrowsize=.5];
+"Date"->"Nat"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
+"Nat1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V31"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V12"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Nat1"->"V1"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"Date"->"V31"[arrowhead=vee,style=dashed,label="day ≤"];
+
+"Date"->"V12"[arrowhead=vee,style=dashed,label="month ≤"];
+
+
+}
+subgraph cluster_F_PW2{style=dashed;label=F_PW2;
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Pet</I><br/>(A)}>];
+"PDate"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Date<br/>(P)>];
 "PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
 "Locatable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Locatable</I><br/>(V)}>];
 "Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
 "City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
 "PHCard"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCard"];
 
-"Named"->"Name"[label="name▼",dir=none,taillabel="0..1",headlabel=""];
 "Locatable"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
 "Locatable"->"City"[label="city",arrowhead=vee,headlabel="",arrowsize=.5];
-"Pet"->"Date"[label="dob",arrowhead=vee,headlabel="",arrowsize=.5];
+"Pet"->"PDate"[label="dob",arrowhead=vee,headlabel="",arrowsize=.5];
 "PetOwner"->"Pet"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
 "PetOwner"->"PHCard"[label="Holds▼",dir=none,taillabel="",headlabel="*"];
-"Pet"->"Named"[arrowhead=onormal,arrowsize=2.0];
-"PetOwner"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Pet"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"PetOwner"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "PetOwner"->"Locatable"[arrowhead=onormal,arrowsize=2.0];
 
 }
-subgraph cluster_F_PW2{style=dashed;label=F_PW2;
+
+
+subgraph cluster_F_PW3{style=dashed;label=F_PW3;
 "PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
 "Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
 "Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
@@ -29,15 +55,15 @@ subgraph cluster_F_PW2{style=dashed;label=F_PW2;
 "Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
 "Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
 "Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
-"privileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
-"middleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
-"disadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
 "PetStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="PetStatus\l(enum)"];
+"Vprivileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
+"Vmiddleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
+"Vdisadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
 "NoPrivilege"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NoPrivilege</I><br/>(V)}>];
 
-"privileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
-"middleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
-"disadvantaged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"Vprivileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"Vmiddleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"Vdisadvantaged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
 "PPet"->"PetStatus"[label="pstatus",arrowhead=vee,headlabel="",arrowsize=.5];
 "Mammal"->"PPet"[arrowhead=onormal,arrowsize=2.0];
 "Reptile"->"PPet"[arrowhead=onormal,arrowsize=2.0];
@@ -45,12 +71,14 @@ subgraph cluster_F_PW2{style=dashed;label=F_PW2;
 "Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
 "Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
 "Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
-"middleclass"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
-"disadvantaged"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"Vmiddleclass"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"Vdisadvantaged"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"Reptile"->"Vdisadvantaged"[arrowhead=vee,style=dashed,label="pstatus ≠"];
+
 
 }
 
-subgraph cluster_F_PW3{style=dashed;label=F_PW3;
+subgraph cluster_F_PW4{style=dashed;label=F_PW4;
 "PPet2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet2<br/>(P)>];
 "PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
 "RoomId"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomId"];
@@ -68,50 +96,51 @@ subgraph cluster_F_PW3{style=dashed;label=F_PW3;
 
 }
 
-subgraph cluster_F_PW4{style=dashed;label=F_PW4;
+subgraph cluster_F_PW5{style=dashed;label=F_PW5;
 "PHotelRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelRoom<br/>(P)>];
 "PDog"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Dog<br/>(P)>];
 "PReptile"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reptile<br/>(P)>];
 "PCat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Cat<br/>(P)>];
-"dogs"[shape=cds,fillcolor="#FFF2CC",style = filled,label="dogs"];
-"reptiles"[shape=cds,fillcolor="#FFF2CC",style = filled,label="reptiles"];
-"cats"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cats"];
 "HotelZone"[shape=record,fillcolor="#FFCCFF",style = filled,label="HotelZone\l(enum)"];
+"Vdogs"[shape=cds,fillcolor="#FFF2CC",style = filled,label="dogs"];
+"Vreptiles"[shape=cds,fillcolor="#FFF2CC",style = filled,label="reptiles"];
+"Vcats"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cats"];
 
-"dogs"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
-"reptiles"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
-"cats"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
+"Vdogs"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
+"Vreptiles"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
+"Vcats"->"HotelZone"[arrowhead=onormal,arrowsize=2.0];
 "PHotelRoom"->"HotelZone"[label="zone",arrowhead=vee,headlabel="",arrowsize=.5];
-"PDog"->"dogs"[label="S1: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
-"PReptile"->"reptiles"[label="S2: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
-"PCat"->"cats"[label="S3: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"PDog"->"Vdogs"[label="S1: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"PReptile"->"Vreptiles"[label="S2: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"PCat"->"Vcats"[label="S3: ~Hosts ⨾ zone ▼",dir=none,taillabel="*",headlabel="",style=dotted];
 
 }
 
 
 
 
-subgraph cluster_F_PW5{style=dashed;label=F_PW5;
+subgraph cluster_F_PW6{style=dashed;label=F_PW6;
 "PetHotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetHotel"];
 "HotelGroup"[shape=record,fillcolor=lightskyblue1,style = filled,label="HotelGroup"];
-"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
 "PLocatable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Locatable<br/>(P)>];
 "PPetRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom<br/>(P)>];
 "PPHCard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PHCard<br/>(P)>];
 "PFacility"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Facility<br/>(P)>];
 "PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
-"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
+"PNat1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat1<br/>(P)>];
 
 "PetHotel"->"HotelGroup"[label="OfGroup▼",dir=none,taillabel="*",headlabel="0..1"];
 "PetHotel"->"PPHCard"[label="lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PetHotel"->"PFacility"[label="facilities",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PetHotel"->"PPetRoom"[label="rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"PPetRoom"->"Nat"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
-"PPHCard"->"Nat"[label="PHCard_points",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPetRoom"->"PNat1"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
+"PPHCard"->"PNat"[label="points",arrowhead=vee,headlabel="",arrowsize=.5];
 "PPHCard"->"PHCardId"[label="cid▼",dir=none,taillabel="0..1",headlabel=""];
-"PetHotel"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"PetHotel"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
 "PetHotel"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
-"HotelGroup"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"HotelGroup"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
 "HotelGroup"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
 
 }
@@ -120,7 +149,9 @@ subgraph cluster_F_PW5{style=dashed;label=F_PW5;
 
 
 
-subgraph cluster_F_PW6{style=dashed;label=F_PW6;
+
+
+subgraph cluster_F_PW7{style=dashed;label=F_PW7;
 "PPetRoom2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom2<br/>(P)>];
 "PHotelZone"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelZone<br/>(P)>];
 "EnsuiteRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnsuiteRoom"];
@@ -143,7 +174,7 @@ subgraph cluster_F_PW6{style=dashed;label=F_PW6;
 
 
 
-subgraph cluster_F_PW7{style=dashed;label=F_PW7;
+subgraph cluster_F_PW8{style=dashed;label=F_PW8;
 "PPetRoom3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PetRoom3<br/>(P)>];
 "PEnsuiteRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<EnsuiteRoom<br/>(P)>];
 "Pdisadvantaged"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<disadvantaged<br/>(P)>];

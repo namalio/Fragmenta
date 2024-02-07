@@ -36,25 +36,28 @@ instance GR GFGr where
 refsOf::(Eq a, Eq b)=> GFGr a b->Rel a a
 refsOf = trancl . relOfG . gOf
 
-okayGFG:: (Eq a, Eq b) => GFGr a b -> Bool
+okayGFG:: (Eq a, Eq b, GNumSets a) => GFGr a b -> Bool
 okayGFG gfg = okayG Nothing (gOf gfg) && acyclicG (restrict gfg $ (es gfg) `sminus` (esId gfg))
 
-errsGFG::(Eq a, Eq b, Show a, Show b) => String->GFGr a b -> [ErrorTree]
+errsGFG::(Eq a, Eq b, Show a, Show b, GNumSets a) => String->GFGr a b -> [ErrorTree]
 errsGFG id gfg =
     let err1 = faultsG id Nothing (gOf gfg) in
     let err2 = if acyclicG (restrict gfg $ (es gfg) `sminus` (esId gfg)) then nile else consSET "The GFG has cycles." in
     [err1, err2]
 
-reportGFG :: (Eq a, Eq b, Show a, Show b) => String -> GFGr a b -> ErrorTree
+reportGFG :: (Eq a, Eq b, Show a, Show b, GNumSets a) => 
+   String -> GFGr a b -> ErrorTree
 reportGFG id gfg = reportWF gfg id okayGFG (errsGFG id)
 
 --is_wf_gfg' _ = is_wf_gfg
 
-reportGFG' :: (Eq a, Eq b, Show a, Show b) =>String -> p -> GFGr a b -> ErrorTree
+reportGFG' :: (Eq a, Eq b, GNumSets a, Show a, Show b) =>String -> p -> GFGr a b -> ErrorTree
 reportGFG' id _ = reportGFG id
 
 instance G_WF_CHK GFGr where
-   okayG :: (Eq a, Eq b) => Maybe TK -> GFGr a b -> Bool
+   okayG :: (Eq a, Eq b, GNumSets a)=>
+      Maybe TK->GFGr a b->Bool
    okayG _ = okayGFG
-   faultsG :: (Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> GFGr a b -> ErrorTree
+   faultsG :: (Eq a, Eq b, Show a, Show b, GNumSets a)=>
+      String->Maybe TK->GFGr a b->ErrorTree
    faultsG = reportGFG'

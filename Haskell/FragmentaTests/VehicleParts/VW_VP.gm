@@ -4,8 +4,14 @@ Morphism M_CW_VW {
 	   Wheel->Part
        Car->Vehicle
        ThreeWheeler->Vehicle
+	   Nat->Other
+	   Nat2To5->Other
+	   V5->Other
+	   V2->Other
+	   V4->Other
 	}
 	edges {
 	   HasWheels->HasParts
+	   noDoors->ORel
 	}
 }

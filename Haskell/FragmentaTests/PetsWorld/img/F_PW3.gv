@@ -1,19 +1,32 @@
 digraph {graph[label=F_PW3,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW3{style=dashed;label=F_PW3;
-"PPet2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet2<br/>(P)>];
-"PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
-"RoomId"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomId"];
-"Facility"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Facility</I><br/>(A)}>];
-"Toilet"[shape=record,fillcolor=lightskyblue1,style = filled,label="Toilet"];
-"Grooming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Grooming"];
-"HotelRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>HotelRoom</I><br/>(A)}>];
+"PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
+"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
+"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
+"Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
+"Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
+"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
+"Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
+"PetStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="PetStatus\l(enum)"];
+"Vprivileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
+"Vmiddleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
+"Vdisadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
+"NoPrivilege"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NoPrivilege</I><br/>(V)}>];
 
-"PetRoom"->"PPet2"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
-"HotelRoom"->"RoomId"[label="roomid▼",dir=none,taillabel="0..1",headlabel=""];
-"PetRoom"->"HotelRoom"[arrowhead=onormal,arrowsize=2.0];
-"Facility"->"HotelRoom"[arrowhead=onormal,arrowsize=2.0];
-"Toilet"->"Facility"[arrowhead=onormal,arrowsize=2.0];
-"Grooming"->"Facility"[arrowhead=onormal,arrowsize=2.0];
+"Vprivileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"Vmiddleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"Vdisadvantaged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
+"PPet"->"PetStatus"[label="pstatus",arrowhead=vee,headlabel="",arrowsize=.5];
+"Mammal"->"PPet"[arrowhead=onormal,arrowsize=2.0];
+"Reptile"->"PPet"[arrowhead=onormal,arrowsize=2.0];
+"Dog"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
+"Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
+"Vmiddleclass"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"Vdisadvantaged"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"Reptile"->"Vdisadvantaged"[arrowhead=vee,style=dashed,label="pstatus ≠"];
+
 
 }
 

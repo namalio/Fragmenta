@@ -1,0 +1,13 @@
+digraph {graph[label=F_PP,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PP{style=dashed;label=F_PP;
+"Product"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Product</I><br/>(V)}>];
+"PPercentage"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Percentage<br/>(P)>];
+"PEuro"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Euro<br/>(P)>];
+
+"Product"->"PEuro"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PPercentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+
+
+}

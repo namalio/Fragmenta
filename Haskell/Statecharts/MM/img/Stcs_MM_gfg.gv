@@ -5,8 +5,8 @@ digraph {graph[label=StCs_MM_gfg,labelloc=tl,labelfontsize=12];
 "F_MM4"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_MM4"];
 "F_MM5"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_MM5"];
 
-"F_MM2"->"F_MM1"[label=" ",arrowhead=veevee];
-"F_MM3"->"F_MM2"[label=" ",arrowhead=veevee];
-"F_MM4"->"F_MM2"[label=" ",arrowhead=veevee];
-"F_MM5"->"F_MM4"[label=" ",arrowhead=veevee];
+"F_MM2"->"F_MM1"[label=" ",dir=forward,arrowhead=vee];
+"F_MM3"->"F_MM2"[label=" ",dir=forward,arrowhead=vee];
+"F_MM4"->"F_MM2"[label=" ",dir=forward,arrowhead=vee];
+"F_MM5"->"F_MM4"[label=" ",dir=forward,arrowhead=vee];
 }

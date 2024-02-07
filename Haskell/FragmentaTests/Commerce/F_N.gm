@@ -1,0 +1,7 @@
+Morphism F_B {
+	nodes {
+     Nat->Nat
+	}
+	edges {
+	}
+}

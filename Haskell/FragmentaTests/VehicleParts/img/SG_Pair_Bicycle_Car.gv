@@ -6,6 +6,8 @@ digraph {graph[label=SG_Pair_Bicycle_Car,labelloc=tl,labelfontsize=12];
 "SideMirror"[shape=record,fillcolor=lightskyblue1,style = filled,label="SideMirror"];
 "Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
 "Car"[shape=record,fillcolor=lightskyblue1,style = filled,label="Car"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
 
 "CPair"->"X"[label="CPair_fst▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
 "CPair"->"Y"[label="CPair_snd▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
@@ -15,8 +17,10 @@ digraph {graph[label=SG_Pair_Bicycle_Car,labelloc=tl,labelfontsize=12];
 "Wheel"->"Y"[arrowhead=onormal,arrowsize=2.0];
 "SideMirror"->"X"[arrowhead=onormal,arrowsize=2.0];
 "SideMirror"->"Y"[arrowhead=onormal,arrowsize=2.0];
-"Bicycle"->"Wheel"[label="Bi_f: "ECPair_fst" ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
-"Bicycle"->"Wheel"[label="Bi_b: "ECPair_snd" ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
-"Car"->"SideMirror"[label="Car_l: "ECPair_fst" ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
-"Car"->"SideMirror"[label="Car_r: "ECPair_snd" ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Bicycle"->"Wheel"[label="Bi_f: CPair_fst ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Bicycle"->"Wheel"[label="Bi_b: CPair_snd ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Car"->"SideMirror"[label="Car_l: CPair_fst ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Car"->"SideMirror"[label="Car_r: CPair_snd ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"Car"->"Nat"[label="kilometers",arrowhead=vee,headlabel="",arrowsize=.5];
+"Bicycle"->"Name"[label="brand",arrowhead=vee,headlabel="",arrowsize=.5];
 }

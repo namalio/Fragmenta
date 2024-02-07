@@ -1,0 +1,14 @@
+digraph {graph[label=M_CC_gfg,labelloc=tl,labelfontsize=12];
+"F_P"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_P"];
+"F_E"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_E"];
+"F_BTs"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_BTs"];
+"F_PP"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PP"];
+"F_PB"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PB"];
+"F_PF"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PF"];
+
+"F_P"->"F_BTs"[label=" ",dir=forward,arrowhead=vee];
+"F_E"->"F_P"[label=" ",dir=forward,arrowhead=vee];
+"F_PP"->"F_E"[label=" ",dir=forward,arrowhead=vee];
+"F_PB"->"F_PP"[label=" ",dir=forward,arrowhead=vee];
+"F_PF"->"F_PP"[label=" ",dir=forward,arrowhead=vee];
+}

@@ -2,8 +2,10 @@ Morphism M_CW_VP {
 	nodes {
 	   Car->Vehicle
 	   Wheel->Part
+	   Nat->Other
 	}
 	edges {
 	   HasWheels->HasParts
+	   kilometers->ORel
 	}
 }

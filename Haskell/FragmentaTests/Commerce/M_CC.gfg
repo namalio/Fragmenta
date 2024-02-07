@@ -1,0 +1,13 @@
+GFG CCommerce {
+  fragment F_P
+  fragment F_E
+  fragment F_BTs
+  fragment F_PP
+  fragment F_PB
+  fragment F_PF
+  F_P references F_BTs
+  F_E references F_P
+  F_PP references F_E
+  F_PB references F_PP
+  F_PF references F_PP
+}

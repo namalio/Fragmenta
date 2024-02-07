@@ -8,4 +8,22 @@ SG SG_Vehicle_Wheels {
    inh ThreeWheeler->Vehicle
    derived Car->Wheel[HWs_1<->HasWheels]:0..1;4
    derived ThreeWheeler->Wheel[HWs_2<->HasWheels]:0..1;3
+   node Nat
+   node Nat2To5
+   inh Nat2To5->Nat
+   value 2
+   value 5
+   inh V2->Nat
+   inh V5->Nat
+   inh V2->Nat
+   inh V5->Nat
+   vcnt Nat2To5->V2[Nat2To5_lb:≥]
+   vcnt Nat2To5->V5[Nat2To5_ub:≤]
+   relu Vehicle->Nat2To5[noDoors]
+   vcnt ThreeWheeler->V2[tw_doors:noDoors =]
+   vcnt Car->V2[car_ndoors_neq1:noDoors ≠]
+   value 4
+   inh V4->Nat
+   vcnt Car->V4[car_ndoors_neq2:noDoors ≠]
+
 }

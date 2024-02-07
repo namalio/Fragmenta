@@ -1,0 +1,9 @@
+Morphism F_P {
+	nodes {
+	 Percentage->Percentage
+     PNat->Nat
+     V100->Nat
+	}
+	edges {
+	}
+}

@@ -1,11 +1,13 @@
 module ShowUtils(
    showElems
    , showElems'
+   , showThemSlimmed
    , wrSepElems
    , showStrs
    , showNode
    , showEdge
    , showEdges
+   , slimStr
    , slimShow
    , showNodes) where
 import SimpleFuns (butLast)
@@ -13,11 +15,14 @@ import SimpleFuns (butLast)
 showStrs :: Foldable t => t String -> String -> String
 showStrs xs sep = foldl (\ss s->if null ss then s else ss++sep++s) "" xs
 
-showElems :: (Foldable t, Show a) => t a -> String-> String
-showElems xs sep = foldr (\s ss->if null ss then (show s) else (show s)++sep++ss) "" xs
+showElems :: (Foldable t, Show a) => t a ->(a->String)->String-> String
+showElems xs showF sep = foldr (\s ss->if null ss then showF s else showF s++sep++ss) "" xs
 
 showElems' :: (Foldable t, Show a) => t a -> String
-showElems' xs  = showElems xs ", "
+showElems' xs  = showElems xs show ", "
+
+showThemSlimmed :: (Foldable t, Show a) => t a -> String
+showThemSlimmed xs  = showElems xs slimShow ", "
 
 showEdges :: (Functor t, Foldable t, Show a) => t a -> String
 showEdges xs  = showStrs (fmap showEdge xs) ", "
@@ -31,8 +36,11 @@ do_indent n = "   " ++ do_indent(n-1)
 shortenENm::Show a=>a->String
 shortenENm = (drop 1) . slimShow
 
+slimStr::String->String
+slimStr = drop 1 . butLast 
+
 slimShow::Show a=>a->String
-slimShow = drop 1 . butLast . show
+slimShow = slimStr . show
 
 shortenNNm::Show a=>a->String
 shortenNNm = slimShow

@@ -1,0 +1,24 @@
+digraph {graph[label=M_AC_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_M_AC_rf{style=dashed;label=M_AC_rf;
+"Percentage"[shape=record,fillcolor=lightskyblue1,style = filled,label="Percentage"];
+"V100"[shape=cds,fillcolor="#FFF2CC",style = filled,label="100"];
+"Feature"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Feature</I><br/>(V)}>];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Currency"[shape=record,fillcolor=lightskyblue1,style = filled,label="Currency"];
+"Product"[shape=record,fillcolor=lightskyblue1,style = filled,label="Product"];
+"OtherF"[shape=record,fillcolor=lightskyblue1,style = filled,label="OtherF"];
+
+"OtherF"->"Feature"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"Currency"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Percentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"Feature"->"Feature"[label="HasAttributes▼",dir=none,taillabel="*",headlabel="*"];
+"Product"->"Feature"[arrowhead=onormal,arrowsize=2.0];
+"Currency"->"Feature"[arrowhead=onormal,arrowsize=2.0];
+"Nat"->"Feature"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"V100"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"V100"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

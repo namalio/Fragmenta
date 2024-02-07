@@ -1,22 +1,15 @@
 Morphism F_PW5 {
-	nodes {
-     PNamed->Manner
-     PLocatable->Manner
-     PetHotel->Hotel
-     PPHCard->Other
-     Nat->Other
-     PHCardId->Other
-     PPetRoom->Room
-     PFacility->Room
-     HotelGroup->Other
+  nodes {
+     HotelZone->Other
+     PHotelRoom->Room
+     PDog->Guest
+     PReptile->Guest
+     PCat->Guest
+     Vdogs->Other
+     Vreptiles->Other
+     Vcats->Other
   }
   edges {
-    rooms->Hotel_rooms
-    lcards->AnyRel
-	  facilities->AnyRel
-    cid->AnyRel
-    PHCard_points->AnyRel
-    OfGroup->AnyRel
-    rcapacity->AnyRel
+    zone->AnyRel
   }
 }

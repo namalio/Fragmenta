@@ -1,0 +1,11 @@
+fragment F_PP {
+  SG SG_PP {
+    virtual Product
+    proxy PPercentage
+    proxy PEuro
+    relu Product->PEuro[price]
+    relu Product->PPercentage[vat]
+  }
+  ref PPercentage->Percentage
+  ref PEuro->Euro
+}

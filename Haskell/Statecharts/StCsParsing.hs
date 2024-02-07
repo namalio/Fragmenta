@@ -19,7 +19,7 @@ import GrswT
 import ParseUtils
 import Statecharts.StCs_MM_Names
 import SimpleFuns
-import CommonParsing
+import ParsingCommon
 import Statecharts.StCsCommon
 import Gr_Cls
 

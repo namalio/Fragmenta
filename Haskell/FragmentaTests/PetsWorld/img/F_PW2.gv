@@ -1,31 +1,24 @@
 digraph {graph[label=F_PW2,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW2{style=dashed;label=F_PW2;
-"PPet"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet<br/>(P)>];
-"Dog"[shape=record,fillcolor=lightskyblue1,style = filled,label="Dog"];
-"Cat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Cat"];
-"Chamaeleon"[shape=record,fillcolor=lightskyblue1,style = filled,label="Chamaeleon"];
-"Gecko"[shape=record,fillcolor=lightskyblue1,style = filled,label="Gecko"];
-"Mammal"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Mammal</I><br/>(A)}>];
-"Reptile"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Reptile</I><br/>(A)}>];
-"privileged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="privileged"];
-"middleclass"[shape=cds,fillcolor="#FFF2CC",style = filled,label="middleclass"];
-"disadvantaged"[shape=cds,fillcolor="#FFF2CC",style = filled,label="disadvantaged"];
-"PetStatus"[shape=record,fillcolor="#FFCCFF",style = filled,label="PetStatus\l(enum)"];
-"NoPrivilege"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>NoPrivilege</I><br/>(V)}>];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Pet</I><br/>(A)}>];
+"PDate"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Date<br/>(P)>];
+"PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
+"Locatable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Locatable</I><br/>(V)}>];
+"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
+"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
+"PHCard"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCard"];
 
-"privileged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
-"middleclass"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
-"disadvantaged"->"PetStatus"[arrowhead=onormal,arrowsize=2.0];
-"PPet"->"PetStatus"[label="pstatus",arrowhead=vee,headlabel="",arrowsize=.5];
-"Mammal"->"PPet"[arrowhead=onormal,arrowsize=2.0];
-"Reptile"->"PPet"[arrowhead=onormal,arrowsize=2.0];
-"Dog"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
-"Cat"->"Mammal"[arrowhead=onormal,arrowsize=2.0];
-"Chamaeleon"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
-"Gecko"->"Reptile"[arrowhead=onormal,arrowsize=2.0];
-"middleclass"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
-"disadvantaged"->"NoPrivilege"[arrowhead=onormal,arrowsize=2.0];
+"Locatable"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
+"Locatable"->"City"[label="city",arrowhead=vee,headlabel="",arrowsize=.5];
+"Pet"->"PDate"[label="dob",arrowhead=vee,headlabel="",arrowsize=.5];
+"PetOwner"->"Pet"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
+"PetOwner"->"PHCard"[label="Holds▼",dir=none,taillabel="",headlabel="*"];
+"Pet"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"PetOwner"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"PetOwner"->"Locatable"[arrowhead=onormal,arrowsize=2.0];
 
 }
+
 
 }

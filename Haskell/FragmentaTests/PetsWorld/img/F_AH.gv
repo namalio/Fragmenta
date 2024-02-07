@@ -4,15 +4,15 @@ subgraph cluster_F_AH{style=dashed;label=F_AH;
 "Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
 "Room"[shape=record,fillcolor=lightskyblue1,style = filled,label="Room"];
 "Hotel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Hotel"];
-"Manner"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Manner</I><br/>(V)}>];
+"Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
 
 "Room"->"Guest"[label="Hosts▼",dir=none,taillabel="0..1",headlabel="*"];
 "Hotel"->"Room"[label="Hotel_rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"Manner"->"Manner"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
-"Room"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Hotel"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Guest"->"Manner"[arrowhead=onormal,arrowsize=2.0];
-"Other"->"Manner"[arrowhead=onormal,arrowsize=2.0];
+"Trait"->"Trait"[label="AnyRel▼",dir=none,taillabel="*",headlabel="*"];
+"Room"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Hotel"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Guest"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Other"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 
 }
 }

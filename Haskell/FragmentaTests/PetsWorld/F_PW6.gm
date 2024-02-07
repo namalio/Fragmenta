@@ -1,11 +1,23 @@
 Morphism F_PW6 {
 	nodes {
-     EnsuiteRoom->Room
-     PPetRoom2->Room
-     PToilet->Room
-     PHotelZone->Other
+     PNamed2->Trait
+     PLocatable->Trait
+     PetHotel->Hotel
+     PPHCard->Other
+     PNat->Other
+     PNat1->Other
+     PHCardId->Other
+     PPetRoom->Room
+     PFacility->Room
+     HotelGroup->Other
   }
   edges {
-    Serves->AnyRel
+    rooms->Hotel_rooms
+    lcards->AnyRel
+	facilities->AnyRel
+    cid->AnyRel
+    points->AnyRel
+    OfGroup->AnyRel
+    rcapacity->AnyRel
   }
 }

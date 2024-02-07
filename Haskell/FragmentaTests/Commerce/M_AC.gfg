@@ -1,0 +1,7 @@
+GFG ACommerce {
+  fragment F_AP
+  fragment F_P
+  fragment F_NF
+  F_P references F_NF
+  F_AP references F_P
+}

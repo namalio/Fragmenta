@@ -2,7 +2,9 @@ digraph {graph[label=SG_Vehicle_Parts,labelloc=tl,labelfontsize=12];
 "Vehicle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Vehicle"];
 "Composite"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Composite</I><br/>(V)}>];
 "Part"[shape=record,fillcolor=lightskyblue1,style = filled,label="Part"];
+"Other"[shape=record,fillcolor=lightskyblue1,style = filled,label="Other"];
 
 "Composite"->"Part"[label="HasParts▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="0..1",headlabel="*"];
 "Vehicle"->"Composite"[arrowhead=onormal,arrowsize=2.0];
+"Vehicle"->"Other"[label="ORel▼",dir=none,taillabel="*",headlabel="*"];
 }

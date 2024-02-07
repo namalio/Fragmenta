@@ -1,23 +1,22 @@
 fragment F_PW2 {
   SG SG_PW2 {
-    proxy PPet
-    node Dog
-    node Cat
-    node Chamaeleon
-    node Gecko
-    nodea Mammal
-    nodea Reptile
-    enum PetStatus: privileged, middleclass, disadvantaged
-    virtual NoPrivilege
-    relu PPet->PetStatus[pstatus]
-    inh Mammal->PPet
-    inh Reptile->PPet
-    inh Dog->Mammal
-    inh Cat->Mammal
-    inh Chamaeleon->Reptile
-    inh Gecko->Reptile
-    inh middleclass->NoPrivilege
-    inh disadvantaged->NoPrivilege
+    proxy PNamed
+    nodea Pet
+    proxy PDate
+    node PetOwner
+    virtual Locatable
+    node Country
+    node City
+    node PHCard
+    relu Locatable->Country[country]
+    relu Locatable->City[city]
+    relu Pet->PDate[dob]
+    rel PetOwner->Pet[Owns]:1;*
+    rel PetOwner->PHCard[Holds]:1;*
+    inh Pet->PNamed
+    inh PetOwner->PNamed
+    inh PetOwner->Locatable
   }
-  ref PPet->Pet
+  ref PNamed->Named
+  ref PDate->Date
 }

@@ -14,25 +14,33 @@ import Frs
 import ShowUtils
 import Sets
 
+def_path :: String
 def_path = "IntoSysML/MM/"
+wr_path :: String
 wr_path = "IntoSysML/"
 
+code_preamble_amm :: String
 code_preamble_amm = "module IntoSysML.AMM_Names (IntoSysML_AMM_Ns(..), IntoSysML_AMM_Es(..), show_amm_n, show_amm_e)\n"
     ++ "where\n\n"
 
+code_concl_amm :: String
 code_concl_amm = "show_amm_n nt = drop 4 (show nt)\n"
     ++ "show_amm_e et = drop 4 (show et)\n"
 
+code_preamble_asd_mm :: String
 code_preamble_asd_mm = "module IntoSysML.ASD_MM_Names (IntoSysML_ASD_MM_Ns(..), IntoSysML_ASD_MM_Es(..), show_asd_mm_n, show_asd_mm_e, read_asd_mm)\n"
     ++ "where\n\n"
 
+code_concl_asd_mm :: String
 code_concl_asd_mm = "show_asd_mm_n nt = drop 7 (show nt)\n"
     ++ "show_asd_mm_e et = drop 7 (show et)\n"
     ++ "read_asd_mm x = read (\"ASD_MM_\" ++ x)"
 
+code_preamble_cd_mm ::String
 code_preamble_cd_mm = "module IntoSysML.CD_MM_Names (IntoSysML_CD_MM_Ns(..), IntoSysML_CD_MM_Es(..), show_cd_mm_n, show_cd_mm_e, read_cd_mm)\n"
     ++ "where\n\n"
 
+code_concl_cd_mm :: String
 code_concl_cd_mm = "show_cd_mm_n nt = drop 6 (show nt)\n"
     ++ "show_cd_mm_e et = drop 6 (show et)\n"
     ++ "read_cd_mm x = read (\"CD_MM_\" ++ x)"

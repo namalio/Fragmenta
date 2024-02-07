@@ -53,21 +53,22 @@ from::(Eq a, Eq b)=>Mdl a b->a->a
 from m n = from' n (mfd m)
 
 is_ref_ok m p = (from m p, from m (appl (refs (mufs m)) p)) `elem` (refsOf . mgfg $ m)
-complyGFG m = all (\p->is_ref_ok m p) (nsP . fsg . mufs $ m)
+complyGFG m = all (is_ref_ok m) (nsP . fsg . mufs $ m)
 
 errs_complyGFG m = if complyGFG m then nile else consSET ("The following proxies are not complying with the referencing of the model's GFG: " ++ (showElems' ps))
     where ps = filterS (not . is_ref_ok m)(nsP . fsg . mufs $ m)
 
-okayMdl :: (Eq a, Eq b) => Mdl a b -> Bool
+okayMdl :: (Eq a, Eq b, GNumSets a) => Mdl a b -> Bool
 okayMdl m = okayG Nothing (mgfg m)  
    && tfun' (mfd m) (ns . mgfg $ m) && (disjFs . toList. ran_of . mfd $ m)
    && okayG (Just Total) (mufs m) && complyGFG m
 
+rep_elems :: Mdl a b -> Set (Fr a b)
 rep_elems m = ran_of . mfd $ m
 
-errsMdl ::(Eq a, Eq b, Show a, Show b)=>String->Mdl a b->[ErrorTree]
+errsMdl ::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->Mdl a b->[ErrorTree]
 errsMdl id m = 
-    let err1 = faultsG id (Nothing) (mgfg m) in
+    let err1 = faultsG id Nothing (mgfg m) in
     let err2 = if tfun' (mfd m) (ns . mgfg $ m) then nile else consET "Not all GFG fragment nodes have a corresponding fragment." [reportFT' (mfd m) (ns . mgfg $ m)] in
     let err3 = if disjFs . toList . ran_of . mfd $ m then nile else consSET ("The fragments are not disjoint; the following nodes are repeated:" ++ (showElems' . toList . rep_ns_of_fs . ran_of . mfd $ m)) in
     let err4 = if disjFs . toList . ran_of . mfd $ m then nile else consSET ("The fragments are not disjoint; the following edges are repeated:" ++ (showElems' . toList . rep_es_of_fs . ran_of . mfd $ m)) in
@@ -75,7 +76,8 @@ errsMdl id m =
     let err6 = errs_complyGFG m in
     [err1, err2, err3, err4, err5,err6]
 
-reportMdl::(Eq a, Eq b, Show a, Show b)=>String->Mdl a b->ErrorTree
+reportMdl::(Eq a, Eq b, Show a, Show b, GNumSets a)
+    =>String->Mdl a b->ErrorTree
 reportMdl nm m = reportWF m nm okayMdl (errsMdl nm)
 
 --is_wf_f' _ = is_wf_mdl
@@ -90,7 +92,8 @@ reso_m::(Eq a, Eq b)=>Mdl a b->Fr a b
 reso_m = reso_f . mufs
 
 -- Checks that a morphism between models is well-formed 
-okayMGM :: (Eq a, Eq b, GNodesNumConv a) => (Mdl a b, GrM a b, Mdl a b) -> Bool
+okayMGM :: (Eq a, Eq b, GNodesNumConv a, GNumSets a) 
+    => (Mdl a b, GrM a b, Mdl a b) -> Bool
 okayMGM (mdls, m, mdlt) = okayGM Nothing (mufs mdls, m, mufs mdlt)
 
 -- Checks that a source model accompanied by a set of morphisms is model-morphism compliant to another model
@@ -100,7 +103,8 @@ errsMGM nm (mdls, m, mdlt) =
     let err = faultsGM nm (Just WeakM) (mufs mdls, m, mufs mdlt) in
     [err]
 
-reportMGM :: (Eq a, Eq b, Show a, Show b, GNodesNumConv a) =>String-> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
+reportMGM :: (Eq a, Eq b, Show a, Show b, GNodesNumConv a, GNumSets a) 
+    =>String-> (Mdl a b, GrM a b, Mdl a b) -> ErrorTree
 reportMGM nm (mdls, m, mdlt) = reportWF (mdls, m, mdlt) nm okayMGM (errsMGM nm)
 
 -- Checks that one model refines another

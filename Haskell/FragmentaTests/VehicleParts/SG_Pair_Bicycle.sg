@@ -11,4 +11,6 @@ SG SG_Pair_Bicycle {
    inh Wheel->Y
    derived Bicycle->Wheel[Bi_f<->CPair_fst]:0..1;1
    derived Bicycle->Wheel[Bi_b<->CPair_snd]:0..1;1
+   enum BrakeType: Rim, Disk
+   relu Bicycle->BrakeType[brakes]
 }

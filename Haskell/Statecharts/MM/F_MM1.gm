@@ -1,10 +1,10 @@
 Morphism F_MM1 {
 	nodes {
 	   StCModel->Model
-     StCDesc->Description
-		 StCDef->Definition
+       StCDesc->Description
+	   StCDef->Definition
 	   Element->Element
-	   Named->Manner
+	   Named->Trait
 	   Name->Attribute
 	}
 	edges {

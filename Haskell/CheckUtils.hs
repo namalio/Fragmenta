@@ -26,12 +26,12 @@ reportErrs id errs b = do
       then putStrLn $ id ++ " is well formed (" ++ (evalExpectation b True) ++ ")"
       else putStrLn $ "(" ++ (evalExpectation b False) ++ ") " ++ id ++ " is mal-formed\n" ++ (showErr errs) 
 
-check_report_wf :: (G_WF_CHK g, Eq a, Eq b, Show a, Show b) =>String -> Maybe TK -> g a b -> Bool -> IO ()
+check_report_wf :: (G_WF_CHK g, Eq a, Eq b, Show a, Show b, GNumSets a) =>String -> Maybe TK -> g a b -> Bool -> IO ()
 check_report_wf id otk g b = do
    let errs = faultsG id otk g 
    reportErrs id errs b
 
-check_morphism::(Eq a, Eq b, Show a, Show b, GM_CHK g g', GNodesNumConv a)
+check_morphism::(Eq a, Eq b, Show a, Show b, GM_CHK g g', GNodesNumConv a, GNumSets a)
    =>String->Maybe MK->g a b->GrM a b->g' a b->Bool->IO()
 check_morphism id omk gs m gt b = do 
    let errs = faultsGM id omk (gs, m, gt) 

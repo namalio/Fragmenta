@@ -7,6 +7,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module SGrs(SGr
+   , SGVCEOP(..)
    , consSG
    , inhG
    , g_sg
@@ -16,6 +17,7 @@ module SGrs(SGr
    , ety
    , pe
    , ds
+   , vcei
    , nsTys
    , nsP
    , nsN
@@ -41,12 +43,13 @@ module SGrs(SGr
    , rOkETSGs) 
 where
 
-import Sets (Set(..), sminus, gunion, intersec, union, singles, set, intoSet, toList, rest, filterS )
+import Sets (Set(..), sminus, gunion, intersec, union, singles, set, intoSet, toList, rest, 
+   filterS )
 import Relations
 import Gr_Cls
 import Grs
 import ErrorAnalysis
-import ShowUtils ( showElems, showElems', showEdges, showNodes )
+import ShowUtils 
 import SGElemTys
     (sgety_set
     , sgnty_set
@@ -58,7 +61,7 @@ import MyMaybe
 import GrswT ( consGWT, GrwT )
 import PathExpressions
 import TheNil
-import SimpleFuns (pair_up)
+import SimpleFuns (pairUp)
 import Logic ( implies )
 import Utils ( reportWF )
 
@@ -74,7 +77,7 @@ data SGr a b = SGr {
    , tgtm_ :: Rel b Mult
    , p_ :: Rel b (PE a b)
    , d_ :: Rel b b
-   , vc_ :: Rel b ((SGVCEOP, Maybe b))
+   , vc_ :: Rel b (SGVCEOP, Maybe b)
 } deriving (Show, Eq)
 
 g_sg :: SGr a b -> Gr a b
@@ -244,7 +247,7 @@ mult_etys_ok sg = all (edge_multOk sg) $ esM sg
 
 -- Inheritance relation between pair of nodes complies with the inheritance restrictions of their types
 inh_nty_ok :: Eq a => SGr a b -> (a, a) -> Bool
-inh_nty_ok sg (v, v') = (appl(nty sg) v) < (appl(nty sg) v')
+inh_nty_ok sg (v, v') = appl(nty sg) v < appl(nty sg) v'
 inh_ntys_ok :: (Eq a, Eq b) => SGr a b -> Bool
 inh_ntys_ok sg = all (inh_nty_ok sg) (inh sg)
 
@@ -339,15 +342,18 @@ isVCEECnt sg vce = isSomething (snd . appl (vcei sg) $ vce)
 isVCENCnt::Eq b=>SGr a b ->b->Bool
 isVCENCnt sg vce = isNil (snd . appl (vcei sg) $ vce)
 
-isNumeric::(Eq a, Eq b, GNumSets a)=>SGr a b ->a->Bool
-isNumeric sg n = 
-   (n, nNatS) `elem` inhst sg || (n, nIntS) `elem` inhst sg || (n, nRealS) `elem` inhst sg
+--isNumeric::(Eq a, Eq b, GNumSets a)=>SGr a b ->a->Bool
+--isNumeric sg n = 
+--   (n, nNatS) `elem` inhst sg || (n, nIntS) `elem` inhst sg || (n, nRealS) `elem` inhst sg
+
+commonAncestor::(Eq a, Eq b, GNumSets a)=>SGr a b->a->a->Bool
+commonAncestor sg n1 n2 = any (\ns->(n1, ns) `elem` inhst sg && (n2, ns) `elem` inhst sg) (ns sg)
 
 eVCntOk::(Eq a, Eq b, GNumSets a)=>SGr a b->b->Bool
 eVCntOk sg vce = 
-   let ns = appl (tgt sg) (the . snd . appl (vcei sg) $ vce) in
-   isVCEECnt sg vce `implies` ((appl (tgt sg) vce, ns) `elem` inhst sg && isNumeric sg ns)
-   && isVCENCnt sg vce `implies` ((appl (tgt sg) vce, appl (src sg) vce) `elem` inhst sg && isNumeric sg (appl (src sg) vce))
+   let ns =  appl (tgt sg) (the . snd . appl (vcei sg) $ vce) in
+   isVCEECnt sg vce `implies` commonAncestor sg (appl (tgt sg) vce) ns
+   && isVCENCnt sg vce `implies` commonAncestor sg (appl (tgt sg) vce) (appl (src sg) vce)
 
 -- Checks that the value constraint edges are well-formed in a total setting
 esVCntsOk::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
@@ -355,6 +361,7 @@ esVCntsOk sg = all (eVCntOk sg) (esVCnt sg)
 
 esCntOk :: (Eq a, Eq b) => SGr a b -> b -> Bool
 esCntOk sg e = okPE sg (appl (pe sg) e)
+
 esCntsOk::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
 esCntsOk sg = derOk sg && all (esCntOk sg) (esPaCnt sg) && esVCntsOk sg
 
@@ -411,9 +418,10 @@ errsSG sg =
 rOkaySG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
 rOkaySG nm sg = reportWF sg nm okaySG errsSG
 
+rEtherealInherited :: (Show a, Eq b, Eq a) => SGr a b -> ErrorTree
 rEtherealInherited sg = 
    if etherealInherited sg then nile else consSET $ "The following ethereal nodes are not inherited: " ++ (showElems' ens_n_inh)
-   where isInherited n = n `elem` (ran_of $ inh sg)
+   where isInherited n = n `elem` ran_of (inh sg)
          ens_n_inh = filterS (not . isInherited)(nsEther sg) 
 
 rIsInhTree :: (Eq a, Eq b, Show a) => SGr a b -> ErrorTree
@@ -424,17 +432,17 @@ rIsInhTree sg =
 
 rDerOk::(Eq a, Eq b, Show a, Show b)=>SGr a b-> ErrorTree
 rDerOk sg = 
-   let msg_src e = "The source of edge " ++ (show e) ++ " is invalid." 
-       msg_tgt e = "The target of edge " ++ (show e) ++ " is invalid." 
+   let msg_src e = "The source of edge " ++ show e ++ " is invalid." 
+       msg_tgt e = "The target of edge " ++ show e ++ " is invalid." 
        cons_ems_src e = if (not $ srcDerEOk sg e) then [msg_src e] else [] 
        cons_ems_tgt e = if (not $ tgtDerEOk sg e) then [msg_tgt e] else [] 
        des_bad = foldr (\e ms->(cons_ems_src e) ++ (cons_ems_tgt e) ++ ms) [] (esD sg) in
    if derOk sg then nile else consSET $ "Errors in the following derived edges: " ++ (showElems' des_bad)
 
-rEsCntsOk :: (Eq a, Show a,Eq b, Show b, GNumSets a)=>SGr a b -> ErrorTree
-rEsCntsOk sg = 
-   if esCntsOk sg then nile else consSET $ "Errors in the following constraint edges: " ++ (showElems' esCnts_nOk) ++ (show $ srcst sg) ++ (show $ tgtst sg)
-   where esCnts_nOk = filterS (not . esCntOk sg) (esCnt sg) 
+rEsVCntsOk :: (Eq a, Show a,Eq b, Show b, GNumSets a)=>SGr a b -> ErrorTree
+rEsVCntsOk sg = 
+   if esCntsOk sg then nile else consSET $ "Errors in the following value constraint edges: " ++ show esCnts_nOk --(showElems' esCnts_nOk) 
+   where esCnts_nOk = filterS (not . eVCntOk sg) (esVCnt sg) 
 
 errsTSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsTSG sg = 
@@ -442,7 +450,7 @@ errsTSG sg =
    let err2 = rIsInhTree sg in
    let err3 = rEtherealInherited sg in
    let err4 = rDerOk sg in
-   let err5 = rEsCntsOk sg in 
+   let err5 = rEsVCntsOk sg in 
    [err1, err2, err3, err4, err5]
 
 rOkayTSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
@@ -814,12 +822,14 @@ errs_sg_refinesz (sgc, m) sga =
    [err1, err2, err3, err4]
 
 -- errors of SG refinement
+errs_sg_refines :: (Eq a, Eq b, Show a, Show b) =>String -> (SGr a b, GrM a b, SGr a b) -> [ErrorTree]
 errs_sg_refines id (sgc, m, sga) = 
    --let m' = totaliseForDer m sgc in 
    let err1 = rOkSGM id sgc m sga in
    let errs2 = errs_sg_refinesz (sgc, m) sga in
    (err1:errs2)
 
+check_sg_refines :: (Eq a, Eq b, Show a, Show b) =>String -> (SGr a b, GrM a b) -> SGr a b -> ErrorTree
 check_sg_refines id (sgc, m) sga = reportWF (sgc, m, sga) id sg_refines' (errs_sg_refines id)
    where sg_refines' (sgc, m, sga) = (sgc, m) `sg_refines` sga
 
@@ -1054,14 +1064,14 @@ tyCompliesFI::(Eq a, Eq b, GRM g)=>g a b->SGr a b->Bool
 tyCompliesFI gwt sg = null $ insEther gwt sg
 
 insEtherPairs :: (GRM gm, Eq a, Eq b) => gm a b -> SGr a b ->Rel a a
-insEtherPairs gwt sg = foldr (\ne ps->fmap (flip pair_up $ ne) (img ((inv . fV) $ gwt) (singles ne)) `union` ps) nil $ nsEther sg
+insEtherPairs gwt sg = foldr (\ne ps->fmap (flip pairUp $ ne) (img ((inv . fV) $ gwt) (singles ne)) `union` ps) nil $ nsEther sg
 
 checkTyCompliesFI :: (Eq a, Eq b, Show a, GRM g)=>g a b -> SGr a b -> ErrorTree
 checkTyCompliesFI gwt sg = 
    if tyCompliesFI gwt sg then nile else consSET $ "Error! There are the following ethereal nodes instances:" ++ (show_pairs (insEtherPairs gwt sg))
    where show_pairs EmptyS = ""
          show_pairs (p `Set` ps) = (showP p)++(show_pairs ps) 
-         showP (x, y) = (show x)++ "->" ++(show y)
+         showP (x, y) = (show x)++ "->" ++ (show y)
 
 
 -- Builds a relation from a path expression atom
@@ -1202,7 +1212,7 @@ tyCompliesMult gwt sg = all (\me->meMultOk sg me gwt) $ esM sg
 checkTyCompliesMult :: (Eq a, Eq b, Show a, Show b) => GrwT a b -> SGr a b -> ErrorTree
 checkTyCompliesMult gwt sg = 
    if tyCompliesMult gwt sg then nile else consET "Multiplicity breached in instance model." errs
-   where errs = foldr (\me errs ->(checkMEMultOk sg me gwt):errs) [] (esM sg)
+   where errs = map (\me->checkMEMultOk sg me gwt) (toList . esM $ sg)
 
 -- Checks that numeric constraints are satisfied for natural numbers
 
@@ -1242,7 +1252,7 @@ errIInts::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a)
    =>GrwT a b -> ErrorTree
 errIInts gwt = 
    let errIs  = filterS (not . okIntI) (intIs gwt)
-       emsg = "Instance nodes which fail to satisfy the integer constraints:" ++ (showElems' errIs) in
+       emsg = "Instance nodes fail to satisfy the integer constraints:" ++ (showElems' errIs) in
    if okIInts gwt then nile else consSET emsg
 
 -- Checks that numeric constraints are satisfied for reals
@@ -1261,7 +1271,7 @@ errIReals::(Eq a, Eq b, Show a, Show b, Read a, GNodesNumConv a, GNumSets a)
    =>GrwT a b -> ErrorTree
 errIReals gwt = 
    let errIs  = filterS (not . okRealI) (realIs gwt)
-       emsg = "Instance nodes which fail to satisfy the real number constraints:" ++ (showElems' errIs) in
+       emsg = "Instance nodes fail to satisfy the real number constraints:" ++ (showElems' errIs) in
    if okIReals gwt then nile else consSET emsg
 
 -- Checks that a GWT complies to the numeric constraints set by the type
@@ -1276,43 +1286,166 @@ rOp Geq n1 n2 = n1 >= n2
 rOp Lt n1 n2 = n1 < n2
 rOp Gt n1 n2 = n1 > n2
 
-toNum::SGr a b->gm a b->a->Maybe (Either Int Float)
-toNum sg t n = 
-   let cond = n `elem` dom_of (fV t) && ((appl (fV t) n, nNatS) `elem` inhst sg || (appl (fV t) n, nNatS) `elem` inhst sg) in
-   if cond then fmap Left (toInt n) else fmap Right (toReal n)
+--toNumI::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+--   =>SGr a b->gm a b->a->Maybe (Either Int Float)
+--toNumI sg t n = 
+--  let cond = n `elem` dom_of (fV t) && ((appl (fV t) n, nNatS) `elem` inhst sg || (appl (fV t) n, nIntS) `elem` inhst sg) in
+--   if cond then fmap Left (toInt n) else fmap Right (toReal n)
 
-satisfiesACnt::GRM gm=>SGr a b->gm a b->a->SGVCEOP->a->Bool
+toNum::(Eq a, Eq b, Read a, GNumSets a, GNodesNumConv a)
+   =>SGr a b->a->a->Maybe (Either Int Float)
+toNum sg ni nt 
+   | (nt, nNatS) `elem` inhst sg || (nt, nIntS) `elem` inhst sg = fmap Left (toInt ni)
+   | (nt, nRealS) `elem` inhst sg = fmap Right (toReal ni)
+   | otherwise = Nothing
+--   let conda = (n, nNatS) `elem` inhst sg || (n, nIntS) `elem` inhst sg 
+--       condb = (n, nRealS) `elem` inhst sg in
+--   if cond then fmap Left (toInt n) else if condb then fmap Right (toReal n) else Nothing
+
+isNumInt::Maybe (Either Int Float)->Bool
+isNumInt (Just (Left _)) = True
+isNumInt _ = False
+
+isNumReal::Maybe (Either Int Float)->Bool
+isNumReal (Just (Right _)) = True
+isNumReal _ = False
+
+gIntFrNum::Maybe (Either Int Float)->Int
+gIntFrNum (Just (Left n)) = n
+
+gRealFrNum::Maybe (Either Int Float)->Float
+gRealFrNum (Just (Right x)) = x
+
+okIntCnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+   =>SGr a b->gm a b->a->SGVCEOP->a->Bool
+okIntCnt sg t ns op nt = 
+   let ons = toNum sg ns (appl (fV t) ns) 
+       ont = toNum sg nt nt in
+   ns `elem` dom_of (fV t) && isNumInt ons && isNumInt ont && rOp op (gIntFrNum ons) (gIntFrNum ont)
+
+okRealCnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+   =>SGr a b->gm a b->a->SGVCEOP->a->Bool
+okRealCnt sg t ns op nt = 
+   let ons = toNum sg ns (appl (fV t) ns)  
+       ont = toNum sg nt nt in
+   ns `elem` dom_of (fV t) && isNumReal ons && isNumReal ont && rOp op (gRealFrNum ons) (gRealFrNum ont)
+
+--errsSatisfiesAIntCnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+--   =>SGr a b->gm a b->a->SGVCEOP->a->ErrorTree
+--errsSatisfiesAIntCnt sg t ns op nt =
+--   let ons = toNum sg ns (appl (fV t) ns)
+--       ont = toNum sg nt nt
+--       tydMsg = "Numeric types of artithmentic constraint expressions must both be integer"
+--       tysDiffer = consSET tydMsg
+--       bothInt = isNumInt ons && isNumInt ont
+--       bothReal = isNumReal ons && isNumReal ont
+--       errTysDiffer 
+--          | bothInt = nile
+--         | bothReal = nile
+--          | otherwise = tysDiffer
+--       cntfMsg = "The integer numeric constraint is not satisfied"
+--       errCntFail = if bothInt && not (okIntCnt sg t ns op nt) then consSET cntfMsg else nile
+--       mMsg = "Error in integer arithmentic constraint expression" in
+--   if okIntCnt sg t ns op nt then nile else consET mMsg [errTysDiffer, errCntFail]
+
+--errsSatisfiesARealCnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+--   =>SGr a b->gm a b->a->SGVCEOP->a->ErrorTree
+--errsSatisfiesARealCnt sg t ns op nt =
+--   let ons = toNum sg ns (appl (fV t) ns)
+--       ont = toNum sg ns nt
+--       tydMsg = "Numeric types of artithmentic constraint expressions must both be real"
+--       tysDiffer = consSET tydMsg
+--       bothInt = isNumInt ons && isNumInt ont
+--       bothReal = isNumReal ons && isNumReal ont
+--       errTysDiffer 
+--          | bothReal = nile 
+--          | bothInt = nile 
+--          | otherwise = tysDiffer
+--       cntfMsg = "The numeric constraint involving reals is not satisfied"
+--       errCntFail = if bothReal && not (okRealCnt sg t ns op nt) then consSET cntfMsg else nile
+--       mMsg = "Error in an arithmentic constraint expression involving reals" in
+--   if okIntCnt sg t ns op nt then nile else consET mMsg [errTysDiffer, errCntFail]
+
+--errsSatisfiesACnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+--   =>SGr a b->gm a b->a->SGVCEOP->a->ErrorTree
+--errsSatisfiesACnt sg t ns op nt = 
+--   let mMsg = "Error in arithmetic constraint expression"
+--       errs1 = errsSatisfiesAIntCnt sg t ns op nt
+--       errs2 = errsSatisfiesARealCnt sg t ns op nt in
+--   if okIntCnt sg t ns op nt || okRealCnt sg t ns op nt then nile else consET mMsg [errs1, errs2]
+
+satisfiesACnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+   =>SGr a b->gm a b->a->SGVCEOP->a->Bool
 satisfiesACnt sg t ns op nt = 
-   let ons = toNum sg t ns 
-       ont = toNum sg t nt 
-       bothInt = isInt ons && isInt ont 
-       bothReal = isReal ons && isReal ont in
-   if bothInt then rOp op (gInt ons) (gInt ont) else bothReal && rOp op (gReal ons) (gReal ont)
-   where
-      isInt (Just (Left _)) = True
-      isInt _ = False
-      isReal (Just (Right _)) = True
-      isReal _ = False
-      gInt (Just (Left n)) = n
-      gReal (Just (Right x)) = x
+   let ons = toNum sg ns (appl (fV t) ns)
+       ont = toNum sg nt nt
+       bothInt = isNumInt ons && isNumInt ont
+       bothReal = isNumReal ons && isNumReal ont in
+   ns `elem` dom_of (fV t) && (bothInt && rOp op (gIntFrNum ons) (gIntFrNum ont) || bothReal && rOp op (gRealFrNum ons) (gRealFrNum ont))
 
-satisfiesVCEECnt::(Eq a, Eq b)=>SGr a b->GrwT a b->b->Bool
+satisfiesVCEECnt::(Eq a, Eq b, Read a, GR g, GRM g, GWT g, GNumSets a, GNodesNumConv a)
+   =>SGr a b->g a b->b->Bool
 satisfiesVCEECnt sg gwt vce = 
    let ns e = appl (tgt gwt) e
        op = fst . appl (vcei sg) $ vce 
-       nt = appl (tgt sg) vce in
-   all (\e->satisfiesACnt sg (ty gwt) (ns e) op nt) (img (inv . fE $ gwt) (maybeToSet . snd . appl (vcei sg) $ vce))
+       nt = appl (tgt sg) vce 
+       ies = filterS (\e->appl (fV gwt) (appl (src gwt) e) == appl (src sg) vce) $ img (inv . fE $ gwt) (maybeToSet . snd . appl (vcei sg) $ vce) in
+   all (\e->satisfiesACnt sg (ty gwt) (ns e) op nt) ies
 
-satisfiesVCENCnt::(Eq a, Eq b)=>SGr a b->GrwT a b->b->Bool
+satisfiesVCENCnt::(Eq a, Eq b, Read a, GNumSets a, GNodesNumConv a)
+   =>SGr a b->GrwT a b->b->Bool
 satisfiesVCENCnt sg gwt vce = 
    let op = fst . appl (vcei sg) $ vce 
        nt = appl (tgt sg) vce in
-   all (\n->satisfiesACnt sg (ty gwt) n op nt) (img (inv . fV $ gwt) $ singles (appl (src sg) $ vce))
+   all (\n->satisfiesACnt sg (ty gwt) n op nt) (img (inv . fV $ gwt) (img (src sg) $ singles vce))
 
-ivcesOk::(Eq a, Eq b)=>SGr a b->GrwT a b->Bool
-ivcesOk sg gwt = 
-   let cond e = (isVCEECnt sg e `implies` satisfiesVCEECnt sg gwt e) && (isVCENCnt sg e `implies` satisfiesVCENCnt sg gwt e) in
-   all cond (esVCnt sg)
+errsSatisfiesVCEECnt::(Eq a, Eq b, Read a, Show b, GNumSets a, GNodesNumConv a)
+   =>SGr a b->GrwT a b->b->ErrorTree
+errsSatisfiesVCEECnt sg gwt vce = 
+   let vce' = tail . slimShow $ vce
+       ns e = appl (tgt gwt) e
+       op = fst . appl (vcei sg) $ vce 
+       nt = appl (tgt sg) vce
+       ies = filterS (\e->appl (fV gwt) (appl (src gwt) e) == appl (src sg) vce) $ img (inv . fE $ gwt) (maybeToSet . snd . appl (vcei sg) $ vce) 
+       errIEs = filterS (\e->not $ satisfiesACnt sg (ty gwt) (ns e) op nt) ies
+       --errs = map (\ie->errsSatisfiesACnt sg (ty gwt) (appl (tgt gwt) ie) op nt) (toList errIEs)
+       msg = "Several instance edges breach the SG value constraint edge '"
+       err = consSET (msg ++ vce' ++ "': " ++ showEdges errIEs) in
+   if satisfiesVCEECnt sg gwt vce then nile else err
+
+errsSatisfiesVCENCnt::(Eq a, Eq b, Read a, Show a, Show b, GNumSets a, GNodesNumConv a)
+   =>SGr a b->GrwT a b->b->ErrorTree
+errsSatisfiesVCENCnt sg gwt vce = 
+   let vce' = tail . slimShow $ vce
+       op = fst . appl (vcei sg) $ vce 
+       nt = appl (tgt sg) vce
+       errINs = filterS (\n->not $ satisfiesACnt sg (ty gwt) n op nt) $ img (inv . fV $ gwt) (img (src sg) $ singles vce)
+       --errs = map (\ie->errsSatisfiesACnt sg (ty gwt) (appl (tgt gwt) ie) op nt) (toList errIEs)
+       msg = "Several instance nodes breach the SG value constraint edge '"
+       err = consSET (msg ++ vce' ++ "': " ++ showThemSlimmed errINs) in
+   if satisfiesVCENCnt sg gwt vce then nile else err
+   
+okVCEI::(Eq a, Eq b, Read a, GNumSets a, GNodesNumConv a)
+   =>SGr a b->GrwT a b->b->Bool
+okVCEI sg gwt vce = 
+   let conda = isVCEECnt sg vce `implies` satisfiesVCEECnt sg gwt vce
+       condb = isVCENCnt sg vce `implies` satisfiesVCENCnt sg gwt vce in
+   conda && condb
+
+ivcesOk::(Eq a, Eq b, Read a, GNumSets a, GNodesNumConv a)
+   =>SGr a b->GrwT a b->Bool
+ivcesOk sg gwt = all (okVCEI sg gwt) (esVCnt sg)
+
+errsIvcesOk::(Eq a, Eq b, Read a, Show a, Show b, GNumSets a, GNodesNumConv a)
+   =>SGr a b->GrwT a b->[ErrorTree]
+errsIvcesOk sg gwt = 
+   let --mMsg =  "Value constraint edges not satisfied in instance model" 
+       errVCE vce 
+          | isVCEECnt sg vce = if satisfiesVCEECnt sg gwt vce then nile else errsSatisfiesVCEECnt sg gwt vce 
+          | isVCENCnt sg vce = if satisfiesVCENCnt sg gwt vce then nile else errsSatisfiesVCENCnt sg gwt vce 
+          | otherwise = nile
+       errs = map errVCE (toList . esVCnt $ sg) in
+   if ivcesOk sg gwt then [] else errs --(mMsg ++ showThemSlimmed (filterS (not . okVCEI sg gwt) $ esVCnt sg))
 
 -- Compliance with constraits of a SG type
 tyCompliesCnts::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->SGr a b->Bool
@@ -1324,13 +1457,14 @@ checkTyCompliesCnts gwt sg  =
    let err1 = errINats gwt 
        err2 = errIInts gwt
        err3 = errIReals gwt 
-       el = [err1, err2, err3] in
+       err4 = errsIvcesOk sg gwt
+       el = [err1, err2, err3] ++ err4 in
    if tyCompliesCnts gwt sg then nile else consET "Numeric constraints of SG type breached in instance model." el
 
 tyComplies::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->SGr a b->Bool
 tyComplies gwt sg = 
    is_wf_gwt_sg (gwt, sg) && gwt `tyCompliesMult` sg 
-   &&  gwt `tyCompliesFI` sg && gwt `tyCompliesPNS` sg 
+   && gwt `tyCompliesFI` sg && gwt `tyCompliesPNS` sg 
    && gwt `tyCompliesCnts` sg
 
 checkTyComplies::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)
@@ -1407,10 +1541,6 @@ instance GM_CHK' GrwT SGr where
 -- check_wf_tyss id (Just PartialM) (g, sg) = check_tyss_complies id g sg
 -- check_wf_tyss id (Just TotalM) (g, sg) = check_tyss_complies id g sg
 
--- instance GM_CHK' GrwTSs SGr where
---    is_wf_gm' = is_wf_tyss
---    check_wf_gm' = check_wf_tyss
-
 --Gets instance nodes of particular node type given a type sg and a morphism
 ns_of_ntys :: (GRM gm, Eq a, Eq b, Foldable t) => gm a b -> SGr a b->t a -> Set a
 ns_of_ntys m sg ns = img (inv . fV $ m) (img (inv . inhst $ sg) ns)
@@ -1470,21 +1600,3 @@ es_of_ety m e = img (inv . fE $ m) [e]
 --    let errs3 = checkInstMults gm g sg in
 --    let errs4 = check_composites gm g sg in
 --    [errs1, errs2] ++ errs3 ++ [errs4]
-
-
--- is_wf_ty_sgs PartialM = is_wf_ty_sgs_partial 
--- is_wf_ty_sgs FullM = is_wf_ty_sgs_strong 
--- is_wf_ty_sgs PartialM = is_wf_ty_sgs_weak 
--- is_wf_ty_sgs WeakM = is_wf_gm_sgs 
-
--- check_wf_ty_g_sg::(Eq a, Show a)=>String -> (GrM a, Gr a, SGr a) -> ErrorTree
--- check_wf_ty_g_sg nm (gm, g, sg) = 
---    check_wf_of (gm, g, sg) nm (is_wf_ty_g_sg) (errors_ty_g_sg nm)
-
--- check_wf_ty_sgs::(Eq a, Show a)=>String -> MK -> (GrM a, SGr a, SGr a) -> ErrorTree
--- check_wf_ty_sgs nm mk (gm, sgs, sgt) = 
---    check_wf_of (gm, sgs, sgt) nm (is_wf_ty_sgs mk) (errors_ty_sgs nm mk)
-
---check_wf_gm_sg nm PartialM (gm, sg, sgt) = check_wf_ty_sgs_partial nm gm sg sgt
---check_wf_gm_sg nm (TotalM Strong) (gm, sg, sgt) = check_wf_ty_sgs_strong nm gm sg sgt
---check_wf_gm_sg nm (TotalM Weak) (gm, sg, sgt) = check_wf_ty_sgs_weak nm gm sg sgt

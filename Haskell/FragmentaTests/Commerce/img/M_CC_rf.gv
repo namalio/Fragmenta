@@ -1,0 +1,58 @@
+digraph {graph[label=M_CC_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_M_CC_rf{style=dashed;label=M_CC_rf;
+"Euro"[shape=record,fillcolor=lightskyblue1,style = filled,label="Euro"];
+"V99"[shape=cds,fillcolor="#FFF2CC",style = filled,label="99"];
+"Product"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Product</I><br/>(V)}>];
+"Food"[shape=record,fillcolor=lightskyblue1,style = filled,label="Food"];
+"V4"[shape=cds,fillcolor="#FFF2CC",style = filled,label="4"];
+"FoodGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="FoodGroup\l(enum)"];
+"VFruitVeg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="FruitVeg"];
+"VStarchy"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Starchy"];
+"VDairy"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Dairy"];
+"VFat"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Fat"];
+"VProtein"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Protein"];
+"V10"[shape=cds,fillcolor="#FFF2CC",style = filled,label="10"];
+"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
+"Author"[shape=record,fillcolor=lightskyblue1,style = filled,label="Author"];
+"Book"[shape=record,fillcolor=lightskyblue1,style = filled,label="Book"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"V100"[shape=cds,fillcolor="#FFF2CC",style = filled,label="100"];
+"Percentage"[shape=record,fillcolor=lightskyblue1,style = filled,label="Percentage"];
+
+"Percentage"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V100"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"V100"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"Product"[arrowhead=onormal,arrowsize=2.0];
+"V10"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Book"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Book"->"Nat"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"Author"[label="authors",arrowhead=vee,headlabel="1..*",arrowsize=.5];
+"Author"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"V10"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Food"->"V4"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Food"->"FoodGroup"[label="category",arrowhead=vee,headlabel="",arrowsize=.5];
+"VProtein"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VFat"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VDairy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VStarchy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VFruitVeg"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"V4"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Food"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Food"->"Product"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"Percentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Euro"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"Euro"->"V99"[arrowhead=vee,style=dashed,label="cents ≤"];
+
+"V99"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Euro"->"Nat"[label="euros",arrowhead=vee,headlabel="",arrowsize=.5];
+"Euro"->"Nat"[label="cents",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

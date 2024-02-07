@@ -1,0 +1,10 @@
+digraph {graph[label=F_BTs,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_BTs{style=dashed;label=F_BTs;
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
+}

@@ -257,7 +257,7 @@ say_mult (m `Set` EmptyS) = say_multc m
 say_mult ms = butLast (foldr (\m say->say ++ say_multc m ++ ",") "{" ms) ++ "}"
 
 multc_err_msg :: Show a => a -> Set MultC -> Set MultC -> String
-multc_err_msg me m1 m2 = (say_mult m1) ++ " to " ++ (say_mult m2) ++ " multiplicity constraint  of meta-edge " ++ (showEdge me) ++ " is unsatisfied."
+multc_err_msg me m1 m2 = (say_mult m1) ++ " to " ++ (say_mult m2) ++ " multiplicity constraint  of type edge " ++ (showEdge me) ++ " is unsatisfied."
 
 reportRB :: (Foldable t, Eq a, Show a) => Rel a a -> t a -> MultC -> ErrorTree
 reportRB r s m = 

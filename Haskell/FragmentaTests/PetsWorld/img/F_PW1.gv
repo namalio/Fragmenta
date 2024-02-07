@@ -2,23 +2,27 @@ digraph {graph[label=F_PW1,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW1{style=dashed;label=F_PW1;
 "Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
 "Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
-"Pet"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Pet</I><br/>(A)}>];
 "Date"[shape=record,fillcolor=lightskyblue1,style = filled,label="Date"];
-"PetOwner"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetOwner"];
-"Locatable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Locatable</I><br/>(V)}>];
-"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
-"City"[shape=record,fillcolor=lightskyblue1,style = filled,label="City"];
-"PHCard"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCard"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Nat1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat1"];
+"V31"[shape=cds,fillcolor="#FFF2CC",style = filled,label="31"];
+"V1"[shape=cds,fillcolor="#FFF2CC",style = filled,label="1"];
+"V12"[shape=cds,fillcolor="#FFF2CC",style = filled,label="12"];
 
 "Named"->"Name"[label="name▼",dir=none,taillabel="0..1",headlabel=""];
-"Locatable"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
-"Locatable"->"City"[label="city",arrowhead=vee,headlabel="",arrowsize=.5];
-"Pet"->"Date"[label="dob",arrowhead=vee,headlabel="",arrowsize=.5];
-"PetOwner"->"Pet"[label="Owns▼",dir=none,taillabel="",headlabel="*"];
-"PetOwner"->"PHCard"[label="Holds▼",dir=none,taillabel="",headlabel="*"];
-"Pet"->"Named"[arrowhead=onormal,arrowsize=2.0];
-"PetOwner"->"Named"[arrowhead=onormal,arrowsize=2.0];
-"PetOwner"->"Locatable"[arrowhead=onormal,arrowsize=2.0];
+"Date"->"Nat1"[label="day",arrowhead=vee,headlabel="",arrowsize=.5];
+"Date"->"Nat1"[label="month",arrowhead=vee,headlabel="",arrowsize=.5];
+"Date"->"Nat"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
+"Nat1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V31"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V12"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Nat1"->"V1"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"Date"->"V31"[arrowhead=vee,style=dashed,label="day ≤"];
+
+"Date"->"V12"[arrowhead=vee,style=dashed,label="month ≤"];
+
 
 }
 }

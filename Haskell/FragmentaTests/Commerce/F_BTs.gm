@@ -1,0 +1,10 @@
+Morphism F_BTs {
+	nodes {
+	 Nat->Nat
+	 Named->Feature
+	 Name->OtherF
+	}
+	edges {
+		name->HasAttributes
+	}
+}

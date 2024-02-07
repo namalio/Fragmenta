@@ -15,4 +15,8 @@ GrwT Vehicle_Wheels_I1 {
    edge V2->W2a : HasWheels
    edge V2->W2b : HasWheels
    edge V2->W2c : HasWheels
+   node v2 : Nat2To5
+   node v5 : Nat2To5
+   edge V2->v2 : noDoors
+   edge V1->v5 : noDoors
 }
