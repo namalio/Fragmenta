@@ -1,2 +1,2 @@
 # Haskell
-The haskell code of Fragmenta and Fragmemta's support for PCs.
+The haskell code of Fragmenta with several sample models.
