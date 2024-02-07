@@ -19,9 +19,9 @@ import Utils ( option_main_save )
 import NumString
 
 def_path :: String
-def_path = "FragmentaTests/PetsWorld/"
+def_path = "PetsWorld/"
 img_path :: String
-img_path = "FragmentaTests/PetsWorld/img/"
+img_path = "PetsWorld/img/"
 
 saveDrawings :: IO ()
 saveDrawings = do

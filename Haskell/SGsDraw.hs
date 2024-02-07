@@ -1,6 +1,13 @@
-module SGsDraw(SGDrawing(..),is_so,DrawPartKind(..),consSGDrawingDesc, wrSGGraphvizDesc, ls_of_node_names) where
+module SGsDraw(
+   SGDrawing(..)
+   , is_so
+   ,DrawPartKind(..)
+   ,consSGDrawingDesc
+   , wrSGGraphvizDesc
+   , ls_of_node_names)
+where
 
-import Gr_Cls
+import Gr_Cls ( consGM, GR(ns, src, tgt, es), GRM(fE, fV), GrM )
 import Grs
 import SGrs 
 import Relations
@@ -124,17 +131,21 @@ wrMult (m `Set` ms) = wrMultS m ++ if ms == EmptyS then "" else  "," ++ wrMult m
 
 edgName :: [a] -> [a]
 edgName = drop 2 . butLast
+
+nodeName:: [a]->[a]
+nodeName = drop 1 . butLast
+
 wrPEA :: PEA String->String
 wrPEA (Edg e) = edgName e
-wrPEA (Inv e) = "~" ++ (edgName e)
+wrPEA (Inv e) = "~" ++ edgName e
 
 wrPEC :: PEC String String -> String
 wrPEC (At pea) = wrPEA pea
-wrPEC (Dres v pea) = v ++ " ◁ " ++ (wrPEA pea)
-wrPEC (Rres pea v) = (wrPEA pea)  ++ " ▷ " ++ v
+wrPEC (Dres v pea) = nodeName v ++ " ◁ " ++ wrPEA pea
+wrPEC (Rres pea v) = wrPEA pea  ++ " ▷ " ++ nodeName v
 wrPE :: PE String String->String
 wrPE (Ec pec) = wrPEC pec 
-wrPE (SCmp pec pe) = (wrPEC pec) ++ " ⨾ " ++ wrPE pe
+wrPE (SCmp pec pe) = wrPEC pec ++ " ⨾ " ++ wrPE pe
 
 wrEdgeSettings ::String->SGETy->Mult->Mult->PE String String->Maybe String->String
 wrEdgeSettings _ et@(Einh) m1 m2 pe ets = "[" ++ (wrEdgeSettings' "" et m1 m2 pe ets) ++ "];"
@@ -146,8 +157,8 @@ edgeLabel enm Nothing = enm
 edgeLabel enm (Just ets) = enm++":"++ets
 
 wrEdgeSettings' :: String->SGETy->Mult->Mult->PE String String->Maybe String->String
-wrEdgeSettings' _ (Einh) _ _ _ _ = "arrowhead=onormal,arrowsize=2.0"
-wrEdgeSettings' enm (Eder) m1 m2 pe _ = "label=\""++enm++": " ++ (wrPE pe) ++ " ▼\",dir=none,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\",style=dotted"
+wrEdgeSettings' _ Einh _ _ _ _ = "arrowhead=onormal,arrowsize=2.0"
+wrEdgeSettings' enm Eder m1 m2 pe _ = "label=\""++enm++": " ++ (wrPE pe) ++ " ▼\",dir=none,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\",style=dotted"
 --wrEdgeSettings' enm (Epath) _ _ pe = "label=\""++enm++":" ++ (wrPE pe) ++ " ▼\",dir=none,style=dotted"
 wrEdgeSettings' enm (Ecomp Dbi) m1 m2 _ ets = "label=\""++edgeLabel enm ets++"▼\",arrowtail=diamond,arrowhead=none,dir=both,taillabel=\""++ (wrMult m1) ++"\",headlabel=\""++ (wrMult m2) ++"\""
 wrEdgeSettings' enm (Ecomp Duni) _ m _ ets= "label=\""++edgeLabel enm ets++"\",arrowhead=vee,arrowtail=diamond,dir=both,headlabel=\""++ (wrMult m) ++"\""
@@ -167,7 +178,7 @@ npathNm nm = "N_" ++ (tail nm)
 wrEdgeEPath::String->String->String->PE String String->String
 wrEdgeEPath nm s t pe = 
    wrNode ++ wrEdgeS ++ wrEdgeT
-   where wrNode = "\"" ++ npathNm nm ++ "\"" ++ "[shape=none,label=\""++npathNm nm++" ➝ " ++ (wrPE pe) ++ "\"];\n"
+   where wrNode = "\"" ++ npathNm nm ++ "\"" ++ "[shape=none,label=\""++npathNm nm++ " :: " ++ wrPE pe ++ "\"];\n"
          wrEdgeS = "\"" ++ npathNm nm ++ "\"->\"" ++ s ++ "\"" ++ "[" ++ "arrowhead=dot,style=dotted" ++ "];\n"
          wrEdgeT = "\"" ++ npathNm nm ++ "\"->\"" ++ t ++ "\"" ++ "[" ++ "arrowhead=vee,style=dotted" ++ "];\n"
 
@@ -197,7 +208,9 @@ wrEdge (SGEdge nm s t (SGEdgeFICnt op e)) =
 --wrEdge (SGEdge nm et m1 m2 s t pe ets) = "\"" ++ s ++ "\"->\"" ++ t ++ "\"" ++ (wrEdgeSettings nm et m1 m2 pe ets) -- (wrDerFrEdge nm et d)
 wrEdges :: Foldable t => t SGEdge -> String
 wrEdges = foldr (\e es'-> wrEdge e++ "\n" ++es') ""
+wrDep :: String -> String -> String
 wrDep e1 e2 =  "\"" ++ (npathNm e1) ++ "\"->\"" ++ (npathNm e2) ++ "\"" ++ "[" ++ "arrowhead=normal,style=dashed, label = \"=\"" ++ "];\n"
+wrDeps :: Foldable t => t (String, String) -> String
 wrDeps ds = foldr (\(e1, e2) ds'-> (wrDep e1 e2)++ ds') "" ds 
 
 wrSGGraphvizDesc::String->DrawPartKind->SGDrawing->String

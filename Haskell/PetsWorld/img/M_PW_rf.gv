@@ -78,11 +78,11 @@ subgraph cluster_M_PW_rf{style=dashed;label=M_PW_rf;
 "EnsuiteRoom"->"PetRoom"[arrowhead=onormal,arrowsize=2.0];
 "Toilet"->"PetRoom"[label="Serves▼",dir=none,taillabel="1..*",headlabel="*"];
 "Toilet"->"EnsuiteRoom"[label="Serves1: Serves ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
-"N_THZ1"[shape=none,label="N_THZ1 ➝ Serves ⨾ zone"];
+"N_THZ1"[shape=none,label="N_THZ1 :: Serves ⨾ zone"];
 "N_THZ1"->"Toilet"[arrowhead=dot,style=dotted];
 "N_THZ1"->"HotelZone"[arrowhead=vee,style=dotted];
 
-"N_THZ2"[shape=none,label="N_THZ2 ➝ zone"];
+"N_THZ2"[shape=none,label="N_THZ2 :: zone"];
 "N_THZ2"->"Toilet"[arrowhead=dot,style=dotted];
 "N_THZ2"->"HotelZone"[arrowhead=vee,style=dotted];
 
@@ -90,7 +90,7 @@ subgraph cluster_M_PW_rf{style=dashed;label=M_PW_rf;
 "EnsuiteRoom"->"Vdisadvantaged"[label="ERND: Hosts ⨾ pstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "EnsuiteRoom"->"Vmiddleclass"[label="ERNMC: Hosts ⨾ pstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "EnsuiteRoom"->"Vprivileged"[label="ERP: Hosts ⨾ pstatus ▼",dir=none,taillabel="0..1",headlabel="0..2",style=dotted];
-"PetRoom"->"Vdisadvantaged"[label="PRA: Hosts ▷ "Reptile" ⨾ pstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
+"PetRoom"->"Vdisadvantaged"[label="PRA: Hosts ▷ Reptile ⨾ pstatus ▼",dir=none,taillabel="0",headlabel="0",style=dotted];
 "HotelGroup"->"Locatable"[arrowhead=onormal,arrowsize=2.0];
 "HotelGroup"->"Named"[arrowhead=onormal,arrowsize=2.0];
 "PetHotel"->"Locatable"[arrowhead=onormal,arrowsize=2.0];

@@ -8,11 +8,11 @@ subgraph cluster_F_PW7{style=dashed;label=F_PW7;
 "EnsuiteRoom"->"PPetRoom2"[arrowhead=onormal,arrowsize=2.0];
 "PToilet"->"PPetRoom2"[label="Serves▼",dir=none,taillabel="1..*",headlabel="*"];
 "PToilet"->"EnsuiteRoom"[label="Serves1: Serves ▼",dir=none,taillabel="",headlabel="0..1",style=dotted];
-"N_THZ1"[shape=none,label="N_THZ1 ➝ Serves ⨾ zone"];
+"N_THZ1"[shape=none,label="N_THZ1 :: Serves ⨾ zone"];
 "N_THZ1"->"PToilet"[arrowhead=dot,style=dotted];
 "N_THZ1"->"PHotelZone"[arrowhead=vee,style=dotted];
 
-"N_THZ2"[shape=none,label="N_THZ2 ➝ zone"];
+"N_THZ2"[shape=none,label="N_THZ2 :: zone"];
 "N_THZ2"->"PToilet"[arrowhead=dot,style=dotted];
 "N_THZ2"->"PHotelZone"[arrowhead=vee,style=dotted];
 
