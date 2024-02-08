@@ -1,0 +1,24 @@
+digraph {graph[label=StCs_AMM_uf,labelloc=tl,labelfontsize=12];
+subgraph cluster_StCs_AMM_uf{style=dashed;label=StCs_AMM_uf;
+"Model"[shape=record,fillcolor=lightskyblue1,style = filled,label="Model"];
+"Description"[shape=record,fillcolor=lightskyblue1,style = filled,label="Description"];
+"Element"[shape=record,fillcolor=lightskyblue1,style = filled,label="Element"];
+"DepthElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="DepthElement"];
+"Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
+"Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
+"Definition"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Definition</I><br/>(V)}>];
+
+"Description"->"Element"[label="Contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Description"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Element"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Trait"->"Attribute"[label="Has▼",dir=none,taillabel="*",headlabel="*"];
+"Element"->"Element"[label="RelatedTo▼",dir=none,taillabel="*",headlabel="*"];
+"Attribute"->"Attribute"[label="AssociatedWith▼",dir=none,taillabel="*",headlabel="*"];
+"Definition"->"Description"[label="HasDesc",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Model"->"Definition"[arrowhead=onormal,arrowsize=2.0];
+"Model"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"DepthElement"->"Element"[arrowhead=onormal,arrowsize=2.0];
+"DepthElement"->"Definition"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

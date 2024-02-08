@@ -22,7 +22,7 @@ check_AMM = do
 
 check_CMM :: IO ()
 check_CMM = do
-    (nm_cmdl, cmdl)<-loadMdl def_path "Stcs_MM"
+    (nm_cmdl, cmdl)<-loadMdl def_path "StCs_MM"
     check_report_wf nm_cmdl (Just Total) cmdl True
 
 check_morphisms :: IO ()
@@ -53,8 +53,8 @@ check_morphisms = do
 do_main :: IO ()
 do_main = do
     (nm_amdl, amdl)<-loadMdl def_path "StCs_AMM"
-    (nm_cmdl, cmdl)<-loadMdl def_path "Stcs_MM"
-    rms<-load_rm_cmdl_def def_path "Stcs_MM"
+    (nm_cmdl, cmdl)<-loadMdl def_path "StCs_MM"
+    rms<-load_rm_cmdl_def def_path "StCs_MM"
     check_report_wf nm_amdl (Just Total) amdl True
     check_report_wf nm_cmdl (Just Total) cmdl True
     check_morphism "Refinement of 'StCs_MM' by 'StCs_AMM'" (Just TotalM) cmdl rms amdl True

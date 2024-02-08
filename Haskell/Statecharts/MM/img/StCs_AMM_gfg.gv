@@ -1,0 +1,4 @@
+digraph {graph[label=StCs_AMM_gfg,labelloc=tl,labelfontsize=12];
+"F_AH"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_AH"];
+
+}
