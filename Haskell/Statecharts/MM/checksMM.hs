@@ -1,7 +1,7 @@
 ------------------------
 -- Project: Fragmenta
--- Module: 'IntoSysML_MM_checks'
--- Description: Performs well-formedness checks on the Into-SysML metamodel
+-- Module: 'checksMM'
+-- Description: Performs well-formedness checks on the Statecharts metamodel
 -- Author: Nuno Amálio
 ------------------------
 import Gr_Cls
