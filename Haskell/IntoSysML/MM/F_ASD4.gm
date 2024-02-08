@@ -7,8 +7,8 @@ Morphism M_F_ASD4 {
 		InFlowPort->Part
 		OutFlowPort->Part
 		APIPortKind->Feature
-		requires->Feature
-		provides->Feature
+		Vrequires->Feature
+		Vprovides->Feature
 	}
 	edges {
 		OutFlowPort_depends->Has

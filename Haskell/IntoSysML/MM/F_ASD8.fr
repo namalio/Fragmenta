@@ -21,6 +21,6 @@ fragment F_ASD8 {
     ref PBElement->BElement
     ref PAPIPort->APIPort
     ref PInterface->Interface
-    ref Psubsystem->subsystem
+    ref Psubsystem->Vsubsystem
     ref PCompound->Compound
 }

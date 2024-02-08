@@ -6,12 +6,12 @@ subgraph cluster_F_ASD4{style=dashed;label=F_ASD4;
 "APIPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="APIPort"];
 "InFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="InFlowPort"];
 "OutFlowPort"[shape=record,fillcolor=lightskyblue1,style = filled,label="OutFlowPort"];
-"requires"[shape=cds,fillcolor="#FFF2CC",style = filled,label="requires"];
-"provides"[shape=cds,fillcolor="#FFF2CC",style = filled,label="provides"];
 "APIPortKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="APIPortKind\l(enum)"];
+"Vrequires"[shape=cds,fillcolor="#FFF2CC",style = filled,label="requires"];
+"Vprovides"[shape=cds,fillcolor="#FFF2CC",style = filled,label="provides"];
 
-"requires"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
-"provides"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
+"Vrequires"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
+"Vprovides"->"APIPortKind"[arrowhead=onormal,arrowsize=2.0];
 "APIPort"->"APIPortKind"[label="APIPort_kind",arrowhead=vee,headlabel="",arrowsize=.5];
 "Port"->"PInitialisable"[arrowhead=onormal,arrowsize=2.0];
 "FlowPort"->"Port"[arrowhead=onormal,arrowsize=2.0];

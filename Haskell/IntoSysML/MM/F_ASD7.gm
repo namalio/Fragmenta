@@ -4,8 +4,8 @@ Morphism M_F_ASD7 {
 		PBlock2->Part
 		Mult->Feature
 		MultCompSrc->Feature
-		optional->Feature
-		compulsory->Feature
+		Voptional->Feature
+		Vcompulsory->Feature
 		MultSingle->Feature
 		MultRange->Feature
 		MultVal->Feature

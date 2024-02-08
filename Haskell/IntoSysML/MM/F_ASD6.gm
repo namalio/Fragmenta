@@ -8,12 +8,12 @@ Morphism M_F_ASD6 {
 		BElement->Part
 		Compound->Part
 		ComponentKind->Feature
-		cyber->Feature
-		subsystem->Feature
-		physical->Feature
+		Vcyber->Feature
+		Vsubsystem->Feature
+		Vphysical->Feature
 		PhenomenaKind->Feature
-		discrete->Feature
-		continuous->Feature
+		Vdiscrete->Feature
+		Vcontinuous->Feature
 	}
 	edges {
 		Block_ports->Has

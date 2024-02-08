@@ -9,8 +9,8 @@ Morphism M_F_ASD2 {
 		FieldI->Part
 		Variable->Part
 		VariableKind->Feature
-		var->Feature
-		parameter->Feature
+		Vvar->Feature
+		Vparameter->Feature
 	}
 	edges {
 		Variable_kind->Has

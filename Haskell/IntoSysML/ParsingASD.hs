@@ -206,9 +206,9 @@ parse_pinterval :: ReadP PType
 parse_pinterval = do
   string "Interval" 
   skipSpaces
-  n1<-parse_number
+  n1<-parseNumber
   skipSpaces
-  n2<-parse_number
+  n2<-parseNumber
   skipSpaces
   return (PInterval (read n1) (read n2))
 
@@ -396,7 +396,7 @@ parse_mult_many = do
 
 parse_mult_n::ReadP MultVal
 parse_mult_n = do
-   n<-parse_number
+   n<-parseNumber
    return (MultN $ read n)
 
 parse_mult_val::ReadP MultVal
@@ -412,7 +412,7 @@ parse_mults = do
 
 parse_mult_range::ReadP Mult
 parse_mult_range = do
-   n<-parse_number
+   n<-parseNumber
    skipSpaces
    string ".."
    skipSpaces

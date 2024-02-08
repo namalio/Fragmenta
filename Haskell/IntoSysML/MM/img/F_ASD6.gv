@@ -7,13 +7,13 @@ subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
 "Component"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Component</I><br/>(A)}>];
 "Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
 "BElement"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElement"];
-"cyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
-"subsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
-"physical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
 "ComponentKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="ComponentKind\l(enum)"];
-"discrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
-"continuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
+"Vcyber"[shape=cds,fillcolor="#FFF2CC",style = filled,label="cyber"];
+"Vsubsystem"[shape=cds,fillcolor="#FFF2CC",style = filled,label="subsystem"];
+"Vphysical"[shape=cds,fillcolor="#FFF2CC",style = filled,label="physical"];
 "PhenomenaKind"[shape=record,fillcolor="#FFCCFF",style = filled,label="PhenomenaKind\l(enum)"];
+"Vdiscrete"[shape=cds,fillcolor="#FFF2CC",style = filled,label="discrete"];
+"Vcontinuous"[shape=cds,fillcolor="#FFF2CC",style = filled,label="continuous"];
 
 "System"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
 "Component"->"PBlock"[arrowhead=onormal,arrowsize=2.0];
@@ -21,12 +21,12 @@ subgraph cluster_F_ASD6{style=dashed;label=F_ASD6;
 "Component"->"PVariable"[label="Component_vars",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Compound"->"Component"[arrowhead=onormal,arrowsize=2.0];
 "BElement"->"Component"[arrowhead=onormal,arrowsize=2.0];
-"cyber"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
-"subsystem"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
-"physical"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"Vcyber"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"Vsubsystem"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
+"Vphysical"->"ComponentKind"[arrowhead=onormal,arrowsize=2.0];
 "Component"->"ComponentKind"[label="Component_kind",arrowhead=vee,headlabel="",arrowsize=.5];
-"discrete"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
-"continuous"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"Vdiscrete"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
+"Vcontinuous"->"PhenomenaKind"[arrowhead=onormal,arrowsize=2.0];
 "Compound"->"PhenomenaKind"[label="Compound_phenomena",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
