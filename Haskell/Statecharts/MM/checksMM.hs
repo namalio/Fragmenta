@@ -1,4 +1,9 @@
-
+------------------------
+-- Project: Fragmenta
+-- Module: 'IntoSysML_MM_checks'
+-- Description: Performs well-formedness checks on the Into-SysML metamodel
+-- Author: Nuno Amálio
+------------------------
 import Gr_Cls
 import LoadCheckDraw
 import CheckUtils

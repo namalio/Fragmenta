@@ -1,5 +1,11 @@
+------------------------
+-- Project: Fragmenta
+-- Module: 'IntoSysML_MM_checks'
+-- Description: Performs well-formedness checks on the Into-SysML metamodel
+-- Author: Nuno Amálio
+------------------------
 
-import Gr_Cls
+import Gr_Cls ( MK(TotalM, PartialM), TK(Total, Partial) )
 import LoadCheckDraw
 import CheckUtils
 import Utils
@@ -133,13 +139,7 @@ check_Compatibility_CD_ASD::IO()
 check_Compatibility_CD_ASD = do
     (nm_asd_mdl, asd_mdl)<-loadMdl def_path "IntoSysML_ASD_MM"
     (nm_cd_mdl, cd_mdl)<-loadMdl def_path "IntoSysML_CD_MM"
-    --let uf_cd = mufs cd_mdl
-    --print $ fet uf_cd
-    --print $ foldr(\e ems->(e, appl(tgtm (fsg uf_cd)) e):ems) [] (dom_of . fE . fet $ uf_cd)
-    --let uf_asd = mufs asd_mdl
-    --print $ fLNs uf_asd
     checkOkETCFs ("Model " ++ nm_cd_mdl, cd_mdl) ("Model " ++ nm_asd_mdl, asd_mdl) True
-    --checkOkETCFs ("Fragment " ++ nm_cd_mdl, uf_cd) ("Fragment " ++ nm_asd_mdl, uf_asd) True
     
 
 do_main :: IO ()
