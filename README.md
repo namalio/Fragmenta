@@ -5,9 +5,10 @@ FRAGMENTA [1, 2], a theory of modular model design that enables the construction
 FRAGMENTA is presented in [1] and is applied to a profile of SysML in [3].
 
 This is the repository of FRAGMENTA. It includes:
-* The paper presented at Models 2015 and the technical report that presents the full theory; under '/docs'
-* The complete Z specification of FRAGMENTA; under 'Z-Spec'
-* The Isabelle files that define 'FRAGMENTA'; under 'Isabelle'
+* The paper presented at Models 2015 and the technical report that presents the previous version of the theory (under '/docs').
+* The complete Z specification of FRAGMENTA (under 'Z-Spec'), which includes the new version of Fragmenta.
+* The Isabelle files that define 'FRAGMENTA' (under 'Isabelle').
+* The Haskell implementation (under 'Haskell').
 
 # References
 [1] Nuno Amálio, Juan de Lara and Esther Guerra. [FRAGMENTA: A Theory of Fragmentation for MDE. Models 2015.](docs/MODELS2015-article.pdf). Models 2015.
