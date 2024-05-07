@@ -1,4 +1,6 @@
 module QUR(
+    Pair,
+    Quad,
     QuadURel(..)
     , qur
     , nilQUR
@@ -20,6 +22,7 @@ newtype QuadURel a = QuadURel (Quad (Rel a a))
 qur :: Quad (Rel a a) -> QuadURel a
 qur = QuadURel
 
+-- Creates a QUR with emty sets
 nilQUR :: QuadURel a
 nilQUR = qur (EmptyS, EmptyS, EmptyS, EmptyS)
 
@@ -27,7 +30,7 @@ qurOneTpl::Rel a a->Trpl (Rel a a)->QuadURel a
 qurOneTpl xs t = qur $ makeQFrTFst xs t
 
 singleQUR::Quad(Pair a)->QuadURel a
-singleQUR (x, y, z, w)= qur (singles x, singles y, singles z, singles w)
+singleQUR (x, y, z, w) = qur (singles x, singles y, singles z, singles w)
 
 singleQURFrFst::Pair a->QuadURel a
 singleQURFrFst x = qur $ makeQFrTFst (singles x) (EmptyS, EmptyS, EmptyS)

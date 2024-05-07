@@ -11,7 +11,7 @@ module ParsingCommon (
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
 import MyMaybe ( str_of_ostr )
-import ParseUtils
+import ParseUtils ( isDigit )
 
 isLetter::Char->Bool
 isLetter ch = ch `elem` ['a'..'z'] || ch `elem` ['A'..'Z']
@@ -56,10 +56,11 @@ parse_until_chs chs = do manyTill (satisfy (\ch->True)) (satisfyWLook (\c-> any 
 
 parse_ls_ids ::String->ReadP [String]
 parse_ls_ids sep = do
-   ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep))
+   ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
+   --ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep))
    -- parses last id
-   p<-parse_id
-   return (ps++[p])
+   --p<-parse_id
+   return ps --(ps++[p])
 
 parse_either_strs::[String]->ReadP String
 parse_either_strs (s:ss) = do
@@ -73,3 +74,11 @@ capitalise_fst (c:cs) = (Char.toUpper c):cs
 lower_fst::String->String
 lower_fst "" = ""
 lower_fst (c:cs) = (Char.toLower c):cs
+
+test1 = readP_to_S (parse_until_chs ".,") "ABC.CDE"
+test2 = readP_to_S (parse_until_chs ".,") "ABC,CDE"
+
+test3 = readP_to_S (parse_ls_ids ",") "ABC , CDE"
+
+--test4 :: [([String], String)]
+--test4 = readP_to_S ((\sep->sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)) ",") "ABC , CDE"

@@ -22,17 +22,16 @@ import Relations
 import Sets
 import SGrs
 import Frs
-import Grs
-import The_Nil
+import TheNil
 import MyMaybe
 import ParseUtils
 import SimpleFuns
 import PCs.PCs_MM_Names
 import Control.Monad(when)
 
-type PC a = GrwT a
+type PC a b = GrwT a b
 
-data MMInfo a = MMInfo {cmm_ :: Mdl a, amm_ :: Mdl a, rm_:: GrM a, sg_cmm_ :: SGr a}
+data MMInfo a b = MMInfo {cmm_ :: Mdl a b, amm_ :: Mdl a b, rm_:: GrM a b, sg_cmm_ :: SGr a b}
   deriving (Show)
 
 cons_mm_info cmm amm rm sgcmm = MMInfo {cmm_ = cmm, amm_ = amm, rm_ = rm, sg_cmm_ = sgcmm}
@@ -68,10 +67,10 @@ isNodeOfTys n tys sg_mm pc =
     let t = str_of_ostr $ tyOfNM n pc in
     t `elem`  (img (inv $ inhst sg_mm) [show_cmm_n sty | sty<-tys])
 
-pc_ns_of_nty::SGr String->GrwT String -> PCs_CMM_Ns -> [String]
+pc_ns_of_nty::SGr String String->GrwT String String-> PCs_CMM_Ns -> [String]
 pc_ns_of_nty sg_mm pc nt = ns_of_ntys pc sg_mm [show_cmm_n nt]
 
-getAtoms::SGr String->GrwT String-> [String]
+getAtoms::SGr String String->GrwT String String-> [String]
 getAtoms sg_mm pc = foldr (\a as->(extAtoms (nmOfNamed pc a) (anyExpOfAt pc a))++as) [] (pc_ns_of_nty sg_mm pc CMM_Atom)
     where extAtoms nm Nothing = [nm]
           extAtoms _ (Just (_, ats)) = 
@@ -296,4 +295,5 @@ divergentInnerKs mmi pc n = divergentInnerKs0 mmi pc [compoundStart mmi pc n] [n
 commonInnerKs mmi pc n = gintersec (divergentInnerKs mmi pc n)
 
 --getImports :: GrM a -> [String]
-importsOf sg_mm pc = pc_ns_of_nty sg_mm  pc CMM_Import
+importsOf :: SGr String String -> GrwT String String -> [String]
+importsOf sg_mm pc = pc_ns_of_nty sg_mm pc CMM_Import

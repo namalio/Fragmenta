@@ -24,7 +24,7 @@ import Sets
 import SimpleFuns
 import ErrorAnalysis
 import CheckUtils
-import The_Nil
+import TheNil
 import MyMaybe
 import System.Environment
 
@@ -33,7 +33,7 @@ pcs_path = "PCs/Examples/"
 csp_path = "PCs/Examples/CSP/"
 img_path = "PCs/Examples/img/"
 
-getImportedAtoms::FilePath->SGr String->GrwT String->IO([String])
+getImportedAtoms::FilePath->SGr String->GrwT String->IO [String]
 getImportedAtoms pcs_path sg_mm pc = do
    let is = importsOf sg_mm pc
    as <- forM is (\n-> do 
@@ -44,7 +44,7 @@ getImportedAtoms pcs_path sg_mm pc = do
    return (gunion as)
 
 
-getImports::FilePath->SGr String->GrwT String->IO([String])
+getImports::FilePath->SGr String->GrwT String->IO [String]
 getImports pcs_path sg_mm pc = do
    let is = importsOf sg_mm pc
    is <- forM is (\n-> do 

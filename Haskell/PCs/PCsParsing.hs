@@ -13,13 +13,17 @@ import Grs
 import SGrs
 import Sets
 import Relations
-import The_Nil
+import TheNil
 import MyMaybe
 import GrswT
 import ParseUtils
 import PCs.PCs_MM_Names
+import SimpleFuns ( nilQl )
+import ParsingCommon
+    (parse_id, parseMaybe, parse_until_chs, parse_ls_ids)
+import Gr_Cls
 import SimpleFuns
-import CommonParsing
+import QUR
 
 -- A node has a name a type and possibly an associated operator
 -- A reference may be inner
@@ -47,19 +51,25 @@ data Elem = ElemN Node | ElemC Connector
 data PCDef = PCDef String String [Elem] 
    deriving(Eq, Show)
 
+isNode :: Elem -> Bool
 isNode (ElemN _) = True
-isNode (ElemC _) = False
+isNode _ = False
+getN :: Elem -> Node
 getN (ElemN n) = n
+getC :: Elem -> Connector
 getC (ElemC c) = c
 
-getTheNodes elems = foldl (\es e-> if isNode e then (getN e):es else es) [] elems
-getTheCs elems = foldl (\es e-> if not . isNode $ e then (getC e):es else es) [] elems
+getTheNodes :: Foldable t => t Elem -> [Node]
+getTheNodes = foldl (\es e-> if isNode e then (getN e):es else es) []
 
-pc_start :: ReadP(String, String)
-pc_start = do
+getTheCs :: Foldable t => t Elem -> [Connector]
+getTheCs = foldl (\es e-> if not . isNode $ e then (getC e):es else es) [] 
+
+pcStart :: ReadP(String, String)
+pcStart = do
    string "PC"
    skipSpaces
-   pcnm<-(many1 . satisfy) (\ch->ch /= '@')
+   pcnm<-parse_until_chs "@" -- (many1 . satisfy) (/= '@')
    char '@'
    st<- str_until_end_of_stm
    skipSpaces
@@ -70,18 +80,17 @@ str_until_end_of_stm = do
    s<-parse_until_chs "\n "
    return s
 
-pc_params :: Char->String->ReadP [String]
-pc_params ch ts = do
+pcParams :: Char->ReadP [String]
+pcParams ch = do
    char ch
-   ps<-parse_ls_ids ts ";"
-   return ps
+   parse_ls_ids ","
 
-pc_compound :: ReadP Node
-pc_compound = do
+pcCompound :: ReadP Node
+pcCompound = do
    string "compound"
    skipSpaces
    cnm<-parse_until_chs "@."
-   ps<- (pc_params '.' "@;\n") <++ return []
+   ps<- pcParams '.' <++ return []
    char '@'
    start<-str_until_end_of_stm 
    skipSpaces
@@ -141,7 +150,7 @@ pc_operator = do
    o_nm<-parse_until_chs "." 
    char '.'
    op<-parse_until_chs ":\n"
-   ps<- (pc_params ':' ";:\n") <++ return []
+   ps<- (pcParams ':') <++ return []
    skipSpaces
    return (Node o_nm $ Operator op ps)
 
@@ -170,7 +179,7 @@ pc_reference = do
    skipSpaces
    g<-pc_guard
    skipSpaces
-   ps<- (pc_params '.' ";[\n") <++ return []
+   ps<- (pcParams '.') <++ return []
    skipSpaces
    let hp = if null ps then "" else head ps
    let ps' = if null ps then [] else tail ps
@@ -269,13 +278,13 @@ pc_refC  = do
    let hidden = shidden == "hidden"
    skipSpaces
    (proxy, ref)<-pc_C_fr_to
-   ps<-(pc_params '.' ";\n") <++ return []
+   ps<-(pcParams '.') <++ return []
    skipSpaces
    return (Connector (Ref ps hidden) proxy ref)
 
 pc_elemN :: ReadP Elem
 pc_elemN = do
-   n<-pc_compound <|> pc_atom <|> pc_operator <|> pc_reference <|> pc_stop <|> pc_skip <|> pc_import
+   n<-pcCompound <|> pc_atom <|> pc_operator <|> pc_reference <|> pc_stop <|> pc_skip <|> pc_import
    return (ElemN n)
 
 pc_elemC :: ReadP Elem
@@ -290,7 +299,7 @@ pc_elem  = do
 
 pc_def :: ReadP PCDef
 pc_def = do
-   (pcnm, start)<-pc_start
+   (pcnm, start)<-pcStart
    es<-manyTill pc_elem eof
    return (PCDef pcnm start es)
 
@@ -301,12 +310,12 @@ loadPCFrFile fn = do
     let pc = parseMaybe pc_def contents
     return pc
 
---nilQl = ([], [], [], [])
 combineQAsConcat (x, y, z, w) (x', y', z', w') = (x++x', y++y', z++z', w++w')
 combineQAsUnion (x, y, z, w) (x', y', z', w') = (x `union` x', y `union` y', z `union` z', w `union` w')
-combineQAsInsert (x, y, z, w) (x', y', z', w') = (insert x x', insert y y', insert z z', insert w w')
-combineQAsUnionFst x (x', y', z', w') = (x `union` x', y', z', w')
-combineQAsUnionLs qs = foldr (\q qs->q `combineQAsUnion` qs) nilQl qs
+-- combineQAsInsert (x, y, z, w) (x', y', z', w') = (insert x x', insert y y', insert z z', insert w w')
+combineQwUnionOfFst::Eq a=>Set a->(Set a, b, c, d) ->(Set a, b, c, d)
+combineQwUnionOfFst x (x', y', z', w') = (x `union` x', y', z', w')
+--combineQAsUnionLs qs = foldr (\q qs->q `combineQAsUnion` qs) nilQl qs
 
 extractInfo (Atom rnm aexp g) = (show_cmm_n CMM_Atom, (maybeToLs rnm)++(maybeToLs g)++(if isNil aexp then [] else [fst . the $ aexp] ++ [snd . the $ aexp]))
 extractInfo (Compound _ ps) = (show_cmm_n CMM_Compound, ps)
@@ -317,69 +326,93 @@ extractInfo Skip = (show_cmm_n CMM_Skip, [])
 extractInfo Import = (show_cmm_n CMM_Import, [])
 
 -- constructs name of parameter
+mkPNm :: String -> String -> String
 mkPNm nm p = nm ++ "_param_"++p
 
 -- builds parameters of edges
+mkEPNm :: String -> String -> String
 mkEPNm nm p = "EParam" ++ nm ++ "_" ++ p 
+cNm :: String -> String
 cNm nm = nm ++ "_"
-mk_enm_q enm nm =  ((cNm nm, show_cmm_n CMM_Name), ("ENmOf"++enm, show_cmm_e CMM_ENamedNode_name), 
-    ("ENmOf"++enm, enm), ("ENmOf"++enm, cNm nm))
+mkEnmQ ::String-> String -> QuadURel String
+mkEnmQ enm nm = 
+   let eNm enm = "ENmOf"++enm in
+   singleQUR ((cNm nm, show_cmm_n CMM_Name), (eNm enm, show_cmm_e CMM_ENamedNode_name), 
+      (eNm enm, enm), (eNm enm, cNm nm))
 
 -- builds node and edges for start of compound 
-mkConn_For_Compound nm st = 
+mkConnForCompound ::String ->String -> QuadURel String
+mkConnForCompound nm st = 
    let cnNm = "Def" ++ nm in -- name of connector node
    let eSrcNm = "E" ++ cnNm ++ "Src" in
    let eTgtNm = "E" ++ cnNm ++ "Tgt" in
-   ([(cnNm, show_cmm_n CMM_DefinesC)], [(eSrcNm, show_cmm_e CMM_EDefinesCSrc), (eTgtNm, show_cmm_e CMM_EDefinesCTgt)], [(eSrcNm, cnNm), (eTgtNm, cnNm)], [(eSrcNm, nm), (eTgtNm, st)])
+   qurOneTpl (singles (cnNm, show_cmm_n CMM_DefinesC)) ((eSrcNm, show_cmm_e CMM_EDefinesCSrc) `intoSet` singles (eTgtNm, show_cmm_e CMM_EDefinesCTgt), (eSrcNm, cnNm) `intoSet` singles (eTgtNm, cnNm), (eSrcNm, nm) `intoSet` singles (eTgtNm, st))
 
+mkAEnnm :: String -> String
 mkAEnnm nm = nm ++ "_anyExp"
 
-mk_st_AnyExp nm =( (mkAEnnm nm, show_cmm_n CMM_AnyExp), (mkenm, show_cmm_e CMM_EAtomExp), (mkenm, nm), (mkenm, mkAEnnm nm))
+mk_st_AnyExp :: String -> QuadURel String
+mk_st_AnyExp nm = singleQUR ((mkAEnnm nm, show_cmm_n CMM_AnyExp), (mkenm, show_cmm_e CMM_EAtomExp), (mkenm, nm), (mkenm, mkAEnnm nm))
     where mkenm = "EAE_"++nm
 
-mk_AnyExpQ nm (enm, ats) = 
-    (mk_st_AnyExp nm) `combineQAsInsert` ((mk_P_lq nm enm CMM_EAnyExp_atv) `combineQAsUnion` (mk_P_lq nm ats CMM_EAnyExp_atSet))
-
+mk_P_lq ::String ->String ->a->QuadURel String
 mk_P_lq nm p e_ty_ps = 
-   ([(mkPNm nm p, show_cmm_n CMM_Parameter)], [(mkEPNm nm p, show_cmm_e e_ty_ps)], [(mkEPNm nm p, mkAEnnm nm)], [(mkEPNm nm p, mkPNm nm p)])
+   singleQUR ((mkPNm nm p, show_cmm_n CMM_Parameter), 
+      (mkEPNm nm p, show_cmm_e e_ty_ps), (mkEPNm nm p, mkAEnnm nm), (mkEPNm nm p, mkPNm nm p))
 
+mk_AnyExpQ ::String->Pair String->QuadURel String
+mk_AnyExpQ nm (enm, ats) = 
+    (mk_st_AnyExp nm) `join` (mk_P_lq nm enm CMM_EAnyExp_atv) `join` (mk_P_lq nm ats CMM_EAnyExp_atSet)
+
+mk_ren_nm ::String->String->String->String
 mk_ren_nm nm fr to = nm ++ "_renaming_"++fr++"_"++to
+
+mk_e_Ren::String->String->String ->String
 mk_e_Ren nm fr to  = "ERen"++nm++"_"++fr++"_"++to
-mk_ren_lq nm fr to = ([(mk_ren_nm nm fr to, show_cmm_n CMM_Renaming)]
-    , [(mk_e_Ren nm fr to, show_cmm_e CMM_ERenamings)]
-    , [(mk_e_Ren nm fr to, nm)]
-    , [(mk_e_Ren nm fr to, mk_ren_nm nm fr to)])
 
+mkRenamingQUR::String->String->String->QuadURel String
+mkRenamingQUR nm fr to = singleQUR ((mk_ren_nm nm fr to, show_cmm_n CMM_Renaming)
+    , (mk_e_Ren nm fr to, show_cmm_e CMM_ERenamings)
+    , (mk_e_Ren nm fr to, nm)
+    , (mk_e_Ren nm fr to, mk_ren_nm nm fr to))
+
+mkHasParamQ::String->String->QuadURel String
 mkHasParamQ nm p = 
-   ([(mkPNm nm p, show_cmm_n CMM_Parameter)], [(mkEPNm nm p, show_cmm_e CMM_EHasParams)], [(mkEPNm nm p, nm)], [(mkEPNm nm p, mkPNm nm p)])
-consHasPs _ [] = nilQl
-consHasPs nm (p:ps) = mkHasParamQ nm p `combineQAsConcat` (consHasPs nm ps)
+   singleQUR ((mkPNm nm p, show_cmm_n CMM_Parameter), (mkEPNm nm p, show_cmm_e CMM_EHasParams), (mkEPNm nm p, nm), (mkEPNm nm p, mkPNm nm p))
 
-mkGLQ nm Nothing = nilQl 
+consHasPs :: String -> [String] -> QuadURel String
+consHasPs _ [] = nilQUR
+consHasPs nm (p:ps) = mkHasParamQ nm p `join` (consHasPs nm ps)
+
+mkGLQ :: [Char] -> Maybe [Char] -> QuadURel String
+mkGLQ nm Nothing = nilQUR
 mkGLQ nm (Just g) =
-    let gnm =  nm ++ "_guard_"++g in
-   ([(gnm, show_cmm_n CMM_Guard)], [("E"++nm++"_g", show_cmm_e CMM_EHasGuard)], [("E"++nm++"_g", nm)], [("E"++nm++"_g", gnm)])
+   let gnm =  nm ++ "_guard_"++g in
+   singleQUR ((gnm, show_cmm_n CMM_Guard), ("E"++nm++"_g", show_cmm_e CMM_EHasGuard), ("E"++nm++"_g", nm), ("E"++nm++"_g", gnm))
 
+getNodesInfo :: t Node -> QuadURel String
 getNodesInfo ns = 
    let fQ (x, _, _, _) = x in
-   let yn_vals = [("YesV", show_cmm_n CMM_Yes), ("NoV", show_cmm_n CMM_No)] in
-   foldl (\ns' n-> ns' `combineQAsUnion` (cons n (map fst $ fQ ns'))) (yn_vals `combineQAsUnionFst` nilQl) ns
-   where cQ p = ([p], [], [], [])
+   let yesV = ("YesV", show_cmm_n CMM_Yes) in
+   let noV = ("NoV", show_cmm_n CMM_No) in
+   let yn_vals = yesV `intoSet` singles noV in
+   foldr (\n ns-> (cons n (map fst $ fQ ns')) `join` ns) (qurOneTpl yn_vals (nil, nil, nil)) ns
+   where cQ p = (singles p, nil, nil, nil)
          mkQ nm op ns_m = (ns_m, [("E"++nm++"_op", show_cmm_e CMM_EOperator_op)], [("E"++nm++"_op", nm)], [("E"++nm++"_op", op++"_Val")])
-         cons (Node nm (Compound start ps)) _ = consForC nm start `combineQAsConcat` consHasPs nm ps
+         cons (Node nm (Compound start ps)) _ = consForC nm start `join` consHasPs nm ps
          cons (Node nm (Operator op ps)) ns = consForOp nm op ps ns
-         cons (Node nm (Reference i rn g ps rs)) _ = combineQAsUnionLs [(if null rn then (cQ $ rP nm) else consForRef nm rn ps rs), mkGLQ nm g, consRenamings nm rs, consRIQ nm i]
+         cons (Node nm (Reference i rn g ps rs)) _ = combineQWUnionLs [(if null rn then (cQ $ rP nm) else consForRef nm rn ps rs), mkGLQ nm g, consRenamings nm rs, consRIQ nm i]
          cons (Node nm (Atom rnm aexp g)) _ = (mk_enm_q nm $ atNm nm rnm) `combineQAsInsert` (combineQAsUnionLs [mkGLQ nm g, atPs nm aexp, cQ (nm, show_cmm_n CMM_Atom)])
-         cons (Node nm Import) _ = let p = (nm, show_cmm_n CMM_Import) in (mk_enm_q nm nm) `combineQAsInsert` cQ p
+         cons (Node nm Import) _ = let p = (nm, show_cmm_n CMM_Import) in (mk_enm_q nm nm) `combineQwInsert` cQ p
          cons (Node nm ni) ns = let (ty, ps) = extractInfo ni in cQ (nm, ty)
-         consRenamings nm rs = foldr (\(fr, to) rqs->(mk_ren_lq nm fr to) `combineQAsUnion` rqs) nilQl rs
-         consForC nm start = (mk_enm_q nm nm) `combineQAsInsert` (cQ (nm, show_cmm_n CMM_Compound) `combineQAsConcat` mkConn_For_Compound nm start)
+         consRenamings nm rs = foldr (\(fr, to) rqs->(mkRenamingQUR nm fr to) `combineQwUnion` rqs) nilQS rs
+         consForC nm start = (mk_enm_q nm nm) `join` ((singleQURFrFst (nm, show_cmm_n CMM_Compound)) `join` mkConnForCompound nm start)
          mk_Q_forRNm nm rn = ((cNm rn, show_cmm_n CMM_Name), ("ERNmOf"++nm, show_cmm_e CMM_EReference_name), ("ERNmOf"++nm, nm), ("ERNmOf"++nm, cNm rn))
          consRIQ nm i = let iv = if i then "YesV" else "NoV" in ([], [("E"++nm++"_inner", show_cmm_e CMM_EReference_inner)], [("E"++nm++"_inner", nm)], [("E"++nm++"_inner", iv)])
-         consForRef nm rn [] rs = (mk_Q_forRNm nm rn `combineQAsInsert` (cQ $ rP nm)) 
-         consForRef nm rn (p:ps) rs = (consForRef nm rn ps rs) `combineQAsUnion` (mkHasParamQ nm p) 
-         consForOp nm op [] ns = let p = (nm, show_cmm_n CMM_Operator) in if op++"_Val" `elem` ns then mkQ nm op [p] else mkQ nm op (p:[(op++"_Val", op)])
-         consForOp nm op (p:ps) ns = (consForOp nm op ps ns) `combineQAsUnion` ([(mkPNm nm p, show_cmm_n CMM_Parameter)], [(mkEPNm nm p, show_cmm_e CMM_EHasParams)], [(mkEPNm nm p, nm)], [(mkEPNm nm p, mkPNm nm p)])
+         consForRef nm rn EmptyS rs = (mk_Q_forRNm nm rn `combineQwInsert` (cQ $ rP nm)) 
+         consForRef nm rn (Set p ps) rs = (consForRef nm rn ps rs) `combineQAsUnion` (mkHasParamQ nm p) 
+         consForOp nm op EmptyS ns = let p = (nm, show_cmm_n CMM_Operator) in if op++"_Val" `elem` ns then mkQ nm op [p] else mkQ nm op (p:[(op++"_Val", op)])
+         consForOp nm op (Set p ps) ns = (consForOp nm op ps ns) `join` (singleQUR ((mkPNm nm p, show_cmm_n CMM_Parameter), (mkEPNm nm p, show_cmm_e CMM_EHasParams), (mkEPNm nm p, nm), (mkEPNm nm p, mkPNm nm p)))
          atNm nm rnm = if isNil rnm then nm else (the rnm)
          atPs nm aexp = if isNil aexp then nilQl else mk_AnyExpQ nm (the aexp)
          rP nm = (nm, show_cmm_n CMM_Reference) 
@@ -403,7 +436,7 @@ getConnectorsInfo cs ns_m es_m src_m tgt_m =
    foldr (\c cs'-> (cons c) `combineQAsUnion` cs') (ns_m, es_m, src_m, tgt_m) cs 
    where mkGNm nm g =  nm ++ "_guard_"++g
          consOther nm CMM_BMainIfC [g] = ([(mkGNm nm g, show_cmm_n CMM_Guard)], [("E"++nm++"_g", show_cmm_e CMM_EHasGuard)], [("E"++nm++"_g", nm)], [("E"++nm++"_g", mkGNm nm g)])
-         consOther nm CMM_ReferenceC ps = consRCHQ nm (head ps) `combineQAsUnion` consHasPs nm (tail ps)
+         consOther nm CMM_ReferenceC ps = consRCHQ nm (head ps) `combineQwUnion` consHasPs nm (tail ps)
          consOther nm CMM_AfterC ps = let ov = if (head ps) == "o" then "YesV" else "NoV" in ([], [(eac_co nm, show_cmm_e CMM_EAfterC_copen)], [(eac_co nm, nm)], [(eac_co nm, ov)])
          consOther _ _ _ =  ([], [], [], [])
          consRCHQ nm h = let hv = if h == "h" then "YesV" else "NoV" in ([], [("E"++nm++"_hidden", show_cmm_e CMM_EReferenceC_hidden)], [("E"++nm++"_hidden", nm)], [("E"++nm++"_hidden", hv)])
@@ -412,6 +445,7 @@ getConnectorsInfo cs ns_m es_m src_m tgt_m =
          eac_co nm = "E"++nm++"_copen"
 
 --consOtherEdges :: String -> [NodeDef] -> [EdgeDef] -> [a]
+consOtherEdges::Eq b=> SGr String b -> String -> [Char] -> Set ([Char], String) -> Rel String String -> [(String, String)] -> [(String, String)] -> (Rel String String, [(String, String)], [(String, String)])
 consOtherEdges sg_mm nm start ns_t es_m src_m tgt_m = 
    let ess = ([("EPCSt", "EStarts"), ("EStCSrc_", show_cmm_e CMM_EStartCSrc), ("EStCTgt_", show_cmm_e CMM_EStartCTgt)], 
              [("EPCSt", nm), ("EStCSrc_", "StartC_"), ("EStCTgt_",  "StartC_")], 
@@ -425,46 +459,47 @@ consOtherEdges sg_mm nm start ns_t es_m src_m tgt_m =
    let es_cs = foldl (\es n->mkTupleAndCombine (fst n) es) ([], [], []) ns_t in
    (es_m, src_m, tgt_m) `combine` (ess `combine` es_cs) --`combine` es_ops))
 
+consPCAndTyMorph :: SGr String b -> PCDef -> GrwT a String
 consPCAndTyMorph sg_mm (PCDef nm start elems)  = 
    -- initial set of nodes with the mapping
    let ns_m_i = [(nm, "PCDef"), ("StartN_", show_cmm_n CMM_StartN), ("StartC_", show_cmm_n CMM_StartC)] in 
-   let (ns_m, es_m, src_m, tgt_m) = (mk_enm_q "StartN_" "StartN_") `combineQAsInsert` getNodesInfo (getTheNodes elems) in
+   let (ns_m, es_m, src_m, tgt_m) = (mk_enm_q "StartN_" "StartN_") `combineQwInsert` getNodesInfo (getTheNodes elems) in
    let (ns_m_c, es_c, src_m_c, tgt_m_c) = getConnectorsInfo (getTheCs elems) (ns_m_i++ns_m) (es_m) (src_m) (tgt_m) in
    let (es_m_f, src_m_f, tgt_m_f) = consOtherEdges sg_mm nm start ns_m_c es_c src_m_c tgt_m_c in
-   let pcg = cons_g (map fst ns_m_c) (map fst es_m_f) src_m_f tgt_m_f in
+   let pcg = consG (map fst ns_m_c) (map fst es_m_f) src_m_f tgt_m_f in
    --let pcg = cons_g (map fst ns_m_c) (map fst es_m) [] [] in
-   cons_gwt pcg (cons_gm (ns_m_c) (es_m_f))
+   consGWT pcg (consGM (ns_m_c) es_m_f)
 
 is_wf_pcdef (PCDef _ start elems) = start `elem` (map (\(Node nm _)->nm) (getTheNodes elems))
 
 
+loadPC' :: SGr String b1 -> PCDef-> IO (GrwT String String)
 loadPC' sg_mm pc = do
    let b = is_wf_pcdef pc
-   let pc_g = if b then (consPCAndTyMorph sg_mm pc) else empty_gwt
+   let pc_g = if b then consPCAndTyMorph sg_mm pc else Gr_Cls.empty
    when (not b) $ do putStrLn "The PC is not well-formed."
    return (pc_g)
 
+loadPC :: SGr String b1 -> FilePath -> IO (GrwT String String)
 loadPC sg_mm fn = do
    opc <- loadPCFrFile fn
-   if (isNil opc) 
+   if isNil opc
       then do
          putStrLn "The PC definition could not be parsed."
-         return empty_gwt
-      else do
-         pc_gs <- loadPC' sg_mm (the opc)
-         return (pc_gs)
-
-
+         return Gr_Cls.empty
+      else do loadPC' sg_mm (the opc)
 
 process_pc_def :: FilePath -> IO ()
 process_pc_def fn = do
    pc<-loadPCFrFile fn
    putStrLn $ show pc
 
+tb_pc_def :: String
 tb_pc_def = "PC PC_HouseAttacker@HouseAttacker\n"
    ++ "compound HouseAttacker.ges,mes,ses@someoneEnters\n"
    ++ "atom someoneEnters-e:ges\n"
  
+def_path :: String
 def_path = "PCs/PCs/"
 
 test1 = readP_to_S pc_def tb_pc_def

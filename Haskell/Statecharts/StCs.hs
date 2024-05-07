@@ -63,6 +63,7 @@ load_stcs_mmi def_path = do
 consRelOfEdge stc e = foldr (\e r->(appl (src stc) e, appl (tgt stc) e) `intoSet` r) nil (es_of_ety stc $ show_cmm_e e)
 
 -- Gets name of given statechart 
+gStCName :: (GR gm, GRM gm) => gm String String -> String
 gStCName stc = appl (consRelOfEdge stc CMM_ENamed_name) "StCModel_"
 
 

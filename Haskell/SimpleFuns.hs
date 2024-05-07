@@ -19,6 +19,7 @@ module SimpleFuns(swap
     , combineQwIntoS
     , combineQwAppend
     , combineQwUnion
+    , combineQWUnionLs
     , makeQFrTFst
     , nilQl
     , nilQS
@@ -60,13 +61,14 @@ combineTwInsert::(Ord a1, Ord a2, Ord a3) =>(a1, a2, a3) -> ([a1], [a2], [a3]) -
 combineTwInsert (x, y, z) (x', y' , z') = (insert x x', insert y y', insert z z')
 combineTwIntoS::(Eq a, Eq b, Eq c)=>(a, b, c) -> (Set a, Set b, Set c) -> (Set a, Set b, Set c)
 combineTwIntoS (x, y, z) (x', y' , z') =(x `intoSet` x', y `intoSet` y', z `intoSet` z')
+
 -- A quadruple with empty lists
 nilQl :: ([a1], [a2], [a3], [a4])
 nilQl = ([], [], [], [])
 nilQS:: (Set a1, Set a2, Set a3, Set a4)
 nilQS = (nil, nil, nil, nil)
 
--- Makes a quadruple out of an element and a triple
+-- Makes quadruple out of an element and a triple
 makeQFrTFst :: a -> (b, c, d) -> (a, b, c, d)
 makeQFrTFst x (y, z, w) = (x, y, z, w)
 
@@ -75,8 +77,11 @@ combineQwOp op (x, y, z, w) (x', y' , z', w') = (op x x', op y y', op z z', op w
 combineQwAppend = combineQwOp (++) 
 combineQwUnion :: (Eq a1, Eq a2, Eq a3, Eq a4) =>(Set a1, Set a2, Set a3, Set a4)->(Set a1, Set a2, Set a3, Set a4)-> (Set a1, Set a2, Set a3, Set a4)
 combineQwUnion (x, y, z, w) (x', y' , z', w') = (x `union` x', y `union` y', z `union` z', w `union` w')
+combineQwInsert :: (Ord a1, Ord a2, Ord a3, Ord a4) => (a1, a2, a3, a4) -> ([a1], [a2], [a3], [a4]) -> ([a1], [a2], [a3], [a4])
 combineQwInsert (x, y, z, w) (x', y' , z', w') = (insert x x', insert y y', insert z z', insert w w')
 combineQwIntoS (x, y, z, w) (x', y' , z', w') = (x `intoSet` x', y `intoSet` y', z `intoSet` z', w `intoSet` w')
+combineQWUnionLs :: (Eq a1, Eq a2, Eq a3, Eq a4) =>[(Set a1, Set a2, Set a3, Set a4)] -> (Set a1, Set a2, Set a3, Set a4)
+combineQWUnionLs = foldr combineQwUnion nilQS
 
 -- Maps a function onto a triple
 mapP :: (a -> b) -> (a, a) -> (b, b)

@@ -43,42 +43,60 @@ data StCDesc = StCDesc Name [Elem]
 data StCModel = StCModel Name [StCDesc]
    deriving(Eq, Show)
 
+isState :: Elem -> Bool
 isState (ElemSt _) = True
 isState _ = False
+isEndState :: State -> Bool
 isEndState (State _ EndSt _) = True
 isEndState _ = False
+isHistoryState :: State -> Bool
 isHistoryState (State _ HistorySt _) = True
 isHistoryState _ = False
+isTransition :: Elem -> Bool
 isTransition (ElemT _) = True
 isTransition _ = False
 
 -- isNode (ElemC _) = False
+gDescName :: StCDesc -> Name
 gDescName (StCDesc nm _) = nm
 gElems :: StCDesc -> Set Elem
 gElems (StCDesc _ es) = set es
+getSt :: Elem -> State
 getSt (ElemSt st) = st
+getT :: Elem -> Transition
 getT (ElemT t) = t
 
 
 
+getNameOfT :: Transition -> Name
 getNameOfT(Transition nm _ _ _ _ _) = nm
+getEventOfT :: Transition -> Maybe Event
 getEventOfT(Transition _ _ _ e _ _) = e
+getGuardOfT :: Transition -> Maybe Guard
 getGuardOfT(Transition _ _ _ _ g _) = g
+getActionOfT :: Transition -> Maybe Action
 getActionOfT(Transition _ _ _ _ _ a) = a
+getSrcOfT :: Transition -> Name
 getSrcOfT(Transition _ s _ _ _ _) = s
+getTgtOfT :: Transition -> Name
 getTgtOfT(Transition _ _ t _ _ _) = t
 
+gStName :: State -> Name
 gStName (State nm _ _) = nm
+gStTy :: State -> StateTy
 gStTy (State _ ty _) = ty
 gStDescs :: State -> Set StCDesc
 gStDescs (State _ _ ds) = set ds
 
+gCMMTy :: State -> StCs_CMM_Ns
 gCMMTy (State _ StartSt _) = CMM_StartState
 gCMMTy (State _ EndSt _) = CMM_EndState
 gCMMTy (State _ HistorySt _) = CMM_HistoryState
 gCMMTy (State _ MutableSt _) = CMM_MutableState
 
+getStates :: StCDesc -> Set State
 getStates desc = foldr (\e es-> if isState e then (getSt e) `intoSet` es else es) nil (gElems desc)
+getTransitions :: StCDesc -> Set Transition
 getTransitions desc = foldr (\e es-> if isTransition e then (getT e) `intoSet` es else es) nil (gElems desc)
 -- getTheCs elems = foldl (\es e-> if not . isNode $ e then (getC e):es else es) [] elems
 
@@ -309,7 +327,7 @@ consGwTFrStc (StCModel nm descs)  =
 loadStC :: FilePath -> IO (GrwT String String)
 loadStC fn = do
    ostc <- loadStCFrFile fn
-   if (isNil ostc) 
+   if isNil ostc 
       then do
          putStrLn "The StC definition could not be parsed."
          return Gr_Cls.empty
@@ -322,6 +340,7 @@ process_stc_def fn = do
    stc<-loadStCFrFile fn
    putStrLn $ show stc
 
+def_path :: String
 def_path = "StateCharts/"
 
 complexSt = "state Processing {\n"

@@ -16,7 +16,7 @@ import Gr_Cls
 import SGrs
 import CSPPrint
 import PCs.PCTrees
-import The_Nil
+import TheNil
 import MyMaybe
 import PCs.PCs_MM_Names
 import GrswT
@@ -203,7 +203,7 @@ cspExp (OpB OpInterleave t1 t2) =
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite isComposite) in
    (Interleave e1 e2, cds)
 
-toCSP::MMInfo String->PC String->[String]->[String]->(CSPSpec, CSPSpec, CSPSpec)
+toCSP::MMInfo String String->PC String String->[String]->[String]->(CSPSpec, CSPSpec, CSPSpec)
 toCSP mmi pc ias is = 
    let (PCTD _ cts) = consPCTD mmi pc in
    (CSP [cspChannels cts ias], CSP $ cspDecl cts, CSP $ [cspMainImports pc] ++ [cspImports is])

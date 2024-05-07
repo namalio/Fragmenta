@@ -88,7 +88,6 @@ gRoot asd = appl (inv . fV . ty $ asd) (show_asd_mm_n ASD_MM_StructureDiagram)
 gASDName :: (GR g, GRM g, GWT g) => g String String -> String
 gASDName asd = gName asd . gRoot $ asd
 
-
 -- gDescStart stc dnm = the $ img (consRelOfEdge stc CMM_EStarts) [dnm]
 
 -- gDescEnd stc dnm = toMaybeFrLs $ img (consRelOfEdge stc CMM_EEnds) [dnm]
