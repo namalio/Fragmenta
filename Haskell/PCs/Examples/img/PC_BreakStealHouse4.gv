@@ -33,7 +33,7 @@ OpGetInside->breakWindow[arrowhead="open"];
 OpAlarm->noAlarm[arrowhead="open"];
 OpBurglary->DoBurglary[arrowhead="open"];
 OpBreakAndStealHouse->RunAway[arrowhead="open",label="Jump"];
-StartN_->BreakAndStealHouse[arrowtail=diamond,dir=both,label="starts"];
+StartN_->BreakAndStealHouse[label="starts"];
 BreakAndStealHouse->OpBreakAndStealHouse[arrowhead="onormal",penwidth=2,label="="];
 GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
 RunAway->getOutandRun[arrowhead="onormal",penwidth=2,label="="];

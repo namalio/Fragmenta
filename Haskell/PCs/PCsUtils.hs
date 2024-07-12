@@ -12,7 +12,7 @@ import Gr_Cls
 import PCs.PCs
 import SGrs
 import GrswT
-import PCs.ToCSP
+import PCs.ToCSP ( toCSP )
 import PCs.PCTrees
 import CSPPrint
 import System.IO
@@ -65,6 +65,7 @@ getImports pcs_path sg_mm pc = do
          return nil) >>= return)
    return (gunion is)
 
+writeDrawingToFile :: String -> MMInfo String String -> PC String String -> IO ()
 writeDrawingToFile img_path mmi pc = do
    let draw_src = wrPCAsGraphviz mmi pc  
    writeFile (img_path ++ (getPCDef pc) ++ ".gv") draw_src
@@ -113,7 +114,7 @@ wrCSPToFile pcs_path csp_path mmi pc = do
    writeFile (csp_path ++ (getPCDef pc) ++ ".csp") cspm
 
 
-wrPCDrawingToFile ::String->MMInfo String String -> GrwT String String -> IO ()
+wrPCDrawingToFile ::String->MMInfo String String -> PC String String -> IO ()
 wrPCDrawingToFile img_path mmi pc = do
     putStrLn "Writing the GraphViz file..." 
     writeDrawingToFile img_path mmi pc
@@ -203,6 +204,7 @@ outputDrawing pcs_path img_path csp_path fn mmi = do
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do drawPCToFile pcs_path img_path csp_path mmi (the opc) 
 
+outputCSP :: FilePath -> FilePath -> FilePath -> String -> MMInfo String String -> IO ()
 outputCSP pcs_path img_path csp_path fn mmi = do
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do writeCSPToFile pcs_path img_path csp_path mmi (the opc) 
@@ -458,10 +460,14 @@ test :: IO ()
 test = do 
     mmi<-load_mm_info mm_path
     --load_check_show_tree mmi "PC_Buzzer.pc"
-    generate_Timer mmi
+    --generate_Timer mmi
     generate_Buzzer mmi
     --generate_BusRider mmi
-    -- opc <- loadPC (pc_sg_cmm mmi) (pcs_path ++ "PC_Buzzer.pc")
+    --opc <- loadPC (pc_sg_cmm mmi) (pcs_path ++ "PC_Buzzer.pc")
+    --putStrLn $ show $ nextKsOf mmi (the opc)  "Buzzing"
+    --putStrLn $ nextNodes mmi pc n
+    --putStrLn $ show $ relKs mmi (the opc)
+    --putStrLn $ show_pctd $ consPCTD mmi (the opc)
     --print $ isNodeOfTys "Bool" [CMM_Compound] (pc_sg_cmm mmi) (the opc)
     --putStrLn $ show $ compoundStart mmi (the opc)  "Bool"
     --putStrLn $ show $ nextNodesAfter mmi (the opc)  "Bool"

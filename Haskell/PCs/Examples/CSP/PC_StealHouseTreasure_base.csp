@@ -1,1 +1,1 @@
-channel unlockEnterRoom, grabTreasure, disableAlarm, outWindow, breakinWindow, disableCamera, outDoor, intoHall
+channel intoHall, outDoor, disableCamera, breakinWindow, outWindow, disableAlarm, grabTreasure, unlockEnterRoom

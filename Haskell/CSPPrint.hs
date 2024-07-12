@@ -14,7 +14,7 @@ import Sets
 --wrWaitFor = "Wait_({})= SKIP\nWait_(evs) = [] e :evs @ e->Wait_(diff(evs, {e}))"
 
 wrDecl :: Int -> Decl -> [Char]
-wrDecl ind (Channel ids) = "channel " ++ (wrSepElems (toList ids) "," True False ind)
+wrDecl ind (Channel ids) = "channel " ++ (wrSepElems ids "," True False ind)
 wrDecl ind (EqDecl e1 e2) = (do_indent ind) ++ (wrExp ind e1) ++ " = " ++ wrExp (ind +1) e2
 wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (toList ms)) "\n" False False ind
 

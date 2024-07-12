@@ -1,17 +1,17 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseAlarm];
-RefHouseAlarm0 [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label=" 
+RefHouseAlarm0 [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label="↑ 
 (Inner)"];
 OpHouseAlarm0 [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 activateAlarm [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {not active}
 activateAlarm"];
-RefHouseAlarm02 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefHouseAlarm02 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 alarmSounds [shape=ellipse,fillcolor=greenyellow,style = filled,label="alarmSounds"];
-RefHouseAlarm03 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefHouseAlarm03 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 movement [shape=ellipse,fillcolor=greenyellow,style = filled,label=< {active and (not triggered)}<br/><I>anyof</I> aes<br/>[movement]>];
 disableAlarm [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {active}
 disableAlarm"];
-HouseAlarm0 [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAlarm0 (triggered,active)"];
+HouseAlarm0 [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAlarm0 (active,triggered)"];
 HouseAlarm [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAlarm (aes)"];
 
 {rank=same;RefHouseAlarm0,disableAlarm}
@@ -24,10 +24,10 @@ RefHouseAlarm03->HouseAlarm0[arrowhead="normalnormal",fillcolor=white,label=" (a
 OpHouseAlarm0->movement[arrowhead="open"];
 RefHouseAlarm02->HouseAlarm0[arrowhead="normalnormal",fillcolor=white,label=" (True,False)"];
 OpHouseAlarm0->activateAlarm[arrowhead="open"];
-StartN_->HouseAlarm[arrowtail=diamond,dir=both,label="starts"];
+StartN_->HouseAlarm[label="starts"];
 HouseAlarm0->OpHouseAlarm0[arrowhead="onormal",penwidth=2,label="="];
 HouseAlarm->RefHouseAlarm0[arrowhead="onormal",penwidth=2,label="="];
-RefHouseAlarm0->HouseAlarm0[arrowhead="normalnormal",fillcolor=white,label=" (False)"];
+RefHouseAlarm0->HouseAlarm0[arrowhead="normalnormal",fillcolor=white,label=" (False,False)"];
 OpHouseAlarm0->disableAlarm[arrowhead="open"];
 activateAlarm->RefHouseAlarm02[arrowtail=dot,dir=both,label="after"];
 movement->alarmSounds[arrowtail=dot,dir=both,label="after"];

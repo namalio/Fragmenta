@@ -1,1 +1,1 @@
-channel breakDoor, stolenKey, breakWindow, breakAndSteal, getOut, runAway, abortSafe, doneStealing, stealMoney, stealLaptop, stealOther, stealTV
+channel stealTV, stealOther, stealLaptop, stealMoney, doneStealing, abortSafe, runAway, getOut, breakAndSteal, breakWindow, stolenKey, breakDoor

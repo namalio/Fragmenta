@@ -73,8 +73,8 @@ findAfterAtom pc m n = (predecessors pc n) `intersec` (ran_of $ rres (src pc) $ 
 --   let buildExp e = if (not $ null $ cns) then LetW (genDeclsForCompounds pc m cns) e else e in 
 --   EqDecl (ExpId n) $ buildExp (genCompoundDef pc m (findCompoundStart pc m n))
 
-cspChannels :: Foldable t=>t CT -> Set Id -> Decl
-cspChannels pct ias = Channel $ ias `union` (atomsOfPCTD pct)
+cspChannels :: Foldable t=>t CT -> [Id] -> Decl
+cspChannels pct ias = Channel $ ias ++ (toList $ atomsOfPCTD pct)
    --Channel $ foldl(\ns n-> let n' = nmOfNamed pc m n in if n' `elem` ias then ns else insert n' ns) [] (getAtoms m)
 
 --cspPImports sg_mm pc = Include $ map (\mn->mn ++ "P") (importsOf sg_mm pc)
@@ -227,4 +227,4 @@ cspExp (OpB OpInterleave t1 t2) =
 toCSP::MMInfo String String->PC String String->Set String->Set String->(CSPSpec, CSPSpec, CSPSpec)
 toCSP mmi pc ias is = 
    let (PCTD _ cts) = consPCTD mmi pc in
-   (CSP [cspChannels cts ias], CSP $ cspDecl cts, CSP $ [cspMainImports pc] ++ [cspImports is])
+   (CSP [cspChannels cts (toList ias)], CSP $ cspDecl cts, CSP [cspMainImports pc, cspImports is])

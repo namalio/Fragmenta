@@ -6,7 +6,7 @@ breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWind
 Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal "];
 stealTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealTV"];
 stealOther [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealOther"];
-RefSteal [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefSteal [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 getOut [shape=ellipse,fillcolor=greenyellow,style = filled,label="getOut"];
 run [shape=ellipse,fillcolor=greenyellow,style = filled,label="run"];
 RunAway [shape=box,fillcolor=deepskyblue,style = filled,label="RunAway "];
@@ -29,7 +29,7 @@ OpSteal->doneStealing[arrowhead="open"];
 OpSteal->stealLaptop[arrowhead="open"];
 GetInside->Steal[arrowtail=dot,dir=both,label="after"];
 OpGetInside->breakWindow[arrowhead="open"];
-StartN_->BreakAndStealHouse[arrowtail=diamond,dir=both,label="starts"];
+StartN_->BreakAndStealHouse[label="starts"];
 BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
 Steal->OpSteal[arrowhead="onormal",penwidth=2,label="="];
 RunAway->getOut[arrowhead="onormal",penwidth=2,label="="];

@@ -5,6 +5,6 @@ showBalance [shape=ellipse,fillcolor=greenyellow,style = filled,label="showBalan
 
 {rank=same;ShowBalance,StartN_}
 
-StartN_->ShowBalance[arrowtail=diamond,dir=both,label="starts"];
+StartN_->ShowBalance[label="starts"];
 ShowBalance->showBalance[arrowhead="onormal",penwidth=2,label="="];
 }

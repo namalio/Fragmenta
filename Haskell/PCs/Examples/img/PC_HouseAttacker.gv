@@ -1,13 +1,13 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseAttacker];
-HouseAttacker [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAttacker (ges,ses,mes)"];
+HouseAttacker [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAttacker (ges,mes,ses)"];
 OpSteal [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
 MoveInside [shape=box,fillcolor=deepskyblue,style = filled,label="MoveInside "];
 Grab [shape=box,fillcolor=deepskyblue,style = filled,label="Grab "];
 Escape [shape=box,fillcolor=deepskyblue,style = filled,label="Escape "];
 WayOut [shape=box,fillcolor=deepskyblue,style = filled,label="WayOut "];
-RefHouseAttacker [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefHouseAttacker [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 leave [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[leave]>];
 someoneMoves2 [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> mes<br/>[someoneMoves]>];
 OpEscape [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
@@ -25,7 +25,7 @@ someoneMoves2->Escape[arrowtail=dot,dir=both,label="after"];
 grab->Steal[arrowtail=dot,dir=both,label="after"];
 OpSteal->SKIP[arrowhead="open"];
 OpSteal->MoveInside[arrowhead="open"];
-StartN_->HouseAttacker[arrowtail=diamond,dir=both,label="starts"];
+StartN_->HouseAttacker[label="starts"];
 HouseAttacker->someoneEnters[arrowhead="onormal",penwidth=2,label="="];
 MoveInside->someoneMoves[arrowhead="onormal",penwidth=2,label="="];
 Grab->grab[arrowhead="onormal",penwidth=2,label="="];
@@ -37,5 +37,5 @@ OpSteal->Grab[arrowhead="open"];
 someoneMoves->Steal[arrowtail=dot,dir=both,label="after"];
 OpEscape->WayOut[arrowhead="open"];
 OpEscape->leave[arrowhead="open"];
-RefHouseAttacker->HouseAttacker[arrowhead="normalnormal",fillcolor=white,label=" (mes,ses,ges)"];
+RefHouseAttacker->HouseAttacker[arrowhead="normalnormal",fillcolor=white,label=" (ges,mes,ses)"];
 }

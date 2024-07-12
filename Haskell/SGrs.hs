@@ -40,8 +40,7 @@ module SGrs(SGr
    , es_of_ety
    , ins
    , okETSGs
-   , rOkETSGs
-   , rMultOk) -- toremove later 
+   , rOkETSGs) 
 where
 
 import Sets (

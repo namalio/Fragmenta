@@ -1,7 +1,5 @@
 Doas = 
    let 
-      Docs = nil -> SKIP
-            [] c -> Docs
       Dobs = 
          let 
             Docs = nil -> SKIP

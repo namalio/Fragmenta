@@ -1,22 +1,22 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Authentication];
-RefAuthenticate [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-fail [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
-grant [shape=ellipse,fillcolor=greenyellow,style = filled,label="grant"];
-deny [shape=ellipse,fillcolor=greenyellow,style = filled,label="deny"];
-OpAuthenticateChoice [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-OpAuthenticate [shape=diamond,fillcolor=yellow,style = filled,label="If"];
 Authenticate [shape=box,fillcolor=deepskyblue,style = filled,label="Authenticate (n)"];
+OpAuthenticateChoice [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
+grant [shape=ellipse,fillcolor=greenyellow,style = filled,label="grant"];
+RefAuthenticate [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+fail [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
+deny [shape=ellipse,fillcolor=greenyellow,style = filled,label="deny"];
+OpAuthenticate [shape=diamond,fillcolor=yellow,style = filled,label="If"];
 
-{rank=min;StartN_,Authenticate}
-{rank=same;fail,RefAuthenticate}
+{rank=same;RefAuthenticate,fail}
+{rank=same;Authenticate,StartN_}
 
 RefAuthenticate->Authenticate[arrowhead="normalnormal",fillcolor=white,label=" (n-1)"];
-fail->RefAuthenticate[arrowtail=dot,dir=both,label="after"];
 OpAuthenticateChoice->fail[arrowhead="open"];
-OpAuthenticateChoice->grant[arrowhead="open"];
 OpAuthenticate->deny[arrowhead="open",label="Else"];
-OpAuthenticate->OpAuthenticateChoice[arrowhead="open",label="n>0"];
-StartN_->Authenticate[arrowtail=diamond,dir=both,label="starts"];
+StartN_->Authenticate[label="starts"];
 Authenticate->OpAuthenticate[arrowhead="onormal",penwidth=2,label="="];
+OpAuthenticate->OpAuthenticateChoice[arrowhead="open",label="n>0"];
+OpAuthenticateChoice->grant[arrowhead="open"];
+fail->RefAuthenticate[arrowtail=dot,dir=both,label="after"];
 }

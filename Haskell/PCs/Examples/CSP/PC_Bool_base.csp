@@ -1,1 +1,1 @@
-channel getF, getT, assignT, assignF
+channel assignF, assignT, getT, getF

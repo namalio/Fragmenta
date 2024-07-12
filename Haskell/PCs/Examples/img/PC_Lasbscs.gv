@@ -21,7 +21,7 @@ OpDoas->a[arrowhead="open"];
 Docs->OpDocs[arrowhead="onormal",penwidth=2,label="="];
 Dobs->OpDobs[arrowhead="onormal",penwidth=2,label="="];
 Doas->OpDoas[arrowhead="onormal",penwidth=2,label="="];
-StartN_->Doas[arrowtail=diamond,dir=both,label="starts"];
+StartN_->Doas[label="starts"];
 OpDoas->Dobs[arrowhead="open"];
 b->Dobs[arrowtail=dot,dir=both,label="after"];
 OpDobs->b[arrowhead="open"];

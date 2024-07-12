@@ -42,8 +42,7 @@ module PCs.PCs(PC
     , nextNodeAfter
     , branchesOfOp
     , innerKs, relKs,
-    innerRefKs, commonInnerKs, hidden_RC, inner_Ref, openAC, guardOfOp
-    , nextKsOf) --remove later
+    innerRefKs, commonInnerKs, hidden_RC, inner_Ref, openAC, guardOfOp) 
 where
 
 import Gr_Cls
@@ -403,14 +402,15 @@ nextKsOf mmi pc n =
         isCompound sn = isNodeOfTys sn [CMM_Compound] (pc_sg_cmm mmi) pc
   
 
-relKsOf::MMInfo String String->PC String String->Set String->Rel String String
-relKsOf mmi pc EmptyS = nil
-relKsOf mmi pc (n `Set` ns)   =
-  let nks = nextKsOf mmi pc n `sminus` (singles n) in
-  (fmap (pairUp n) nks) `union` (relKsOf mmi pc (ns `union` nks))
+relKsOf::MMInfo String String->PC String String->Set String->Rel String String->Rel String String
+relKsOf mmi pc EmptyS r = r
+relKsOf mmi pc (n `Set` ns) r =
+  let nks = nextKsOf mmi pc n `sminus` (singles n) 
+      r' = fmap (pairUp n) nks `union` r in
+  relKsOf mmi pc (ns `union` nks `sminus` (dom_of r)) r'
 
 relKs::MMInfo String String->PC String String->Rel String String
-relKs mmi pc = relKsOf mmi pc (singles $ startCompound mmi pc)
+relKs mmi pc = relKsOf mmi pc (singles $ startCompound mmi pc) nil
 
 --getImports :: GrM a -> [String]
 importsOf :: SGr String String -> GrwT String String -> Set String

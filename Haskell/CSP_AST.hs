@@ -11,7 +11,7 @@ import Sets
 
 type Id = String
 
-data Decl = Channel (Set Id) | EqDecl Exp Exp | Include (Set Id) deriving(Show) 
+data Decl = Channel [Id] | EqDecl Exp Exp | Include (Set Id) deriving(Show) 
 --data Stmt = Stmt Id Exp deriving(Show) 
 data Exp = ExpId Id -- a name
    | ExpApp Id [Id] -- function application

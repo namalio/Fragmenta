@@ -8,7 +8,7 @@ StealValuables [shape=box,fillcolor=deepskyblue,style = filled,label="StealValua
 doneStealing [shape=ellipse,fillcolor=greenyellow,style = filled,label="doneStealing"];
 stealTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealTV"];
 stealMoney [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealMoney"];
-RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 breakAndSteal [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakAndSteal"];
 Escape [shape=box,fillcolor=deepskyblue,style = filled,label="Escape "];
 runAway [shape=ellipse,fillcolor=greenyellow,style = filled,label="runAway"];
@@ -40,7 +40,7 @@ OpStealValuables->stealTV[arrowhead="open"];
 OpRansack->RobSafes[arrowhead="open"];
 GetInside->Ransack[arrowtail=dot,dir=both,label="after"];
 OpGetInside->breakWindow[arrowhead="open"];
-StartN_->BreakAndStealHouse[arrowtail=diamond,dir=both,label="starts"];
+StartN_->BreakAndStealHouse[label="starts"];
 BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
 Ransack->OpRansack[arrowhead="onormal",penwidth=2,label="="];
 StealValuables->OpStealValuables[arrowhead="onormal",penwidth=2,label="="];

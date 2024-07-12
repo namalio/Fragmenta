@@ -255,7 +255,7 @@ relWithin (Kappa (CT nm _ cts t)) = (relWithinRel_cts cts) `union` relWithinRel 
 relWithin _ = nil
 
 atomsOfPCTD :: Foldable t=>t CT ->Set String
-atomsOfPCTD cts = foldr (\ct ats->(atomsOfPCT (Kappa ct)) `union` ats) EmptyS cts
+atomsOfPCTD = foldr (\ct ats->(atomsOfPCT (Kappa ct)) `union` ats) EmptyS
 
 atomsOfPCTs :: PCT -> PCT -> Set String
 atomsOfPCTs t1 t2 = (atomsOfPCT t1) `union` atomsOfPCT t2

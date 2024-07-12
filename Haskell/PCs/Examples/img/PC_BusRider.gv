@@ -4,7 +4,7 @@ BusRider [shape=box,fillcolor=deepskyblue,style = filled,label="BusRider "];
 OpOnBus [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 stand [shape=ellipse,fillcolor=greenyellow,style = filled,label="stand"];
 alight [shape=ellipse,fillcolor=greenyellow,style = filled,label="alight"];
-RefOnBus [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefOnBus [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 move [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
 seat [shape=ellipse,fillcolor=greenyellow,style = filled,label="seat"];
 OnBus [shape=box,fillcolor=deepskyblue,style = filled,label="OnBus "];

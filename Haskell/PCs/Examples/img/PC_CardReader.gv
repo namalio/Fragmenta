@@ -34,7 +34,7 @@ CardReaderEject->OpCardReaderEject[arrowhead="onormal",penwidth=2,label="="];
 CardReaderTimeout->OpCardReaderTimeout[arrowhead="onormal",penwidth=2,label="="];
 DoCardReader->OpDoCardReader[arrowhead="onormal",penwidth=2,label="="];
 CardReader->cardIn[arrowhead="onormal",penwidth=2,label="="];
-StartN_->CardReader[arrowtail=diamond,dir=both,label="starts"];
+StartN_->CardReader[label="starts"];
 OpDoCardReader->ejectCard[arrowhead="open"];
 OpDoCardReader->readCard[arrowhead="open"];
 ejectCard->CardReaderEject[arrowtail=dot,dir=both,label="after"];

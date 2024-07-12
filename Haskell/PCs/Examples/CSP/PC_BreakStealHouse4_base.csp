@@ -1,1 +1,1 @@
-channel alarmSounds, noAlarm, breakDoor, stolenKey, breakWindow, doneStealing, stealValuable, getOutandRun
+channel getOutandRun, stealValuable, doneStealing, breakWindow, stolenKey, breakDoor, noAlarm, alarmSounds

@@ -1,1 +1,1 @@
-channel breakDoor, breakWindow, stolenKey, stealTV
+channel stealTV, stolenKey, breakWindow, breakDoor

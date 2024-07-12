@@ -3,7 +3,7 @@ StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC
 OpBool [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 assignF [shape=ellipse,fillcolor=greenyellow,style = filled,label="assignF"];
 OpBoolT [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-RefBool [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+RefBool [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 OpBoolF [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 getF [shape=ellipse,fillcolor=greenyellow,style = filled,label="getF"];
 BoolF [shape=box,fillcolor=deepskyblue,style = filled,label="BoolF "];
