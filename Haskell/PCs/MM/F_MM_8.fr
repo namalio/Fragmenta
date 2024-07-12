@@ -5,8 +5,8 @@ fragment F_MM_8 {
     proxy PStartN
     proxy PCompound
     inh StartC->PConnector
-    rel StartC->PStartN[StartCSrc]:1,1
-    rel StartC->PCompound[StartCTgt]:0..1,1
+    rel StartC->PStartN[StartSrc]:1;1
+    rel StartC->PCompound[StartTgt]:0..1;1
   }
   ref PConnector->Connector
   ref PStartN->StartN

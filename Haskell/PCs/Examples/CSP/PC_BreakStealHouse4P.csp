@@ -3,9 +3,9 @@ BreakAndStealHouse =
       RunAway = getOutandRun -> SKIP
       DoBurglary = 
          let 
-            GetInside = stolenKey -> SKIP
-                  [] breakWindow -> SKIP
+            GetInside = breakWindow -> SKIP
                   [] breakDoor -> SKIP
+                  [] stolenKey -> SKIP
             Steal = doneStealing -> SKIP
                   [] stealValuable -> Steal
          within

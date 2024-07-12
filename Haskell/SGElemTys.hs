@@ -8,7 +8,7 @@
 module SGElemTys (SGNTy(..), SGETy(..), SGED(..), sgnty_set, sgety_set) where
 
 import Sets ( set, Set )
-import Logic
+import Logic (implies)
 
 data SGNTy = Nnrml | Nabst | Nprxy | Nenum | Nval | Nvirt
    deriving (Eq, Show)

@@ -1,6 +1,6 @@
 Withdraw = 
    let 
-      DoWithdraw = withdraw -> (cashDeny -> DoWithdraw
-             |~| cashDispense -> SKIP)
+      DoWithdraw = withdraw -> (cashDispense -> SKIP
+             |~| cashDeny -> DoWithdraw)
    within
       optWithdraw -> DoWithdraw

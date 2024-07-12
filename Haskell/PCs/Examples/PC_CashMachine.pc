@@ -3,10 +3,10 @@ compound CashMachine@OpCashMachine
 reference RefCashMachine
 ref_connector RefCashMachine->CashMachine
 after_connector CashMachine->RefCashMachine
-operator OpCashMachine.OpParallel:cancel;cardIn;deny
+operator OpCashMachine.OpParallel:cancel,cardIn,deny
 op_connector OpCashMachine->RefCardControl
 op_connector OpCashMachine->OpCashMachine2
-operator OpCashMachine2.OpThrow:cancel;deny
+operator OpCashMachine2.OpThrow:cancel,deny
 operator OpCashMachine3.OpInterleave
 op_connector OpCashMachine2->OpCashMachine3
 skip SKIP

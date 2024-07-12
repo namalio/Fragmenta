@@ -1,7 +1,7 @@
 Morphism F_MM_5 {
 	nodes {
 		PNode->Node
-		PParameterised->Element
+		PParameterised->Trait
 		Stop->Node
 		Skip->Node
 		Combination->Node

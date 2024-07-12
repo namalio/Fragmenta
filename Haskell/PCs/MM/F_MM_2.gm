@@ -1,18 +1,18 @@
 Morphism F_MM_2 {
 	nodes {
 		PNamedNode->Node
-	  Import->Node
+	    Import->Node
 		Compound->Node
-    Atom->Node
+        Atom->Node
 		TargetOfRef->Node
-		Parameterised->Element
+		Parameterised->Trait
 		Action->Node
-		Guarded->Element
-	  Parameter->Attribute
+		Guarded->Trait
+	    Parameter->Attribute
 		Guard->Attribute
 	}
 	edges {
 	   HasParams->Has
-		 HasGuard->Has
+	   HasGuard->Has
 	}
 }

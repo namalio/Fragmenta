@@ -3,12 +3,13 @@ Morphism F_MM_1 {
 	   PCDef->PCDef
        Node->Node
 	   Connector->Connector
-	   NamedNode->Node
+	   Named->Trait
 	   StartN->Node
+	   NamedNode->Node
 	   Name->Attribute
 	}
 	edges {
-	   NamedNode_name->Has
+	   name->Has
 	   ContainsNs->Contains
 	   ContainsCs->Contains
        Starts->Starts

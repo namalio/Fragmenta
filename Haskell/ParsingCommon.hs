@@ -1,12 +1,15 @@
 module ParsingCommon (
-   parse_id
+   parseId
    , parseNumber
    , parseMaybe
    , parse_until_chs
    , parse_ls_ids
    , capitalise_fst
    , lower_fst
-   , parseIdLoose) where
+   , parseIdLoose
+   , parse_strings
+   , parseWord
+   , parseAnyStr) where
 
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
@@ -27,11 +30,17 @@ parseNumber = (many1 . satisfy) isDigit
 --   ch<- satisfy (is_letter)
 --   return (ch:"")
 
-parse_id::ReadP String
-parse_id = do
+parseId::ReadP String
+parseId = do
    ch<- satisfy (isLetter)
    str<-munch is_val_id_char
    return (ch:str)
+
+parseWord::ReadP String
+parseWord = munch is_val_id_char
+
+parseAnyStr::String->ReadP String
+parseAnyStr stchs = munch (\ch->ch `notElem` ([' ', '\n', '\t', '@'] ++ stchs))
 
 parseIdLoose::ReadP String
 parseIdLoose = munch is_val_id_char
@@ -52,15 +61,21 @@ satisfyWLook::(Char->Bool)->ReadP Char
 satisfyWLook p = look >>= (\s->if not (null s) && p (head s) then return (head s) else pfail)
 
 parse_until_chs::String->ReadP String
-parse_until_chs chs = do manyTill (satisfy (\ch->True)) (satisfyWLook (\c-> any (c ==) chs))
+parse_until_chs chs = do manyTill (get) (satisfyWLook (\c-> any (c ==) chs))
+
+
+
+parse_strings ::String->ReadP String->ReadP [String]
+parse_strings sep sparser = do
+   sepBy (sparser) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
 
 parse_ls_ids ::String->ReadP [String]
-parse_ls_ids sep = do
-   ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
+parse_ls_ids sep = parse_strings sep parseId
+--   ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
    --ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep))
    -- parses last id
    --p<-parse_id
-   return ps --(ps++[p])
+--   return ps --(ps++[p])
 
 parse_either_strs::[String]->ReadP String
 parse_either_strs (s:ss) = do

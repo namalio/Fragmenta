@@ -1,28 +1,28 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BusRider];
-RefOnBus [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-alight [shape=ellipse,fillcolor=greenyellow,style = filled,label="alight"];
-move [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
-stand [shape=ellipse,fillcolor=greenyellow,style = filled,label="stand"];
-seat [shape=ellipse,fillcolor=greenyellow,style = filled,label="seat"];
-OpOnBus [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-OnBus [shape=box,fillcolor=deepskyblue,style = filled,label="OnBus "];
 BusRider [shape=box,fillcolor=deepskyblue,style = filled,label="BusRider "];
+OpOnBus [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+stand [shape=ellipse,fillcolor=greenyellow,style = filled,label="stand"];
+alight [shape=ellipse,fillcolor=greenyellow,style = filled,label="alight"];
+RefOnBus [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
+move [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
+seat [shape=ellipse,fillcolor=greenyellow,style = filled,label="seat"];
+OnBus [shape=box,fillcolor=deepskyblue,style = filled,label="OnBus "];
 board [shape=ellipse,fillcolor=greenyellow,style = filled,label="board"];
 
-{rank=min;StartN_,BusRider}
-{rank=same;board,OnBus}
+{rank=same;OnBus,board}
+{rank=same;BusRider,StartN_}
 
 RefOnBus->OnBus[arrowhead="normalnormal",fillcolor=white,label=" "];
-move->RefOnBus[arrowtail=dot,dir=both,label="after"];
 stand->RefOnBus[arrowtail=dot,dir=both,label="after"];
-seat->RefOnBus[arrowtail=dot,dir=both,label="after"];
 OpOnBus->alight[arrowhead="open"];
-OpOnBus->move[arrowhead="open"];
 OpOnBus->stand[arrowhead="open"];
-OpOnBus->seat[arrowhead="open"];
 board->OnBus[arrowtail=dot,dir=both,label="after"];
-StartN_->BusRider[arrowtail=diamond,dir=both,label="starts"];
-OnBus->OpOnBus[arrowhead="onormal",penwidth=2,label="="];
 BusRider->board[arrowhead="onormal",penwidth=2,label="="];
+OnBus->OpOnBus[arrowhead="onormal",penwidth=2,label="="];
+StartN_->BusRider[label="starts"];
+OpOnBus->seat[arrowhead="open"];
+OpOnBus->move[arrowhead="open"];
+seat->RefOnBus[arrowtail=dot,dir=both,label="after"];
+move->RefOnBus[arrowtail=dot,dir=both,label="after"];
 }

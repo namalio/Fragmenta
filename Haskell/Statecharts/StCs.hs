@@ -20,7 +20,7 @@ where
 
 import Gr_Cls
 import Grs
-import Sets
+import Sets ( intersec, intoSet, Set )
 import SGrs
 import GrswT (GrwT)
 import Mdls 

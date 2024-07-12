@@ -2,20 +2,23 @@
 ------------------
 -- Project: PCs/Fragmenta
 -- Module: 'CSPPrint'
--- Description: Module that deals with the text printing (or conversion to string) of CSP specifications
+-- Description: Converts CSP specifications to strings 
 -- Author: Nuno Amálio
 -----------------
 module CSPPrint(wrCSP) where
 
 import CSP_AST
 import ParseUtils
+import Sets
 
 --wrWaitFor = "Wait_({})= SKIP\nWait_(evs) = [] e :evs @ e->Wait_(diff(evs, {e}))"
 
-wrDecl ind (Channel ids) = "channel " ++ (wrSepElems ids "," True False ind)
+wrDecl :: Int -> Decl -> [Char]
+wrDecl ind (Channel ids) = "channel " ++ (wrSepElems (toList ids) "," True False ind)
 wrDecl ind (EqDecl e1 e2) = (do_indent ind) ++ (wrExp ind e1) ++ " = " ++ wrExp (ind +1) e2
-wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") ms) "\n" False False ind
+wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (toList ms)) "\n" False False ind
 
+wrExp :: Int -> Exp -> String
 wrExp _ (ExpId id) = id 
 wrExp ind (ExpPar e) = "(" ++ (wrExp ind e) ++ ")" 
 wrExp ind (ExpApp id ps) = id ++ "(" ++ (wrSepElems ps ", " False False 0) ++ ")" 
@@ -38,15 +41,23 @@ wrExp ind SKIP = "SKIP"
 wrExp ind (LetW ds e) = "\n" ++ (do_indent ind) ++ "let \n" ++ (wrSepElems (map (wrDecl $ ind + 1) ds) "\n" False False (ind +2)) 
    ++ "\n" ++ (do_indent ind) ++ "within\n" ++ (do_indent (ind+1)) ++ (wrExp (ind + 1) e)
 wrExp ind (ExpRen e rs) = (wrExp ind e) ++ (wrRenamings rs)
+wrRenamings :: Foldable t => t (String, String) ->String
 wrRenamings rs = "[[" ++ (foldr (\(fr, to) rstr->fr ++ " <- " ++ to ++ (if null rstr then "" else ",") ++ rstr) "" rs) ++ "]]"
 --hasWait (WaitFor _) = True
+
+hasWait :: Exp -> Bool
 hasWait (LetW ds e) = (hasWaitDs ds) || hasWait e
-hasWait (_) = False
+hasWait _ = False
+
+hasWaitD :: Decl -> Bool
 hasWaitD (Channel _) = False
 hasWaitD (Include _) = False
 hasWaitD (EqDecl _ e) = hasWait e
+
+hasWaitDs :: Foldable t => t Decl -> Bool
 hasWaitDs ds = foldr (\d d'->(hasWaitD d) || d') False ds
 
+wrCSP :: CSPSpec -> String
 wrCSP (CSP ds) = 
    let cspTxt = wrSepElems (map (wrDecl 0) ds) "\n\n" False False 0 in
    cspTxt

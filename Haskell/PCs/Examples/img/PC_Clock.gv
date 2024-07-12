@@ -3,9 +3,9 @@ StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC
 tick [shape=ellipse,fillcolor=greenyellow,style = filled,label="tick"];
 Clock [shape=box,fillcolor=deepskyblue,style = filled,label="Clock "];
 
-{rank=min;StartN_,Clock}
+{rank=same;Clock,StartN_}
 
 tick->Clock[arrowtail=dot,dir=both,label="after"];
-StartN_->Clock[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-Clock->tick[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+Clock->tick[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Clock[label="starts"];
 }

@@ -1,22 +1,21 @@
 BreakAndStealHouse = 
    let 
-      GetInside = stolenKey -> SKIP
-            [] breakWindow -> SKIP
+      GetInside = breakWindow -> SKIP
             [] breakDoor -> SKIP
-      RifleHouse = 
+            [] stolenKey -> SKIP
+      Ransack = 
          let 
-            BreakAndSteal = 
+            RobSafes = 
                let 
-                  RobSafes = abortStealingOfSafe -> RifleHouse
-                        [] breakAndSteal -> RifleHouse
-                  StealValuables = stealOther -> RifleHouse
-                        [] stealMoney -> RifleHouse
-                        [] stealLaptop -> RifleHouse
-                        [] stealTV -> RifleHouse
+                  Escape = getOut -> runAway -> SKIP
                within
-                  doneRifling -> SKIP ||| (RobSafes ||| StealValuables)
+                  abortSafe -> (Ransack; Escape)
+                     [] breakAndSteal -> (Ransack; Escape)
+            StealValuables = stealMoney -> (Ransack; Escape)
+                  [] stealTV -> (Ransack; Escape)
+                  [] stealLaptop -> (Ransack; Escape)
+                  [] stealOther -> (Ransack; Escape)
          within
-            ranSack -> BreakAndSteal
-      Escape = getOut -> runAway -> SKIP
+            RobSafes ||| (StealValuables ||| doneStealing -> SKIP)
    within
-      GetInside; (RifleHouse; Escape)
+      GetInside; Ransack

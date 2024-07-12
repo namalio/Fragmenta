@@ -1,8 +1,8 @@
-Bool = assignF -> BoolF
-      [] assignT -> BoolT
+Bool = assignT -> BoolT
+      [] assignF -> BoolF
 
 BoolF = Bool
       [] getF -> BoolF
 
-BoolT = Bool
-      [] getT -> BoolT
+BoolT = getT -> BoolT
+      [] Bool

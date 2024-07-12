@@ -38,8 +38,9 @@ toMaybeP Nothing _ = Nothing
 toMaybeP _ Nothing = Nothing
 toMaybeP (Just x) (Just y) = Just (x, y)
 
+toMaybeFrLs :: [a] -> Maybe a
 toMaybeFrLs [] = Nothing
-toMaybeFrLs (n:_) = Just n
+toMaybeFrLs (n:_) = Just n 
 
 maybeFrSet :: Set a -> Maybe a
 maybeFrSet EmptyS = Nothing

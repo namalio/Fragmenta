@@ -126,8 +126,8 @@ wrMultS (Rm n sm) = show n ++ ".." ++ (wrMUV sm True)
 wrMultS (Sm sm)   = (wrMUV sm) False
 
 wrMult ::Mult -> String
-wrMult (m `Set` EmptyS) = wrMultS m
-wrMult (m `Set` ms) = wrMultS m ++ if ms == EmptyS then "" else  "," ++ wrMult ms
+wrMult (Mult (m `Set` EmptyS)) = wrMultS m
+wrMult (Mult (m `Set` ms)) = wrMultS m ++ if ms == EmptyS then "" else  "," ++ wrMult (Mult ms)
 
 edgName :: [a] -> [a]
 edgName = drop 2 . butLast

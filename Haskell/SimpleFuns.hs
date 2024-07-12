@@ -1,6 +1,7 @@
 module SimpleFuns(swap
     , pairUp
     , equalLs
+    , quicksortp
     , quicksort
     , fstT
     , sndT
@@ -101,16 +102,28 @@ equalLs (x:xs) (y:ys)
    | x == y = equalLs xs ys
    | otherwise = False
 
-quicksort :: (Ord a) => [a] -> [a]    
-quicksort [] = []    
-quicksort (x:xs) =     
-    let smallerSorted = quicksort (filter (<=x) xs)  
-        biggerSorted = quicksort (filter (>x) xs)   
+quicksortp :: (a->a->Bool)->[a] -> [a]    
+quicksortp _ [] = []    
+quicksortp p (x:xs) =     
+    let smallerSorted = quicksortp p (filter (`p` x) xs)  
+        biggerSorted = quicksortp p (filter (\y-> not (y `p` x)) xs)   
     in  smallerSorted ++ [x] ++ biggerSorted 
 
+quicksort :: (Ord a) => [a] -> [a]    
+quicksort = quicksortp (<=)
+
+--quicksort [] = []    
+--quicksort (x:xs) =     
+--    let smallerSorted = quicksort (filter (<=x) xs)  
+--        biggerSorted = quicksort (filter (>x) xs)   
+--    in  smallerSorted ++ [x] ++ biggerSorted 
+
+
+applyPToP :: (t1 -> a, t2 -> b) -> (t1, t2) -> (a, b)
 applyPToP (f, g)(x, y)= (f x, g y) 
 
-butLast l = take ((length l) - 1) l
+butLast :: [a] -> [a]
+butLast l = take (length l - 1) l
 
 toIdxC::Eq a=>[a]->[(a, Int)]
 toIdxC xs = toIdxC' xs 0

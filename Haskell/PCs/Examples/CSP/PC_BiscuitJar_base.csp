@@ -1,1 +1,1 @@
-channel openJar, closeJar, dropBiscuit, takeBiscuit
+channel takeBiscuit, dropBiscuit, closeJar, openJar

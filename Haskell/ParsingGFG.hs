@@ -44,17 +44,17 @@ parse_gfg_node::ReadP GFGElem
 parse_gfg_node = do
     string "fragment"
     skipSpaces
-    nm<-parse_id
+    nm<-parseId
     skipSpaces
     return (GFGN nm)
 
 parse_gfg_ref::ReadP GFGElem
 parse_gfg_ref = do
-    sn<-parse_id 
+    sn<-parseId 
     skipSpaces
     string "references"
     skipSpaces
-    tn<-parse_id
+    tn<-parseId
     skipSpaces
     return (GFGR sn tn)
 
@@ -69,7 +69,7 @@ parse_gfg = do
    skipSpaces
    string "GFG"
    skipSpaces
-   g_nm<-parse_id
+   g_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_gfg_elem)
    return (GFGDef g_nm elems)

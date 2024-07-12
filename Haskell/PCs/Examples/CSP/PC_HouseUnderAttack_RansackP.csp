@@ -2,20 +2,20 @@ Ransack =
    let 
       IntoRoom = 
          let 
-            InRoom = IntoHall
-                  [] roomWindow -> SKIP
+            InRoom = IntoHall(IntoHall)
                   [] (([] e : {grabLaptop,grabJewels} @ e -> SKIP); InRoom)
+                  [] roomWindow -> SKIP
          within
             intoRoom -> InRoom
       IntoHall = 
          let 
-            InLivingRoom = grabTV -> InLivingRoom
-                  [] IntoHall
+            InLivingRoom = IntoHall(IntoHall)
+                  [] grabTV -> InLivingRoom
          within
             intoHall -> (mainDoor -> SKIP
-               [] IntoRoom
+               [] intoLivingRoom -> InLivingRoom
                [] intoKitchen -> IntoHall
-               [] intoLivingRoom -> InLivingRoom)
+               [] IntoRoom(IntoRoom))
    within
       roomWindow -> IntoRoom
          [] mainDoor -> IntoHall

@@ -8,7 +8,7 @@ fragment F_MM_10 {
     proxy PYesNo3
     inh ReferenceC->PConnector3
     inh ReferenceC->PParameterised3
-    rel ReferenceC->PReference[ReferenceCSrc]:1,1
+    rel ReferenceC->PReference[ReferenceCSrc]:1;1
     relu ReferenceC->PTargetOfRef[ReferenceCTgt]:1
     relu ReferenceC->PYesNo3[ReferenceC_hidden]
   }

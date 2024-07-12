@@ -49,20 +49,20 @@ parse_gwt_node = do
    skipSpaces
    string ":"
    skipSpaces
-   ty<-parse_id
+   ty<-parseId
    skipSpaces
    return (ElemN nm ty)
 
 parse_edge_name::ReadP String
 parse_edge_name = do
-   nm<-(between (char '[') (char ']') parse_id) <++ (return "")
+   nm<-(between (char '[') (char ']') parseId) <++ (return "")
    return nm
 
 parse_gwt_edge::ReadP GwTElem
 parse_gwt_edge = do
    string "edge"
    skipSpaces
-   sn<-parse_id 
+   sn<-parseId 
    skipSpaces
    string "->"
    skipSpaces
@@ -72,7 +72,7 @@ parse_gwt_edge = do
    skipSpaces
    string ":"
    skipSpaces
-   ty<-parse_id
+   ty<-parseId
    skipSpaces
    return (ElemE enm sn tn ty)
 
@@ -86,7 +86,7 @@ parse_gwt::ReadP GwTDef
 parse_gwt = do
    string "GrwT"
    skipSpaces
-   g_nm<-parse_id
+   g_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_gwt_elem) 
    return (GwTDef g_nm elems)

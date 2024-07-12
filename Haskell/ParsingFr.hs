@@ -63,11 +63,11 @@ frd_fname::FrDef->String
 frd_fname (FrDef fnm _ _) = fnm
 
 ext_mult_t::String->Mult->Rel String Mult
-ext_mult_t e EmptyS = singles (e, singles (Sm $ Val 1))
+ext_mult_t e (Mult EmptyS) = singles (e, Mult $ singles (Sm $ Val 1))
 ext_mult_t e m = singles (e, m)
 
 ext_mult_s::String->Mult->Rel String Mult
-ext_mult_s _ EmptyS = nil
+ext_mult_s _ (Mult EmptyS) = nil
 ext_mult_s e m = singles (e, m)
 
 
@@ -144,7 +144,7 @@ cons_fr_fr_frd (FrDef _ sgd rs ) =
 
 parse_fin_node::SGNTy->ReadP NodeDef
 parse_fin_node nty= do
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    return (NodeDef nm nty)
 
@@ -198,7 +198,7 @@ parse_sg_node = do
 
 parse_edge_name::ReadP String
 parse_edge_name = do
-   nm<-(between (char '[') (char ']') parse_id) <++ (return "")
+   nm<-(between (char '[') (char ']') parseId) <++ (return "")
    return nm
 
 parse_mult_many::ReadP MultVal
@@ -240,15 +240,15 @@ parse_multc = do
 parse_mult::ReadP Mult
 parse_mult = do
    ms<-sepBy (parse_multc) (char ',')
-   return (set ms)   
+   return (Mult . set $ ms)   
 
 parse_edge_info::ReadP(String, String, String)
 parse_edge_info = do
-   s<-parse_id 
+   s<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   t<-parse_id
+   t<-parseId
    skipSpaces
    enm<-parse_edge_name
    skipSpaces
@@ -285,9 +285,9 @@ parse_opt_mult = do
 parse_rel_uni::SGETy->ReadP EdgeDef
 parse_rel_uni ety = do
    (s, t, e)<-parse_edge_info
-   m<-parse_opt_mult <++ return (singles $ Sm $ Val 1)
+   m<-parse_opt_mult <++ return (Mult . singles . Sm . Val $ 1)
    skipSpaces
-   return (EdgeDef e s t ety nil m Nothing)
+   return (EdgeDef e s t ety nilMult m Nothing)
 
 parse_relu::ReadP EdgeDef
 parse_relu = do
@@ -306,12 +306,12 @@ parse_relu = do
 
 parse_PEA_nrml::ReadP (PEA String)
 parse_PEA_nrml = do
-   rn<-parse_id -- parses names of relation
+   rn<-parseId -- parses names of relation
    return (Edg $ "E" ++ rn)
 
 parse_PEA_inv::ReadP (PEA String)
 parse_PEA_inv = do
-   rn<-parse_id -- parses names of relation
+   rn<-parseId -- parses names of relation
    char '~'
    return (Inv $ "E" ++ rn)   
 
@@ -328,7 +328,7 @@ parse_PE_At = do
 
 parse_PE_Dres::ReadP (PEC String String)
 parse_PE_Dres = do
-   s<-parse_id -- parses names of restricting set
+   s<-parseId -- parses names of restricting set
    skipSpaces
    string "◁"
    skipSpaces
@@ -342,7 +342,7 @@ parse_PE_Rres = do
    skipSpaces
    string "▷"
    skipSpaces
-   s<-parse_id -- parses names of restricting set
+   s<-parseId -- parses names of restricting set
    skipSpaces
    return (Rres pea s)
 
@@ -375,19 +375,19 @@ parse_PE = do
 
 --parse_dedge_info::ReadP(String, String, String, String)
 --parse_dedge_info = do
---   sn<-parse_id 
+--   sn<-parseId 
 --   skipSpaces
 --   string "->"
 --   skipSpaces
---   tn<-parse_id
+--   tn<-parseId
 --   skipSpaces
 --   char '['
 --   skipSpaces
---   enm<-parse_id
+--   enm<-parseId
 --   skipSpaces
 --   string ":"
 --   skipSpaces
---   ed<-parse_id
+--   ed<-parseId
 --   skipSpaces
 --   char ']'
 --   skipSpaces
@@ -397,15 +397,15 @@ parse_der::ReadP EdgeDef
 parse_der = do
    string "derived"
    skipSpaces
-   s<-parse_id 
+   s<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   t<-parse_id
+   t<-parseId
    skipSpaces
    char '['
    skipSpaces
-   e<-parse_id
+   e<-parseId
    skipSpaces
    pe<-parse_PE
    skipSpaces
@@ -425,21 +425,21 @@ parse_path::ReadP EdgeDef
 parse_path = do
    string "path"
    skipSpaces
-   s<-parse_id 
+   s<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   t<-parse_id
+   t<-parseId
    skipSpaces
    char '['
    skipSpaces
-   e<-parse_id
+   e<-parseId
    skipSpaces
    pe<-parse_PE
    skipSpaces
    char ']'
    skipSpaces
-   return (EdgeDef e s t Epath nil nil (Just pe))
+   return (EdgeDef e s t Epath nilMult nilMult (Just pe))
 
 parse_vcOpEq::ReadP SGVCEOP
 parse_vcOpEq = do
@@ -486,19 +486,19 @@ parse_vce::ReadP EdgeVCnt
 parse_vce = do
    string "vcnt"
    skipSpaces
-   s<-parse_id 
+   s<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   t<-parse_id
+   t<-parseId
    skipSpaces
    char '['
    skipSpaces
-   en<-parse_id
+   en<-parseId
    skipSpaces
    char ':'
    skipSpaces
-   e<-parse_id <++ (return "")
+   e<-parseId <++ (return "")
    skipSpaces
    op<-parse_vcOp
    skipSpaces
@@ -524,13 +524,13 @@ parse_inh::ReadP EdgeDef
 parse_inh = do
    string "inh"
    skipSpaces
-   sn<-parse_id 
+   sn<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   tn<-parseId
    skipSpaces
-   return (EdgeDef "" sn tn Einh nil nil Nothing)
+   return (EdgeDef "" sn tn Einh nilMult nilMult Nothing)
 
 parse_sg_edge::ReadP EdgeDef
 parse_sg_edge = do
@@ -548,11 +548,11 @@ parse_enum::ReadP ClEnum
 parse_enum = do
    string "enum"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    char ':'
    skipSpaces
-   vals<-endBy (parse_id) (end_of_sep_term)
+   vals<-endBy (parseId) (end_of_sep_term)
    skipSpaces
    return (ClEnum nm vals)
 
@@ -560,11 +560,11 @@ parse_edge_dep::ReadP EdgeDep
 parse_edge_dep = do
    string "dependency"
    skipSpaces
-   edg1<-parse_id
+   edg1<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   edg2<-parse_id
+   edg2<-parseId
    skipSpaces
    return (EdgeDep edg1 edg2)
 
@@ -603,7 +603,7 @@ parse_sg::ReadP SGDef
 parse_sg = do
    string "SG"
    skipSpaces
-   sg_nm<-parse_id
+   sg_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_sg_elem) 
    return (SGDef sg_nm elems)
@@ -612,11 +612,11 @@ parseProxyRef::ReadP FrRef
 parseProxyRef = do
    string "ref"
    skipSpaces
-   pnm<-parse_id
+   pnm<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   nnm<-parse_id
+   nnm<-parseId
    skipSpaces
    return (Proxy pnm nnm)
 
@@ -624,11 +624,11 @@ parseInstanceOfN::ReadP FrRef
 parseInstanceOfN = do
    string "iON"
    skipSpaces
-   nnm<-parse_id
+   nnm<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   tnnm<-parse_id
+   tnnm<-parseId
    skipSpaces
    return (InstanceOfN nnm tnnm)
 
@@ -636,11 +636,11 @@ parseInstanceOfE::ReadP FrRef
 parseInstanceOfE = do
    string "iOE"
    skipSpaces
-   enm<-parse_id
+   enm<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   tenm<-parse_id
+   tenm<-parseId
    skipSpaces
    return (InstanceOfE enm tenm)
 
@@ -653,7 +653,7 @@ parse_fr :: ReadP FrDef
 parse_fr = do
    string "fragment"
    skipSpaces
-   fnm<-parse_id
+   fnm<-parseId
    skipSpaces
    char '{'
    skipSpaces

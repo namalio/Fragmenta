@@ -40,11 +40,22 @@ module SGrs(SGr
    , es_of_ety
    , ins
    , okETSGs
-   , rOkETSGs) 
+   , rOkETSGs
+   , rMultOk) -- toremove later 
 where
 
-import Sets (Set(..), sminus, gunion, intersec, union, singles, set, intoSet, toList, rest, 
-   filterS )
+import Sets (
+   Set(..)
+   , sminus
+   , gunion
+   , intersec
+   , union
+   , singles
+   , set
+   , intoSet
+   , toList
+   , rest
+   , filterS )
 import Relations
 import Gr_Cls
 import Grs
@@ -58,9 +69,11 @@ import SGElemTys
     , SGNTy(..) )
 import Mult
 import MyMaybe
-import GrswT ( consGWT, GrwT )
+import GrswT ( 
+   consGWT
+   , GrwT )
 import PathExpressions
-import TheNil
+import TheNil ( Nil(isSomething, isNil, nil), The(the) )
 import SimpleFuns (pairUp)
 import Logic ( implies )
 import Utils ( reportWF )
@@ -165,11 +178,11 @@ esA = (flip esTys) [et d | et<-[Ecomp, Erel], d<-[Dbi, Duni]]
 
 -- Gets the derived edges
 esD::(Eq a, Eq b)=>SGr a b->Set b
-esD = (flip esTys) [Eder]
+esD = flip esTys [Eder]
 
 -- Gets path edges
 esPa::(Eq a, Eq b)=>SGr a b->Set b
-esPa = (flip esTys) [Epath]
+esPa = flip esTys [Epath]
 
 -- Gets the path constraint edges
 esPaCnt::(Eq a, Eq b)=>SGr a b->Set b
@@ -209,7 +222,7 @@ inhst sg = rtrancl_on (inh sg) (ns sg)
 
 -- totalises 'srcm' by providing multiplicities of uni-directional composition and relation edges
 srcma :: (Eq a, Eq b) => SGr a b -> Rel b Mult
-srcma sg = (srcm sg) `override` ((esTys sg [Ecomp Duni] `cross` (singles  .singles $ msole_k 1)) `override` (esTys sg [Erel Duni] `cross` (singles  .singles $ msole_many)))
+srcma sg = (srcm sg) `override` ((esTys sg [Ecomp Duni] `cross` (singles $ Mult . singles $ msole_k 1)) `override` (esTys sg [Erel Duni] `cross` (singles $ Mult .singles $ msole_many)))
 
 -- src* relations: base and final definitions
 srcstr :: (Foldable t, Eq a, Eq b) => SGr a b -> t b->Rel b a
@@ -276,7 +289,7 @@ nodeopt_ok sg n = all isMultLbZ (img (srcma sg) (img (inv . src $ sg) [n]))
 --all (nodeopt_ok sg) $ nsO sg
 
 -- Function that checks that a list of multiplicies are well-formed
-mults_wf :: Set (Set MultC) -> Bool
+mults_wf :: Set (Mult) -> Bool
 mults_wf = all multwf
 
 -- Checks whether a SG is well-formed either totally or partially
@@ -752,8 +765,8 @@ refines_mcnt sgc m sga e =
        src_ok e e' = appl (fV m) (appl (sf (peas e) sgc) e') == appl (src sga) e
        tgt_ok e e' = appl (fV m) (appl (tf (peae e) sgc) e') == appl (tgt sga) e 
        case1 e' e'' = (affectedPE sgc m sga (appl (pe sga) e) e e' e'') `implies` (src_m_ok e e' && tgt_m_ok e e'') 
-       case2 e' = ((affectedPEStart sgc m sga (appl (pe sga) e) e e') && ((singles . msole_k $ 1) `mcsLeq` appl (tgtm sga) e)) `implies` tgt_ok e e'
-       case3 e' = ((affectedPEEnd sgc m sga (appl (pe sga) e) e e') && ((singles . msole_k $ 1) `mcsLeq` appl (srcma sga) e)) `implies` src_ok e e' in
+       case2 e' = ((affectedPEStart sgc m sga (appl (pe sga) e) e e') && ((Mult . singles . msole_k $ 1) `mcsLeq` appl (tgtm sga) e)) `implies` tgt_ok e e'
+       case3 e' = ((affectedPEEnd sgc m sga (appl (pe sga) e) e e') && ((Mult . singles . msole_k $ 1) `mcsLeq` appl (srcma sga) e)) `implies` src_ok e e' in
    all(\e'->all(\e''-> case1 e' e'' && (case2 e' || case3 e'')) (img (inv . fE $ m) [ePEA . peae $ e])) (img (inv . fE $ m) [ePEA . peas $ e])
    -- && all(\e'->all(\e''-> case2 e' || case3 e'') (img (inv . fE $ m) [ePEA . peae $ e])) (img (inv . fE $ m) [ePEA . peas $ e])
    --(ok_src_nodes e e' && ok_tgt_nodes e e'') 
@@ -889,14 +902,15 @@ check_tsg_refines id (sgc, m) sga =
 
 
 -- Checks that 'abstract' and 'enum' mEtamodel nodes have no direct nodes in instance graph
+no_instances_of_abstract_tnodes :: (GRM gm, Eq a, Eq b) => gm a b -> SGr a b -> Bool
 no_instances_of_abstract_tnodes m sgt = null (img (inv $ fV m) $ nsTys sgt [Nabst, Nenum])
 
 -- ET Compatability with respect to extra typing
 
 -- multiplicities of source SG must be included in those of target SG
 mssgsLEq :: (GRM gm, Eq a, Eq b) =>SGr a b ->gm a b ->SGr a b->(b, b)-> Bool
-mssgsLEq sgs m sgt (e, e') = appl (srcma sgs) e <= appl (srcma sgt) e'
-                       && appl (tgtm sgs) e <= appl (tgtm sgt) e'
+mssgsLEq sgs m sgt (e, e') = appl (srcma $ sgs) e <= appl (srcma sgt) e'
+                       && appl (tgtm $ sgs) e <= appl (tgtm  sgt) e'
 
 -- Compliance of multiplicities for extra typing
 etCompliesM::(GRM gm, Eq a, Eq b)=>(SGr a b, gm a b)->SGr a b ->Bool 
@@ -1094,15 +1108,15 @@ ape sg e = if e `elem` esCnt sg then appl (pe sg) e else (Ec . At . Edg $ e)
 
 multComp ::Mult -> Mult -> Mult
 multComp m1 m2
-   | isMultMany m1 || isMultMany m2       = singles msole_many
-   | isMultVal_k m1 0 || isMultVal_k m2 0 = singles (msole_k 0)
+   | isMultMany m1 || isMultMany m2       = Mult $ singles msole_many
+   | isMultVal_k m1 0 || isMultVal_k m2 0 = Mult $ singles (msole_k 0)
    | isMultVal_k m1 1 = m2
    | isMultVal_k m2 1 = m1
-   | isMultOpt m1 = msole_k 0 `intoSet` m2
-   | isMultOpt m2 = msole_k 0 `intoSet` m1
-   | isMultRange m1 && isMultRange m2 = singles $ (the m1) `mult_mr` (the m2)
-   | isMultEither m2 = multComp m1 (singles $ the m2) `union` multComp m1 (rest m2)
-   | isMultEither m1 = multComp (singles $ the m1) m2 `union` multComp (rest m1) m2
+   | isMultOpt m1 = Mult $ msole_k 0 `intoSet` (mset m2)
+   | isMultOpt m2 = Mult $ msole_k 0 `intoSet` (mset m1)
+   | isMultRange m1 && isMultRange m2 = Mult . singles $ (the . mset $ m1) `mult_mr` (the . mset $ m2)
+   | isMultEither m2 = Mult $ mset (multComp m1 (Mult . singles . the . mset $ m2)) `union` mset (multComp m1 (Mult . rest . mset $  m2))
+   | isMultEither m1 = Mult $ mset (multComp (Mult . singles . the . mset $ m1) m2) `union` mset (multComp (Mult . rest . mset $  m1) m2)
 
 -- gives source multiplicity of path expression atom
 smPEA :: (Eq a, Eq b) => SGr a b -> PEA b -> Mult

@@ -1,19 +1,19 @@
 digraph {graph[label=F_MM_6,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_6{style=dashed;label=F_MM_6;
 "Operator"[shape=record,fillcolor="#FFCCFF",style = filled,label="Operator\l(enum)"];
-"OpChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpChoice"];
-"OpIntChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIntChoice"];
-"OpParallel"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpParallel"];
-"OpIf"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIf"];
-"OpInterleave"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpInterleave"];
-"OpThrow"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpThrow"];
+"VOpChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpChoice"];
+"VOpIntChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIntChoice"];
+"VOpParallel"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpParallel"];
+"VOpIf"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIf"];
+"VOpInterleave"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpInterleave"];
+"VOpThrow"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpThrow"];
 
-"OpChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpIntChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpParallel"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpIf"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpInterleave"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpThrow"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpIntChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpParallel"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpIf"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpInterleave"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpThrow"->"Operator"[arrowhead=onormal,arrowsize=2.0];
 
 }
 }

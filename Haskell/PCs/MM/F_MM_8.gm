@@ -6,7 +6,7 @@ Morphism F_MM_8 {
 		PCompound->Node
 	}
 	edges {
-		StartCSrc->Connector_src
-		StartCTgt->Connector_tgt
+		StartSrc->Connector_src
+		StartTgt->Connector_tgt
 	}
 }

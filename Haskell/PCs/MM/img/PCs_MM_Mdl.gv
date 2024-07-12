@@ -1,31 +1,33 @@
 digraph {graph[label=PCs_MM,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_1{style=dashed;label=F_MM_1;
-"NamedNode"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>NamedNode</I><br/>(A)}>];
-"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
 "Node"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Node</I><br/>(A)}>];
-"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I><br/>(A)}>];
+"NamedNode"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>NamedNode</I><br/>(A)}>];
 "PCDef"[shape=record,fillcolor=lightskyblue1,style = filled,label="PCDef"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I><br/>(A)}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
 "StartN"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartN"];
 
-"NamedNode"->"Node"[arrowhead=onormal,arrowsize=2.0];
 "StartN"->"NamedNode"[arrowhead=onormal,arrowsize=2.0];
-"NamedNode"->"Name"[label="NamedNode_name▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"PCDef"->"Node"[label="ContainsNs▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"PCDef"->"Connector"[label="ContainsCs▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"NamedNode"->"Node"[arrowhead=onormal,arrowsize=2.0];
+"NamedNode"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+"PCDef"->"Node"[label="ContainsNs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PCDef"->"Connector"[label="ContainsCs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PCDef"->"StartN"[label="Starts▼",dir=none,taillabel="",headlabel=""];
 
 }
 subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
 "PNamedNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode<br/>(P)>];
 "Import"[shape=record,fillcolor=lightskyblue1,style = filled,label="Import"];
-"TargetOfRef"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TargetOfRef</I><br/>(V)}>];
-"Atom"[shape=record,fillcolor=lightskyblue1,style = filled,label="Atom"];
 "Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
+"Atom"[shape=record,fillcolor=lightskyblue1,style = filled,label="Atom"];
+"Guard"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guard"];
 "Action"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Action</I><br/>(V)}>];
 "Parameterised"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Parameterised</I><br/>(V)}>];
-"Parameter"[shape=record,fillcolor=lightskyblue1,style = filled,label="Parameter"];
+"TargetOfRef"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TargetOfRef</I><br/>(V)}>];
 "Guarded"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Guarded</I><br/>(V)}>];
-"Guard"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guard"];
+"Parameter"[shape=record,fillcolor=lightskyblue1,style = filled,label="Parameter"];
 
 "Import"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
 "Compound"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
@@ -36,28 +38,28 @@ subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
 "Atom"->"Action"[arrowhead=onormal,arrowsize=2.0];
 "Atom"->"Guarded"[arrowhead=onormal,arrowsize=2.0];
 "Compound"->"Action"[arrowhead=onormal,arrowsize=2.0];
-"Parameterised"->"Parameter"[label="HasParams▼",arrowhead=vee,headlabel="*",arrowsize=.5];
-"Guarded"->"Guard"[label="HasGuard▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Parameterised"->"Parameter"[label="HasParams",arrowhead=vee,headlabel="*",arrowsize=.5];
+"Guarded"->"Guard"[label="HasGuard",arrowhead=vee,headlabel="0..1",arrowsize=.5];
 
 }
 
 subgraph cluster_F_MM_3{style=dashed;label=F_MM_3;
 "YesNo"[shape=record,fillcolor="#FFCCFF",style = filled,label="YesNo\l(enum)"];
-"Yes"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Yes"];
-"No"[shape=cds,fillcolor="#FFF2CC",style = filled,label="No"];
+"VYes"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Yes"];
+"VNo"[shape=cds,fillcolor="#FFF2CC",style = filled,label="No"];
 
-"Yes"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
-"No"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
+"VYes"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
+"VNo"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
 
 }
 subgraph cluster_F_MM_4{style=dashed;label=F_MM_4;
 "PAtom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Atom<br/>(P)>];
-"AnyExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="AnyExp"];
 "PParameter"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameter<br/>(P)>];
+"AnyExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="AnyExp"];
 
 "PAtom"->"AnyExp"[label="AtomExp▼",dir=none,taillabel="",headlabel="0..1"];
-"AnyExp"->"PParameter"[label="AnyExp_atv▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"AnyExp"->"PParameter"[label="AnyExp_atSet▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"AnyExp"->"PParameter"[label="atVal",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"AnyExp"->"PParameter"[label="atSet",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 
@@ -65,11 +67,11 @@ subgraph cluster_F_MM_4{style=dashed;label=F_MM_4;
 subgraph cluster_F_MM_5{style=dashed;label=F_MM_5;
 "PNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node<br/>(P)>];
 "PParameterised"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameterised<br/>(P)>];
+"PAction"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action<br/>(P)>];
+"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
 "Stop"[shape=record,fillcolor=lightskyblue1,style = filled,label="Stop"];
 "Skip"[shape=record,fillcolor=lightskyblue1,style = filled,label="Skip"];
-"PAction"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action<br/>(P)>];
 "Combination"[shape=record,fillcolor=lightskyblue1,style = filled,label="Combination"];
-"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
 
 "Stop"->"PNode"[arrowhead=onormal,arrowsize=2.0];
 "Skip"->"PNode"[arrowhead=onormal,arrowsize=2.0];
@@ -78,7 +80,7 @@ subgraph cluster_F_MM_5{style=dashed;label=F_MM_5;
 "Stop"->"PAction"[arrowhead=onormal,arrowsize=2.0];
 "Skip"->"PAction"[arrowhead=onormal,arrowsize=2.0];
 "Combination"->"PAction"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"POperator"[label="Combination_op▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Combination"->"POperator"[label="Combination_op",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 
@@ -87,28 +89,28 @@ subgraph cluster_F_MM_5{style=dashed;label=F_MM_5;
 
 subgraph cluster_F_MM_6{style=dashed;label=F_MM_6;
 "Operator"[shape=record,fillcolor="#FFCCFF",style = filled,label="Operator\l(enum)"];
-"OpChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpChoice"];
-"OpIntChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIntChoice"];
-"OpParallel"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpParallel"];
-"OpIf"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIf"];
-"OpInterleave"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpInterleave"];
-"OpThrow"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpThrow"];
+"VOpChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpChoice"];
+"VOpIntChoice"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIntChoice"];
+"VOpParallel"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpParallel"];
+"VOpIf"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIf"];
+"VOpInterleave"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpInterleave"];
+"VOpThrow"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpThrow"];
 
-"OpChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpIntChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpParallel"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpIf"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpInterleave"->"Operator"[arrowhead=onormal,arrowsize=2.0];
-"OpThrow"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpIntChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpParallel"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpIf"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpInterleave"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpThrow"->"Operator"[arrowhead=onormal,arrowsize=2.0];
 
 }
 subgraph cluster_F_MM_7{style=dashed;label=F_MM_7;
 "PNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node2<br/>(P)>];
 "PParameterised2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameterised2<br/>(P)>];
 "PAction2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action2<br/>(P)>];
-"PGuarded"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded<br/>(P)>];
 "PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
 "PYesNo"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo<br/>(P)>];
+"PGuarded"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded<br/>(P)>];
 "Reference"[shape=record,fillcolor=lightskyblue1,style = filled,label="Reference"];
 "Renaming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Renaming"];
 
@@ -116,8 +118,8 @@ subgraph cluster_F_MM_7{style=dashed;label=F_MM_7;
 "Reference"->"PParameterised2"[arrowhead=onormal,arrowsize=2.0];
 "Reference"->"PAction2"[arrowhead=onormal,arrowsize=2.0];
 "Reference"->"PGuarded"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PName"[label="Reference_name▼",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Reference"->"PYesNo"[label="Reference_inner▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Reference"->"PName"[label="Reference_name",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Reference"->"PYesNo"[label="Reference_inner",arrowhead=vee,headlabel="",arrowsize=.5];
 "Reference"->"Renaming"[label="Renamings▼",dir=none,taillabel="",headlabel="*"];
 
 }
@@ -129,13 +131,13 @@ subgraph cluster_F_MM_7{style=dashed;label=F_MM_7;
 
 subgraph cluster_F_MM_8{style=dashed;label=F_MM_8;
 "PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
-"PStartN"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartN<br/>(P)>];
 "StartC"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartC"];
+"PStartN"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartN<br/>(P)>];
 "PCompound"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound<br/>(P)>];
 
 "StartC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
-"StartC"->"PStartN"[label="StartCSrc▼",dir=none,taillabel="",headlabel=""];
-"StartC"->"PCompound"[label="StartCTgt▼",dir=none,taillabel="0..1",headlabel=""];
+"StartC"->"PStartN"[label="StartSrc▼",dir=none,taillabel="",headlabel=""];
+"StartC"->"PCompound"[label="StartTgt▼",dir=none,taillabel="0..1",headlabel=""];
 
 }
 
@@ -143,19 +145,19 @@ subgraph cluster_F_MM_8{style=dashed;label=F_MM_8;
 
 subgraph cluster_F_MM_9{style=dashed;label=F_MM_9;
 "PConnector2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector2<br/>(P)>];
-"PAction3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action3<br/>(P)>];
-"DefinesC"[shape=record,fillcolor=lightskyblue1,style = filled,label="DefinesC"];
-"PCompound2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound2<br/>(P)>];
 "AfterC"[shape=record,fillcolor=lightskyblue1,style = filled,label="AfterC"];
+"DefinesC"[shape=record,fillcolor=lightskyblue1,style = filled,label="DefinesC"];
+"PAction3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action3<br/>(P)>];
+"PCompound2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound2<br/>(P)>];
 "PYesNo2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo2<br/>(P)>];
 
 "AfterC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
 "DefinesC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
-"AfterC"->"PAction3"[label="AfterCSrc▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"AfterC"->"PAction3"[label="AfterCTgt▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"DefinesC"->"PAction3"[label="DefinesCTgt▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"DefinesC"->"PCompound2"[label="DefinesCSrc▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"AfterC"->"PYesNo2"[label="AfterC_copen▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"AfterC"->"PAction3"[label="AfterCSrc",arrowhead=vee,headlabel="",arrowsize=.5];
+"AfterC"->"PAction3"[label="AfterCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"DefinesC"->"PAction3"[label="DefinesCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"DefinesC"->"PCompound2"[label="DefinesCSrc",arrowhead=vee,headlabel="",arrowsize=.5];
+"AfterC"->"PYesNo2"[label="AfterC_copen",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 
@@ -163,18 +165,18 @@ subgraph cluster_F_MM_9{style=dashed;label=F_MM_9;
 
 
 subgraph cluster_F_MM_10{style=dashed;label=F_MM_10;
+"ReferenceC"[shape=record,fillcolor=lightskyblue1,style = filled,label="ReferenceC"];
 "PConnector3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector3<br/>(P)>];
 "PParameterised3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameterised3<br/>(P)>];
 "PReference"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reference<br/>(P)>];
 "PTargetOfRef"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<TargetOfRef<br/>(P)>];
-"ReferenceC"[shape=record,fillcolor=lightskyblue1,style = filled,label="ReferenceC"];
 "PYesNo3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo3<br/>(P)>];
 
 "ReferenceC"->"PConnector3"[arrowhead=onormal,arrowsize=2.0];
 "ReferenceC"->"PParameterised3"[arrowhead=onormal,arrowsize=2.0];
 "ReferenceC"->"PReference"[label="ReferenceCSrc▼",dir=none,taillabel="",headlabel=""];
-"ReferenceC"->"PTargetOfRef"[label="ReferenceCTgt▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"ReferenceC"->"PYesNo3"[label="ReferenceC_hidden▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"ReferenceC"->"PTargetOfRef"[label="ReferenceCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"ReferenceC"->"PYesNo3"[label="ReferenceC_hidden",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 
@@ -183,22 +185,22 @@ subgraph cluster_F_MM_10{style=dashed;label=F_MM_10;
 
 
 subgraph cluster_F_MM_11{style=dashed;label=F_MM_11;
-"BMainIfC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BMainIfC"];
-"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
-"BElseC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElseC"];
-"BJumpC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BJumpC"];
 "PConnector4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector4<br/>(P)>];
 "PCombination"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Combination<br/>(P)>];
-"BranchC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BranchC"];
 "PAction4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action4<br/>(P)>];
+"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
+"BMainIfC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BMainIfC"];
+"BElseC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElseC"];
+"BJumpC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BJumpC"];
+"BranchC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BranchC"];
 
 "BMainIfC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
 "BMainIfC"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
 "BElseC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
 "BJumpC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
 "BranchC"->"PConnector4"[arrowhead=onormal,arrowsize=2.0];
-"BranchC"->"PCombination"[label="BranchCSrc▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"BranchC"->"PAction4"[label="BranchCTgt▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"BranchC"->"PCombination"[label="BranchCSrc",arrowhead=vee,headlabel="",arrowsize=.5];
+"BranchC"->"PAction4"[label="BranchCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 

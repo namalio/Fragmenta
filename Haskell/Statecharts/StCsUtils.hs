@@ -14,7 +14,7 @@ import Grs
 import Statecharts.StCs
 import Statecharts.StCsParsing
 import CheckUtils
-import Control.Monad(when, forM)
+import Control.Monad(when, forM, unless)
 import MyMaybe
 import TheNil
 import ErrorAnalysis
@@ -46,11 +46,11 @@ check_stcs_MM = do
     check_report_wf "StCs_MM" (Just Total) (gCMM mmi) True
     check_morphism "Refinement of 'StCs_MM' by 'StCs_AMM'" (Just TotalM) (gCMM mmi) (gRM mmi) (gAMM mmi) True
 
-checkWF::MMI String String->StC String String->IO(Bool)
+checkWF::MMI String String->StC String String->IO Bool
 checkWF mmi stc = do
     let stc_nm = gStCName stc
     let errs = faultsGM' stc_nm (Just TotalM) (stc, gCMM mmi) 
-    when (not . is_nil $ errs) $ do
+    unless (is_nil  errs) $ do
         show_wf_msg ("StC " ++ stc_nm) errs
     return (is_nil errs)
 

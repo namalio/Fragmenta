@@ -13,7 +13,7 @@ import GrswET
 import Text.ParserCombinators.ReadP
 import Control.Applicative hiding (many, empty)
 import TheNil
-import ParsingCommon ( parseMaybe, parse_id )
+import ParsingCommon ( parseMaybe, parseId )
 import Sets ( singles, set )
 import Gr_Cls 
 
@@ -53,7 +53,7 @@ parse_ET::ReadP (Maybe String)
 parse_ET = do
    string "::"
    skipSpaces
-   ety<-parse_id
+   ety<-parseId
    skipSpaces
    return (Just ety)
 
@@ -61,35 +61,35 @@ parse_gwt_node::ReadP GwETElem
 parse_gwt_node = do
    string "node"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    string ":"
    skipSpaces
-   ty<-parse_id
+   ty<-parseId
    skipSpaces
    et <- parse_ET <++ (return Nothing)
    return (ElemN nm ty et)
 
 parse_edge_name::ReadP String
 parse_edge_name = do
-   nm<-(between (char '[') (char ']') parse_id) <++ (return "")
+   nm<-(between (char '[') (char ']') parseId) <++ (return "")
    return nm
 
 parse_gwt_edge::ReadP GwETElem
 parse_gwt_edge = do
    string "edge"
    skipSpaces
-   sn<-parse_id 
+   sn<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   tn<-parseId
    skipSpaces
    enm<-parse_edge_name
    skipSpaces
    string ":"
    skipSpaces
-   ty<-parse_id
+   ty<-parseId
    skipSpaces
    et <- parse_ET <++ (return Nothing)
    return (ElemE enm sn tn ty et)
@@ -104,7 +104,7 @@ parse_gwet::ReadP GwETDef
 parse_gwet = do
    string "GrwET"
    skipSpaces
-   g_nm<-parse_id
+   g_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_gwet_elem) 
    return (GwETDef g_nm elems)

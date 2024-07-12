@@ -1,2 +1,2 @@
-VM2 = coin -> (water -> VM2
-      [] choc -> VM2)
+VM2 = coin -> (choc -> VM2
+      [] water -> VM2)

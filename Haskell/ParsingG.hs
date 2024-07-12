@@ -55,24 +55,24 @@ parse_g_node::ReadP GElem
 parse_g_node = do
    string "node"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    return (ElemN nm)
 
 parse_edge_name::ReadP String
 parse_edge_name = do
-   nm<-(between (char '[') (char ']') parse_id) <++ (return "")
+   nm<-(between (char '[') (char ']') parseId) <++ (return "")
    return nm
 
 parse_g_edge::ReadP GElem
 parse_g_edge = do
    string "edge"
    skipSpaces
-   sn<-parse_id 
+   sn<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   tn<-parse_id
+   tn<-parseId
    skipSpaces
    enm<-parse_edge_name
    skipSpaces
@@ -88,7 +88,7 @@ parse_graph::ReadP GDef
 parse_graph = do
    string "Graph"
    skipSpaces
-   g_nm<-parse_id
+   g_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_g_elem) 
    return (GDef g_nm elems)

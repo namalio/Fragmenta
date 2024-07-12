@@ -14,7 +14,7 @@ fragment F_MM_7 {
     inh Reference->PGuarded
     relu Reference->PName[Reference_name]:0..1
     relu Reference->PYesNo[Reference_inner]
-    rel Reference->Renaming[Renamings]:1,*
+    rel Reference->Renaming[Renamings]:1;*
   }
   ref PNode2->Node
   ref PParameterised2->Parameterised

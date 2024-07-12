@@ -1,5 +1,7 @@
 Doas = 
    let 
+      Docs = nil -> SKIP
+            [] c -> Docs
       Dobs = 
          let 
             Docs = nil -> SKIP
@@ -8,5 +10,5 @@ Doas =
             Docs
                [] b -> Dobs
    within
-      Dobs
-         [] a -> Doas
+      a -> Doas
+         [] Dobs

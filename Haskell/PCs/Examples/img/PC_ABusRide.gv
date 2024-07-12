@@ -1,22 +1,20 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_ABusRide];
-alight [shape=ellipse,fillcolor=greenyellow,style = filled,label="alight"];
-move2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
-seat [shape=ellipse,fillcolor=greenyellow,style = filled,label="seat"];
-move [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
-ABusRide [shape=box,fillcolor=deepskyblue,style = filled,label="ABusRide "];
 board [shape=ellipse,fillcolor=greenyellow,style = filled,label="board"];
+move [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
+move2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="move"];
+alight [shape=ellipse,fillcolor=greenyellow,style = filled,label="alight"];
+seat [shape=ellipse,fillcolor=greenyellow,style = filled,label="seat"];
+ABusRide [shape=box,fillcolor=deepskyblue,style = filled,label="ABusRide "];
 
-{rank=min;StartN_,ABusRide}
-{rank=same;board,move,seat,move2,alight}
-{rank=same;move,seat,move2,alight}
-{rank=same;seat,move2,alight}
-{rank=same;move2,alight}
+{rank=same;move2,alight,seat}
+{rank=same;move,seat,move2,alight,board}
+{rank=same;ABusRide,StartN_}
 
 move2->alight[arrowtail=dot,dir=both,label="after"];
-seat->move2[arrowtail=dot,dir=both,label="after"];
 move->seat[arrowtail=dot,dir=both,label="after"];
-board->move[arrowtail=dot,dir=both,label="after"];
-StartN_->ABusRide[arrowtail=diamond,dir=both,label="starts"];
+StartN_->ABusRide[label="starts"];
 ABusRide->board[arrowhead="onormal",penwidth=2,label="="];
+board->move[arrowtail=dot,dir=both,label="after"];
+seat->move2[arrowtail=dot,dir=both,label="after"];
 }

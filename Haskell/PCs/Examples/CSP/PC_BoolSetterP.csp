@@ -3,8 +3,8 @@ BoolSetter = BoolF
 BoolF = Bool
       [] getF -> BoolF
 
-Bool = assignF -> BoolF
-      [] assignT -> BoolT
+Bool = assignT -> BoolT
+      [] assignF -> BoolF
 
-BoolT = Bool
-      [] getT -> BoolT
+BoolT = getT -> BoolT
+      [] Bool

@@ -3,17 +3,20 @@ subgraph cluster_F_AMM{style=dashed;label=F_AMM;
 "Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
 "Element"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Element</I><br/>(A)}>];
 "PCDef"[shape=record,fillcolor=lightskyblue1,style = filled,label="PCDef"];
-"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
 "Node"[shape=record,fillcolor=lightskyblue1,style = filled,label="Node"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
 
-"Element"->"Attribute"[label="Has▼",dir=none,taillabel="*",headlabel="*"];
-"Attribute"->"Attribute"[label="Has2▼",dir=none,taillabel="*",headlabel="*"];
+"PCDef"->"Element"[label="Contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Element"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"PCDef"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"Attribute"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "Connector"->"Element"[arrowhead=onormal,arrowsize=2.0];
 "Node"->"Element"[arrowhead=onormal,arrowsize=2.0];
-"PCDef"->"Element"[label="Contains▼",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Trait"->"Trait"[label="Has▼",dir=none,taillabel="*",headlabel="*"];
 "PCDef"->"Node"[label="Starts▼",dir=none,taillabel="0..1",headlabel=""];
-"Connector"->"Node"[label="Connector_src▼",arrowhead=vee,headlabel="",arrowsize=.5];
-"Connector"->"Node"[label="Connector_tgt▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Node"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Node"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 }

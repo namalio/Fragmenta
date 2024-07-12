@@ -44,11 +44,11 @@ gEMInfo (EdgeMapping e1 e2) = (e1, e2)
 
 parse_map::ReadP (String, String)
 parse_map = do
-   nm1<-parse_id
+   nm1<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   nm2<-parse_id
+   nm2<-parseId
    return $ (nm1, nm2)
 
 parse_nodeM::ReadP NodeMapping
@@ -85,7 +85,7 @@ parse_morphism::ReadP MorphismDef
 parse_morphism = do
    string "Morphism"
    skipSpaces
-   m_nm<-parse_id
+   m_nm<-parseId
    skipSpaces
    char '{'
    skipSpaces

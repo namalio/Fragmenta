@@ -1,8 +1,8 @@
 BusRider = 
    let 
       OnBus = alight -> SKIP
-            [] move -> OnBus
             [] stand -> OnBus
             [] seat -> OnBus
+            [] move -> OnBus
    within
       board -> OnBus

@@ -23,7 +23,8 @@ module ErrorAnalysis(
   , reportSSEq
   , reportSEq
   , reportR
-  , reportSPEq) where
+  , reportSPEq
+  , reportEMultC) where
 
 import Relations
 import Sets ( sminus, gunion, Set ) 
@@ -39,11 +40,11 @@ nile = NilE
 is_nil :: ErrorTree -> Bool
 is_nil et = et == NilE 
 
--- Builds an error with nesting
+-- Constructor of error with nesting
 consET :: String -> [ErrorTree] -> ErrorTree
 consET = Error
 
--- Builds an error without nesting
+-- Constructor of error without nesting
 consSET :: String -> ErrorTree
 consSET s = consET s []
 
@@ -107,18 +108,22 @@ reportFI f xs ys =
   if fun_inj f xs ys then nile else consET "Errors in total injection." [reportFT f xs ys, reportI f]
 
 -- Errors related to totality 
-reportRT::(Eq a, Show a)=>Rel a b->Set a->ErrorTree
+reportRT::(Eq a, Show a, Show b)=>Rel a b->Set a->ErrorTree
 reportRT f xs = 
-   let es_diff = xs `sminus` (dom_of f) in
-   let es_diff2 = (dom_of f) `sminus` xs in
-   let errs2 = if null es_diff then nile else consSET ("No mapping for elements: " ++ (showNodes es_diff)) in
-   let errs3 = if null es_diff2 then nile else consSET ("The following shouldn't be mapped: " ++ (showNodes es_diff2)) in
+   let es_diff = xs `sminus` (dom_of f) 
+       es_diff2 = (dom_of f) `sminus` xs
+       errs2 = if null es_diff then nile else consSET ("No mapping for elements: " ++ (showNodes es_diff))
+       errs3 = if null es_diff2 then nile else consSET ("The following shouldn't be mapped: " ++ (showNodes es_diff2)) 
+       --errs4 = consSET ("xs:" ++ (show xs)) 
+       --errs5 = consSET ("f:" ++ (show f)) 
+       in
    if total f xs then nile else consET "The totality constraint is unsatisfied. " [errs2, errs3]
 
 -- Errors related to a relation
 errsR::(Eq a1, Eq a2, Show a1, Show a2)=>Rel a1 a2->Set a1->Set a2->[ErrorTree]
 errsR r xs ys = [reportSSEq (dom_of r) xs, reportSSEq (ran_of r) ys]
 
+reportR :: (Eq a1, Eq a2, Show a1, Show a2) => Rel a1 a2 -> Set a1 -> Set a2 -> ErrorTree
 reportR r xs ys = 
   if relation r xs ys then nile else consET "Errors with domain and range." (errsR r xs ys)
 
@@ -176,3 +181,9 @@ reportSPEq ps1@(ds1, rs1) ps2@(ds2, rs2) =
   let err1 = reportSEq "first" ds1 ds2
       err2 = reportSEq "second" rs1 rs2 in
       if ps1 == ps2 then nile else consET "The two pairs with sets are unequal." [err1, err2]
+
+-- Reports a multiplicity error
+reportEMultC :: (Show a, Show m) => a -> m -> m ->[ErrorTree]->ErrorTree
+reportEMultC me ms1 ms2 errs=
+    let msg =  (show ms1) ++ " to " ++ (show ms2) ++ " multiplicity constraint of type edge " ++ (showEdge me) ++ " is unsatisfied." in
+    consET msg errs

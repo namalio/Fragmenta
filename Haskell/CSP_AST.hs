@@ -5,11 +5,13 @@
 -- Description: Module that represents CSP's abstract syntax tree (AST)
 -- Author: Nuno Amálio
 -----------------
-module CSP_AST(Decl(..), Exp(..), CSPSpec(..), isAtomicExp, isComposite, isExtChoice) where
+module CSP_AST(Id, Decl(..), Exp(..), CSPSpec(..), isAtomicExp, isComposite, isExtChoice) where
+
+import Sets
 
 type Id = String
 
-data Decl = Channel [Id] | EqDecl Exp Exp | Include [Id] deriving(Show) 
+data Decl = Channel (Set Id) | EqDecl Exp Exp | Include (Set Id) deriving(Show) 
 --data Stmt = Stmt Id Exp deriving(Show) 
 data Exp = ExpId Id -- a name
    | ExpApp Id [Id] -- function application
@@ -33,6 +35,7 @@ data Exp = ExpId Id -- a name
 
 data CSPSpec = CSP [Decl] deriving(Show) 
 
+isAtomicExp :: Exp -> Bool
 isAtomicExp (ExpId _)    = True
 isAtomicExp (ExpApp _ _) = True
 isAtomicExp (ExpPar _)   = True
@@ -45,7 +48,9 @@ isAtomicExp (LetW _ _) = True
 isAtomicExp (ExpRen _ _) = True
 isAtomicExp _ = False
 
+isComposite :: Exp -> Bool
 isComposite = not . isAtomicExp
 
+isExtChoice :: Exp -> Bool
 isExtChoice (ExtChoice _ _) = True
 isExtChoice _ = False
