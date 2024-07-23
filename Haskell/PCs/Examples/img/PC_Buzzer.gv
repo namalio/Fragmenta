@@ -1,21 +1,21 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Buzzer];
-Buzzer [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzer "];
-Muted [shape=box,fillcolor=deepskyblue,style = filled,label="Muted "];
+PC_Timer [shape=hexagon,fillcolor=orangered,style=filled,label =PC_Timer];
+buzz [shape=ellipse,fillcolor=greenyellow,style = filled,label="buzz"];
+Buzzing [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzing "];
 RefTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Timer (3)
 ⟦timeout/mute⟧"];
-Buzzing [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzing "];
-buzz [shape=ellipse,fillcolor=greenyellow,style = filled,label="buzz"];
-PC_Timer [shape=hexagon,fillcolor=orangered,style=filled,label =PC_Timer];
+Muted [shape=box,fillcolor=deepskyblue,style = filled,label="Muted "];
+Buzzer [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzer "];
 
 {rank=same;Buzzing,buzz}
 {rank=same;Buzzer,StartN_}
 
-Buzzing->Muted[arrowtail=dot,dir=both,label="after"];
-RefTimer->PC_Timer[arrowhead="normalnormal",fillcolor=white,label=" "];
-Buzzer->Muted[arrowhead="onormal",penwidth=2,label="="];
-Muted->buzz[arrowhead="onormal",penwidth=2,label="="];
-Buzzing->RefTimer[arrowhead="onormal",penwidth=2,label="="];
-StartN_->Buzzer[label="starts"];
 buzz->Buzzing[arrowtail=dot,dir=both,label="after"];
+StartN_->Buzzer[label="starts"];
+Buzzing->RefTimer[arrowhead="onormal",penwidth=2,label="="];
+Muted->buzz[arrowhead="onormal",penwidth=2,label="="];
+Buzzer->Muted[arrowhead="onormal",penwidth=2,label="="];
+RefTimer->PC_Timer[arrowhead="normalnormal",fillcolor=white,label=" "];
+Buzzing->Muted[arrowtail=dot,dir=both,label="after"];
 }

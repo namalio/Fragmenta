@@ -1,19 +1,19 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BoolSetter];
-Bool [shape=box,fillcolor=deepskyblue,style = filled,label="Bool "];
-assignT [shape=ellipse,fillcolor=greenyellow,style = filled,label="assignT"];
-RefBoolT [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-BoolT [shape=box,fillcolor=deepskyblue,style = filled,label="BoolT "];
-getT [shape=ellipse,fillcolor=greenyellow,style = filled,label="getT"];
-BoolF [shape=box,fillcolor=deepskyblue,style = filled,label="BoolF "];
-getF [shape=ellipse,fillcolor=greenyellow,style = filled,label="getF"];
-OpBoolF [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-RefBool [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-OpBoolT [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-RefBoolF [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-assignF [shape=ellipse,fillcolor=greenyellow,style = filled,label="assignF"];
-OpBool [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 BoolSetter [shape=box,fillcolor=deepskyblue,style = filled,label="BoolSetter "];
+OpBool [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+assignF [shape=ellipse,fillcolor=greenyellow,style = filled,label="assignF"];
+RefBoolF [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+OpBoolT [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+RefBool [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+OpBoolF [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+getF [shape=ellipse,fillcolor=greenyellow,style = filled,label="getF"];
+BoolF [shape=box,fillcolor=deepskyblue,style = filled,label="BoolF "];
+getT [shape=ellipse,fillcolor=greenyellow,style = filled,label="getT"];
+BoolT [shape=box,fillcolor=deepskyblue,style = filled,label="BoolT "];
+RefBoolT [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+assignT [shape=ellipse,fillcolor=greenyellow,style = filled,label="assignT"];
+Bool [shape=box,fillcolor=deepskyblue,style = filled,label="Bool "];
 
 {rank=same;BoolT,getT}
 {rank=same;RefBoolT,assignT}
@@ -21,22 +21,22 @@ BoolSetter [shape=box,fillcolor=deepskyblue,style = filled,label="BoolSetter "];
 {rank=same;BoolF,getF}
 {rank=same;BoolSetter,StartN_}
 
-RefBoolF->BoolF[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpBoolF->RefBool[arrowhead="open"];
-RefBoolT->BoolT[arrowhead="normalnormal",fillcolor=white,label=" "];
-getT->BoolT[arrowtail=dot,dir=both,label="after"];
-OpBoolT->getT[arrowhead="open"];
-assignT->RefBoolT[arrowtail=dot,dir=both,label="after"];
-OpBool->assignT[arrowhead="open"];
-Bool->OpBool[arrowhead="onormal",penwidth=2,label="="];
-BoolT->OpBoolT[arrowhead="onormal",penwidth=2,label="="];
-BoolF->OpBoolF[arrowhead="onormal",penwidth=2,label="="];
-BoolSetter->RefBoolF[arrowhead="onormal",penwidth=2,label="="];
-StartN_->BoolSetter[label="starts"];
-OpBool->assignF[arrowhead="open"];
-assignF->RefBoolF[arrowtail=dot,dir=both,label="after"];
-OpBoolT->RefBool[arrowhead="open"];
-RefBool->Bool[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpBoolF->getF[arrowhead="open"];
 getF->BoolF[arrowtail=dot,dir=both,label="after"];
+OpBoolF->getF[arrowhead="open"];
+RefBool->Bool[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpBoolT->RefBool[arrowhead="open"];
+assignF->RefBoolF[arrowtail=dot,dir=both,label="after"];
+OpBool->assignF[arrowhead="open"];
+StartN_->BoolSetter[label="starts"];
+BoolSetter->RefBoolF[arrowhead="onormal",penwidth=2,label="="];
+BoolF->OpBoolF[arrowhead="onormal",penwidth=2,label="="];
+BoolT->OpBoolT[arrowhead="onormal",penwidth=2,label="="];
+Bool->OpBool[arrowhead="onormal",penwidth=2,label="="];
+OpBool->assignT[arrowhead="open"];
+assignT->RefBoolT[arrowtail=dot,dir=both,label="after"];
+OpBoolT->getT[arrowhead="open"];
+getT->BoolT[arrowtail=dot,dir=both,label="after"];
+RefBoolT->BoolT[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpBoolF->RefBool[arrowhead="open"];
+RefBoolF->BoolF[arrowhead="normalnormal",fillcolor=white,label=" "];
 }

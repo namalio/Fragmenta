@@ -4,9 +4,9 @@ atom a
 atom b
 atom c
 atom nil
-operator OpDoas.OpChoice
-operator OpDobs.OpChoice
-operator OpDocs.OpChoice
+operator OpDoas.Choice
+operator OpDobs.Choice
+operator OpDocs.Choice
 compound Dobs@OpDobs
 compound Docs@OpDocs
 op_connector OpDoas->a

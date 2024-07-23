@@ -1,23 +1,23 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Withdraw];
-optWithdraw [shape=ellipse,fillcolor=greenyellow,style = filled,label="optWithdraw"];
-withdraw [shape=ellipse,fillcolor=greenyellow,style = filled,label="withdraw"];
-cashDeny [shape=ellipse,fillcolor=greenyellow,style = filled,label="cashDeny"];
-cashDispense [shape=ellipse,fillcolor=greenyellow,style = filled,label="cashDispense"];
-OpDoWithdraw [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-DoWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="DoWithdraw "];
 Withdraw [shape=box,fillcolor=deepskyblue,style = filled,label="Withdraw "];
+DoWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="DoWithdraw "];
+OpDoWithdraw [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
+cashDispense [shape=ellipse,fillcolor=greenyellow,style = filled,label="cashDispense"];
+cashDeny [shape=ellipse,fillcolor=greenyellow,style = filled,label="cashDeny"];
+withdraw [shape=ellipse,fillcolor=greenyellow,style = filled,label="withdraw"];
+optWithdraw [shape=ellipse,fillcolor=greenyellow,style = filled,label="optWithdraw"];
 
 {rank=same;OpDoWithdraw,withdraw}
 {rank=same;DoWithdraw,optWithdraw}
 {rank=same;Withdraw,StartN_}
 
-cashDeny->DoWithdraw[arrowtail=dot,dir=both,label="after"];
-OpDoWithdraw->cashDispense[arrowhead="open"];
-optWithdraw->DoWithdraw[arrowtail=dot,dir=both,label="after"];
-DoWithdraw->withdraw[arrowhead="onormal",penwidth=2,label="="];
-Withdraw->optWithdraw[arrowhead="onormal",penwidth=2,label="="];
-StartN_->Withdraw[label="starts"];
-withdraw->OpDoWithdraw[arrowtail=dot,dir=both,label="after"];
 OpDoWithdraw->cashDeny[arrowhead="open"];
+withdraw->OpDoWithdraw[arrowtail=dot,dir=both,label="after"];
+StartN_->Withdraw[label="starts"];
+Withdraw->optWithdraw[arrowhead="onormal",penwidth=2,label="="];
+DoWithdraw->withdraw[arrowhead="onormal",penwidth=2,label="="];
+optWithdraw->DoWithdraw[arrowtail=dot,dir=both,label="after"];
+OpDoWithdraw->cashDispense[arrowhead="open"];
+cashDeny->DoWithdraw[arrowtail=dot,dir=both,label="after"];
 }

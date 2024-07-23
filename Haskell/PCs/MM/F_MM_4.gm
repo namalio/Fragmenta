@@ -1,12 +1,18 @@
 Morphism F_MM_4 {
 	nodes {
       PAtom->Node
-	  PParameter->Attribute
 	  AnyExp->Attribute
+	  Binding->Attribute
+	  BindingSet->Attribute
+	  BindingSingle->Attribute
+	  BValue->Attribute
+	  PName->Attribute
 	}
 	edges {
-	   AtomExp->Has
-	   atSet->Has
-	   atVal->Has
+	   aexp->Has
+	   of->Has
+	   var->Has
+	   vals->Has
+	   val->Has
 	}
 }

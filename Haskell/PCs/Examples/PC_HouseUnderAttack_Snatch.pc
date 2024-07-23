@@ -9,14 +9,14 @@ reference RefEnterOrExit
 ref_connector RefEnterOrExit->EnterOrExit
 compound Snatch@RefEnterOrExit
 after_connector RefEnterOrExit->RefSnatchControl
-operator OpSnatch.OpChoice
+operator OpSnatch.Choice
 compound SnatchControl.ges@OpSnatch
 reference RefSnatchControl
 ref_connector RefSnatchControl->SnatchControl.{grabTV,grabLaptop,grabJewels}
-atom snatch<e:ges>
+atom snatch<e:'ges'>
 op_connector OpSnatch->snatch
 reference RefSnatchControl2
-ref_connector RefSnatchControl2->SnatchControl.diff(ges, {e})
+ref_connector RefSnatchControl2->SnatchControl.'diff(ges, {e})'
 after_connector open snatch->RefSnatchControl2
 op_connector OpSnatch->RefEnterOrExit2
 reference RefEnterOrExit2

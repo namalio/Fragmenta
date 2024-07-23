@@ -2,7 +2,6 @@ module MyMaybe(
     str_of_ostr
     , toMaybeP
     , toMaybeFrLs
-    , applM
     , boolMaybe
     , predMaybe
     , maybeToLs
@@ -62,8 +61,8 @@ maybeToSet :: Maybe a -> Set a
 maybeToSet Nothing = EmptyS
 maybeToSet (Just x) = singles x
 
-applM :: (Eq a, Eq b) => Rel a b -> a -> Maybe b
-applM r x = maybeFrSet $ img r [x] 
+--applM :: (Eq a, Eq b) => Rel a b -> a -> Maybe b
+--applM r x = maybeFrSet $ img r [x] 
 
 boolMaybe b x = if b then Just x else Nothing
 

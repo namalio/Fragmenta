@@ -1,4 +1,4 @@
-Live = die -> STOP
-      [] rest -> (Timer,2,; Live)
-      [] move -> Live
-      [] eat -> Live
+LiveSimply = rest -> (Timer(3)[[timeout <- wake_up]]; LiveSimply)
+       |~| (eat -> LiveSimply
+       |~| (move -> LiveSimply
+       |~| die -> STOP))

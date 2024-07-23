@@ -9,7 +9,10 @@ module ShowUtils(
    , showEdges
    , slimStr
    , slimShow
-   , showNodes) where
+   , showNodes
+   , strOfBinding
+   , strsOfBindings
+   , do_indent) where
 import SimpleFuns (butLast)
 
 showStrs :: Foldable t => t String -> String -> String
@@ -30,6 +33,7 @@ showEdges xs  = showStrs (fmap showEdge xs) ", "
 showNodes :: (Functor t, Foldable t, Show a) => t a -> String
 showNodes xs  = showStrs (fmap showNode xs) ", "
 
+do_indent :: (Eq n, Num n) => n -> String
 do_indent 0 = ""
 do_indent n = "   " ++ do_indent(n-1)
 
@@ -53,10 +57,20 @@ showEdge = shortenENm
 
 -- Writes elements separated by some separator
 -- Takes an identation level (a natural number)
-wrSepElems [] _ _ _ _ = ""
-wrSepElems (s:ss) sep spaced ind i
-   | null ss = (if ind then (do_indent i) else "") ++ s
-   | otherwise = 
-   let spc = if spaced then " " else "" in
-   let dind = if ind then do_indent i else "" in
-      dind++s++sep++spc++(wrSepElems ss sep spaced False i)
+wrSepElems :: (Eq t, Num t, Foldable c) => c String ->String -> Bool -> Bool -> t -> String
+--wrSepElems [] _ _ _ _ = ""
+wrSepElems ss sep spaced ind i = 
+   let spc = if spaced then " " else "" 
+       dind = if ind then do_indent i else "" 
+       str s e = if null s || all (== ' ') s then e else dind++e++sep++spc in
+   foldr (\e s->(str s e)++s) (if ind then (do_indent i) else "")  ss
+   -- | null ss = (if ind then (do_indent i) else "") ++ s
+   -- | otherwise = 
+   -- dind++s++sep++spc++(wrSepElems ss sep spaced False i)
+
+strOfBinding::Either String [String]->String
+strOfBinding (Left b) = b
+strOfBinding (Right bs) = "{" ++ showStrs bs "," ++ "}"
+
+strsOfBindings::[Either String [String]]->[String]
+strsOfBindings = fmap strOfBinding

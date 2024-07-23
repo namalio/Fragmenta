@@ -1,3 +1,4 @@
+include "PC_StopTimerP.csp"
 include "PC_CardControlP.csp"
-include "PC_CardControl_base.csp"
 
+channel deny, cardSwallow, cardEject, cardCollect, cancel, cardIn, timeout, tock, stopIt

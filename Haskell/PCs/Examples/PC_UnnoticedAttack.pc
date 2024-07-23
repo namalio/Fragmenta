@@ -8,7 +8,7 @@ after_connector activateAlarm->RefEnterOrExit
 after_connector RefEnterOrExit->MoveStealEscape
 reference RefEnterOrExit2.EnterOrExit
 ref_connector RefEnterOrExit2->PC_HouseUnderAttack_EnterOrExit
-operator OpMoveStealEscape.OpChoice
+operator OpMoveStealEscape.Choice
 compound MoveStealEscape@OpMoveStealEscape
 atom moveSteal-:{intoHall,intoLivingRoom,intoKitchen,intoRoom,grabTV,grabLaptop,grabJewels}
 op_connector OpMoveStealEscape->moveSteal

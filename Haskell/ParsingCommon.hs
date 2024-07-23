@@ -3,13 +3,14 @@ module ParsingCommon (
    , parseNumber
    , parseMaybe
    , parse_until_chs
-   , parse_ls_ids
+   , parseIds
    , capitalise_fst
    , lower_fst
    , parseIdLoose
-   , parse_strings
+   , parseTokens
    , parseWord
-   , parseAnyStr) where
+   , parseAnyStr
+   , satisfyWLook) where
 
 import Text.ParserCombinators.ReadP
 import qualified Data.Char as Char
@@ -40,7 +41,15 @@ parseWord::ReadP String
 parseWord = munch is_val_id_char
 
 parseAnyStr::String->ReadP String
-parseAnyStr stchs = munch (\ch->ch `notElem` ([' ', '\n', '\t', '@'] ++ stchs))
+parseAnyStr stchs = munch (`notElem` stchs)
+
+-- Check this out later
+--parseQStr::String->ReadP String
+--parseQStr stchs = do
+--   char '\"'
+--   s<-parse_until_chs "\""
+--   char '\"'
+--   return s
 
 parseIdLoose::ReadP String
 parseIdLoose = munch is_val_id_char
@@ -61,16 +70,15 @@ satisfyWLook::(Char->Bool)->ReadP Char
 satisfyWLook p = look >>= (\s->if not (null s) && p (head s) then return (head s) else pfail)
 
 parse_until_chs::String->ReadP String
-parse_until_chs chs = do manyTill (get) (satisfyWLook (\c-> any (c ==) chs))
+parse_until_chs chs = 
+   manyTill (get) (satisfyWLook (\c-> any (c ==) chs))
 
+parseTokens ::String->ReadP a->ReadP [a]
+parseTokens sep parser = do
+   sepBy parser (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
 
-
-parse_strings ::String->ReadP String->ReadP [String]
-parse_strings sep sparser = do
-   sepBy (sparser) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
-
-parse_ls_ids ::String->ReadP [String]
-parse_ls_ids sep = parse_strings sep parseId
+parseIds ::String->ReadP [String]
+parseIds sep = parseTokens sep parseId
 --   ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)
    --ps<-sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep))
    -- parses last id
@@ -93,7 +101,10 @@ lower_fst (c:cs) = (Char.toLower c):cs
 test1 = readP_to_S (parse_until_chs ".,") "ABC.CDE"
 test2 = readP_to_S (parse_until_chs ".,") "ABC,CDE"
 
-test3 = readP_to_S (parse_ls_ids ",") "ABC , CDE"
+test3 = readP_to_S (parseIds ",") "ABC , CDE"
+
+test4 :: [(String, String)]
+test4 = readP_to_S (parseAnyStr "") "{intoHall}"
 
 --test4 :: [([String], String)]
 --test4 = readP_to_S ((\sep->sepBy (parse_id) (skipSpaces>>satisfy (\ch->any (ch==) sep) >> skipSpaces)) ",") "ABC , CDE"

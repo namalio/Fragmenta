@@ -1,0 +1,14 @@
+StopPauseTimer(t) = 
+   let 
+      Paused = tock -> Paused
+            [] resume -> StopPauseTimer(t)
+            [] stopIt -> SKIP
+   within
+      if t>=0
+      then
+         t>0 & stopIt -> SKIP
+         [] t==0 & timeout -> SKIP
+         [] t>0 & tock -> StopPauseTimer(t-1)
+         [] t>0 & pause -> Paused
+      else
+         STOP

@@ -1,11 +1,11 @@
 PC PC_MadTicker@MadTicker
 compound MadTicker@OpCT
-operator OpCT.OpChoice
+operator OpCT.Choice
 atom taque
 atom tique
 atom toque
 stop STOP
-operator OpCT2.OpChoice
+operator OpCT2.Choice
 op_connector OpCT->OpCT2
 op_connector OpCT->taque
 after_connector taque->STOP

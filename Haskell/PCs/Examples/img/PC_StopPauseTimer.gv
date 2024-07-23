@@ -1,0 +1,46 @@
+digraph {
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_StopPauseTimer];
+StopPauseTimer [shape=box,fillcolor=deepskyblue,style = filled,label="StopPauseTimer (t : Int)"];
+OpIfChoice [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+timeout [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {t==0}
+timeout"];
+stopIt [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {t>0}
+stopIt"];
+RefStopPauseTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+OpPaused [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+tock2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="tock"];
+RefStopPauseTimer2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+stopIt2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="stopIt"];
+resume [shape=ellipse,fillcolor=greenyellow,style = filled,label="resume"];
+Paused [shape=box,fillcolor=deepskyblue,style = filled,label="Paused "];
+pause [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {t>0}
+pause"];
+tock [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {t>0}
+tock"];
+STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
+OpStopPauseTimer [shape=diamond,fillcolor=yellow,style = filled,label="If"];
+
+{rank=same;RefStopPauseTimer,tock}
+{rank=same;Paused,pause}
+{rank=same;RefStopPauseTimer2,resume}
+{rank=same;StopPauseTimer,StartN_}
+
+RefStopPauseTimer2->StopPauseTimer[arrowhead="normalnormal",fillcolor=white,label=" (t)"];
+OpPaused->stopIt2[arrowhead="open"];
+OpPaused->resume[arrowhead="open"];
+RefStopPauseTimer->StopPauseTimer[arrowhead="normalnormal",fillcolor=white,label=" (t-1)"];
+OpIfChoice->pause[arrowhead="open"];
+OpIfChoice->tock[arrowhead="open"];
+OpStopPauseTimer->STOP[arrowhead="open",label="Else"];
+StartN_->StopPauseTimer[label="starts"];
+StopPauseTimer->OpStopPauseTimer[arrowhead="onormal",penwidth=2,label="="];
+Paused->OpPaused[arrowhead="onormal",penwidth=2,label="="];
+OpStopPauseTimer->OpIfChoice[arrowhead="open",label="t>=0"];
+OpIfChoice->timeout[arrowhead="open"];
+OpIfChoice->stopIt[arrowhead="open"];
+tock->RefStopPauseTimer[arrowtail=dot,dir=both,label="after"];
+pause->Paused[arrowtail=dot,dir=both,label="after"];
+OpPaused->tock2[arrowhead="open"];
+tock2->Paused[arrowtail=dot,dir=both,label="after"];
+resume->RefStopPauseTimer2[arrowtail=dot,dir=both,label="after"];
+}

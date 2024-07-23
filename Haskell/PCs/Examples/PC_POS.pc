@@ -1,6 +1,6 @@
 PC PC_POS@POS
 compound POS@OpPos
-operator OpPos.OpChoice
+operator OpPos.Choice
 atom down
 atom up
 op_connector OpPos->down

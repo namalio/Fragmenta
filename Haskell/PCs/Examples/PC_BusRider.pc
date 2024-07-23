@@ -3,7 +3,7 @@ atom board
 compound BusRider@board
 compound OnBus@OpOnBus
 after_connector board->OnBus
-operator OpOnBus.OpChoice
+operator OpOnBus.Choice
 atom seat
 atom stand
 atom move

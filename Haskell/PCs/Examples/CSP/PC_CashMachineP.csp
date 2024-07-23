@@ -2,9 +2,9 @@ CashMachine =
    let 
       CashMachine0 = 
          let 
-            DoOptions = (ShowBalance; DoOptions)
-                  [] (Withdraw; DoOptions)
+            DoOptions = (Withdraw; DoOptions)
+                  [] (ShowBalance; DoOptions)
          within
-            (((CashMachineOps; DoOptions) ||| cancel -> SKIP)[|{deny,cancel}|>SKIP)[|{deny,cardIn,cancel}|]CardControl
+            (((CashMachineOps; DoOptions) ||| cancel -> SKIP)[|{cancel,deny}|>SKIP)[|{cancel,cardIn,deny}|]CardControl
    within
       CashMachine0; CashMachine

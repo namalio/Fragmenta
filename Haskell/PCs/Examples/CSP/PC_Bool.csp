@@ -1,3 +1,3 @@
-include "PC_Bool_base.csp"
 include "PC_BoolP.csp"
 
+channel assignF, assignT, getT, getF

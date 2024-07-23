@@ -21,24 +21,25 @@ import MyMaybe
 import PCs.PCs_MM_Names
 import GrswT
 import SimpleFuns
+import MMI
 
-genAfterC :: MMInfo String String -> PC String String -> String -> Exp
+genAfterC :: MMI String String -> PC String String -> String -> Exp
 genAfterC mmi pc n
    | tyOfN n pc == show_cmm_n CMM_Reference = ExpId (nmOfRef pc n)
    | tyOfN n pc == show_cmm_n CMM_Atom = genAtom mmi pc n
    | tyOfN n pc == show_cmm_n CMM_Compound = genCompoundDef mmi pc n
    | otherwise = SKIP
 
-genAfterAtom :: MMInfo String String -> GrwT String String -> String -> Set String -> Exp
+genAfterAtom :: MMI String String -> GrwT String String -> String -> Set String -> Exp
 genAfterAtom _ _ _ EmptyS = SKIP
 genAfterAtom mmi pc n (Set n2 EmptyS) 
    | n2 `elem` img (inv $ fV pc) [show_cmm_n CMM_AfterC] = genAfterC mmi pc (the $ successorsOf mmi pc n2)
    | otherwise = SKIP
 
-genAtom :: MMInfo String String -> PC String String -> Id -> Exp
+genAtom :: MMI String String -> PC String String -> Id -> Exp
 genAtom mmi pc n = Prfx (ExpId n) $ genAfterAtom mmi pc n (successorsOf mmi pc n)
 
-genChoices :: MMInfo String String -> PC String String -> Set String -> Exp
+genChoices :: MMI String String -> PC String String -> Set String -> Exp
 genChoices mmi pc EmptyS = SKIP
 genChoices mmi pc (Set ch chs) 
    | null chs = genAfterC mmi pc (the $ successorsOf mmi pc ch)
@@ -49,20 +50,20 @@ genChoices mmi pc (Set ch chs)
 --   then LetW (genDeclsForCompounds pc m cns) (genAtomic pc m n) 
 --   else (genAtomic pc m n)
 
-genCompoundSeqComp :: MMInfo String String -> PC String String -> String -> Exp
+genCompoundSeqComp :: MMI String String -> PC String String -> String -> Exp
 genCompoundSeqComp mmi pc n =
-   let e = first $ (successorsOf mmi pc n) `intersec` (pc_ns_of_nty (pc_sg_cmm mmi) pc CMM_AfterC) in
+   let e = first $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_AfterC) in
    let next_n = the $ successorsOf mmi pc e in
    SeqComp (ExpId n) (genAfterC mmi pc next_n) 
 
-genCompoundDef :: MMInfo String String -> PC String String -> String -> Exp
+genCompoundDef :: MMI String String -> PC String String -> String -> Exp
 genCompoundDef mmi pc n 
    | tyOfN n pc == show_cmm_n CMM_Atom = genAtom mmi pc n
    -- Either a process reference or sequential composition
    | tyOfN n pc == show_cmm_n CMM_Compound = if (show_cmm_n CMM_AfterC) `elem` (img (fV pc) (successorsOf mmi pc n)) 
       then (genCompoundSeqComp mmi pc n) else ExpId n 
    -- something combined with an operator
-   | tyOfN n pc == show_cmm_n CMM_Operator && (opValOfOp (pc_sg_cmm mmi) pc n) == show_cmm_n CMM_VOpChoice = genChoices mmi pc (successorsOf mmi pc n)  
+   | tyOfN n pc == show_cmm_n CMM_Operator && (opValOfOp (gCRSG mmi) pc n) == show_cmm_n CMM_VOpChoice = genChoices mmi pc (successorsOf mmi pc n)  
    | otherwise = SKIP -- INCOMPLETE
    
 
@@ -73,17 +74,17 @@ findAfterAtom pc m n = (predecessors pc n) `intersec` (ran_of $ rres (src pc) $ 
 --   let buildExp e = if (not $ null $ cns) then LetW (genDeclsForCompounds pc m cns) e else e in 
 --   EqDecl (ExpId n) $ buildExp (genCompoundDef pc m (findCompoundStart pc m n))
 
-cspChannels :: Foldable t=>t CT -> [Id] -> Decl
-cspChannels pct ias = Channel $ ias ++ (toList $ atomsOfPCTD pct)
+cspAtoms :: Foldable t=>t CT -> Set Id -> Set Id
+cspAtoms pct ias = (atomsOfPCTD pct) `union` ias
    --Channel $ foldl(\ns n-> let n' = nmOfNamed pc m n in if n' `elem` ias then ns else insert n' ns) [] (getAtoms m)
 
 --cspPImports sg_mm pc = Include $ map (\mn->mn ++ "P") (importsOf sg_mm pc)
 
 cspImports :: Set String -> Decl
-cspImports is = Include $ fmap (\mn->mn ++ "P") is
+cspImports is = Include $ is
 
-cspMainImports :: Eq b=>PC String b -> Decl
-cspMainImports pc = Include $ set [(getPCDef pc) ++ "P", (getPCDef pc) ++ "_base"]
+--cspMainImports :: Eq b=>PC String b -> Decl
+--cspMainImports pc = Include $ set [(getPCDef pc) ++ "P", (getPCDef pc) ++ "_base"]
 
 --isOperator (OpB OpChoice _ _) = True
 --isOperator (OpB (OpParallel  _) _ _) = True
@@ -146,8 +147,8 @@ cspExpsFor t1 t2 pfs =
     let (e1, e2, cds) = cspExpsFor0 t1 t2 in
     (calcExp1 e1 pfs, calcExp2 e2 pfs, cds)
 
-cspPRef :: (Nil f, The f) => String -> f Id -> [Id] -> Rel Id Id -> Exp
-cspPRef n g ps rs = let e1 = if null ps then ExpId n else ExpApp n ps in
+cspPRef :: (Nil f, The f) => String -> f Id -> [String] -> Rel Id Id -> Exp
+cspPRef n g bs rs = let e1 = if null bs then ExpId n else ExpApp n bs in
    let e2 = if null rs then e1 else ExpRen e1 (toList rs) in
    if isNil g then e2 else GExp (ExpId $ the g) e2 
 
@@ -190,18 +191,18 @@ cspExp SkipT = (SKIP, [])
 cspExp (Atom a og Nothing) = 
     let e =  ExpId a in
     pairUp (if isNil og then e else GExp (ExpId $ the og) e) [] 
-cspExp (Kappa (CT n ps cts t))  = let e1 = cspPRef n Nothing ps nil in
+cspExp (Kappa (CT n ps cts t))  = let e1 = cspPRef n Nothing (map fst ps) nil in
    let e2 = cspPDef t in
    let e2' = if isSomething cts then consLetW (cspDecl cts) e2 else e2 in
    (e1, [EqDecl e1 e2'])
-cspExp (Ref r g ps rs) = (cspPRef r g ps rs, [])
+cspExp (Ref r g bs rs) = (cspPRef r g bs rs, [])
 cspExp (OpB (OpIf g) t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 None in
    (IfExp (ExpId g) e1 e2, cds) 
 cspExp (OpB (OpSeq o) t1 t2) 
     | isAtomAny t1 && (o || t2 == NilT) = cspExpREC t1 t2 
-    | isAtomAny t1 && (not o) = let (e1, ds1) = cspExpREC t1 NilT in let (e2, ds2) = cspExp t2 in (SeqComp e1 e2, ds1++ds2)
-    | otherwise    = if (isAtom t1) then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
+    | isAtomAny t1 && not o = let (e1, ds1) = cspExpREC t1 NilT in let (e2, ds2) = cspExp t2 in (SeqComp e1 e2, ds1++ds2)
+    | otherwise    = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
 cspExp (OpB OpExtChoice t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite (not . f)) in
    (ExtChoice e1 e2, cds)
@@ -224,7 +225,9 @@ cspExp (OpB OpInterleave t1 t2) =
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite isComposite) in
    (Interleave e1 e2, cds)
 
-toCSP::MMInfo String String->PC String String->Set String->Set String->(CSPSpec, CSPSpec, CSPSpec)
+toCSP::MMI String String->PC String String->Set String->Set String->(Set Id, CSPSpec, CSPSpec)
 toCSP mmi pc ias is = 
-   let (PCTD _ cts) = consPCTD mmi pc in
-   (CSP [cspChannels cts (toList ias)], CSP $ cspDecl cts, CSP [cspMainImports pc, cspImports is])
+   let (PCTD _ cts) = consPCTD mmi pc 
+       as = cspAtoms cts ias
+       is' = cspImports (fmap (++"P") ((getPCDef pc) `intoSet` is )) in
+   (as, CSP [is', Channel as], CSP $ cspDecl cts)

@@ -1,7 +1,7 @@
 PC PC_Authentication@Authenticate
 compound Authenticate.n@OpAuthenticate
-operator OpAuthenticate.OpIf
-operator OpAuthenticateChoice.OpIntChoice
+operator OpAuthenticate.If
+operator OpAuthenticateChoice.IntChoice
 atom deny
 op_connector_g OpAuthenticate->OpAuthenticateChoice{n>0}
 op_else_connector OpAuthenticate->deny
@@ -11,4 +11,4 @@ op_connector OpAuthenticateChoice->grant
 op_connector OpAuthenticateChoice->fail
 reference RefAuthenticate
 after_connector fail->RefAuthenticate
-ref_connector RefAuthenticate->Authenticate.n-1
+ref_connector RefAuthenticate->Authenticate.'n-1'

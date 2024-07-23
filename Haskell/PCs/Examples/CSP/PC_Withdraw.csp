@@ -1,3 +1,3 @@
-include "PC_Withdraw_base.csp"
 include "PC_WithdrawP.csp"
 
+channel cashDispense, cashDeny, withdraw, optWithdraw

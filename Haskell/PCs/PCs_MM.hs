@@ -1,4 +1,11 @@
 
+------------------------
+-- Project: Fragmenta/PCs
+-- Module: 'PCs_MM'
+-- Description: Module that deals with the metamodel of PCs 
+-- Author: Nuno Amálio
+------------------------
+
 import Gr_Cls
 import Mdls 
 import LoadCheckDraw
@@ -18,6 +25,7 @@ img_path = "PCs/MM/img/"
 wr_path :: String
 wr_path = "./"
 
+-- Saves the PCs drawings as graphviz files
 saveDrawings :: IO ()
 saveDrawings = do
    draw_mdl def_path img_path "PCs_AMM"
@@ -35,14 +43,24 @@ code_preamble = "module PCs_MM_Names (PCs_AMM_Ns(..), PCs_AMM_Es(..), PCs_CMM_Ns
 --code_concl = "data PCS_MM_Ns = AMMN PCs_AMM_Ns | CMMN PCs_CMM_Ns\n"
 --    ++ "data PCS_MM_Es = AMME PCs_AMM_Es | CMME PCs_CMM_Es\n"
 code_concl :: String
-code_concl = "show_amm_n nt = drop 4 (show nt)\n"
-    ++ "show_amm_e et = drop 4 (show et)\n"
-    ++ "show_cmm_n nt = drop 4 (show nt)\n"
-    ++ "show_cmm_e et = drop 4 (show et)\n"
+code_concl = "show_mm_n :: Show a => a -> String\n"
+    ++ "show_mm_n nt = drop 4 (show nt)\n"
+    ++ "show_amm_n :: PCs_AMM_Ns -> String\n"
+    ++ "show_amm_n nt = show_mm_n nt\n"
+    ++ "show_mm_e :: Show a => a -> String\n"
+    ++ "show_mm_e et = drop 4 (show et)\n"
+    ++ "show_amm_e :: PCs_AMM_Es -> String\n"
+    ++ "show_amm_e et = show_mm_e et\n"
+    ++ "show_cmm_n :: PCs_CMM_Ns -> String\n"
+    ++ "show_cmm_n nt = show_mm_n nt\n"
+    ++ "show_cmm_e :: PCs_CMM_Es -> String\n"
+    ++ "show_cmm_e et = show_mm_e et\n"
+    ++ "read_cmm :: Read a => String -> a\n"
     ++ "read_cmm x = read (\"CMM_\" ++ x)\n"
 
-cons_data_type :: Foldable t => String -> t String -> String
-cons_data_type nm elems = "data " ++ nm ++ " = " ++ (showStrs elems " | ") ++ "\n    deriving (Read, Show, Eq)"
+cons_data_type :: String -> Set String -> String
+cons_data_type nm elems = "data " ++ nm ++ " = " 
+    ++ (first elems) ++ " " ++ (showStrs (fmap ("| "++) $ rest elems) "\n    ") ++ "\n    deriving (Read, Show, Eq)"
 
 consMMDatatypes :: IO ()
 consMMDatatypes = do

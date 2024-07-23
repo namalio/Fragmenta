@@ -5,14 +5,15 @@ Morphism F_MM_2 {
 		Compound->Node
         Atom->Node
 		TargetOfRef->Node
-		Parameterised->Trait
 		Action->Node
 		Guarded->Trait
 	    Parameter->Attribute
 		Guard->Attribute
+		PNamed->Trait
 	}
 	edges {
-	   HasParams->Has
-	   HasGuard->Has
+	   params->Has
+	   guard->Has
+	   type->Has
 	}
 }

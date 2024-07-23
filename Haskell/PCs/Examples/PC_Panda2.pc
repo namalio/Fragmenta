@@ -1,5 +1,5 @@
 PC PC_Panda2@PandaEats
-operator OpEats.OpIntChoice
+operator OpEats.IntChoice
 compound PandaEats@OpEats
 atom shoots
 atom leaves

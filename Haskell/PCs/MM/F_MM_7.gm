@@ -1,11 +1,11 @@
 Morphism F_MM_7 {
 	nodes {
 		PNode2->Node
-		PParameterised2->Trait
+		PBindable->Trait
 		Reference->Node
 		PAction2->Node
 		PGuarded->Trait
-		PName->Attribute
+		PName2->Attribute
 		Renaming->Attribute
 		PYesNo->Attribute
 	}

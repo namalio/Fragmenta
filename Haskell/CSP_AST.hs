@@ -11,10 +11,10 @@ import Sets
 
 type Id = String
 
-data Decl = Channel [Id] | EqDecl Exp Exp | Include (Set Id) deriving(Show) 
+data Decl = Channel (Set Id) | EqDecl Exp Exp | Include (Set Id) deriving(Show) 
 --data Stmt = Stmt Id Exp deriving(Show) 
 data Exp = ExpId Id -- a name
-   | ExpApp Id [Id] -- function application
+   | ExpApp Id [String] -- function application
    | ExpPar Exp -- a parenthesised expression
    | GExp Exp Exp
    | IfExp Exp Exp Exp
@@ -23,7 +23,7 @@ data Exp = ExpId Id -- a name
    | IntChoice Exp Exp
    | RExtChoice Id Id Exp -- name of variable, identifier of set and expression '[] x : s @ Exp' 
    | SeqComp Exp Exp
-   | Parallel [Id] Exp Exp
+   | Parallel [String] Exp Exp
 --   | SyncInterrupt [String] Exp Exp
    | Throw [String] Exp Exp
    | Interleave Exp Exp

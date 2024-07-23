@@ -1,7 +1,7 @@
-PC PC_SimpleLife@Live
+PC PC_SimpleLife@LiveSimply
 import PC_Timer
-compound Live@OpLive
-operator OpLive.OpChoice
+compound LiveSimply@OpLive
+operator OpLive.IntChoice
 atom eat
 atom move
 atom rest
@@ -13,10 +13,10 @@ op_connector OpLive->die
 reference RefLive
 after_connector eat->RefLive
 after_connector move->RefLive
-ref_connector RefLive->Live
+ref_connector RefLive->LiveSimply
 stop stopLife
 after_connector die->stopLife
-reference RefTimer.Timer,2,
+reference RefTimer:Timer.'3'[timeout/wake_up]
 after_connector rest->RefTimer
 ref_connector RefTimer->PC_Timer
 after_connector RefTimer->RefLive

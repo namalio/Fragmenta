@@ -1,7 +1,7 @@
 PC PC_BreakStealHouse2@BreakAndStealHouse
 compound BreakAndStealHouse@GetInside
 compound GetInside@OpGetInside
-operator OpGetInside.OpChoice
+operator OpGetInside.Choice
 atom breakDoor
 atom breakWindow
 atom stolenKey
@@ -10,7 +10,7 @@ op_connector OpGetInside->breakWindow
 op_connector OpGetInside->stolenKey
 compound Steal@OpSteal
 after_connector GetInside->Steal
-operator OpSteal.OpChoice
+operator OpSteal.Choice
 atom stealTV
 atom stealLaptop
 atom stealOther

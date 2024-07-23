@@ -1,20 +1,20 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Panda2];
-RefPandaEats [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-leaves [shape=ellipse,fillcolor=greenyellow,style = filled,label="leaves"];
-shoots [shape=ellipse,fillcolor=greenyellow,style = filled,label="shoots"];
 PandaEats [shape=box,fillcolor=deepskyblue,style = filled,label="PandaEats "];
+leaves [shape=ellipse,fillcolor=greenyellow,style = filled,label="leaves"];
+RefPandaEats [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+shoots [shape=ellipse,fillcolor=greenyellow,style = filled,label="shoots"];
 OpEats [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
 
-{rank=min;StartN_,PandaEats}
+{rank=same;PandaEats,StartN_}
 
-RefPandaEats->PandaEats[arrowhead="normalnormal",fillcolor=white,label=" "];
 leaves->RefPandaEats[arrowtail=dot,dir=both,label="after"];
-shoots->RefPandaEats[arrowtail=dot,dir=both,label="after"];
 OpEats->SKIP[arrowhead="open"];
-OpEats->leaves[arrowhead="open"];
 OpEats->shoots[arrowhead="open"];
-StartN_->PandaEats[arrowtail=diamond,dir=both,label="starts"];
 PandaEats->OpEats[arrowhead="onormal",penwidth=2,label="="];
+StartN_->PandaEats[label="starts"];
+OpEats->leaves[arrowhead="open"];
+shoots->RefPandaEats[arrowtail=dot,dir=both,label="after"];
+RefPandaEats->PandaEats[arrowhead="normalnormal",fillcolor=white,label=" "];
 }

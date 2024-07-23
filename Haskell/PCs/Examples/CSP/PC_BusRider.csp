@@ -1,3 +1,3 @@
-include "PC_BusRider_base.csp"
 include "PC_BusRiderP.csp"
 
+channel stand, move, seat, alight, board

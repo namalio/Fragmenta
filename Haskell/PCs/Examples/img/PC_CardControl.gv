@@ -1,39 +1,29 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CardControl];
-cardSwallow2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardSwallow"];
-cardSwallow [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardSwallow"];
-cCollectTimeout [shape=ellipse,fillcolor=greenyellow,style = filled,label="cCollectTimeout"];
-cCollect [shape=ellipse,fillcolor=greenyellow,style = filled,label="cCollect"];
-OpAfterEject [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-cardEject [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardEject"];
-deny [shape=ellipse,fillcolor=greenyellow,style = filled,label="deny"];
-OpDoCardIn [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-DoCardIn [shape=box,fillcolor=deepskyblue,style = filled,label="DoCardIn "];
-cancel2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="cancel"];
 cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
 cancel [shape=ellipse,fillcolor=greenyellow,style = filled,label="cancel"];
+deny [shape=ellipse,fillcolor=greenyellow,style = filled,label="deny"];
+cardSwallow [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardSwallow"];
+RefStopTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑StopTimer (5)
+⟦stopIt/cardCollect,timeout/cardSwallow⟧"];
+PC_StopTimer [shape=hexagon,fillcolor=orangered,style=filled,label =PC_StopTimer];
+cardEject [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardEject"];
+OpDoCardIn [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 CardControl [shape=box,fillcolor=deepskyblue,style = filled,label="CardControl "];
-OpCardControl [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 
-{rank=min;StartN_,CardControl}
-{rank=same;cardIn,DoCardIn}
-{rank=same;cancel2,cardEject,OpAfterEject}
-{rank=same;cardEject,OpAfterEject}
-{rank=same;cCollectTimeout,cardSwallow}
-{rank=same;deny,cardSwallow2}
+{rank=same;RefStopTimer,cardEject}
+{rank=same;RefStopTimer,cardEject,cancel}
+{rank=same;OpDoCardIn,cardIn}
+{rank=same;cardSwallow,deny}
+{rank=same;CardControl,StartN_}
 
-deny->cardSwallow2[arrowtail=dot,dir=both,label="after"];
-cCollectTimeout->cardSwallow[arrowtail=dot,dir=both,label="after"];
-OpAfterEject->cCollectTimeout[arrowhead="open"];
-OpAfterEject->cCollect[arrowhead="open"];
-cardEject->OpAfterEject[arrowtail=dot,dir=both,label="after"];
-cancel2->cardEject[arrowtail=dot,dir=both,label="after"];
+cardEject->RefStopTimer[arrowtail=dot,dir=both,label="after"];
+cancel->cardEject[arrowtail=dot,dir=both,label="after"];
+OpDoCardIn->cancel[arrowhead="open"];
+StartN_->CardControl[label="starts"];
+CardControl->cardIn[arrowhead="onormal",penwidth=2,label="="];
+cardIn->OpDoCardIn[arrowtail=dot,dir=both,label="after"];
 OpDoCardIn->deny[arrowhead="open"];
-OpDoCardIn->cancel2[arrowhead="open"];
-cardIn->DoCardIn[arrowtail=dot,dir=both,label="after"];
-OpCardControl->cardIn[arrowhead="open"];
-OpCardControl->cancel[arrowhead="open"];
-StartN_->CardControl[arrowtail=diamond,dir=both,label="starts"];
-DoCardIn->OpDoCardIn[arrowhead="onormal",penwidth=2,label="="];
-CardControl->OpCardControl[arrowhead="onormal",penwidth=2,label="="];
+RefStopTimer->PC_StopTimer[arrowhead="normalnormal",fillcolor=white,label=" "];
+deny->cardSwallow[arrowtail=dot,dir=both,label="after"];
 }

@@ -1,14 +1,14 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VM];
-VM [shape=box,fillcolor=deepskyblue,style = filled,label="VM "];
-choc [shape=ellipse,fillcolor=greenyellow,style = filled,label="choc"];
 coin [shape=ellipse,fillcolor=greenyellow,style = filled,label="coin"];
+choc [shape=ellipse,fillcolor=greenyellow,style = filled,label="choc"];
+VM [shape=box,fillcolor=deepskyblue,style = filled,label="VM "];
 
 {rank=same;choc,coin}
 {rank=same;VM,StartN_}
 
-choc->VM[arrowtail=dot,dir=both,label="after"];
-StartN_->VM[label="starts"];
-VM->coin[arrowhead="onormal",penwidth=2,label="="];
 coin->choc[arrowtail=dot,dir=both,label="after"];
+VM->coin[arrowhead="onormal",penwidth=2,label="="];
+StartN_->VM[label="starts"];
+choc->VM[arrowtail=dot,dir=both,label="after"];
 }

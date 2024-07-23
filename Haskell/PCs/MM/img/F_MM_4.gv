@@ -1,12 +1,20 @@
 digraph {graph[label=F_MM_4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_4{style=dashed;label=F_MM_4;
 "PAtom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Atom<br/>(P)>];
-"PParameter"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameter<br/>(P)>];
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
 "AnyExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="AnyExp"];
+"Binding"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Binding</I><br/>(A)}>];
+"BindingSet"[shape=record,fillcolor=lightskyblue1,style = filled,label="BindingSet"];
+"BindingSingle"[shape=record,fillcolor=lightskyblue1,style = filled,label="BindingSingle"];
+"BValue"[shape=record,fillcolor=lightskyblue1,style = filled,label="BValue"];
 
-"PAtom"->"AnyExp"[label="AtomExp▼",dir=none,taillabel="",headlabel="0..1"];
-"AnyExp"->"PParameter"[label="atVal",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"AnyExp"->"PParameter"[label="atSet",arrowhead=vee,headlabel="",arrowsize=.5];
+"BindingSet"->"Binding"[arrowhead=onormal,arrowsize=2.0];
+"BindingSingle"->"Binding"[arrowhead=onormal,arrowsize=2.0];
+"PAtom"->"AnyExp"[label="aexp▼",dir=none,taillabel="",headlabel="0..1"];
+"AnyExp"->"PName"[label="var",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"AnyExp"->"Binding"[label="of",arrowhead=vee,headlabel="",arrowsize=.5];
+"BindingSet"->"BValue"[label="vals",arrowhead=vee,headlabel="*",arrowsize=.5];
+"BindingSingle"->"BValue"[label="val",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 

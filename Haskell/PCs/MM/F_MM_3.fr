@@ -1,5 +1,18 @@
 fragment F_MM_3 {
   SG SG_MM_3 {
+  	proxy PParameter
+    nodea PCType
     enum YesNo: Yes, No
+    node Boolean
+    node Integer
+    node Event
+    node Set
+    inh Boolean->PCType
+    inh Integer->PCType
+    inh Event->PCType
+    inh Set->PCType
+    relu Set->PCType[setOf]
+    relu PParameter->PCType[type]:0..1
   }
+  ref PParameter->Parameter
 }

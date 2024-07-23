@@ -1,12 +1,20 @@
 fragment F_MM_4 {
   SG SG_MM_4 {
     proxy PAtom
-    proxy PParameter
+    proxy PName
     node AnyExp
-    rel PAtom->AnyExp[AtomExp]:1;0..1
-    relu AnyExp->PParameter[atVal]:0..1
-    relu AnyExp->PParameter[atSet]
+    nodea Binding
+    node BindingSet
+    node BindingSingle
+    node BValue
+    inh BindingSet->Binding
+    inh BindingSingle->Binding
+    rel PAtom->AnyExp[aexp]:1;0..1
+    relu AnyExp->PName[var]:0..1
+    relu AnyExp->Binding[of]
+    relu BindingSet->BValue[vals]:*
+    relu BindingSingle->BValue[val]
   }
   ref PAtom->Atom
-  ref PParameter->Parameter
+  ref PName->Name
 }

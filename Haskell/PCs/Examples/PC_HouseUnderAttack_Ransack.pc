@@ -1,5 +1,5 @@
 PC PC_HouseUnderAttack_Ransack@Ransack
-operator OpInHouse.OpChoice
+operator OpInHouse.Choice
 compound Ransack@OpInHouse
 atom mainDoor
 atom roomWindow
@@ -10,22 +10,22 @@ compound IntoHall@intoHall
 compound IntoRoom@intoRoom
 after_connector mainDoor->IntoHall
 after_connector roomWindow->IntoRoom
-operator OpInHall.OpChoice
+operator OpInHall.Choice
 after_connector intoHall->OpInHall
 atom intoLivingRoom
 atom intoKitchen
 op_connector OpInHall->intoLivingRoom
 op_connector OpInHall->intoKitchen
-reference RefIntoRoom.IntoRoom
+reference RefIntoRoom:IntoRoom
 ref_connector hidden RefIntoRoom->IntoRoom
 op_connector OpInHall->RefIntoRoom
 atom mainDoor2.mainDoor
 op_connector OpInHall->mainDoor2
 after_connector intoKitchen->IntoHall
 after_connector intoLivingRoom->InLivingRoom
-operator OpInLivingRoom.OpChoice
+operator OpInLivingRoom.Choice
 compound InLivingRoom@OpInLivingRoom
-reference RefIntoHall.IntoHall
+reference RefIntoHall:IntoHall
 ref_connector hidden RefIntoHall->IntoHall
 op_connector OpInLivingRoom->RefIntoHall
 atom grabTV
@@ -34,13 +34,13 @@ after_connector grabTV->InLivingRoom
 atom intoRoom
 compound IntoRoom@intoRoom
 compound InRoom@OpInRoom
-operator OpInRoom.OpChoice
+operator OpInRoom.Choice
 after_connector intoRoom->InRoom
 atom seize<:{grabLaptop,grabJewels}>
 op_connector OpInRoom->seize
 atom roomWindow2.roomWindow
 op_connector OpInRoom->roomWindow2
 after_connector seize->InRoom
-reference RefIntoHall2.IntoHall
+reference RefIntoHall2:IntoHall
 ref_connector hidden RefIntoHall2->IntoHall
 op_connector OpInRoom->RefIntoHall2

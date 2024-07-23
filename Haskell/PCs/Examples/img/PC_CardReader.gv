@@ -1,21 +1,21 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CardReader];
-cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
-OpDoCardReader [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-swallowCard [shape=ellipse,fillcolor=greenyellow,style = filled,label="swallowCard"];
-CardReaderEject [shape=box,fillcolor=deepskyblue,style = filled,label="CardReaderEject "];
-cardCollect [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardCollect"];
-CardReaderTimeout [shape=box,fillcolor=deepskyblue,style = filled,label="CardReaderTimeout "];
-collectTimeout2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="collectTimeout2"];
-swallowCard2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="swallowCard"];
-cardCollect2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardCollect"];
-OpCardReaderTimeout [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-collectTimeout1 [shape=ellipse,fillcolor=greenyellow,style = filled,label="collectTimeout1"];
-OpCardReaderEject [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-readCard [shape=ellipse,fillcolor=greenyellow,style = filled,label="readCard"];
-ejectCard [shape=ellipse,fillcolor=greenyellow,style = filled,label="ejectCard"];
-DoCardReader [shape=box,fillcolor=deepskyblue,style = filled,label="DoCardReader "];
 CardReader [shape=box,fillcolor=deepskyblue,style = filled,label="CardReader "];
+DoCardReader [shape=box,fillcolor=deepskyblue,style = filled,label="DoCardReader "];
+ejectCard [shape=ellipse,fillcolor=greenyellow,style = filled,label="ejectCard"];
+readCard [shape=ellipse,fillcolor=greenyellow,style = filled,label="readCard"];
+OpCardReaderEject [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+collectTimeout1 [shape=ellipse,fillcolor=greenyellow,style = filled,label="collectTimeout1"];
+OpCardReaderTimeout [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+cardCollect2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardCollect"];
+swallowCard2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="swallowCard"];
+collectTimeout2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="collectTimeout2"];
+CardReaderTimeout [shape=box,fillcolor=deepskyblue,style = filled,label="CardReaderTimeout "];
+cardCollect [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardCollect"];
+CardReaderEject [shape=box,fillcolor=deepskyblue,style = filled,label="CardReaderEject "];
+swallowCard [shape=ellipse,fillcolor=greenyellow,style = filled,label="swallowCard"];
+OpDoCardReader [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
 
 {rank=same;swallowCard2,collectTimeout2}
 {rank=same;CardReaderEject,ejectCard}
@@ -23,22 +23,22 @@ CardReader [shape=box,fillcolor=deepskyblue,style = filled,label="CardReader "];
 {rank=same;CardReaderTimeout,collectTimeout1}
 {rank=same;CardReader,StartN_}
 
-DoCardReader->CardReader[arrowtail=dot,dir=both,label="after"];
-OpCardReaderTimeout->collectTimeout2[arrowhead="open"];
-collectTimeout1->CardReaderTimeout[arrowtail=dot,dir=both,label="after"];
-OpCardReaderEject->cardCollect[arrowhead="open"];
-readCard->DoCardReader[arrowtail=dot,dir=both,label="after"];
-OpDoCardReader->swallowCard[arrowhead="open"];
-cardIn->DoCardReader[arrowtail=dot,dir=both,label="after"];
-CardReaderEject->OpCardReaderEject[arrowhead="onormal",penwidth=2,label="="];
-CardReaderTimeout->OpCardReaderTimeout[arrowhead="onormal",penwidth=2,label="="];
-DoCardReader->OpDoCardReader[arrowhead="onormal",penwidth=2,label="="];
-CardReader->cardIn[arrowhead="onormal",penwidth=2,label="="];
-StartN_->CardReader[label="starts"];
-OpDoCardReader->ejectCard[arrowhead="open"];
-OpDoCardReader->readCard[arrowhead="open"];
-ejectCard->CardReaderEject[arrowtail=dot,dir=both,label="after"];
-OpCardReaderEject->collectTimeout1[arrowhead="open"];
-OpCardReaderTimeout->cardCollect2[arrowhead="open"];
 collectTimeout2->swallowCard2[arrowtail=dot,dir=both,label="after"];
+OpCardReaderTimeout->cardCollect2[arrowhead="open"];
+OpCardReaderEject->collectTimeout1[arrowhead="open"];
+ejectCard->CardReaderEject[arrowtail=dot,dir=both,label="after"];
+OpDoCardReader->readCard[arrowhead="open"];
+OpDoCardReader->ejectCard[arrowhead="open"];
+StartN_->CardReader[label="starts"];
+CardReader->cardIn[arrowhead="onormal",penwidth=2,label="="];
+DoCardReader->OpDoCardReader[arrowhead="onormal",penwidth=2,label="="];
+CardReaderTimeout->OpCardReaderTimeout[arrowhead="onormal",penwidth=2,label="="];
+CardReaderEject->OpCardReaderEject[arrowhead="onormal",penwidth=2,label="="];
+cardIn->DoCardReader[arrowtail=dot,dir=both,label="after"];
+OpDoCardReader->swallowCard[arrowhead="open"];
+readCard->DoCardReader[arrowtail=dot,dir=both,label="after"];
+OpCardReaderEject->cardCollect[arrowhead="open"];
+collectTimeout1->CardReaderTimeout[arrowtail=dot,dir=both,label="after"];
+OpCardReaderTimeout->collectTimeout2[arrowhead="open"];
+DoCardReader->CardReader[arrowtail=dot,dir=both,label="after"];
 }

@@ -3,7 +3,7 @@ atom greet
 compound GreetChat@greet
 after_connector greet->ChatBye
 compound ChatBye@OpChat
-operator OpChat.OpChoice
+operator OpChat.Choice
 atom chat
 atom bye
 op_connector OpChat->chat

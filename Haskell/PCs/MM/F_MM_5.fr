@@ -1,23 +1,25 @@
 fragment F_MM_5 {
   SG SG_MM_5 {
     proxy PNode
-    proxy PParameterised
+    proxy PBinding
     proxy PAction
     proxy POperator
     node Stop
     node Skip
     node Combination
+    virtual Bindable
     inh Stop->PNode
     inh Skip->PNode
     inh Combination->PNode
-    inh Combination->PParameterised
+    inh Combination->Bindable
     inh Stop->PAction
     inh Skip->PAction
     inh Combination->PAction
     relu Combination->POperator[Combination_op]
+    relu Bindable->PBinding[bindings]:*
   }
   ref PNode->Node
-  ref PParameterised->Parameterised
+  ref PBinding->Binding
   ref PAction->Action
   ref POperator->Operator
 }

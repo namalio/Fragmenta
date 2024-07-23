@@ -3,10 +3,10 @@ OrderGoods =
       CloseOrder = closeOrder -> SKIP
       DoOrder = 
          let 
-            Delivery = regular -> SKIP
-                   |~| express -> SKIP
+            Delivery = express -> SKIP
+                   |~| regular -> SKIP
          within
             sendInvoice -> receivePayment -> SKIP ||| fillOrder -> Delivery
    within
-      receiveOrder -> (orderRejected -> CloseOrder
-         [] orderAccepted -> (DoOrder; CloseOrder))
+      receiveOrder -> (orderAccepted -> (DoOrder; CloseOrder)
+         [] orderRejected -> CloseOrder)

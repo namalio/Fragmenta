@@ -1,41 +1,41 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_StealHouseTreasure];
-StealHouseTreasure [shape=box,fillcolor=deepskyblue,style = filled,label="StealHouseTreasure "];
-disableCamera [shape=ellipse,fillcolor=greenyellow,style = filled,label="disableCamera"];
-BreakInDoor [shape=box,fillcolor=deepskyblue,style = filled,label="BreakInDoor "];
-unlockEnterRoom [shape=ellipse,fillcolor=greenyellow,style = filled,label="unlockEnterRoom"];
-RobInHall [shape=box,fillcolor=deepskyblue,style = filled,label="RobInHall "];
-grabTreasure [shape=ellipse,fillcolor=greenyellow,style = filled,label="grabTreasure"];
-RefRobInHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-outDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="outDoor"];
-intoHall [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoHall"];
-RefRobInHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-disableAlarm [shape=ellipse,fillcolor=greenyellow,style = filled,label="disableAlarm"];
-outWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="outWindow"];
-BreakInWindow [shape=box,fillcolor=deepskyblue,style = filled,label="BreakInWindow "];
-breakinWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakinWindow"];
 OpStealHouseTreasure [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+breakinWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakinWindow"];
+BreakInWindow [shape=box,fillcolor=deepskyblue,style = filled,label="BreakInWindow "];
+outWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="outWindow"];
+disableAlarm [shape=ellipse,fillcolor=greenyellow,style = filled,label="disableAlarm"];
+RefRobInHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+intoHall [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoHall"];
+outDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="outDoor"];
+RefRobInHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+grabTreasure [shape=ellipse,fillcolor=greenyellow,style = filled,label="grabTreasure"];
+RobInHall [shape=box,fillcolor=deepskyblue,style = filled,label="RobInHall "];
+unlockEnterRoom [shape=ellipse,fillcolor=greenyellow,style = filled,label="unlockEnterRoom"];
+BreakInDoor [shape=box,fillcolor=deepskyblue,style = filled,label="BreakInDoor "];
+disableCamera [shape=ellipse,fillcolor=greenyellow,style = filled,label="disableCamera"];
+StealHouseTreasure [shape=box,fillcolor=deepskyblue,style = filled,label="StealHouseTreasure "];
 
-{rank=same;RefRobInHall2,outDoor,intoHall}
-{rank=same;intoHall,RefRobInHall2,outDoor,disableCamera}
-{rank=same;unlockEnterRoom,grabTreasure,disableAlarm}
-{rank=same;RefRobInHall,outWindow,breakinWindow}
+{rank=same;outDoor,RefRobInHall2,intoHall}
+{rank=same;outDoor,RefRobInHall2,intoHall,disableCamera}
+{rank=same;grabTreasure,unlockEnterRoom,disableAlarm}
+{rank=same;outWindow,RefRobInHall,breakinWindow}
 {rank=same;StealHouseTreasure,StartN_}
 
-RefRobInHall2->outDoor[arrowtail=dot,dir=both,label="after"];
-RefRobInHall2->RobInHall[arrowhead="normalnormal",fillcolor=white,label=" "];
-unlockEnterRoom->grabTreasure[arrowtail=dot,dir=both,label="after"];
-RefRobInHall->outWindow[arrowtail=dot,dir=both,label="after"];
-RefRobInHall->RobInHall[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpStealHouseTreasure->BreakInWindow[arrowhead="open"];
-StealHouseTreasure->OpStealHouseTreasure[arrowhead="onormal",penwidth=2,label="="];
-BreakInDoor->disableCamera[arrowhead="onormal",penwidth=2,label="="];
-RobInHall->disableAlarm[arrowhead="onormal",penwidth=2,label="="];
-BreakInWindow->breakinWindow[arrowhead="onormal",penwidth=2,label="="];
-StartN_->StealHouseTreasure[label="starts"];
-OpStealHouseTreasure->BreakInDoor[arrowhead="open"];
-breakinWindow->RefRobInHall[arrowtail=dot,dir=both,label="after"];
-disableAlarm->unlockEnterRoom[arrowtail=dot,dir=both,label="after"];
-disableCamera->intoHall[arrowtail=dot,dir=both,label="after"];
 intoHall->RefRobInHall2[arrowtail=dot,dir=both,label="after"];
+disableCamera->intoHall[arrowtail=dot,dir=both,label="after"];
+disableAlarm->unlockEnterRoom[arrowtail=dot,dir=both,label="after"];
+breakinWindow->RefRobInHall[arrowtail=dot,dir=both,label="after"];
+OpStealHouseTreasure->BreakInDoor[arrowhead="open"];
+StartN_->StealHouseTreasure[label="starts"];
+BreakInWindow->breakinWindow[arrowhead="onormal",penwidth=2,label="="];
+RobInHall->disableAlarm[arrowhead="onormal",penwidth=2,label="="];
+BreakInDoor->disableCamera[arrowhead="onormal",penwidth=2,label="="];
+StealHouseTreasure->OpStealHouseTreasure[arrowhead="onormal",penwidth=2,label="="];
+OpStealHouseTreasure->BreakInWindow[arrowhead="open"];
+RefRobInHall->RobInHall[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefRobInHall->outWindow[arrowtail=dot,dir=both,label="after"];
+unlockEnterRoom->grabTreasure[arrowtail=dot,dir=both,label="after"];
+RefRobInHall2->RobInHall[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefRobInHall2->outDoor[arrowtail=dot,dir=both,label="after"];
 }

@@ -1,10 +1,8 @@
 
 module ParseUtils(
-   wrSepElems
-   , words'
+   words'
    , splitAt'
    , splitAtStr
-   , do_indent
    , isDigit
    , isInt
    , isReal) where
@@ -44,17 +42,17 @@ splitAtStr s xs@(x:xs')
    | otherwise = (x:ys, ys')
       where (ys, ys') = splitAtStr s xs'
 
-do_indent :: (Eq t, Num t) => t -> [Char]
-do_indent 0 = ""
-do_indent n = "   " ++ do_indent(n-1)
+--do_indent :: (Eq t, Num t) => t -> [Char]
+--do_indent 0 = ""
+--do_indent n = "   " ++ do_indent(n-1)
 
 -- Writes elements separated by some separator
 -- Takes an identation level (a natural number)
-wrSepElems:: (Eq t, Num t)=>[String] -> String -> Bool -> Bool -> t -> String
-wrSepElems [] _ _ _ _ = ""
-wrSepElems (s:ss) sep spaced ind i
-   | (null ss) = (if ind then (do_indent i) else "") ++ s
-   | otherwise = 
-   let spc = if spaced then " " else "" in
-   let dind = if ind then do_indent i else "" in
-      dind++s++sep++spc++(wrSepElems ss sep spaced False i)
+--wrSepElems:: (Eq t, Num t)=>[String] -> String -> Bool -> Bool -> t -> String
+--wrSepElems [] _ _ _ _ = ""
+--wrSepElems (s:ss) sep spaced ind i
+--   | (null ss) = (if ind then (do_indent i) else "") ++ s
+--   | otherwise = 
+--   let spc = if spaced then " " else "" in
+--   let dind = if ind then do_indent i else "" in
+--      dind++s++sep++spc++(wrSepElems ss sep spaced False i)

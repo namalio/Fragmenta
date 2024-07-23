@@ -1,7 +1,7 @@
 PC PC_BreakStealHouse3@BreakAndStealHouse
 compound BreakAndStealHouse@GetInside
 compound GetInside@OpGetInside
-operator OpGetInside.OpChoice
+operator OpGetInside.Choice
 atom breakDoor
 atom breakWindow
 atom stolenKey
@@ -10,14 +10,14 @@ op_connector OpGetInside->breakDoor
 op_connector OpGetInside->breakWindow
 op_connector OpGetInside->stolenKey
 after_connector GetInside->Ransack
-operator OpRansack.OpInterleave
+operator OpRansack.Interleave
 compound StealValuables@OpStealValuables
 compound RobSafes@OpRobSafes
 atom doneStealing
 op_connector OpRansack->StealValuables
 op_connector OpRansack->RobSafes
 op_connector OpRansack->doneStealing
-operator OpStealValuables.OpChoice
+operator OpStealValuables.Choice
 atom stealTV
 atom stealLaptop
 atom stealMoney
@@ -32,7 +32,7 @@ after_connector stealLaptop->RefRansack
 after_connector stealMoney->RefRansack
 after_connector stealOther->RefRansack
 ref_connector RefRansack->Ransack
-operator OpRobSafes.OpChoice
+operator OpRobSafes.Choice
 atom breakAndSteal
 atom abortSafe
 op_connector OpRobSafes->breakAndSteal

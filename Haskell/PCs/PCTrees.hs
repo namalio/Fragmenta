@@ -4,7 +4,14 @@
 -- Description: Handles representation of PCs as PCTs, a recursive datatype representation of abstract syntax
 -- Author: Nuno Amálio
 -----------------------
-module PCs.PCTrees(PCT(..), TOp(..), CT(..), PCTD(..), withinRel, consPCTD, atomsOfPCTD, 
+module PCs.PCTrees(PCT(..)
+  , TOp(..)
+  , CT(..)
+  , PCTD(..)
+  , withinRel
+  , consPCTD
+  , atomsPCTD
+  , atomsOfPCTD, 
   show_pctd, isOperator, isAtom, isAtomAny, isAtomic
   , isSole
   , seqCTs)
@@ -22,6 +29,8 @@ import PCs.PCs_MM_Names
 import ShowUtils
 import ParseUtils
 import PCs.PCTrees_AST
+import MMI
+import SimpleFuns (butLast)
 
 opseqC :: TOp
 opseqC = OpSeq False
@@ -43,8 +52,20 @@ show_top (OpIf g) = "𝜄" ++ (show g)
 
 show_cts :: Foldable t => t CT -> String
 show_cts cts = if null cts then "" else "{" ++ foldr (\ct scts->(show_pct $ Kappa ct) ++ "∙" ++  scts) "" cts ++ "}"
-show_params :: Foldable t => t String -> String
-show_params ps = if null ps then "" else "(" ++ (showStrs ps ",") ++ ")"
+
+show_params :: (Foldable t, Functor t) => t Param -> String
+show_params ps = 
+  let showParam (nm, ty) = nm ++ " : " ++ ty in
+  if null ps then "" else "(" ++ (showStrs (fmap showParam ps) ",") ++ ")"
+
+--show_binding :: Foldable t => (t String) -> String
+--show_binding bs = if null bs then "" else "(" ++ (showStrs bs ",") ++ ")"
+
+show_bindings :: Foldable t => (t String) -> String
+show_bindings bss = if null bss then "" else "(" ++ showStrs bss "," ++ ")"
+
+--if null bss then "" else "(" ++ foldr (\bs s-> (show_binding bs) ++ s) nil bss ++ ")"
+
 show_renamings :: Foldable t => t (String, String) -> String
 show_renamings rs = if null rs then "" else "⟦" ++ (showStrs (foldr (\(fr, to) rps->(fr ++ "/" ++ to):rps) [] rs) ",") ++ "⟧"
 show_guard :: Maybe String -> String
@@ -55,7 +76,7 @@ show_pct :: PCT -> String
 show_pct (Atom id og op) = "𝛼" ++ id ++ (show_atparams op) ++ (show_guard og)
 show_pct (Kappa (CT id ps cts pct)) = "𝜅 " ++ id ++ (show_params ps) ++ (show_cts cts)++ " @ " ++ (show_pct pct)
 show_pct (OpB op pct1 pct2) = "[𝛾 " ++ show_top op ++ "]" ++ (show_pct pct1) ++ " [" ++ (show_pct pct2) ++ "]"
-show_pct (Ref id og ps rs) = "𝜌" ++ id ++ (show_params ps) ++ (show_renamings rs) ++ (show_guard og)
+show_pct (Ref id og bs rs) = "𝜌" ++ id ++ (show_bindings bs) ++ (show_renamings rs) ++ (show_guard og)
 show_pct (NilT) = "𝜑"
 show_pct (StopT) = "𝛉"
 show_pct (SkipT) = "𝜉"
@@ -74,35 +95,36 @@ undThen (t, rs, gcs) (t', rs', gcs') = if t' == NilT then (t, rs, gcs) else (t, 
 withOp :: (Eq a1, Eq a2) => (PCT, Set a1, Set a2) -> (TOp, (PCT, Set a1, Set a2)) -> (PCT, Set a1, Set a2)
 withOp (t, rs, gcs) (op, (t', rs', gcs')) = if t' == NilT then (t, rs, gcs) else (OpB op t t', rs `union` rs', gcs `union` gcs')
 
-toTOp :: The f => PCs_CMM_Ns -> f Guard -> [Param] -> TOp
+toTOp :: The f => PCs_CMM_Ns -> f Guard -> [PCExp] -> TOp
 toTOp CMM_VOpChoice _ _= OpExtChoice
 toTOp CMM_VOpIntChoice _ _= OpIntChoice
-toTOp CMM_VOpParallel _ ps = OpParallel ps
+toTOp CMM_VOpParallel _ bs = OpParallel bs
 --toTreeOp CMM_OpWaitFor _ _= OpWaitFor
 toTOp CMM_VOpInterleave _ _ = OpInterleave
 --toTreeOp CMM_OpSyncInterrupt _ ps = OpSyncInterrupt ps
 toTOp CMM_VOpThrow _ ps = OpThrow ps
 toTOp CMM_VOpIf og _ = OpIf (the og)
 
-fillAnyExp :: Maybe (String, b) -> Maybe (String, b)
-fillAnyExp (Just ("", ats)) = Just ("e", ats)
-fillAnyExp p = p
+fillAnyExp :: Maybe (String, Either String [String]) -> Maybe (Id, PCExp)
+fillAnyExp Nothing = Nothing
+fillAnyExp (Just (v, b)) = let v' = if null v then "e" else butLast v in 
+  Just (v', strOfBinding b)
 
 atLeaf::PC String String->Id->(PCT, Set Id, Set Id)
 atLeaf pc n = (Atom (nmOfNamed pc n) (guardOf pc n) (fillAnyExp $ anyExpOfAt pc n), nil, nil)
 
-openACOf :: MMInfo String String -> GrwT String String -> String -> Bool
+openACOf :: MMI String String -> GrwT String String -> String -> Bool
 openACOf mmi pc n = 
   let ac = nextAfterC mmi pc n in
   isSomething ac && openAC pc (the ac)
 
-atomBranch::MMInfo String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
+atomBranch::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
 atomBranch mmi pc r n gcs = 
     let t1 = atLeaf pc n in
     let t2 = consOptBranch mmi pc r (nextNodeAfter mmi pc n) gcs in
     if openACOf mmi pc n then t1 `andThenO` t2 else t1 `andThenC` t2
     
-compound::MMInfo String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
+compound::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
 compound mmi pc r n gcs = 
   let ns = img r [n] `intersec` img ( trancl $ r `rcomp`  r) [n]
       (cts, rs1, gcs1) = seqCTs mmi pc r (ns `union` innerRefKs mmi pc n) (n `intoSet` gcs) 
@@ -110,7 +132,7 @@ compound mmi pc r n gcs =
       (t, rs2, gcs2) = consBranch mmi pc r (compoundStart mmi pc n) (gunion [singles n, gcs, gcs1]) in
   (Kappa  $ CT n (paramsOf pc n) cts t, rs1 `union` rs2, gunion [singles n, gcs1, gcs2])
 
-compoundAB::MMInfo String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
+compoundAB::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
 compoundAB mmi pc r n gcs = 
   (compound mmi pc r n gcs) `undThen` (consOptBranch mmi pc r (nextNodeAfter mmi pc n) (n `intoSet` gcs))
 
@@ -128,18 +150,18 @@ compoundAB mmi pc r n gcs =
 --consCompoundOrAtomBranch mmi pc n g gcs = 
 --    (consCompoundOrAtom mmi pc n g gcs) `andThen` (consOptBranch mmi pc (nextNodeAfter mmi pc n) Nothing gcs)
 
-consRefOrcompound::MMInfo String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
+consRefOrcompound::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
 consRefOrcompound mmi pc r n gcs 
     | n `elem` gcs = (Ref n Nothing nil nil, nil, nil)
     | otherwise = compoundAB mmi pc r n gcs
 
-refLeaf :: Foldable t => MMInfo String String -> GrwT String String -> String -> t String -> (PCT, Set Id, Set a)
+refLeaf :: Foldable t => MMI String String -> GrwT String String -> String -> t String -> (PCT, Set Id, Set a)
 refLeaf mmi pc n gcs = 
   let rn = nmOfRefF mmi pc n in 
-  let rs = if rn `elem` gcs || not (isNodeOfTys rn [CMM_Compound] (pc_sg_cmm mmi) pc) then nil else singles rn in
-  (Ref rn (guardOf pc n) (paramsOfRef mmi pc n) (renamingsOf pc n), rs , nil)
+  let rs = if rn `elem` gcs || not (isNodeOfTys rn [CMM_Compound] (gCRSG mmi) pc) then nil else singles rn in
+  (Ref rn (guardOf pc n) (strsOfBindings  (bindingsOfRef mmi pc n)) (renamingsOf pc n), rs , nil)
 
-refBranch :: MMInfo String String -> GrwT String String -> Rel Id Id->Id -> Set Id -> (PCT, Set Id, Set Id)
+refBranch :: MMI String String -> GrwT String String -> Rel Id Id->Id -> Set Id -> (PCT, Set Id, Set Id)
 refBranch mmi pc r n gcs =
     --let ir = inner_Ref pc n in
     --let rn = nmOfRefF mmi pc n in -- Work here
@@ -153,29 +175,29 @@ refBranch mmi pc r n gcs =
 --  let cs = (successorsOf mmi pc n) `intersec` (img (inv $ fV pc) [show_cmm_n CMM_BranchC]) in
 --  if isNil cs then Nothing else predMaybe (not . null) $ guardOf pc (the cs)
 
-opTree::MMInfo String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
+opTree::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
 opTree mmi pc r n gcs = 
-   opBranches mmi pc r (toTOp (read_cmm $ opValOfOp (pc_sg_cmm mmi) pc n) (guardOfOp mmi pc n) (paramsOf pc n)) (branchesOfOp mmi pc n) gcs
+   opBranches mmi pc r (toTOp (read_cmm $ opValOfOp (gCRSG mmi) pc n) (guardOfOp mmi pc n) (strsOfBindings $ bindingsOf pc n)) (branchesOfOp mmi pc n) gcs
 -- let (tcs, rs, cs) = consOpBranches mmi pc (read_cmm $ opValOfOp (pc_sg_cmm mmi) pc n) (bs++bs'++bs'') gcs
 --generatePCTsForBranches mmi pc (bs++bs'++bs'') gcs in
 --(consOpTreeLs tcs (toTreeOp (read_cmm $ opValOfOp (pc_sg_cmm mmi) pc n) g (paramsOf pc n)), rs, cs)
 
-consOptBranch::MMInfo String String->PC String String->Rel Id Id->Maybe Id->Set Id->(PCT, Set Id, Set Id)
+consOptBranch::MMI String String->PC String String->Rel Id Id->Maybe Id->Set Id->(PCT, Set Id, Set Id)
 consOptBranch mmi pc r on gcs
    | isNil on = (NilT, nil, nil) 
    | otherwise = consBranch mmi pc r (the on) gcs
 
-consBranch::MMInfo String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
+consBranch::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PCT, Set Id, Set Id)
 consBranch mmi pc r n gcs 
-    | isNodeOfTys n [CMM_Atom] (pc_sg_cmm mmi) pc = atomBranch mmi pc r n gcs
-    | isNodeOfTys n [CMM_Compound] (pc_sg_cmm mmi) pc = consRefOrcompound mmi pc r n gcs
-    | isNodeOfTys n [CMM_Reference] (pc_sg_cmm mmi) pc = refBranch mmi pc r n gcs
-    | isNodeOfTys n [CMM_Combination] (pc_sg_cmm mmi) pc = opTree mmi pc r n gcs 
-    | isNodeOfTys n [CMM_Stop] (pc_sg_cmm mmi) pc = (StopT, nil, nil)
-    | isNodeOfTys n [CMM_Skip] (pc_sg_cmm mmi) pc = (SkipT, nil, nil)
+    | isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc = atomBranch mmi pc r n gcs
+    | isNodeOfTys n [CMM_Compound] (gCRSG mmi) pc = consRefOrcompound mmi pc r n gcs
+    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc = refBranch mmi pc r n gcs
+    | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = opTree mmi pc r n gcs 
+    | isNodeOfTys n [CMM_Stop] (gCRSG mmi) pc = (StopT, nil, nil)
+    | isNodeOfTys n [CMM_Skip] (gCRSG mmi) pc = (SkipT, nil, nil)
 
 
-opBranches::MMInfo String String->PC String String->Rel Id Id->TOp->Set Id->Set Id->(PCT, Set Id, Set Id)
+opBranches::MMI String String->PC String String->Rel Id Id->TOp->Set Id->Set Id->(PCT, Set Id, Set Id)
 opBranches _ _ _ _ EmptyS _ = (NilT, nil, nil)
 opBranches mmi pc r op (Set b bs) cs = 
    let n = the $ nextNode mmi pc b in
@@ -184,7 +206,7 @@ opBranches mmi pc r op (Set b bs) cs =
    (tc, rs, cs') `withOp`  (op, opBranches mmi pc r op bs $ cs' `union` cs)
 
 --followedBy t ts = if t' == NilT then t else TSeq t t'
-seqCTs::MMInfo String String->PC String String->Rel Id Id->Set Id->Set Id->([CT], Set Id, Set Id)
+seqCTs::MMI String String->PC String String->Rel Id Id->Set Id->Set Id->([CT], Set Id, Set Id)
 seqCTs _ _ _ EmptyS gks = (nil, nil, gks)
 seqCTs mmi pc r (Set n ns) gks = 
     let (t, rns1, gks1)  = compoundAB mmi pc r n gks in
@@ -192,7 +214,7 @@ seqCTs mmi pc r (Set n ns) gks =
     (rearrangeT t:cts, gunion [ns, rns1, rns2], gunion [gks, gks1, gks2])
 --where modify_t (OpB opseqC (Kappa (CT k ps cts t1)) t2) = CT k ps [] (OpB opseqC (Kappa (CT (k++"0") [] cts t1)) t2)
 
-consPCTD::MMInfo String String->PC String String->PCTD
+consPCTD::MMI String String->PC String String->PCTD
 consPCTD mmi pc = 
   let r = relKs mmi pc
       (cts, _, _) = seqCTs mmi pc r (singles $ startCompound mmi pc) nil in 
@@ -235,23 +257,34 @@ relWithin (Kappa (CT nm _ cts t)) = (relWithinRel_cts cts) `union` relWithinRel 
 --relWithin (TSeq t1 t2) = relWithin t1 ++ relWithin t2
 relWithin _ = nil
 
-atomsOfPCTD :: Foldable t=>t CT ->Set String
-atomsOfPCTD = foldr (\ct ats->(atomsOfPCT (Kappa ct)) `union` ats) EmptyS
+atomsPCTD :: PCTD ->Set Id
+atomsPCTD (PCTD _ cts) = atomsOfPCTD cts
 
-atomsOfPCTs :: PCT -> PCT -> Set String
-atomsOfPCTs t1 t2 = (atomsOfPCT t1) `union` atomsOfPCT t2
-atomsOfPCT :: PCT -> Set String
+--unionp::(Eq a, Eq b)=>(Set a, Set b)->(Set a, Set b)->(Set a, Set b)
+--unionp (sx1, sy1) (sx2, sy2) = (sx1 `union` sx2, sy1 `union` sy2)
+
+--nilp :: (Set a1, Set a2)
+--nilp = (EmptyS, EmptyS)
+
+atomsOfPCTD :: Foldable t=>t CT ->Set Id
+atomsOfPCTD = 
+  foldr (\ct p_as_rs ->atomsOfPCT (Kappa ct) `union` p_as_rs) nil
+
+atomsOfPCTs :: PCT -> PCT ->Set Id
+atomsOfPCTs t1 t2 = atomsOfPCT t1 `union` atomsOfPCT t2
+
+atomsOfPCT :: PCT ->Set Id
 atomsOfPCT (Atom na _ Nothing) = singles na
 atomsOfPCT (Atom _ _ (Just (_, ats))) = 
   if head ats == '{' && last ats == '}' then set $ words' (== ',') (drop 1 (take ((length ats) - 1) ats)) else nil
-atomsOfPCT (OpB (OpThrow as) t1 t2) = (set as) `union` atomsOfPCTs t1 t2
+atomsOfPCT (OpB (OpThrow as) t1 t2) = set as `union` atomsOfPCTs t1 t2
 atomsOfPCT (OpB _ t1 t2) = atomsOfPCTs t1 t2
-atomsOfPCT (Kappa (CT _ _ cts t)) = foldr (\ct rct->(atomsOfPCT $ Kappa ct) `union` rct) nil cts `union` (atomsOfPCT t)
-atomsOfPCT (Ref _ _ _ rs) = foldr (\(_, to) as->to `intoSet` as) nil rs
-atomsOfPCT NilT = EmptyS
+atomsOfPCT (Kappa (CT _ _ cts t)) = foldr (\ct ps->(atomsOfPCT $ Kappa ct) `union` ps) nil cts `union` (atomsOfPCT t)
+atomsOfPCT (Ref _ _ _ rs) = foldr (\(_, to) ps->(singles to) `union` ps) nil rs
+atomsOfPCT NilT = nil
 --atomsOfPCT (TSeq t1 t2) = (atomsOfPCT t1) `union` (atomsOfPCT t2)
-atomsOfPCT  StopT = EmptyS
-atomsOfPCT  SkipT = EmptyS
+atomsOfPCT  StopT = nil
+atomsOfPCT  SkipT = nil
 
 isOperator :: PCT -> Bool
 isOperator (OpB _ _ _) = True

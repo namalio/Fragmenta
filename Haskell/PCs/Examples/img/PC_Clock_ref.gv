@@ -1,14 +1,14 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Clock_ref];
-Clock [shape=box,fillcolor=deepskyblue,style = filled,label="Clock "];
-RefClock [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 tick [shape=ellipse,fillcolor=greenyellow,style = filled,label="tick"];
+RefClock [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+Clock [shape=box,fillcolor=deepskyblue,style = filled,label="Clock "];
 
 {rank=same;RefClock,tick}
 {rank=same;Clock,StartN_}
 
-RefClock->Clock[arrowhead="normalnormal",fillcolor=white,label=" "];
-StartN_->Clock[label="starts"];
-Clock->tick[arrowhead="onormal",penwidth=2,label="="];
 tick->RefClock[arrowtail=dot,dir=both,label="after"];
+Clock->tick[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Clock[label="starts"];
+RefClock->Clock[arrowhead="normalnormal",fillcolor=white,label=" "];
 }

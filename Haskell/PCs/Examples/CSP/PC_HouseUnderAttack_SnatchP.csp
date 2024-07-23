@@ -1,0 +1,7 @@
+Snatch = EnterOrExit; SnatchControl({grabTV,grabLaptop,grabJewels})
+
+SnatchControl(ges) = ([] e : ges @ e -> SnatchControl(diff(ges, {e})))
+      [] EnterOrExit
+
+EnterOrExit = roomWindow -> SKIP
+      [] mainDoor -> SKIP

@@ -1,0 +1,3 @@
+include "PC_StopTimerP.csp"
+
+channel timeout, tock, stopIt

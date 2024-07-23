@@ -1,21 +1,23 @@
 digraph {graph[label=F_MM_5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_5{style=dashed;label=F_MM_5;
 "PNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node<br/>(P)>];
-"PParameterised"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameterised<br/>(P)>];
+"PBinding"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Binding<br/>(P)>];
 "PAction"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action<br/>(P)>];
 "POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
 "Stop"[shape=record,fillcolor=lightskyblue1,style = filled,label="Stop"];
 "Skip"[shape=record,fillcolor=lightskyblue1,style = filled,label="Skip"];
 "Combination"[shape=record,fillcolor=lightskyblue1,style = filled,label="Combination"];
+"Bindable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Bindable</I><br/>(V)}>];
 
 "Stop"->"PNode"[arrowhead=onormal,arrowsize=2.0];
 "Skip"->"PNode"[arrowhead=onormal,arrowsize=2.0];
 "Combination"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PParameterised"[arrowhead=onormal,arrowsize=2.0];
+"Combination"->"Bindable"[arrowhead=onormal,arrowsize=2.0];
 "Stop"->"PAction"[arrowhead=onormal,arrowsize=2.0];
 "Skip"->"PAction"[arrowhead=onormal,arrowsize=2.0];
 "Combination"->"PAction"[arrowhead=onormal,arrowsize=2.0];
 "Combination"->"POperator"[label="Combination_op",arrowhead=vee,headlabel="",arrowsize=.5];
+"Bindable"->"PBinding"[label="bindings",arrowhead=vee,headlabel="*",arrowsize=.5];
 
 }
 

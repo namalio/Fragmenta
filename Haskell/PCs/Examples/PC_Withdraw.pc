@@ -5,7 +5,7 @@ compound DoWithdraw@withdraw
 after_connector optWithdraw->DoWithdraw
 atom withdraw
 after_connector withdraw->OpDoWithdraw
-operator OpDoWithdraw.OpIntChoice
+operator OpDoWithdraw.IntChoice
 atom cashDeny
 atom cashDispense
 op_connector OpDoWithdraw->cashDispense

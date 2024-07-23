@@ -5,7 +5,7 @@ atom breakDoor
 atom breakWindow
 atom stolenKey
 atom stealTV
-operator OpGetInside.OpChoice
+operator OpGetInside.Choice
 after_connector GetInside->stealTV
 op_connector OpGetInside->breakDoor
 op_connector OpGetInside->breakWindow

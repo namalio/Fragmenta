@@ -4,5 +4,5 @@ TicketMachine =
    within
       coin -> (green -> (issueTicket -> SKIP
           |~| ReturnCoins)
-         [] red -> ReturnCoins
-         [] TicketMachine)
+         [] TicketMachine
+         [] red -> ReturnCoins)

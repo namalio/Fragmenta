@@ -1,3 +1,3 @@
-include "PC_HouseUnderAttack_Ransack_base.csp"
 include "PC_HouseUnderAttack_RansackP.csp"
 
+channel mainDoor, intoHall, intoLivingRoom, grabTV, intoKitchen, grabJewels, grabLaptop, intoRoom, roomWindow

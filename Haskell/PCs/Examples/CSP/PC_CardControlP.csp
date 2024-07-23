@@ -1,8 +1,2 @@
-CardControl = 
-   let 
-      DoCardIn = deny -> cardSwallow -> SKIP
-            [] cancel -> cardEject -> (cCollectTimeout -> cardSwallow -> SKIP
-            [] cCollect -> SKIP)
-   within
-      cardIn -> DoCardIn
-         [] cancel -> SKIP
+CardControl = cardIn -> (deny -> cardSwallow -> SKIP
+      [] cancel -> cardEject -> StopTimer(5)[[stopIt <- cardCollect,timeout <- cardSwallow]])

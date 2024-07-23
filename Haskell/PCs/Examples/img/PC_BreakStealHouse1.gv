@@ -1,21 +1,21 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse1];
-BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
-breakDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakDoor"];
-stolenKey [shape=ellipse,fillcolor=greenyellow,style = filled,label="stolenKey"];
-OpGetInside [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-stealTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealTV"];
-breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWindow"];
 GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
+breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWindow"];
+stealTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealTV"];
+OpGetInside [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+stolenKey [shape=ellipse,fillcolor=greenyellow,style = filled,label="stolenKey"];
+breakDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakDoor"];
+BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
 
 {rank=same;stealTV,GetInside}
 {rank=same;BreakAndStealHouse,StartN_}
 
-OpGetInside->stolenKey[arrowhead="open"];
-OpGetInside->breakDoor[arrowhead="open"];
-StartN_->BreakAndStealHouse[label="starts"];
-BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
-GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
-GetInside->stealTV[arrowtail=dot,dir=both,label="after"];
 OpGetInside->breakWindow[arrowhead="open"];
+GetInside->stealTV[arrowtail=dot,dir=both,label="after"];
+GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
+BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
+StartN_->BreakAndStealHouse[label="starts"];
+OpGetInside->breakDoor[arrowhead="open"];
+OpGetInside->stolenKey[arrowhead="open"];
 }

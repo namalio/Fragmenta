@@ -1,12 +1,12 @@
 PC PC_ProtectedHouse_HouseAlarm@HouseAlarm
 compound HouseAlarm.aes,ges,pes@entry
-atom entry<:ges>
+atom entry<:'ges'>
 after_connector entry->WatchOut
 operator OpWatchOut.OpChoice
 compound WatchOut@OpWatchOut
-atom raise<:aes>
-atom pass<:pes>
-atom exit<:ges>
+atom raise<:'aes'>
+atom pass<:'pes'>
+atom exit<:'ges'>
 op_connector OpWatchOut->raise
 op_connector OpWatchOut->pass
 op_connector OpWatchOut->exit

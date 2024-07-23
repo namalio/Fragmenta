@@ -1,6 +1,6 @@
 PC PC_Bool2@Bool
 compound Bool@OpBool
-operator OpBool.OpChoice
+operator OpBool.Choice
 atom assignT
 atom assignF
 op_connector OpBool->assignT
@@ -8,7 +8,7 @@ op_connector OpBool->assignF
 after_connector assignT->BoolT
 after_connector assignF->BoolF
 compound BoolT@OpBoolT
-operator OpBoolT.OpChoice
+operator OpBoolT.Choice
 atom getT
 reference RefBool
 op_connector OpBoolT->getT
@@ -16,7 +16,7 @@ op_connector OpBoolT->RefBool
 after_connector getT->BoolT
 ref_connector RefBool->Bool
 compound BoolF@OpBoolF
-operator OpBoolF.OpChoice
+operator OpBoolF.Choice
 atom getF
 op_connector OpBoolF->getF
 op_connector OpBoolF->RefBool

@@ -1,21 +1,21 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseUnderAttack];
-RefSeize [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Seize "];
-PC_HouseUnderAttack_Seize [shape=hexagon,fillcolor=orangered,style=filled,label =PC_HouseUnderAttack_Seize];
-RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Ransack "];
-PC_HouseUnderAttack_Ransack [shape=hexagon,fillcolor=orangered,style=filled,label =PC_HouseUnderAttack_Ransack];
 HouseUnderAttack [shape=box,fillcolor=deepskyblue,style = filled,label="HouseUnderAttack "];
+RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Ransack "];
+RefSeize [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Seize "];
+PC_HouseUnderAttack_Seize [shape=hexagon,fillcolor=orangered,style=filled,label =PC_HouseUnderAttack_Seize];
+PC_HouseUnderAttack_Ransack [shape=hexagon,fillcolor=orangered,style=filled,label =PC_HouseUnderAttack_Ransack];
 OpHouseUnderAttack [shape=diamond,fillcolor=yellow,style = filled,label="||"];
-OpHouseUnderAttack_ps[shape=rect,fillcolor=yellow,style="filled,dotted",label="roomWindow,mainDoor,grabJewels,grabLaptop,grabTV"];
-OpHouseUnderAttack->OpHouseUnderAttack_ps [dir=none,color="black:invis:black"];
-{rank=same;OpHouseUnderAttack,OpHouseUnderAttack_ps}
+OpHouseUnderAttack_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="grabTV,grabLaptop,grabJewels,mainDoor,roomWindow"];
+OpHouseUnderAttack->OpHouseUnderAttack_bs [dir=none,color="black:invis:black"];
+{rank=same;OpHouseUnderAttack,OpHouseUnderAttack_bs}
 
-{rank=min;StartN_,HouseUnderAttack}
+{rank=same;HouseUnderAttack,StartN_}
 
-OpHouseUnderAttack->RefSeize[arrowhead="vee",fillcolor=white];
-RefSeize->PC_HouseUnderAttack_Seize[arrowhead="normalnormal",label=" "];
-OpHouseUnderAttack->RefRansack[arrowhead="vee",fillcolor=white];
-RefRansack->PC_HouseUnderAttack_Ransack[arrowhead="normalnormal",label=" "];
-StartN_->HouseUnderAttack[arrowhead="open",arrowtail=diamond,dir=both,label="starts"];
-HouseUnderAttack->OpHouseUnderAttack[arrowhead="onormal",dir=both,arrowtail=obox,penwidth=2,label="="];
+RefSeize->PC_HouseUnderAttack_Seize[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefRansack->PC_HouseUnderAttack_Ransack[arrowhead="normalnormal",fillcolor=white,label=" "];
+HouseUnderAttack->OpHouseUnderAttack[arrowhead="onormal",penwidth=2,label="="];
+StartN_->HouseUnderAttack[label="starts"];
+OpHouseUnderAttack->RefRansack[arrowhead="open"];
+OpHouseUnderAttack->RefSeize[arrowhead="open"];
 }

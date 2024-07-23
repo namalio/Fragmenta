@@ -1,4 +1,4 @@
-include "PC_SimpleLifeP.csp"
-include "PC_SimpleLife_base.csp"
-
 include "PC_TimerP.csp"
+include "PC_SimpleLifeP.csp"
+
+channel eat, die, move, wake_up, rest, timeout, tock

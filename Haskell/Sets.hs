@@ -46,7 +46,7 @@ singles x = x `Set` EmptyS
 joinS::Set a->Set a->Set a
 joinS EmptyS s = s
 joinS s EmptyS = s
-joinS (x `Set` xs) s  = Set x (joinS s xs)
+joinS (x `Set` xs) s  = Set x (joinS xs s)
 
 inSet::(Eq a) => a->Set a ->Bool
 inSet x EmptyS = False
@@ -101,6 +101,7 @@ instance Eq a => Eq (Set a) where
    (==) = seteq  
 
 instance Show a => Show (Set a) where
+   show :: Show a => Set a -> String
    show s = "{" ++ foldr (\e str->show e ++ if null str then "" else "," ++ str) "" s ++ "}"
 
 instance Foldable Set where
@@ -118,9 +119,10 @@ instance Foldable Set where
    length :: Set a -> Int
    length EmptyS = 0
    length (Set x xs) = 1 + length xs
+   
 
-filterS:: (a -> Bool) -> Set a -> Set a
-filterS p = foldr (\e s'->if p e then Set e s' else s') EmptyS
+filterS:: Eq a=>(a -> Bool) -> Set a -> Set a
+filterS p = foldr (\e s'->if p e then e `intoSet` s' else s') EmptyS
 
 --anyS :: (a -> Bool) -> Set a -> Bool
 --anyS p s = foldr (\x ob->p x || ob) False s
@@ -180,7 +182,7 @@ gunion = foldl union nil
 
 -- intersection
 intersec :: Eq a => Set a -> Set a -> Set a
-intersec sa sb = foldl (\s e->if e `elem` sa then e `intoSet` s else s) nil sb
+intersec sa = foldl (\s e->if e `elem` sa then e `intoSet` s else s) EmptyS
 --intersec _ [] = []
 --intersec [] _ = []
 --intersec (x:xs) ys 

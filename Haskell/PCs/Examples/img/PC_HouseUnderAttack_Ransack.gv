@@ -1,27 +1,27 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseUnderAttack_Ransack];
-OpInHouse [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-mainDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="mainDoor"];
-intoHall [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoHall"];
-IntoRoom [shape=box,fillcolor=deepskyblue,style = filled,label="IntoRoom "];
-intoLivingRoom [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoLivingRoom"];
-RefIntoRoom [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IntoRoom (IntoRoom)"];
-OpInLivingRoom [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-RefIntoHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IntoHall (IntoHall)"];
-intoRoom [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoRoom"];
-InRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InRoom "];
-seize [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> {grabLaptop,grabJewels}<br/>[seize]>];
-RefIntoHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IntoHall (IntoHall)"];
-roomWindow2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="roomWindow"];
-OpInRoom [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-grabTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="grabTV"];
-InLivingRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InLivingRoom "];
-mainDoor2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="mainDoor"];
-intoKitchen [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoKitchen"];
-OpInHall [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-IntoHall [shape=box,fillcolor=deepskyblue,style = filled,label="IntoHall "];
-roomWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="roomWindow"];
 Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack "];
+roomWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="roomWindow"];
+IntoHall [shape=box,fillcolor=deepskyblue,style = filled,label="IntoHall "];
+OpInHall [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+intoKitchen [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoKitchen"];
+mainDoor2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="mainDoor"];
+InLivingRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InLivingRoom "];
+grabTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="grabTV"];
+OpInRoom [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+roomWindow2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="roomWindow"];
+RefIntoHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑IntoHall "];
+seize [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> {grabLaptop,grabJewels}<br/>[seize]>];
+InRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InRoom "];
+intoRoom [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoRoom"];
+RefIntoHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑IntoHall "];
+OpInLivingRoom [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+RefIntoRoom [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑IntoRoom "];
+intoLivingRoom [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoLivingRoom"];
+IntoRoom [shape=box,fillcolor=deepskyblue,style = filled,label="IntoRoom "];
+intoHall [shape=ellipse,fillcolor=greenyellow,style = filled,label="intoHall"];
+mainDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="mainDoor"];
+OpInHouse [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 
 {rank=same;InRoom,intoRoom}
 {rank=same;OpInHall,intoHall}
@@ -30,32 +30,32 @@ Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack "];
 {rank=same;InLivingRoom,intoLivingRoom}
 {rank=same;Ransack,StartN_}
 
-OpInRoom->RefIntoHall2[arrowhead="open"];
-seize->InRoom[arrowtail=dot,dir=both,label="after"];
-OpInRoom->seize[arrowhead="open"];
-grabTV->InLivingRoom[arrowtail=dot,dir=both,label="after"];
-OpInLivingRoom->RefIntoHall[arrowhead="open"];
-intoLivingRoom->InLivingRoom[arrowtail=dot,dir=both,label="after"];
-OpInHall->mainDoor2[arrowhead="open"];
 
-OpInHall->intoLivingRoom[arrowhead="open"];
-roomWindow->IntoRoom[arrowtail=dot,dir=both,label="after"];
-OpInHouse->roomWindow[arrowhead="open"];
-StartN_->Ransack[arrowtail=diamond,dir=both,label="starts"];
-IntoRoom->intoRoom[arrowhead="onormal",penwidth=2,label="="];
-InRoom->OpInRoom[arrowhead="onormal",penwidth=2,label="="];
-InLivingRoom->OpInLivingRoom[arrowhead="onormal",penwidth=2,label="="];
-IntoHall->intoHall[arrowhead="onormal",penwidth=2,label="="];
-Ransack->OpInHouse[arrowhead="onormal",penwidth=2,label="="];
-OpInHouse->mainDoor[arrowhead="open"];
-mainDoor->IntoHall[arrowtail=dot,dir=both,label="after"];
-intoHall->OpInHall[arrowtail=dot,dir=both,label="after"];
-OpInHall->intoKitchen[arrowhead="open"];
-OpInHall->RefIntoRoom[arrowhead="open"];
-intoKitchen->IntoHall[arrowtail=dot,dir=both,label="after"];
-
-OpInLivingRoom->grabTV[arrowhead="open"];
-intoRoom->InRoom[arrowtail=dot,dir=both,label="after"];
 OpInRoom->roomWindow2[arrowhead="open"];
+intoRoom->InRoom[arrowtail=dot,dir=both,label="after"];
+OpInLivingRoom->grabTV[arrowhead="open"];
 
+intoKitchen->IntoHall[arrowtail=dot,dir=both,label="after"];
+OpInHall->RefIntoRoom[arrowhead="open"];
+OpInHall->intoKitchen[arrowhead="open"];
+intoHall->OpInHall[arrowtail=dot,dir=both,label="after"];
+mainDoor->IntoHall[arrowtail=dot,dir=both,label="after"];
+OpInHouse->mainDoor[arrowhead="open"];
+Ransack->OpInHouse[arrowhead="onormal",penwidth=2,label="="];
+IntoHall->intoHall[arrowhead="onormal",penwidth=2,label="="];
+InLivingRoom->OpInLivingRoom[arrowhead="onormal",penwidth=2,label="="];
+InRoom->OpInRoom[arrowhead="onormal",penwidth=2,label="="];
+IntoRoom->intoRoom[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Ransack[label="starts"];
+OpInHouse->roomWindow[arrowhead="open"];
+roomWindow->IntoRoom[arrowtail=dot,dir=both,label="after"];
+OpInHall->intoLivingRoom[arrowhead="open"];
+
+OpInHall->mainDoor2[arrowhead="open"];
+intoLivingRoom->InLivingRoom[arrowtail=dot,dir=both,label="after"];
+OpInLivingRoom->RefIntoHall[arrowhead="open"];
+grabTV->InLivingRoom[arrowtail=dot,dir=both,label="after"];
+OpInRoom->seize[arrowhead="open"];
+seize->InRoom[arrowtail=dot,dir=both,label="after"];
+OpInRoom->RefIntoHall2[arrowhead="open"];
 }

@@ -3,6 +3,14 @@ Morphism F_MM_3 {
 		YesNo->Attribute
 		VYes->Attribute
 		VNo->Attribute
+		PCType->Attribute
+		Boolean->Attribute
+		Integer->Attribute
+		Event->Attribute
+		Set->Attribute
+		PParameter->Attribute
 	}
-	edges {}
+	edges {
+		setOf->Has
+	}
 }

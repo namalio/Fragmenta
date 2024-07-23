@@ -4,9 +4,9 @@ import Gr_Cls
 import Grs
 import GrswET
 import Sets ( toList )
-import Relations ( appl)
+import Relations ( appl, applM)
 import TheNil ( Nil(isNil), The(the) )
-import MyMaybe ( applM )
+import MyMaybe
 
 data GwETEdge = GwETEdge String String String String (Maybe String)
    deriving(Show)

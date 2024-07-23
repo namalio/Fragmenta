@@ -8,12 +8,19 @@
 module CSPPrint(wrCSP) where
 
 import CSP_AST
-import ParseUtils
+import ShowUtils
 import Sets
 
 --wrWaitFor = "Wait_({})= SKIP\nWait_(evs) = [] e :evs @ e->Wait_(diff(evs, {e}))"
 
-wrDecl :: Int -> Decl -> [Char]
+--wrBindings::[[String]]->[String]
+--wrBindings bss = foldr (\bs bs'->conv bs:bs') [] bss 
+--   where conv bs 
+--          | length bs == 0 = "{}" 
+--         | length bs == 1 = head bs 
+--          | otherwise = "{" ++ foldr (\b s-> b ++ if null s then "" else ",") "" bs ++ "}"
+
+wrDecl :: Int -> Decl -> String
 wrDecl ind (Channel ids) = "channel " ++ (wrSepElems ids "," True False ind)
 wrDecl ind (EqDecl e1 e2) = (do_indent ind) ++ (wrExp ind e1) ++ " = " ++ wrExp (ind +1) e2
 wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (toList ms)) "\n" False False ind
@@ -21,11 +28,11 @@ wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (t
 wrExp :: Int -> Exp -> String
 wrExp _ (ExpId id) = id 
 wrExp ind (ExpPar e) = "(" ++ (wrExp ind e) ++ ")" 
-wrExp ind (ExpApp id ps) = id ++ "(" ++ (wrSepElems ps ", " False False 0) ++ ")" 
+wrExp ind (ExpApp id bs) = id ++ "(" ++ (wrSepElems bs ", " False False 0) ++ ")" 
 wrExp ind (GExp e1 e2) = (wrExp ind e1) ++ " & " ++ (wrExp ind e2)
 wrExp ind (IfExp e1 e2 e3) = 
-   "if " ++ (wrExp 0 e1) ++ "\n" ++ (do_indent ind) ++ " then " ++ (wrExp ind e2) 
-   ++ "\n" ++ (do_indent ind) ++ "else " ++ (wrExp (ind +1) e3)
+   "if " ++ (wrExp 0 e1) ++ "\n" ++ (do_indent ind) ++ "then\n" ++ (do_indent $ ind +1) ++ (wrExp ind e2) 
+   ++ "\n" ++ (do_indent ind) ++ "else\n" ++ (do_indent $ ind +1) ++ (wrExp ind e3)
 wrExp ind (Prfx e1 e2) = (wrExp ind e1) ++ " -> " ++ (wrExp ind e2)
 wrExp ind (ExtChoice e1 e2) = (wrExp ind e1) ++ "\n" ++ (do_indent (ind +1)) ++ "[] " ++ (wrExp ind e2)
 wrExp ind (IntChoice e1 e2) = (wrExp ind e1) ++ "\n" ++ (do_indent (ind +1)) ++ " |~| " ++ (wrExp ind e2)

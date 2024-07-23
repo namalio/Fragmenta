@@ -1,3 +1,3 @@
-include "PC_Authentication_base.csp"
 include "PC_AuthenticationP.csp"
 
+channel deny, grant, fail

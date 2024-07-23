@@ -1,41 +1,41 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseAttacker];
-HouseAttacker [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAttacker (ges,mes,ses)"];
-OpSteal [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-MoveInside [shape=box,fillcolor=deepskyblue,style = filled,label="MoveInside "];
-Grab [shape=box,fillcolor=deepskyblue,style = filled,label="Grab "];
-Escape [shape=box,fillcolor=deepskyblue,style = filled,label="Escape "];
-WayOut [shape=box,fillcolor=deepskyblue,style = filled,label="WayOut "];
-RefHouseAttacker [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-leave [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[leave]>];
-someoneMoves2 [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> mes<br/>[someoneMoves]>];
-OpEscape [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-grab [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ses<br/>[grab]>];
-someoneMoves [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> mes<br/>[someoneMoves]>];
-Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal "];
 someoneEnters [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[someoneEnters]>];
+Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal "];
+someoneMoves [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> mes<br/>[someoneMoves]>];
+grab [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ses<br/>[grab]>];
+OpEscape [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+someoneMoves2 [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> mes<br/>[someoneMoves]>];
+leave [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[leave]>];
+RefHouseAttacker [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+WayOut [shape=box,fillcolor=deepskyblue,style = filled,label="WayOut "];
+Escape [shape=box,fillcolor=deepskyblue,style = filled,label="Escape "];
+Grab [shape=box,fillcolor=deepskyblue,style = filled,label="Grab "];
+MoveInside [shape=box,fillcolor=deepskyblue,style = filled,label="MoveInside "];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+OpSteal [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+HouseAttacker [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAttacker (ges,mes,ses)"];
 
-{rank=same;Steal,Escape,RefHouseAttacker,someoneEnters}
+{rank=same;RefHouseAttacker,Escape,Steal,someoneEnters}
 {rank=same;HouseAttacker,StartN_}
 
-Escape->RefHouseAttacker[arrowtail=dot,dir=both,label="after"];
-Steal->Escape[arrowtail=dot,dir=both,label="after"];
-someoneMoves2->Escape[arrowtail=dot,dir=both,label="after"];
-grab->Steal[arrowtail=dot,dir=both,label="after"];
-OpSteal->SKIP[arrowhead="open"];
-OpSteal->MoveInside[arrowhead="open"];
-StartN_->HouseAttacker[label="starts"];
-HouseAttacker->someoneEnters[arrowhead="onormal",penwidth=2,label="="];
-MoveInside->someoneMoves[arrowhead="onormal",penwidth=2,label="="];
-Grab->grab[arrowhead="onormal",penwidth=2,label="="];
-Escape->OpEscape[arrowhead="onormal",penwidth=2,label="="];
-WayOut->someoneMoves2[arrowhead="onormal",penwidth=2,label="="];
-Steal->OpSteal[arrowhead="onormal",penwidth=2,label="="];
-someoneEnters->Steal[arrowtail=dot,dir=both,label="after"];
-OpSteal->Grab[arrowhead="open"];
-someoneMoves->Steal[arrowtail=dot,dir=both,label="after"];
-OpEscape->WayOut[arrowhead="open"];
-OpEscape->leave[arrowhead="open"];
 RefHouseAttacker->HouseAttacker[arrowhead="normalnormal",fillcolor=white,label=" (ges,mes,ses)"];
+OpEscape->leave[arrowhead="open"];
+OpEscape->WayOut[arrowhead="open"];
+someoneMoves->Steal[arrowtail=dot,dir=both,label="after"];
+OpSteal->Grab[arrowhead="open"];
+someoneEnters->Steal[arrowtail=dot,dir=both,label="after"];
+Steal->OpSteal[arrowhead="onormal",penwidth=2,label="="];
+WayOut->someoneMoves2[arrowhead="onormal",penwidth=2,label="="];
+Escape->OpEscape[arrowhead="onormal",penwidth=2,label="="];
+Grab->grab[arrowhead="onormal",penwidth=2,label="="];
+MoveInside->someoneMoves[arrowhead="onormal",penwidth=2,label="="];
+HouseAttacker->someoneEnters[arrowhead="onormal",penwidth=2,label="="];
+StartN_->HouseAttacker[label="starts"];
+OpSteal->MoveInside[arrowhead="open"];
+OpSteal->SKIP[arrowhead="open"];
+grab->Steal[arrowtail=dot,dir=both,label="after"];
+someoneMoves2->Escape[arrowtail=dot,dir=both,label="after"];
+Steal->Escape[arrowtail=dot,dir=both,label="after"];
+Escape->RefHouseAttacker[arrowtail=dot,dir=both,label="after"];
 }

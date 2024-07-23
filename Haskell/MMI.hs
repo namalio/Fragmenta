@@ -37,7 +37,7 @@ gRM (MMI _ _ rm _) = rm
 
 -- extracts metamodel's concrete and resolved SG 
 gCRSG::MMI a b->SGr a b
-gCRSG  (MMI _ _ _ sgcmm) = sgcmm
+gCRSG (MMI _ _ _ sgcmm) = sgcmm
 -- extracts the graph with typing 
 --gGwT::MMI a b->Maybe (GrwT a b)
 --gGwT(MMI _ _ _ _ gwt) = gwt

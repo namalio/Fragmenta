@@ -1,50 +1,50 @@
 digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse4];
-BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
-OpBurglary [shape=diamond,fillcolor=yellow,style = filled,label="|||"];
-alarmSounds [shape=ellipse,fillcolor=greenyellow,style = filled,label="alarmSounds"];
-OpAlarm [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
-breakDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakDoor"];
-stolenKey [shape=ellipse,fillcolor=greenyellow,style = filled,label="stolenKey"];
-OpSteal [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-doneStealing [shape=ellipse,fillcolor=greenyellow,style = filled,label="doneStealing"];
-getOutandRun [shape=ellipse,fillcolor=greenyellow,style = filled,label="getOutandRun"];
-RunAway [shape=box,fillcolor=deepskyblue,style = filled,label="RunAway "];
-stealValuable [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealValuable"];
-Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal "];
-breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWindow"];
-OpGetInside [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-Alarm [shape=box,fillcolor=deepskyblue,style = filled,label="Alarm "];
-noAlarm [shape=ellipse,fillcolor=greenyellow,style = filled,label="noAlarm"];
-DoBurglary [shape=box,fillcolor=deepskyblue,style = filled,label="DoBurglary "];
 OpBreakAndStealHouse [shape=diamond,fillcolor=yellow,style = filled,label="Θ"];
-OpBreakAndStealHouse_ps[shape=rect,fillcolor=yellow,style="filled,dotted",label="alarmSounds"];
-OpBreakAndStealHouse->OpBreakAndStealHouse_ps [dir=none,color="black:invis:black"];
-{rank=same;OpBreakAndStealHouse,OpBreakAndStealHouse_ps}
+OpBreakAndStealHouse_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="alarmSounds"];
+OpBreakAndStealHouse->OpBreakAndStealHouse_bs [dir=none,color="black:invis:black"];
+{rank=same;OpBreakAndStealHouse,OpBreakAndStealHouse_bs}
+DoBurglary [shape=box,fillcolor=deepskyblue,style = filled,label="DoBurglary "];
+noAlarm [shape=ellipse,fillcolor=greenyellow,style = filled,label="noAlarm"];
+Alarm [shape=box,fillcolor=deepskyblue,style = filled,label="Alarm "];
+OpGetInside [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWindow"];
+Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal "];
+stealValuable [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealValuable"];
+RunAway [shape=box,fillcolor=deepskyblue,style = filled,label="RunAway "];
+getOutandRun [shape=ellipse,fillcolor=greenyellow,style = filled,label="getOutandRun"];
+doneStealing [shape=ellipse,fillcolor=greenyellow,style = filled,label="doneStealing"];
+OpSteal [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+stolenKey [shape=ellipse,fillcolor=greenyellow,style = filled,label="stolenKey"];
+breakDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakDoor"];
+GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
+OpAlarm [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
+alarmSounds [shape=ellipse,fillcolor=greenyellow,style = filled,label="alarmSounds"];
+OpBurglary [shape=diamond,fillcolor=yellow,style = filled,label="|||"];
+BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
 
-{rank=same;Steal,RunAway,GetInside}
+{rank=same;RunAway,Steal,GetInside}
 {rank=same;BreakAndStealHouse,StartN_}
 
-Steal->RunAway[arrowtail=dot,dir=both,label="after"];
-OpSteal->doneStealing[arrowhead="open"];
-GetInside->Steal[arrowtail=dot,dir=both,label="after"];
-OpGetInside->breakWindow[arrowhead="open"];
-OpAlarm->noAlarm[arrowhead="open"];
-OpBurglary->DoBurglary[arrowhead="open"];
-OpBreakAndStealHouse->RunAway[arrowhead="open",label="Jump"];
-StartN_->BreakAndStealHouse[label="starts"];
-BreakAndStealHouse->OpBreakAndStealHouse[arrowhead="onormal",penwidth=2,label="="];
-GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
-RunAway->getOutandRun[arrowhead="onormal",penwidth=2,label="="];
-Steal->OpSteal[arrowhead="onormal",penwidth=2,label="="];
-Alarm->OpAlarm[arrowhead="onormal",penwidth=2,label="="];
-DoBurglary->GetInside[arrowhead="onormal",penwidth=2,label="="];
-OpBreakAndStealHouse->OpBurglary[arrowhead="open"];
-OpBurglary->Alarm[arrowhead="open"];
-OpAlarm->alarmSounds[arrowhead="open"];
-OpGetInside->breakDoor[arrowhead="open"];
-OpGetInside->stolenKey[arrowhead="open"];
-OpSteal->stealValuable[arrowhead="open"];
 stealValuable->Steal[arrowtail=dot,dir=both,label="after"];
+OpSteal->stealValuable[arrowhead="open"];
+OpGetInside->stolenKey[arrowhead="open"];
+OpGetInside->breakDoor[arrowhead="open"];
+OpAlarm->alarmSounds[arrowhead="open"];
+OpBurglary->Alarm[arrowhead="open"];
+OpBreakAndStealHouse->OpBurglary[arrowhead="open"];
+DoBurglary->GetInside[arrowhead="onormal",penwidth=2,label="="];
+Alarm->OpAlarm[arrowhead="onormal",penwidth=2,label="="];
+Steal->OpSteal[arrowhead="onormal",penwidth=2,label="="];
+RunAway->getOutandRun[arrowhead="onormal",penwidth=2,label="="];
+GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
+BreakAndStealHouse->OpBreakAndStealHouse[arrowhead="onormal",penwidth=2,label="="];
+StartN_->BreakAndStealHouse[label="starts"];
+OpBreakAndStealHouse->RunAway[arrowhead="open",label="Jump"];
+OpBurglary->DoBurglary[arrowhead="open"];
+OpAlarm->noAlarm[arrowhead="open"];
+OpGetInside->breakWindow[arrowhead="open"];
+GetInside->Steal[arrowtail=dot,dir=both,label="after"];
+OpSteal->doneStealing[arrowhead="open"];
+Steal->RunAway[arrowtail=dot,dir=both,label="after"];
 }

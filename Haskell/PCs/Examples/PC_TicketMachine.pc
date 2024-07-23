@@ -1,7 +1,7 @@
 PC PC_TicketMachine@TicketMachine
 atom coin
 compound TicketMachine@coin
-operator OpAfterCoin.OpChoice
+operator OpAfterCoin.Choice
 after_connector coin->OpAfterCoin
 op_connector OpAfterCoin->TicketMachine
 atom red
@@ -11,7 +11,7 @@ op_connector OpAfterCoin->green
 atom ejectCoins
 compound ReturnCoins@ejectCoins
 after_connector red->ReturnCoins
-operator OpAfterGreen.OpIntChoice
+operator OpAfterGreen.IntChoice
 after_connector green->OpAfterGreen
 op_connector OpAfterGreen->ReturnCoins
 atom issueTicket

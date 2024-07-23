@@ -1,14 +1,16 @@
 Morphism F_MM_5 {
 	nodes {
 		PNode->Node
-		PParameterised->Trait
+		PBinding->Attribute
 		Stop->Node
 		Skip->Node
 		Combination->Node
 		PAction->Node
 		POperator->Attribute
+		Bindable->Trait
 	}
 	edges {
 	   Combination_op->Has
+	   bindings->Has
 	}
 }

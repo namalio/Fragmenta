@@ -24,10 +24,15 @@ module Relations (Rel
     , cl_override
     , mktotal_in
     , appl
+    , applM
     , find_monces
     , acyclic
     , trancl
-    , rtrancl, rtrancl_on, reflexive, antireflexive, antireflexive_on
+    , rtrancl
+    , rtrancl_on
+    , reflexive
+    , antireflexive
+    , antireflexive_on
     , symmetric
     , transitive
     , surjective
@@ -85,6 +90,9 @@ img r xs = ran_of (dres r xs)
 --takes first element of image (appropriate when doing function application)
 appl :: (Eq a, Eq b)=>Rel a b -> a -> b
 appl r x = first $ img r (singles x)
+
+applM :: (Eq a, Eq b)=>Rel a b -> a -> Maybe b
+applM r x = if x `elem` dom_of r then Just (appl r x) else Nothing
 
 -- relational overriding
 override::(Eq a, Eq b)=>Rel a b ->Rel a b ->Rel a b
@@ -146,6 +154,7 @@ fun_inj f xs ys = injective f && tfun f xs ys
 inj_fun r xs ys = injective r && tfun r xs ys
 --inj_surj_fun r xs ys = injective r && surjective r ys && fun_total r xs ys
 
+total_fun_surj :: (Eq a, Eq b) => Rel a b -> Set a -> Set b -> Bool
 total_fun_surj r xs ys = tfun r xs ys && surjective r ys
 fun_bij :: (Eq a, Eq b) => Rel a b -> Set a -> Set b -> Bool
 fun_bij r xs ys = tfun r xs ys && injective r && surjective r ys

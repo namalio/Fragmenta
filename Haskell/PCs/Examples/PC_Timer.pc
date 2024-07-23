@@ -1,7 +1,7 @@
 PC PC_Timer@Timer
-compound Timer.t@OpTimer
-operator OpTimer.OpIf
-operator OpIfChoice.OpChoice
+compound Timer.t:int@OpTimer
+operator OpTimer.If
+operator OpIfChoice.Choice
 stop STOP
 op_connector_g OpTimer->OpIfChoice{t>=0}
 op_else_connector OpTimer->STOP
@@ -11,4 +11,4 @@ op_connector OpIfChoice->timeout
 op_connector OpIfChoice->tock
 reference RefTimer
 after_connector tock->RefTimer
-ref_connector RefTimer->Timer.t-1
+ref_connector RefTimer->Timer.'t-1'

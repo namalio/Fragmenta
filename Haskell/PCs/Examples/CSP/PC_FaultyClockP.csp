@@ -1,2 +1,2 @@
-FaultyClock = STOP
-       |~| tick -> FaultyClock
+FaultyClock = tick -> FaultyClock
+       |~| STOP

@@ -1,0 +1,16 @@
+PC PC_StopTimer@StopTimer
+compound StopTimer.t:int@OpStopTimer
+operator OpStopTimer.If
+operator OpIfChoice.Choice
+stop STOP
+op_connector_g OpStopTimer->OpIfChoice{t>=0}
+op_else_connector OpStopTimer->STOP
+atom timeout{t==0}
+atom tock{t>0}
+atom stopIt{t>0}
+op_connector OpIfChoice->timeout
+op_connector OpIfChoice->tock
+op_connector OpIfChoice->stopIt
+reference RefStopTimer
+after_connector tock->RefStopTimer
+ref_connector RefStopTimer->StopTimer.'t-1'

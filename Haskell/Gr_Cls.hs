@@ -28,9 +28,8 @@ module Gr_Cls(
    , domg
    , codg) where
 
-import Relations ( appl, dom_of, ran_of, Rel )
+import Relations ( appl, applM, dom_of, ran_of, Rel )
 import ErrorAnalysis ( ErrorTree )
-import MyMaybe ( applM )
 import Sets ( filterS, Set(..) )
 
 data Gr a b = Gr {
