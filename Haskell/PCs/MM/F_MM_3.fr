@@ -1,18 +1,29 @@
 fragment F_MM_3 {
   SG SG_MM_3 {
-  	proxy PParameter
-    nodea PCType
-    enum YesNo: Yes, No
-    node Boolean
-    node Integer
-    node Event
-    node Set
-    inh Boolean->PCType
-    inh Integer->PCType
-    inh Event->PCType
-    inh Set->PCType
-    relu Set->PCType[setOf]
-    relu PParameter->PCType[type]:0..1
+    proxy PNamedNode
+    proxy PNamed2
+    node Import
+    node Compound
+    node Atom
+    node Guard
+    virtual Action
+    virtual TargetOfRef
+    virtual Guarded
+    virtual Bindable
+    node Parameter
+    inh Import->PNamedNode
+    inh Compound->PNamedNode
+    inh Atom->PNamedNode
+    inh Import->TargetOfRef
+    inh Compound->TargetOfRef
+    inh Atom->Action
+    inh Atom->Guarded
+    inh Compound->Action
+    inh Atom->Bindable
+    relu Compound->Parameter[params]:*
+    relu Guarded->Guard[guard]:0..1
+    inh Parameter->PNamed2
   }
-  ref PParameter->Parameter
+  ref PNamedNode->NamedNode
+  ref PNamed2->Named
 }

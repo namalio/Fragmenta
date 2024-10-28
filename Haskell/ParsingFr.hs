@@ -660,6 +660,7 @@ parse_fr = do
    sg<-parse_sg
    skipSpaces
    refs<-manyTill parseFrRef (char '}')
+   skipSpaces
    return (FrDef fnm sg refs)
 
 loadFrDefFrFile :: FilePath -> IO (Maybe FrDef)
@@ -722,7 +723,10 @@ test2 = do
    putStrLn $ show sg
 
 test3 = readP_to_S parse_rel "rel Pet->POther[AnyRel1]: *,*"
-test4 = readP_to_S parse_mult "4"
+test4a :: [(Mult, String)]
+test4a = readP_to_S parse_mult "4"
+test4b :: [(Mult, String)]
+test4b = readP_to_S parse_mult "1..*"
 test5a = readP_to_S parse_PE "<-> Serves"
 test5b = readP_to_S parse_PE "<-> Serves~"
 test5c = readP_to_S parse_PE "<-> Serves⨾ HotelRoom_zone"

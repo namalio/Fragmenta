@@ -1,7 +1,5 @@
 BreakAndStealHouse = 
    let 
-      GetInside = stolenKey -> SKIP
-            [] breakDoor -> SKIP
-            [] breakWindow -> SKIP
+      GetInside = |~| x : MeansBreakIn @ break.x -> SKIP
    within
       GetInside; stealTV -> SKIP

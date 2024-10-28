@@ -1,0 +1,3 @@
+PC PC_SayHi@SayHi
+atom hi
+compound SayHi@hi

@@ -1,16 +1,19 @@
 Morphism F_MM_3 {
 	nodes {
-		YesNo->Attribute
-		VYes->Attribute
-		VNo->Attribute
-		PCType->Attribute
-		Boolean->Attribute
-		Integer->Attribute
-		Event->Attribute
-		Set->Attribute
-		PParameter->Attribute
+		PNamedNode->Node
+	    Import->Node
+		Compound->Node
+        Atom->Node
+		TargetOfRef->Node
+		Action->Node
+		Guarded->Trait
+		Bindable->Trait
+	    Parameter->Attribute
+		Guard->Attribute
+		PNamed2->Trait
 	}
 	edges {
-		setOf->Has
+	   params->Has
+	   guard->Has
 	}
 }

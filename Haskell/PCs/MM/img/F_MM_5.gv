@@ -1,25 +1,38 @@
 digraph {graph[label=F_MM_5,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_5{style=dashed;label=F_MM_5;
-"PNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node<br/>(P)>];
-"PBinding"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Binding<br/>(P)>];
+"QuantifiedOp"[shape=record,fillcolor=lightskyblue1,style = filled,label="QuantifiedOp"];
+"PNamedNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode2<br/>(P)>];
 "PAction"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action<br/>(P)>];
-"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
-"Stop"[shape=record,fillcolor=lightskyblue1,style = filled,label="Stop"];
-"Skip"[shape=record,fillcolor=lightskyblue1,style = filled,label="Skip"];
-"Combination"[shape=record,fillcolor=lightskyblue1,style = filled,label="Combination"];
-"Bindable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Bindable</I><br/>(V)}>];
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
+"POpQuantifiedOp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<OpQuantifiedOp<br/>(P)>];
+"PBindable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable<br/>(P)>];
+"PAtom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Atom<br/>(P)>];
+"PGuarded"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded<br/>(P)>];
+"TxtExp"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>TxtExp</I><br/>(A)}>];
+"ExpSet"[shape=record,fillcolor=lightskyblue1,style = filled,label="ExpSet"];
+"ExpSingle"[shape=record,fillcolor=lightskyblue1,style = filled,label="ExpSingle"];
+"ValueExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="ValueExp"];
+"Combinable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Combinable</I><br/>(V)}>];
 
-"Stop"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Skip"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"Bindable"[arrowhead=onormal,arrowsize=2.0];
-"Stop"->"PAction"[arrowhead=onormal,arrowsize=2.0];
-"Skip"->"PAction"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PAction"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"POperator"[label="Combination_op",arrowhead=vee,headlabel="",arrowsize=.5];
-"Bindable"->"PBinding"[label="bindings",arrowhead=vee,headlabel="*",arrowsize=.5];
+"QuantifiedOp"->"PNamedNode2"[arrowhead=onormal,arrowsize=2.0];
+"QuantifiedOp"->"PAction"[arrowhead=onormal,arrowsize=2.0];
+"ExpSet"->"TxtExp"[arrowhead=onormal,arrowsize=2.0];
+"ExpSingle"->"TxtExp"[arrowhead=onormal,arrowsize=2.0];
+"QuantifiedOp"->"PBindable"[arrowhead=onormal,arrowsize=2.0];
+"QuantifiedOp"->"PGuarded"[arrowhead=onormal,arrowsize=2.0];
+"QuantifiedOp"->"Combinable"[arrowhead=onormal,arrowsize=2.0];
+"QuantifiedOp"->"PName"[label="var",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"ExpSet"->"ValueExp"[label="vExps",arrowhead=vee,headlabel="*",arrowsize=.5];
+"ExpSingle"->"ValueExp"[label="vExp",arrowhead=vee,headlabel="",arrowsize=.5];
+"QuantifiedOp"->"POpQuantifiedOp"[label="opOfQuantifiedOp",arrowhead=vee,headlabel="",arrowsize=.5];
+"PBindable"->"TxtExp"[label="exps▼",dir=none,taillabel="",headlabel="*"];
+"QuantifiedOp"->"TxtExp"[label="D1: exps ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"PAtom"->"TxtExp"[label="D2: exps ▼",dir=none,taillabel="0..1",headlabel="0..1",style=dotted];
 
 }
+
+
+
 
 
 

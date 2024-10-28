@@ -1,9 +1,10 @@
 module PCs.PCsNeil where
-import PCs.PCs ( load_mm_info, pc_sg_cmm )
+import PCs.PCs ( load_mm_info )
 import PCs.PCsParsing (loadPC)
 import TheNil
 import PCs.PCTrees
 import Control.Monad(when)
+import MMI (gCRSG)
 
 mm_path :: String
 mm_path = "PCs/MM/"
@@ -16,7 +17,7 @@ pcs_path = "PCs/Examples/"
 main :: IO ()
 main = do
     mmi<-load_mm_info mm_path
-    opc <- loadPC (pc_sg_cmm mmi) (pcs_path ++ "PC_Timer.pc")
+    opc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_Timer.pc")
     when (isSomething opc) $ do
         let pc = the opc
         let pctd = consPCTD mmi pc

@@ -1,17 +1,15 @@
 Morphism F_MM_7 {
 	nodes {
-		PNode2->Node
-		PBindable->Trait
-		Reference->Node
+		PNode->Node
+		Stop->Node
+		Skip->Node
+		Combination->Node
 		PAction2->Node
-		PGuarded->Trait
-		PName2->Attribute
-		Renaming->Attribute
-		PYesNo->Attribute
+		POperator->Attribute
+		PBindable2->Trait
+		PCombinable->Node
 	}
 	edges {
-		 Reference_name->Has
-		 Reference_inner->Has
-		 Renamings->Has
+	   Combination_op->Has
 	}
 }

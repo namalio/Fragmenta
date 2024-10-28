@@ -1,12 +1,17 @@
 Morphism F_MM_8 {
 	nodes {
-		StartC->Connector
-		PConnector->Connector
-		PStartN->Node
-		PCompound->Node
+		PNode2->Node
+		PBindable3->Trait
+		Reference->Node
+		PAction3->Node
+		PGuarded2->Trait
+		PName2->Attribute
+		Renaming->Attribute
+		PYesNo->Attribute
 	}
 	edges {
-		StartSrc->Connector_src
-		StartTgt->Connector_tgt
+		Reference_name->Has
+		Reference_inner->Has
+		Renamings->Has
 	}
 }

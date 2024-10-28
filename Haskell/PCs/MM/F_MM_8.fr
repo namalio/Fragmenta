@@ -1,14 +1,25 @@
 fragment F_MM_8 {
   SG SG_MM_8 {
-    proxy PConnector
-    node StartC
-    proxy PStartN
-    proxy PCompound
-    inh StartC->PConnector
-    rel StartC->PStartN[StartSrc]:1;1
-    rel StartC->PCompound[StartTgt]:0..1;1
+    proxy PNode2
+    proxy PBindable3
+    proxy PAction3
+    proxy PName2
+    proxy PYesNo
+    proxy PGuarded2
+    node Reference
+    node Renaming
+    inh Reference->PNode2
+    inh Reference->PBindable3
+    inh Reference->PAction3
+    inh Reference->PGuarded2
+    relu Reference->PName2[Reference_name]:0..1
+    relu Reference->PYesNo[Reference_inner]
+    rel Reference->Renaming[Renamings]:1;*
   }
-  ref PConnector->Connector
-  ref PStartN->StartN
-  ref PCompound->Compound
+  ref PNode2->Node
+  ref PBindable3->Bindable
+  ref PAction3->Action
+  ref PName2->Name
+  ref PYesNo->YesNo
+  ref PGuarded2->Guarded
 }

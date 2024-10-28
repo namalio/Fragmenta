@@ -1,7 +1,8 @@
 PC PC_BreakStealHouse2@BreakAndStealHouse
+enum Stealable : Laptop,TV,Other,Jewels
 compound BreakAndStealHouse@GetInside
 compound GetInside@OpGetInside
-operator OpGetInside.Choice
+operator OpGetInside.IntChoice
 atom breakDoor
 atom breakWindow
 atom stolenKey
@@ -10,19 +11,15 @@ op_connector OpGetInside->breakWindow
 op_connector OpGetInside->stolenKey
 compound Steal@OpSteal
 after_connector GetInside->Steal
-operator OpSteal.Choice
-atom stealTV
-atom stealLaptop
-atom stealOther
+operator OpSteal.IntChoice
+quantifiedOp StealO.IntChoice x : 'Stealable'
+atom steal.'x'
+op_connector StealO->steal
 atom doneStealing
-op_connector OpSteal->stealTV
-op_connector OpSteal->stealLaptop
-op_connector OpSteal->stealOther
+op_connector OpSteal->StealO
 op_connector OpSteal->doneStealing
 reference RefSteal
-after_connector stealTV->RefSteal
-after_connector stealLaptop->RefSteal
-after_connector stealOther->RefSteal
+after_connector steal->RefSteal
 ref_connector RefSteal->Steal
 after_connector Steal->RunAway
 compound RunAway@getOut

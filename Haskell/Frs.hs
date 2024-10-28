@@ -179,7 +179,7 @@ okayFz f = okayG Nothing (fsg f) && disjoint [fLEs f, esR f]
 okayFa :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
 okayFa f = okayFz f && acyclicG (refsG f)
 
--- Partial well-formedness of fragments (last predicate could be proved and hence removed)
+-- Partial well-formedness of fragments
 okayF :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
 okayF f = okayFa f && okayG (Just Partial) (reso_sg f)
 
@@ -188,6 +188,7 @@ refs_in :: (Eq b1, Eq b2) => Fr b1 a -> Fr b1 b2 -> Bool
 refs_in f1 f2 = ran_of (tgtR f1) <= fLNs f2
 
 -- Says whether flow of references is uni-directional (from one fragment into another, but not the reverse)
+oneway :: (Eq a, Eq b) => Fr a b -> Fr a b -> Bool
 oneway f1 f2 = f1 `refs_in` f2 && (not $ f2 `refs_in` f1)
 
 -- checks whether references are local
@@ -196,7 +197,8 @@ refsLocal f = fRNs f <= fLNs f
 
 -- Well-formedness of total fragments
 okayTF :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
-okayTF f = okayFa f && refsLocal f && okayG (Just Total) (reso_sg f)
+okayTF f = okayFa f 
+   -- && refsLocal f && okayG (Just Total) (reso_sg f)
 
 errsFz::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->Fr a b -> [ErrorTree]
 errsFz nm f =

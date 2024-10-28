@@ -1,24 +1,31 @@
 digraph {graph[label=F_MM_3,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_3{style=dashed;label=F_MM_3;
-"PParameter"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameter<br/>(P)>];
-"PCType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PCType</I><br/>(A)}>];
-"YesNo"[shape=record,fillcolor="#FFCCFF",style = filled,label="YesNo\l(enum)"];
-"VYes"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Yes"];
-"VNo"[shape=cds,fillcolor="#FFF2CC",style = filled,label="No"];
-"Boolean"[shape=record,fillcolor=lightskyblue1,style = filled,label="Boolean"];
-"Integer"[shape=record,fillcolor=lightskyblue1,style = filled,label="Integer"];
-"Event"[shape=record,fillcolor=lightskyblue1,style = filled,label="Event"];
-"Set"[shape=record,fillcolor=lightskyblue1,style = filled,label="Set"];
+"PNamedNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode<br/>(P)>];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"Import"[shape=record,fillcolor=lightskyblue1,style = filled,label="Import"];
+"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
+"Atom"[shape=record,fillcolor=lightskyblue1,style = filled,label="Atom"];
+"Guard"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guard"];
+"Action"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Action</I><br/>(V)}>];
+"TargetOfRef"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TargetOfRef</I><br/>(V)}>];
+"Guarded"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Guarded</I><br/>(V)}>];
+"Bindable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Bindable</I><br/>(V)}>];
+"Parameter"[shape=record,fillcolor=lightskyblue1,style = filled,label="Parameter"];
 
-"VYes"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
-"VNo"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
-"Boolean"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Integer"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Event"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Set"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Set"->"PCType"[label="setOf",arrowhead=vee,headlabel="",arrowsize=.5];
-"PParameter"->"PCType"[label="type",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Import"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
+"Atom"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
+"Import"->"TargetOfRef"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"TargetOfRef"[arrowhead=onormal,arrowsize=2.0];
+"Atom"->"Action"[arrowhead=onormal,arrowsize=2.0];
+"Atom"->"Guarded"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"Action"[arrowhead=onormal,arrowsize=2.0];
+"Atom"->"Bindable"[arrowhead=onormal,arrowsize=2.0];
+"Compound"->"Parameter"[label="params",arrowhead=vee,headlabel="*",arrowsize=.5];
+"Guarded"->"Guard"[label="guard",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Parameter"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
 
 }
+
 
 }

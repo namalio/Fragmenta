@@ -1,10 +1,10 @@
 PC PC_BiscuitJar@BiscuitJar
 atom openJar
-compound BiscuitJar.n,m@openJar
+compound BiscuitJar.n:int,m:int@openJar
 compound JarOpened.n,m@OpJarOpenedIf
 stop STOP
 operator OpJarOpenedIf.If
-op_connector_g OpJarOpenedIf->OpJarOpened{n>=0 and n<=m}
+op_connector_g OpJarOpenedIf->OpJarOpened{(n≥0) ⋀ (n≤m)}
 op_else_connector OpJarOpenedIf->STOP
 operator OpJarOpened.Choice
 atom takeBiscuit{n>0}

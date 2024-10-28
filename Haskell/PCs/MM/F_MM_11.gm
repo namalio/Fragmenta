@@ -1,16 +1,15 @@
 Morphism F_MM_11 {
 	nodes {
-		BMainIfC->Connector
-		BElseC->Connector
-		BJumpC->Connector
-		BranchC->Connector
-		PConnector4->Connector
-		PAction4->Node
-		PCombination->Node
-		PGuarded2->Trait
+		PConnector3->Connector
+		PBindable4->Trait
+		ReferenceC->Connector
+		PReference->Node
+		PTargetOfRef->Node
+		PYesNo3->Attribute
 	}
 	edges {
-		BranchCSrc->Connector_src
-		BranchCTgt->Connector_tgt
+		ReferenceCSrc->Connector_src
+		ReferenceCTgt->Connector_tgt
+		ReferenceC_hidden->Has
 	}
 }

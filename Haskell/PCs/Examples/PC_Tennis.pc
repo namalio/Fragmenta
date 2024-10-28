@@ -1,0 +1,39 @@
+PC PC_Tennis@Game
+compound Game.a:int,b:int@OpIfScoreOk
+operator OpIfScoreOk.If
+stop STOP
+operator OpTennis.Choice
+op_connector_g OpIfScoreOk->OpTennis{a>=0 and a<=50 and b>=0 and b<=50}
+op_else_connector OpIfScoreOk->STOP
+operator OpIncA.Choice
+operator OpIncB.Choice
+reference RefIncA
+ref_connector RefIncA->IncA.'a','b'
+compound IncA.a:int,b:int@OpIncA
+compound IncB@OpIncB
+atom gameA{a>40 and a-b>=20}
+atom gameB{b>40 and b-a>=20}
+op_connector OpTennis->RefIncA
+op_connector OpTennis->IncB
+op_connector OpTennis->gameA
+op_connector OpTennis->gameB
+atom pointA{a<30}
+atom pointA2.pointA{a>=30 and b<50}
+atom pointA3.pointA{a==40 and b==50}
+op_connector OpIncA->pointA
+op_connector OpIncA->pointA2
+op_connector OpIncA->pointA3
+reference RefGame1
+ref_connector RefGame1->Game.'a+15','b'
+after_connector pointA->RefGame1
+reference RefGame2
+ref_connector RefGame2->Game.'a+10','b'
+after_connector pointA->RefGame1
+after_connector pointA2->RefGame2
+reference RefGame3
+ref_connector RefGame3->Game.'0','0'
+after_connector gameA->RefGame3
+after_connector gameB->RefGame3
+reference RefGame4
+ref_connector RefGame4->Game.'a','b-10'
+after_connector pointA3->RefGame4

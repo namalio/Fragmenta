@@ -7,6 +7,7 @@ Morphism F_MM_6 {
 		VOpIf->Attribute
 		VOpInterleave->Attribute
 		VOpThrow->Attribute
+		OpQuantifiedOp->Trait
 	}
 	edges {}
 }

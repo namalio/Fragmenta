@@ -1,27 +1,13 @@
 digraph {graph[label=F_MM_2,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
-"PNamedNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode<br/>(P)>];
+"PDefinition"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Definition<br/>(P)>];
 "PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
-"Import"[shape=record,fillcolor=lightskyblue1,style = filled,label="Import"];
-"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
-"Atom"[shape=record,fillcolor=lightskyblue1,style = filled,label="Atom"];
-"Guard"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guard"];
-"Action"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Action</I><br/>(V)}>];
-"TargetOfRef"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TargetOfRef</I><br/>(V)}>];
-"Guarded"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Guarded</I><br/>(V)}>];
-"Parameter"[shape=record,fillcolor=lightskyblue1,style = filled,label="Parameter"];
+"EnumType"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnumType"];
+"EnumVal"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnumVal"];
 
-"Import"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
-"Atom"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
-"Import"->"TargetOfRef"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"TargetOfRef"[arrowhead=onormal,arrowsize=2.0];
-"Atom"->"Action"[arrowhead=onormal,arrowsize=2.0];
-"Atom"->"Guarded"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"Action"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"Parameter"[label="params",arrowhead=vee,headlabel="*",arrowsize=.5];
-"Guarded"->"Guard"[label="guard",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Parameter"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"EnumType"->"PDefinition"[arrowhead=onormal,arrowsize=2.0];
+"EnumVal"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"EnumType"->"EnumVal"[label="enumVals▼",dir=none,taillabel="",headlabel="*"];
 
 }
 

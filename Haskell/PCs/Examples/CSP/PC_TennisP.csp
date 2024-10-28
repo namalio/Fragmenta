@@ -1,0 +1,16 @@
+Game(a, b) = 
+   let 
+      IncB = SKIP
+   within
+      if a>=0 and a<=50 and b>=0 and b<=50
+      then
+         a>40 and a-b>=20 & gameA -> Game(0, 0)
+         [] IncA(a, b)
+         [] IncB
+         [] b>40 and b-a>=20 & gameB -> Game(0, 0)
+      else
+         STOP
+
+IncA(a, b) = a==40 and b==50 & pointA -> Game(a, b-10)
+      [] a<30 & pointA -> Game(a+15, b)
+      [] a>=30 and b<50 & pointA -> Game(a+10, b)

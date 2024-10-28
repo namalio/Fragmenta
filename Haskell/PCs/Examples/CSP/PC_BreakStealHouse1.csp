@@ -1,3 +1,0 @@
-include "PC_BreakStealHouse1P.csp"
-
-channel stealTV, stolenKey, breakWindow, breakDoor

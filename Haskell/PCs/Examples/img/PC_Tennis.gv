@@ -1,0 +1,55 @@
+digraph {
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Tennis];
+OpIfScoreOk [shape=diamond,fillcolor=yellow,style = filled,label="If"];
+OpTennis [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+OpIncB [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+IncA [shape=box,fillcolor=deepskyblue,style = filled,label="IncA (a : Int,b : Int)"];
+gameA [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {a>40 and a-b>=20}
+gameA"];
+pointA [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {a<30}
+pointA"];
+pointA3 [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {a==40 and b==50}
+pointA"];
+RefGame2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefGame4 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefGame3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefGame1 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+pointA2 [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {a>=30 and b<50}
+pointA"];
+gameB [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {b>40 and b-a>=20}
+gameB"];
+IncB [shape=box,fillcolor=deepskyblue,style = filled,label="IncB "];
+RefIncA [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+OpIncA [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
+Game [shape=box,fillcolor=deepskyblue,style = filled,label="Game (a : Int,b : Int)"];
+
+{rank=same;RefGame2,pointA2}
+{rank=same;RefGame1,pointA}
+{rank=same;RefGame4,pointA3}
+{rank=same;Game,StartN_}
+
+RefGame4->Game[arrowhead="normalnormal",fillcolor=white,label=" (a,b-10)"];
+gameA->RefGame3[arrowtail=dot,dir=both,label="after"];
+pointA2->RefGame2[arrowtail=dot,dir=both,label="after"];
+RefGame2->Game[arrowhead="normalnormal",fillcolor=white,label=" (a+10,b)"];
+RefGame1->Game[arrowhead="normalnormal",fillcolor=white,label=" (a+15,b)"];
+OpIncA->pointA2[arrowhead="open"];
+OpTennis->gameB[arrowhead="open"];
+OpTennis->IncB[arrowhead="open"];
+RefIncA->IncA[arrowhead="normalnormal",fillcolor=white,label=" (a,b)"];
+OpIfScoreOk->OpTennis[arrowhead="open",label="a>=0 and a<=50 and b>=0 and b<=50"];
+IncA->OpIncA[arrowhead="onormal",penwidth=2,label="="];
+IncB->OpIncB[arrowhead="onormal",penwidth=2,label="="];
+Game->OpIfScoreOk[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Game[label="starts"];
+OpIfScoreOk->STOP[arrowhead="open",label="Else"];
+OpTennis->RefIncA[arrowhead="open"];
+OpTennis->gameA[arrowhead="open"];
+OpIncA->pointA[arrowhead="open"];
+OpIncA->pointA3[arrowhead="open"];
+pointA->RefGame1[arrowtail=dot,dir=both,label="after"];
+RefGame3->Game[arrowhead="normalnormal",fillcolor=white,label=" (0,0)"];
+gameB->RefGame3[arrowtail=dot,dir=both,label="after"];
+pointA3->RefGame4[arrowtail=dot,dir=both,label="after"];
+}

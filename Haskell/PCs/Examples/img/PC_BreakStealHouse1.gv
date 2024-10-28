@@ -1,21 +1,27 @@
 digraph {
+subgraph cluster_MeansBreakIn {
+style="filled,rounded";
+label =MeansBreakIn;
+fillcolor = cadetblue1;
+stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label=stolenKey];
+Door[shape=box,fillcolor=darkolivegreen1,style="filled",label=Door];
+Window[shape=box,fillcolor=darkolivegreen1,style="filled",label=Window];
+}
+
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse1];
-GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
-breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWindow"];
-stealTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealTV"];
-OpGetInside [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-stolenKey [shape=ellipse,fillcolor=greenyellow,style = filled,label="stolenKey"];
-breakDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakDoor"];
 BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
+BreakIn [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];
+stealTV [shape=ellipse,fillcolor=greenyellow,style=filled,label="stealTV"];
+break [shape=ellipse,fillcolor=greenyellow,style=filled,label="break.x"];
+GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
 
 {rank=same;stealTV,GetInside}
 {rank=same;BreakAndStealHouse,StartN_}
 
-OpGetInside->breakWindow[arrowhead="open"];
 GetInside->stealTV[arrowtail=dot,dir=both,label="after"];
-GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
+BreakIn->break[arrowhead="open"];
 BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
+GetInside->BreakIn[arrowhead="onormal",penwidth=2,label="="];
 StartN_->BreakAndStealHouse[label="starts"];
-OpGetInside->breakDoor[arrowhead="open"];
-OpGetInside->stolenKey[arrowhead="open"];
 }

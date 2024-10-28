@@ -1,15 +1,26 @@
 digraph {graph[label=F_MM_8,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_8{style=dashed;label=F_MM_8;
-"PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
-"StartC"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartC"];
-"PStartN"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartN<br/>(P)>];
-"PCompound"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound<br/>(P)>];
+"PNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node2<br/>(P)>];
+"PBindable3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable3<br/>(P)>];
+"PAction3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action3<br/>(P)>];
+"PName2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name2<br/>(P)>];
+"PYesNo"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo<br/>(P)>];
+"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
+"Reference"[shape=record,fillcolor=lightskyblue1,style = filled,label="Reference"];
+"Renaming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Renaming"];
 
-"StartC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
-"StartC"->"PStartN"[label="StartSrc▼",dir=none,taillabel="",headlabel=""];
-"StartC"->"PCompound"[label="StartTgt▼",dir=none,taillabel="0..1",headlabel=""];
+"Reference"->"PNode2"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PBindable3"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PName2"[label="Reference_name",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Reference"->"PYesNo"[label="Reference_inner",arrowhead=vee,headlabel="",arrowsize=.5];
+"Reference"->"Renaming"[label="Renamings▼",dir=none,taillabel="",headlabel="*"];
 
 }
+
+
+
 
 
 

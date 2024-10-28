@@ -53,15 +53,20 @@ from::(Eq a, Eq b)=>Mdl a b->a->a
 from m n = from' n (mfd m)
 
 is_ref_ok m p = (from m p, from m (appl (refs (mufs m)) p)) `elem` (refsOf . mgfg $ m)
+
+complyGFG :: (Eq a, Eq b) => Mdl a b -> Bool
 complyGFG m = all (is_ref_ok m) (nsP . fsg . mufs $ m)
 
+errs_complyGFG :: (Show a, Eq a, Eq b) => Mdl a b -> ErrorTree
 errs_complyGFG m = if complyGFG m then nile else consSET ("The following proxies are not complying with the referencing of the model's GFG: " ++ (showElems' ps))
     where ps = filterS (not . is_ref_ok m)(nsP . fsg . mufs $ m)
 
 okayMdl :: (Eq a, Eq b, GNumSets a) => Mdl a b -> Bool
 okayMdl m = okayG Nothing (mgfg m)  
-   && tfun' (mfd m) (ns . mgfg $ m) && (disjFs . toList. ran_of . mfd $ m)
-   && okayG (Just Total) (mufs m) && complyGFG m
+   && tfun' (mfd m) (ns . mgfg $ m) 
+   && (disjFs . toList. ran_of . mfd $ m)
+   && okayG (Just Total) (mufs m) 
+   && complyGFG m
 
 rep_elems :: Mdl a b -> Set (Fr a b)
 rep_elems m = ran_of . mfd $ m
@@ -108,6 +113,7 @@ reportMGM :: (Eq a, Eq b, Show a, Show b, GNodesNumConv a, GNumSets a)
 reportMGM nm (mdls, m, mdlt) = reportWF (mdls, m, mdlt) nm okayMGM (errsMGM nm)
 
 -- Checks that one model refines another
+mrefines :: (Eq a, Eq b, GNodesNumConv a, GNumSets a, Foldable t, GRM gm) => (Mdl a b, t (gm a b)) -> Mdl a b -> Bool
 mrefines (mdls, ms) mdlt = okayGM (Just TotalM) (mufs mdls, unionGMs ms, mufs mdlt) 
 
 errs_mrefines nm (mdls, ms, mdlt) = 

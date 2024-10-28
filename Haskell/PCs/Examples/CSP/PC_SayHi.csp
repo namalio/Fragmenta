@@ -1,0 +1,3 @@
+include "PC_SayHiP.csp"
+
+channel hi

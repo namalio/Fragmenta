@@ -1,24 +1,25 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Timer];
-OpTimer [shape=diamond,fillcolor=yellow,style = filled,label="If"];
-STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-tock [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {t>0}
-tock"];
-RefTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-timeout [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {t==0}
-timeout"];
-OpIfChoice [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
 Timer [shape=box,fillcolor=deepskyblue,style = filled,label="Timer (t : Int)"];
+OpIfChoice [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+timeout [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {t=0}
+timeout"];
+RefTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+tock [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {t>0}
+tock"];
+STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
+OpTimer [shape=diamond,fillcolor=yellow,style=filled,label="If"];
 
 {rank=same;RefTimer,tock}
 {rank=same;Timer,StartN_}
 
-tock->RefTimer[arrowtail=dot,dir=both,label="after"];
+RefTimer->Timer[arrowhead="normalnormal",fillcolor=white,label=" (t-1)"];
+OpIfChoice->tock[arrowhead="open"];
+OpTimer->STOP[arrowhead="open",label="Else"];
+OpTimer->OpIfChoice[arrowhead="open",label="t≥0"];
 OpIfChoice->timeout[arrowhead="open"];
-OpTimer->OpIfChoice[arrowhead="open",label="t>=0"];
+tock->RefTimer[arrowtail=dot,dir=both,label="after"];
 Timer->OpTimer[arrowhead="onormal",penwidth=2,label="="];
 StartN_->Timer[label="starts"];
-OpTimer->STOP[arrowhead="open",label="Else"];
-OpIfChoice->tock[arrowhead="open"];
-RefTimer->Timer[arrowhead="normalnormal",fillcolor=white,label=" (t-1)"];
 }

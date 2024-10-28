@@ -1,41 +1,42 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BiscuitJar];
-openJar [shape=ellipse,fillcolor=greenyellow,style = filled,label="openJar"];
-JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n,m)"];
-OpJarOpenedIf [shape=diamond,fillcolor=yellow,style = filled,label="If"];
-takeBiscuit [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {n>0}
+openJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="openJar"];
+JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n : None,m : None)"];
+OpJarOpenedIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+takeBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n>0}
 takeBiscuit"];
-closeJar [shape=ellipse,fillcolor=greenyellow,style = filled,label="closeJar"];
+closeJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="closeJar"];
 RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-dropBiscuit [shape=ellipse,fillcolor=greenyellow,style = filled,label=" {n<m}
+dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
 dropBiscuit"];
-OpJarOpened [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+OpJarOpened [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-BiscuitJar [shape=box,fillcolor=deepskyblue,style = filled,label="BiscuitJar (n,m)"];
+BiscuitJar [shape=box,fillcolor=deepskyblue,style = filled,label="BiscuitJar (n : Int,m : Int)"];
 
-{rank=same;RefJarOpenedTake,takeBiscuit}
-{rank=same;RefJarOpened,openJar}
-{rank=same;RefJarOpenedDrop,dropBiscuit}
 {rank=same;RefBiscuitJar,closeJar}
+{rank=same;RefJarOpenedDrop,dropBiscuit}
+{rank=same;RefJarOpened,openJar}
+{rank=same;RefJarOpenedTake,takeBiscuit}
 {rank=same;BiscuitJar,StartN_}
 
-RefBiscuitJar->BiscuitJar[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
-takeBiscuit->RefJarOpenedTake[arrowtail=dot,dir=both,label="after"];
-RefJarOpenedTake->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n-1,m)"];
-RefJarOpened->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
-OpJarOpened->dropBiscuit[arrowhead="open"];
+closeJar->RefBiscuitJar[arrowtail=dot,dir=both,label="after"];
+dropBiscuit->RefJarOpenedDrop[arrowtail=dot,dir=both,label="after"];
+RefJarOpenedDrop->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n+1,m)"];
+openJar->RefJarOpened[arrowtail=dot,dir=both,label="after"];
+OpJarOpened->closeJar[arrowhead="open"];
+OpJarOpened->takeBiscuit[arrowhead="open"];
+OpJarOpenedIf->OpJarOpened[arrowhead="open",label="n≥0 ⋀ n<=m"];
 OpJarOpenedIf->STOP[arrowhead="open",label="Else"];
-StartN_->BiscuitJar[label="starts"];
+OpJarOpened->dropBiscuit[arrowhead="open"];
+RefJarOpened->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
+RefJarOpenedTake->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n-1,m)"];
+takeBiscuit->RefJarOpenedTake[arrowtail=dot,dir=both,label="after"];
+RefBiscuitJar->BiscuitJar[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
 JarOpened->OpJarOpenedIf[arrowhead="onormal",penwidth=2,label="="];
 BiscuitJar->openJar[arrowhead="onormal",penwidth=2,label="="];
-OpJarOpenedIf->OpJarOpened[arrowhead="open",label="n>=0 and n<=m"];
-OpJarOpened->takeBiscuit[arrowhead="open"];
-OpJarOpened->closeJar[arrowhead="open"];
-openJar->RefJarOpened[arrowtail=dot,dir=both,label="after"];
-RefJarOpenedDrop->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n+1,m)"];
-dropBiscuit->RefJarOpenedDrop[arrowtail=dot,dir=both,label="after"];
-closeJar->RefBiscuitJar[arrowtail=dot,dir=both,label="after"];
+StartN_->BiscuitJar[label="starts"];
 }

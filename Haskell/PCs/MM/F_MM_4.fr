@@ -1,20 +1,18 @@
 fragment F_MM_4 {
   SG SG_MM_4 {
-    proxy PAtom
-    proxy PName
-    node AnyExp
-    nodea Binding
-    node BindingSet
-    node BindingSingle
-    node BValue
-    inh BindingSet->Binding
-    inh BindingSingle->Binding
-    rel PAtom->AnyExp[aexp]:1;0..1
-    relu AnyExp->PName[var]:0..1
-    relu AnyExp->Binding[of]
-    relu BindingSet->BValue[vals]:*
-    relu BindingSingle->BValue[val]
+  	proxy PParameter
+    nodea PCType
+    enum YesNo: Yes, No
+    node Boolean
+    node Integer
+    node Event
+    node Set
+    inh Boolean->PCType
+    inh Integer->PCType
+    inh Event->PCType
+    inh Set->PCType
+    relu Set->PCType[setOf]
+    relu PParameter->PCType[type]:0..1
   }
-  ref PAtom->Atom
-  ref PName->Name
+  ref PParameter->Parameter
 }

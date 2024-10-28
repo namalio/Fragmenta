@@ -14,11 +14,11 @@ import SGrs
 import GrswT
 import PCs.ToCSP ( toCSP )
 import PCs.PCTrees
-import CSPPrint
+import CSP.CSPPrint
 import System.IO
 import Control.Monad(when, forM, unless, forM_)
 import PCs.PCsDraw
-import PCs.PCsParsing
+import PCs.ParsingPCs
 import Relations
 import Sets
 import SimpleFuns
@@ -31,6 +31,9 @@ import NumString
 import PCs.PCs_MM_Names
 import MMI
 import ParseUtils
+import PCs.PCTrees_TC 
+import ShowUtils -- remove later
+import PCs.ParsingPCTxtExp -- remove later
 
 mm_path :: String
 mm_path = "PCs/MM/"
@@ -226,6 +229,7 @@ askLoadAndOpsPCs mmi = do
   opc <- loadAndCheck d fn mmi
   when (isSomething opc) $ do optionsPCs d (d++"img/") (d++"CSP/") mmi (the opc)
 
+startPCOps :: IO ()
 startPCOps = do
     mmi<-load_mm_info mm_path
     b <- check_MM mmi
@@ -233,6 +237,7 @@ startPCOps = do
         then askLoadAndOpsPCs mmi
         else putStrLn "Errors in the metamodel definition."
 
+outputDrawing :: String -> String -> p -> String -> MMI String String -> IO ()
 outputDrawing pcs_path img_path csp_path fn mmi = do
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do drawPCToFile pcs_path img_path csp_path mmi (the opc) 
@@ -398,6 +403,14 @@ generate fnm = do
   mmi<-load_mm_info mm_path
   check_generate pcs_path img_path csp_path mmi (fnm ++ ".pc")
 
+showPCT :: String -> IO ()
+showPCT fnm = do
+  mmi<-load_mm_info mm_path
+  opc <- loadPC (gCRSG mmi) (pcs_path ++ fnm ++ ".pc") 
+  --opc >>= print . (consPCTD mmi) 
+  when (isSomething opc) $ do
+     print $ consPCTD mmi (the opc)
+
 main :: IO ()
 main = do
   args <- getArgs
@@ -410,9 +423,28 @@ test = do
     --generate_BiscuitJar mmi
     --generate_TicketMachine mmi
     --generate_BusRider mmi
-    opc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_Buzzer.pc")
-    let pctd  = consPCTD mmi (the opc) 
-    print $ atomsPCTD pctd
+    opc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_BiscuitJar.pc")
+    let pc = the opc
+    --print $ paramsOf pc "Timer"
+    --print $ img (tgt pc) $ img (inv $ src pc) ["Timer"] `intersec` es_of_ety pc (show_cmm_e CMM_Eparams)
+    --print $ tyOfParam pc "Timer_param_1_t"
+    --print $ img (inv . src $ pc) ["Timer_param_1_t"] `intersec`  es_of_ety pc (show_cmm_e CMM_Etype)
+    --print pc
+    --print $ fmap (the . parsePCExp) (strOfTxtExps (expsOf pc "OpTimer"))
+    --print $ expsOf pc "OpIfChoice"
+    --print $ (parsePCExp . str_of_ostr) (guardOfOp mmi pc "OpTimer")
+    --print $ branchesOfOp mmi pc "OpIfChoice"
+    --print $ fmap (the . parsePCExp) (strOfTxtExps $ expsOf pc "OpIfChoice")
+    --print $ opValOfOp (gCRSG mmi) pc "OpIfChoice"
+    --print $ nextNode mmi pc "COpIfChoice_timeout"
+    --print $ guardOf pc "timeout"
+    --print $ img (tgt pc) $ img (inv $ src pc) ["steal"] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps)
+    --
+    --print $ nextNode mmi pc "COpIfChoice_timeout"
+    let pctd  = consPCTD mmi pc 
+    print pctd
+    print $ typecheck_pctd pctd
+    --print $ atomsPCTD pctd
     --putStrLn $ show $ nextKsOf mmi (the opc)  "Buzzing"
     --putStrLn $ nextNodes mmi pc n
     --putStrLn $ show $ relKs mmi (the opc)
@@ -442,7 +474,6 @@ test = do
     --checkWFAndGeneratePCTree mmi (the opc)
     --print $ toPCDrawing mmi (the opc) 
     --print $ paramsOf (the opc) "BiscuitJar"
-    --print $ bindingsOf (the opc) "CRefSnatchControl"
     --let pc = the opc
     --print pc
     --print $ img (tgt pc) $ img (inv $ src pc) ["CRefSnatchControl"] `intersec` es_of_ety pc (show_cmm_e CMM_Ebindings)

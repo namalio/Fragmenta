@@ -7,6 +7,7 @@ subgraph cluster_F_MM_6{style=dashed;label=F_MM_6;
 "VOpIf"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpIf"];
 "VOpInterleave"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpInterleave"];
 "VOpThrow"[shape=cds,fillcolor="#FFF2CC",style = filled,label="OpThrow"];
+"OpQuantifiedOp"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>OpQuantifiedOp</I><br/>(V)}>];
 
 "VOpChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
 "VOpIntChoice"->"Operator"[arrowhead=onormal,arrowsize=2.0];
@@ -14,6 +15,8 @@ subgraph cluster_F_MM_6{style=dashed;label=F_MM_6;
 "VOpIf"->"Operator"[arrowhead=onormal,arrowsize=2.0];
 "VOpInterleave"->"Operator"[arrowhead=onormal,arrowsize=2.0];
 "VOpThrow"->"Operator"[arrowhead=onormal,arrowsize=2.0];
+"VOpChoice"->"OpQuantifiedOp"[arrowhead=onormal,arrowsize=2.0];
+"VOpIntChoice"->"OpQuantifiedOp"[arrowhead=onormal,arrowsize=2.0];
 
 }
 }

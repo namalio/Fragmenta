@@ -1,23 +1,20 @@
 digraph {graph[label=F_MM_11,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_11{style=dashed;label=F_MM_11;
-"PConnector4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector4<br/>(P)>];
-"PCombination"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Combination<br/>(P)>];
-"PAction4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action4<br/>(P)>];
-"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
-"BMainIfC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BMainIfC"];
-"BElseC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElseC"];
-"BJumpC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BJumpC"];
-"BranchC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BranchC"];
+"ReferenceC"[shape=record,fillcolor=lightskyblue1,style = filled,label="ReferenceC"];
+"PConnector3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector3<br/>(P)>];
+"PBindable4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable4<br/>(P)>];
+"PReference"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reference<br/>(P)>];
+"PTargetOfRef"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<TargetOfRef<br/>(P)>];
+"PYesNo3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo3<br/>(P)>];
 
-"BMainIfC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
-"BMainIfC"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
-"BElseC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
-"BJumpC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
-"BranchC"->"PConnector4"[arrowhead=onormal,arrowsize=2.0];
-"BranchC"->"PCombination"[label="BranchCSrc",arrowhead=vee,headlabel="",arrowsize=.5];
-"BranchC"->"PAction4"[label="BranchCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"ReferenceC"->"PConnector3"[arrowhead=onormal,arrowsize=2.0];
+"ReferenceC"->"PBindable4"[arrowhead=onormal,arrowsize=2.0];
+"ReferenceC"->"PReference"[label="ReferenceCSrc▼",dir=none,taillabel="",headlabel=""];
+"ReferenceC"->"PTargetOfRef"[label="ReferenceCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"ReferenceC"->"PYesNo3"[label="ReferenceC_hidden",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
+
 
 
 

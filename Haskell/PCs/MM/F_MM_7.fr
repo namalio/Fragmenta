@@ -1,25 +1,27 @@
 fragment F_MM_7 {
   SG SG_MM_7 {
-    proxy PNode2
-    proxy PBindable
+    proxy PNode
     proxy PAction2
-    proxy PName2
-    proxy PYesNo
-    proxy PGuarded
-    node Reference
-    node Renaming
-    inh Reference->PNode2
-    inh Reference->PBindable
-    inh Reference->PAction2
-    inh Reference->PGuarded
-    relu Reference->PName[Reference_name]:0..1
-    relu Reference->PYesNo[Reference_inner]
-    rel Reference->Renaming[Renamings]:1;*
+    proxy POperator
+    proxy PBindable2
+    proxy PCombinable
+    node Stop
+    node Skip
+    node Combination
+    inh Stop->PNode
+    inh Skip->PNode
+    inh Combination->PNode
+    inh Combination->PBindable2
+    inh Stop->PAction2
+    inh Skip->PAction2
+    inh Combination->PCombinable
+    inh Combination->PAction2
+    relu Combination->POperator[Combination_op]
+    
   }
-  ref PNode2->Node
-  ref PBindable->Bindable
+  ref PNode->Node
   ref PAction2->Action
-  ref PName2->Name
-  ref PYesNo->YesNo
-  ref PGuarded->Guarded
+  ref POperator->Operator
+  ref PBindable2->Bindable
+  ref PCombinable->Combinable
 }

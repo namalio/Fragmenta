@@ -7,13 +7,16 @@ subgraph cluster_F_MM_1{style=dashed;label=F_MM_1;
 "Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Connector</I><br/>(A)}>];
 "Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
 "StartN"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartN"];
+"Definition"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Definition</I><br/>(A)}>];
 
 "StartN"->"NamedNode"[arrowhead=onormal,arrowsize=2.0];
 "NamedNode"->"Node"[arrowhead=onormal,arrowsize=2.0];
 "NamedNode"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Definition"->"Named"[arrowhead=onormal,arrowsize=2.0];
 "Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
 "PCDef"->"Node"[label="ContainsNs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PCDef"->"Connector"[label="ContainsCs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PCDef"->"Definition"[label="ContainsDs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PCDef"->"StartN"[label="Starts▼",dir=none,taillabel="",headlabel=""];
 
 }

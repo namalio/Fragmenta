@@ -72,33 +72,37 @@ parse_gfg = do
    g_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_gfg_elem)
+   skipSpaces
    return (GFGDef g_nm elems)
 
-loadGFGDefFrFile :: FilePath -> IO (Maybe GFGDef)
-loadGFGDefFrFile fn = do   
-    contents <- readFile fn
-    let g = parseMaybe parse_gfg contents
-    return g
+loadGFGFrFile :: FilePath -> IO (Maybe GFGDef)
+loadGFGFrFile fn = 
+    readFile fn >>= return . parseMaybe parse_gfg
+    --return $ parseMaybe parse_gfg contents
 
+test_gfg :: String
 test_gfg = "GFG A_B{\n"
-   ++ "fragment FA\n"
+   ++ "fragment F_A\n"
    ++ "fragment FB\n"
-   ++ "FA references FB\n"
-   ++ "}"
+   ++ "F_A references FB\n"
+   ++ "}\n"
 
 
-loadGFG:: FilePath -> IO (Maybe (String, (GFGr String String)))
+loadGFG:: FilePath -> IO (Maybe (String, GFGr String String))
 loadGFG fn = do
-    g_def<-loadGFGDefFrFile fn
+    g_def<-loadGFGFrFile fn
     --return (toMaybeP (appl_f_M sgd_name sg_def) (appl_f_M cons_sg_fr_sgd sg_def))
     if isNil g_def 
         then do
-            putStrLn "Global gragment graph definition on file  could not be parsed"
-            return (Nothing)
+            putStrLn $ "Global fragment graph (GFG) of file " ++ fn ++ " could not be parsed!"
+            return Nothing
         else do
             let gd = the g_def
             return(Just (gfgd_name gd, cons_gfg_fr_d gd))
 
+test1 :: [(GFGDef, String)]
 test1 = readP_to_S parse_gfg test_gfg
-test2 = loadGFGDefFrFile "Tests/GFGTests/gfg_felines.gfg"
-test3 = loadGFGDefFrFile "PCs/MM/PCs_AMM.gfg"
+test2 :: IO (Maybe GFGDef)
+test2 = loadGFGFrFile "Tests/GFGTests/gfg_felines.gfg"
+test3 :: IO (Maybe GFGDef)
+test3 = loadGFGFrFile "PCs/MM/PCs_AMM.gfg"

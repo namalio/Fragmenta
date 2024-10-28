@@ -143,9 +143,9 @@ reportFT' f xs =
 -- reporting of a total function given a set of domain and range elements
 reportFT::(Eq a, Eq b, Show a, Show b)=>Rel a b->Set a->Set b->ErrorTree
 reportFT f xs ys =
-   let err1 = errsFT f xs in
-   let ns_diff = (ran_of f) `sminus` ys in
-   let errs2 = if ((ran_of f) <= ys) then nile else consSET $ "The following are targets but they shouldn't: " ++ (showElems' ns_diff) in
+   let err1 = errsFT f xs 
+       ns_diff = (ran_of f) `sminus` ys 
+       errs2 = if ran_of f <= ys then nile else consSET $ "The following are targets but they shouldn't: " ++ (showElems' ns_diff) in
    add_to_err err1 [errs2]
 
 -- reporting of a total function given a set of domain and range elements

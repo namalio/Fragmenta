@@ -6,11 +6,13 @@ fragment F_AMM {
     virtual Trait
     node Node
     node Connector
+    node Definition
     compu PCDef->Element[Contains]:*
     inh Element->Trait
     inh PCDef->Trait
     inh Attribute->Trait
     inh Connector->Element
+    inh Definition->Element
     inh Node->Element
     rel Trait->Trait[Has]:*;*
     rel PCDef->Node[Starts]:0..1;1

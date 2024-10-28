@@ -13,6 +13,20 @@ module ParsingCommon (
    , satisfyWLook) where
 
 import Text.ParserCombinators.ReadP
+    ( ReadP,
+      (<++),
+      get,
+      look,
+      many1,
+      manyTill,
+      munch,
+      pfail,
+      readP_to_S,
+      satisfy,
+      sepBy,
+      skipSpaces,
+      string,
+      eof)
 import qualified Data.Char as Char
 import MyMaybe ( str_of_ostr )
 import ParseUtils ( isDigit )
@@ -33,7 +47,7 @@ parseNumber = (many1 . satisfy) isDigit
 
 parseId::ReadP String
 parseId = do
-   ch<- satisfy (isLetter)
+   ch<- satisfy isLetter
    str<-munch is_val_id_char
    return (ch:str)
 
@@ -61,10 +75,11 @@ parseIdLoose = munch is_val_id_char
 --   return (id)
 
 parseMaybe :: ReadP a -> String -> Maybe a
-parseMaybe parser input =
-    case readP_to_S parser input of
+parseMaybe parser input = 
+    case readP_to_S (parser <* eof) input of
         [] -> Nothing
-        ((result, _):_) -> Just result
+        ((r, _):_) -> Just r
+
 
 satisfyWLook::(Char->Bool)->ReadP Char
 satisfyWLook p = look >>= (\s->if not (null s) && p (head s) then return (head s) else pfail)

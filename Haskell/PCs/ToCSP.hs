@@ -8,13 +8,13 @@
 module PCs.ToCSP(findAfterAtom, toCSP) where
 
 import PCs.PCs
-import CSP_AST
+import CSP.CSP_AST
 import Relations
 import Sets
 import Grs
 import Gr_Cls
 import SGrs
-import CSPPrint
+import CSP.CSPPrint
 import PCs.PCTrees
 import TheNil
 import MyMaybe
@@ -22,6 +22,9 @@ import PCs.PCs_MM_Names
 import GrswT
 import SimpleFuns
 import MMI
+import PCs.PCTrees_AST(ROp(..), gParamId, PCE)
+import PCs.PCTrees_ExpToCSP(toCSPExp, toCSPExpA)
+import PCs.PCTrees_Exp
 
 genAfterC :: MMI String String -> PC String String -> String -> Exp
 genAfterC mmi pc n
@@ -67,6 +70,7 @@ genCompoundDef mmi pc n
    | otherwise = SKIP -- INCOMPLETE
    
 
+findAfterAtom :: (Foldable t, GR g, GRM gm, Eq a, Eq b) => g String a -> gm String b -> t String -> Set String
 findAfterAtom pc m n = (predecessors pc n) `intersec` (ran_of $ rres (src pc) $ img (inv $ fV m) [show_cmm_n CMM_AfterC])
 
 --genCompound pc m n = 
@@ -74,8 +78,8 @@ findAfterAtom pc m n = (predecessors pc n) `intersec` (ran_of $ rres (src pc) $ 
 --   let buildExp e = if (not $ null $ cns) then LetW (genDeclsForCompounds pc m cns) e else e in 
 --   EqDecl (ExpId n) $ buildExp (genCompoundDef pc m (findCompoundStart pc m n))
 
-cspAtoms :: Foldable t=>t CT -> Set Id -> Set Id
-cspAtoms pct ias = (atomsOfPCTD pct) `union` ias
+cspAtoms :: Foldable t=>t PDT -> Set Id -> Set Id
+cspAtoms pdt ias = (atomsOfPDT pdt) `union` ias
    --Channel $ foldl(\ns n-> let n' = nmOfNamed pc m n in if n' `elem` ias then ns else insert n' ns) [] (getAtoms m)
 
 --cspPImports sg_mm pc = Include $ map (\mn->mn ++ "P") (importsOf sg_mm pc)
@@ -98,7 +102,7 @@ cspImports is = Include $ is
 --   let (e, cds) = cspExp c in
 --   [LetW cds e] 
 --cspDecl (OpB _ t1 t2) = cspDecl t1 ++ cspDecl t2
-cspDecl :: Foldable t => t CT -> [Decl]
+cspDecl :: Foldable t => t PDT -> [Decl]
 cspDecl cts = foldr (\ct scts->(snd $ cspExp  (Kappa ct)) ++ scts) [] cts
 
 --cspDecls ts = foldr (\t ts'-> (cspDecl t)++ts') [] ts
@@ -106,7 +110,7 @@ cspDecl cts = foldr (\ct scts->(snd $ cspExp  (Kappa ct)) ++ scts) [] cts
 --data BothOpt = Both (PCT->Bool) (PCT->Bool) | Fst (PCT->Bool) | Snd (PCT->Bool) | None 
 data BothOpt = Both (Exp->Bool) (Exp->Bool) | Fst (Exp->Bool) | Snd (Exp->Bool) | None
 
-cspExpsFor0 :: PCT -> PCT -> (Exp, Exp, [Decl])
+cspExpsFor0 :: PT -> PT -> (Exp, Exp, [Decl])
 cspExpsFor0 t1 t2 = 
     let (e1, cds1) = cspExp t1 in
     let (e2, cds2) = cspExp t2 in
@@ -142,17 +146,18 @@ calcExp2 e None = e
 
 -- cspExpsFor t1 t2 None = cspExpsFor0 t1 t2
 
-cspExpsFor :: PCT -> PCT -> BothOpt -> (Exp, Exp, [Decl])
+cspExpsFor :: PT -> PT -> BothOpt -> (Exp, Exp, [Decl])
 cspExpsFor t1 t2 pfs = 
     let (e1, e2, cds) = cspExpsFor0 t1 t2 in
     (calcExp1 e1 pfs, calcExp2 e2 pfs, cds)
 
-cspPRef :: (Nil f, The f) => String -> f Id -> [String] -> Rel Id Id -> Exp
-cspPRef n g bs rs = let e1 = if null bs then ExpId n else ExpApp n bs in
+cspPRef ::Id->Maybe PCE->[PCE]->Rel Id Id->Exp
+cspPRef n g bs rs = 
+   let e1 = if null bs then ExpId n else ExpApp n (map toCSPExp bs) in
    let e2 = if null rs then e1 else ExpRen e1 (toList rs) in
-   if isNil g then e2 else GExp (ExpId $ the g) e2 
+   if isNil g then e2 else GExp (toCSPExp $ the g) e2 
 
-cspPDef :: PCT -> Exp
+cspPDef :: PT -> Exp
 cspPDef t =
    let (e, ds) = cspExp t in
    if null ds then e else LetW ds e
@@ -163,12 +168,12 @@ cspPDef t =
 --   let d = EqDecl (ExpId $ n++ "0") e in
 --   if null ds then LetW [d] e1 else LetW (d:ds) e1
 
-cspExpPrfx :: PCT -> PCT -> (Exp, [Decl])
+cspExpPrfx :: PT -> PT -> (Exp, [Decl])
 cspExpPrfx t1 t2 = 
     let (e1, e2, cds) = cspExpsFor t1 t2 (Snd isComposite) in
     (Prfx e1 e2, cds)
 
-cspExpSeq :: PCT -> PCT -> (Exp, [Decl])
+cspExpSeq :: PT -> PT -> (Exp, [Decl])
 cspExpSeq t1 t2 = 
     let (e1, e2, cds) = cspExpsFor t1 t2 (Snd isComposite) in
     (SeqComp e1 e2, cds)
@@ -178,31 +183,38 @@ consLetW ds (LetW ds' e) = LetW (ds++ds') e
 consLetW ds e = LetW ds e
 
 
-cspExpREC :: PCT -> PCT -> (Exp, [Decl])
-cspExpREC (Atom _ og (Just (atv, ats))) t2 = 
-  let (e1, ds) = cspExp t2 in
-  let e2 = ExpPar $ RExtChoice atv ats $ Prfx (ExpId atv) e1 in
-  if isNil og then (e2, ds) else (GExp (ExpId $ the og) e2, ds) 
+--cspExpREC :: PCT -> PCT -> (Exp, [Decl])
+--cspExpREC (Atom _ og) t2 = 
+--  let (e1, ds) = cspExp t2 in
+--  --let e2 = ExpPar $ RExtChoice atv ats $ Prfx (ExpId atv) e1 in
+--  if isNil og then (e2, ds) else (GExp (ExpId $ the og) e2, ds) 
 
-cspExp :: PCT -> (Exp, [Decl])
+cspExp :: PT -> (Exp, [Decl])
 cspExp NilT = (SKIP, [])
 cspExp StopT = (STOP, [])
 cspExp SkipT = (SKIP, [])
-cspExp (Atom a og Nothing) = 
-    let e =  ExpId a in
-    pairUp (if isNil og then e else GExp (ExpId $ the og) e) [] 
-cspExp (Kappa (CT n ps cts t))  = let e1 = cspPRef n Nothing (map fst ps) nil in
-   let e2 = cspPDef t in
-   let e2' = if isSomething cts then consLetW (cspDecl cts) e2 else e2 in
+cspExp (Atom e og) = 
+    --let e = if isNil oe then ExpId a else ExpChannel a (ExpId $ the oe) in
+    pairUp (if isNil og then toCSPExpA e else GExp (toCSPExp $ the og) (toCSPExpA e)) [] 
+cspExp (Kappa (PDT n ps cts t))  = 
+   let e1 = cspPRef n Nothing (map (cIdExp . gParamId) ps) nil
+       e2 = cspPDef t
+       e2' = if isSomething cts then consLetW (cspDecl cts) e2 else e2 in
    (e1, [EqDecl e1 e2'])
-cspExp (Ref r g bs rs) = (cspPRef r g bs rs, [])
+cspExp (OpKappa n op t)  =
+   let e1 = cspPDef t in
+   (rOpOf op e1, [])
+   where rOpOf (OpRExtChoice v id) e1 = RExtChoice v id e1
+         rOpOf (OpRIntChoice v id) e1 = RIntChoice v id e1
+
+cspExp (Rho n g bs rs) = (cspPRef n g bs rs, [])
 cspExp (OpB (OpIf g) t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 None in
-   (IfExp (ExpId g) e1 e2, cds) 
-cspExp (OpB (OpSeq o) t1 t2) 
-    | isAtomAny t1 && (o || t2 == NilT) = cspExpREC t1 t2 
-    | isAtomAny t1 && not o = let (e1, ds1) = cspExpREC t1 NilT in let (e2, ds2) = cspExp t2 in (SeqComp e1 e2, ds1++ds2)
-    | otherwise    = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
+   (IfExp (toCSPExp g) e1 e2, cds) 
+cspExp (OpB (OpSeq o) t1 t2) = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
+   -- | isAtomAny t1 && (o || t2 == NilT) = cspExpREC t1 t2 
+   -- | isAtomAny t1 && not o = let (e1, ds1) = cspExpREC t1 NilT in let (e2, ds2) = cspExp t2 in (SeqComp e1 e2, ds1++ds2)
+   -- | otherwise    = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
 cspExp (OpB OpExtChoice t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite (not . f)) in
    (ExtChoice e1 e2, cds)
@@ -212,7 +224,7 @@ cspExp (OpB OpIntChoice t1 t2) =
    (IntChoice e1 e2, cds)
 cspExp (OpB (OpParallel evs) t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite isComposite) in
-   (Parallel evs e1 e2, cds)
+   (Parallel (map toCSPExp evs) e1 e2, cds)
 --genCSPExp (Op (OpSyncInterrupt evs) t1 t2) = 
 --   let (e1, e2, rts) = genExpsForOps t1 t2 in
 --   let e1' = if (isOperator t1) then ExpPar e1 else e1 in
@@ -220,14 +232,14 @@ cspExp (OpB (OpParallel evs) t1 t2) =
 --   (SyncInterrupt evs e1' e2', rts)
 cspExp (OpB (OpThrow evs) t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite isComposite) in
-   (Throw evs e1 e2, cds)
+   (Throw (map toCSPExp evs) e1 e2, cds)
 cspExp (OpB OpInterleave t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite isComposite) in
    (Interleave e1 e2, cds)
 
 toCSP::MMI String String->PC String String->Set String->Set String->(Set Id, CSPSpec, CSPSpec)
 toCSP mmi pc ias is = 
-   let (PCTD _ cts) = consPCTD mmi pc 
+   let (PCTD _ _ cts) = consPCTD mmi pc 
        as = cspAtoms cts ias
        is' = cspImports (fmap (++"P") ((getPCDef pc) `intoSet` is )) in
    (as, CSP [is', Channel as], CSP $ cspDecl cts)

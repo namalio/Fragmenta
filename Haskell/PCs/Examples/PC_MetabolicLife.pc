@@ -1,0 +1,26 @@
+PC PC_SimpleLife@LiveSimply
+import PC_Timer
+compound LiveSimply.r,ls,e,n@OpLive
+operator OpLive.OpChoice
+atom eat {ls >0 and e > 0}
+atom move
+atom rest
+atom die {ls == 0}
+op_connector OpLive->eat
+op_connector OpLive->move
+op_connector OpLive->rest
+op_connector OpLive->die
+reference RefLiveAfterEat
+reference RefLiveAfterMove
+reference RefLiveAfterRest
+after_connector eat->RefLiveAfterEat
+after_connector move->RefLiveAfterMove
+ref_connector RefLiveAfterEat->LiveSimply.r,ls-1,e,n+1
+ref_connector RefLiveAfterMove->LiveSimply.r,ls-1,e-1,n-1
+ref_connector RefLiveAfterMove->LiveSimply.r,ls-1,e+1,n-1
+stop stopLife
+after_connector die->stopLife
+reference RefTimer:Timer.r[timeout/wake_up]
+after_connector rest->RefTimer
+ref_connector RefTimer->PC_Timer
+after_connector RefTimer->RefLiveAfterRest

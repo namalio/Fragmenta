@@ -3,10 +3,11 @@ import Gr_Cls
 import PCs.PCsParsing
 import PCs.PCs
 import CheckUtils
-import PCS.PCs_MM_Names
+import PCs.PCs_MM_Names
 import MyMaybe
 import NumString
 import TheNil
+import MMI
 
 pcs_path :: String
 pcs_path = "PCs/PCs/"
@@ -16,9 +17,9 @@ def_path = "PCs/MM/"
 tst_1 :: IO ()
 tst_1 = do
     mmi<-load_mm_info def_path
-    opc<-loadPC (pc_sg_cmm mmi) (pcs_path ++ "PC_Clock.pc") 
+    opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_Clock.pc") 
     -- Checks whether the PC is well formed
-    check_ty_morphism (getPCDef $ the opc) (Just TotalM) (the opc) (pc_cmm mmi) True
+    check_ty_morphism (getPCDef $ the opc) (Just TotalM) (the opc) (gCRSG mmi) True
     --putStrLn $ show $ startCompound mmi pc 
     --putStrLn $ show $ getPCStart (pc_sg_cmm mmi) pc 
     --putStrLn $ show $ afterCRel mmi pc 

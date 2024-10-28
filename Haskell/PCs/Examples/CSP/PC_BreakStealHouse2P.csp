@@ -1,12 +1,14 @@
 BreakAndStealHouse = 
    let 
       GetInside = breakWindow -> SKIP
-            [] breakDoor -> SKIP
-            [] stolenKey -> SKIP
-      Steal = doneStealing -> SKIP
-            [] stealLaptop -> Steal
-            [] stealTV -> Steal
-            [] stealOther -> Steal
+             |~| (breakDoor -> SKIP
+             |~| stolenKey -> SKIP)
+      Steal = 
+         let 
+            StealO = StealO
+         within
+            StealO
+                |~| doneStealing -> SKIP
       RunAway = getOut -> run -> SKIP
    within
       GetInside; (Steal; RunAway)

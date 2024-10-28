@@ -96,6 +96,7 @@ check_morphisms = do
     (nm_f9, f9)<-loadF def_path "F_MM_9.fr"
     (nm_f10, f10)<-loadF def_path "F_MM_10.fr"
     (nm_f11, f11)<-loadF def_path "F_MM_11.fr"
+    (nm_f12, f12)<-loadF def_path "F_MM_12.fr"
     (nm_m1, m1)<-loadM def_path "F_MM_1.gm"
     (nm_m2, m2)<-loadM def_path "F_MM_2.gm"
     (nm_m3, m3)<-loadM def_path "F_MM_3.gm"
@@ -107,6 +108,7 @@ check_morphisms = do
     (nm_m9, m9)<-loadM def_path "F_MM_9.gm"
     (nm_m10, m10)<-loadM def_path "F_MM_10.gm"
     (nm_m11, m11)<-loadM def_path "F_MM_11.gm"
+    (nm_m12, m12)<-loadM def_path "F_MM_12.gm"
     check_report_wf nm_af (Just Total) af True
     check_report_wf nm_f1 (Just Partial) f1 True
     check_report_wf nm_f2 (Just Partial) f2 True
@@ -119,6 +121,7 @@ check_morphisms = do
     check_report_wf nm_f9 (Just Partial) f9 True
     check_report_wf nm_f10 (Just Partial) f10 True
     check_report_wf nm_f11 (Just Partial) f11 True
+    check_report_wf nm_f12 (Just Partial) f12 True
     check_morphism (nm_m1 ++ " (Partial)") (Just PartialM) f1 m1 af True
     check_morphism (nm_m2 ++ " (Partial)") (Just PartialM) f2 m2 af True
     check_morphism (nm_m3 ++ " (Partial)") (Just PartialM) f3 m3 af True
@@ -130,6 +133,7 @@ check_morphisms = do
     check_morphism (nm_m9 ++ " (Partial)") (Just PartialM) f9 m9 af True
     check_morphism (nm_m10 ++ " (Partial)") (Just PartialM) f10 m10 af True
     check_morphism (nm_m11 ++ " (Partial)") (Just PartialM) f11 m11 af True
+    check_morphism (nm_m12 ++ " (Partial)") (Just PartialM) f12 m12 af True
 
 check_models_ref::IO ()
 check_models_ref = do
@@ -149,3 +153,10 @@ main :: IO ()
 main = do
     option_main_save do_main saveDrawings
     consMMDatatypes
+
+test::IO()
+test = do
+    (nm_f6, f6)<-loadF def_path "F_MM_6.fr"
+    let sg=fsg f6
+    print sg
+    print (inh sg)

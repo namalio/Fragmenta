@@ -1,27 +1,13 @@
 fragment F_MM_2 {
   SG SG_MM_2 {
-    proxy PNamedNode
+  	proxy PDefinition
     proxy PNamed
-    node Import
-    node Compound
-    node Atom
-    node Guard
-    virtual Action
-    virtual TargetOfRef
-    virtual Guarded
-    node Parameter
-    inh Import->PNamedNode
-    inh Compound->PNamedNode
-    inh Atom->PNamedNode
-    inh Import->TargetOfRef
-    inh Compound->TargetOfRef
-    inh Atom->Action
-    inh Atom->Guarded
-    inh Compound->Action
-    relu Compound->Parameter[params]:*
-    relu Guarded->Guard[guard]:0..1
-    inh Parameter->PNamed
+    node EnumType
+    node EnumVal
+    inh EnumType->PDefinition
+    inh EnumVal->PNamed
+    rel EnumType->EnumVal[enumVals]:1;*
   }
-  ref PNamedNode->NamedNode
   ref PNamed->Named
+  ref PDefinition->Definition
 }

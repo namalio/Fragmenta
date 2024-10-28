@@ -2,7 +2,7 @@
 ------------------------
 -- Project: PCs
 -- Module: 'PCs'
--- Description: Handler module of Processcharts (PCs)
+-- Description: Module that retrieves information from the Fragmenta-based representation of PCs
 -- Author: Nuno Amálio
 ------------------------
 
@@ -17,16 +17,20 @@ module PCs.PCs(PC
     , tgtOf
     , afterCRel
     , paramsOf
-    , bindingsOf
+    , expsOf
+    , expOfAtom
+    , enumValsOf
     , nmOfNamed
     , guardOf
     , ntyNsPC
     , nmOfRef
     , nmOfRefF
-    , bindingsOfRef
-    , anyExpOfAt
+    , expsOfRef
     , renamingsOf
     , opValOfOp
+    , opQuantifiedOp
+    , varBQuantifiedOp
+    , quantifiedOpStart
     , nextNode
     , nextNodes
     , successorsOf
@@ -39,8 +43,12 @@ module PCs.PCs(PC
     , branchesOfOp
     , innerKs
     , relKs
-    , innerRefKs, commonInnerKs, hidden_RC, inner_Ref, openAC, guardOfOp
-    , pbindings) -- remove later 
+    , innerRefKs
+    , commonInnerKs
+    , hidden_RC
+    , inner_Ref
+    , openAC
+    , guardOfOp) 
 where
 
 import Gr_Cls
@@ -113,10 +121,10 @@ ntyNsPC sg_mm pc nt = ns_of_ntys pc sg_mm [show_cmm_n nt]
 
 getAtoms::SGr String String->PC String String-> Set String
 getAtoms sg_mm pc = 
-   foldr (\a as->extAtoms (nmOfNamed pc a) (anyExpOfAt pc a) `union` as) nil (ntyNsPC sg_mm pc CMM_Atom)
-   where extAtoms nm Nothing = singles nm
-         extAtoms _ (Just (_, Left _)) = nil
-         extAtoms _ (Just (_, Right ats)) = set ats
+   foldr (\a as->(nmOfNamed pc a) `intoSet` as) nil (ntyNsPC sg_mm pc CMM_Atom)
+   --where extAtoms nm Nothing = singles nm
+   --      extAtoms _ (Just (_, Left _)) = nil
+   --      extAtoms _ (Just (_, Right ats)) = set ats
 
 -- Gets starting node of  PC 
 getPCStart :: SGr String String ->PC String String -> String
@@ -207,32 +215,29 @@ afterCRel mmi pc =
   let ns_e = ntyNsPC (gCRSG mmi) pc CMM_AfterC in
   fmap (\ne->(srcOf mmi pc ne, tgtOf mmi pc ne)) ns_e
 
-
-
-bindingVals :: Foldable t => PC String String->t String ->[String]
-bindingVals pc bvs = 
+expVals :: Foldable t => PC String String->t String ->[String]
+expVals pc bvs = 
    let bvs' = foldr (\p ps'->getPair p:ps') nil bvs
        obvs = quicksortp (\(k1, _) (k2, _)->k1 <= k2) bvs' in
    map snd obvs
    where
       toIntSnd (b, ks) = let k = snd $ splitAtStr "_" ks in (read k::Int, b)
-      getPair b = toIntSnd (splitAtStr "_" (snd $ splitAtStr "BV_" b))
+      getPair b = toIntSnd (splitAtStr "_" (snd $ splitAtStr "EV_" b))
 
-bindingValsOf ::PC String String-> String -> Either String [String]
-bindingValsOf pc n = 
-   let bvss = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Evals) 
-       bvs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eval) in
-    if null bvss then Left .the $ bindingVals pc bvs else Right $ bindingVals pc bvss 
+expValsOf ::PC String String-> String -> Either String [String]
+expValsOf pc n = 
+   let vss = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EvExps) 
+       vs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EvExp) in
+    if null vss then Left .the $ expVals pc vs else Right $ expVals pc vss 
     
-
-pbindings :: Foldable t => PC String String->t String ->[Either String [String]]
-pbindings pc bs = 
+pexps :: Foldable t => PC String String->t String ->[Either String [String]]
+pexps pc bs = 
   let ips = foldl (\ps' p->if mkPair p `elem` ps' then ps' else mkPair p:ps') nil bs
       obs = quicksortp (\(k1, _) (k2, _)->k1 < k2) ips in
-  foldr(\b bvs->(bindingValsOf pc b):bvs) nil (fmap snd obs)
+  foldr(\b bvs->(expValsOf pc b):bvs) nil (fmap snd obs)
   where
      toIntFst (k, s) = (read k::Int, s)
-     mkPair p = toIntFst (snd (splitAtStr "_binding_" p), p)
+     mkPair p = toIntFst (snd (splitAtStr "_txtExp_" p), p)
 
 pair_of_rename :: String -> (String, String)
 pair_of_rename ren = 
@@ -241,11 +246,13 @@ pair_of_rename ren =
 prenamings :: Foldable t => t String -> Rel String String
 prenamings = foldr (\r ps'->pair_of_rename r `intoSet` ps') nil
 
-tyOfParam :: PC String String -> String -> String
+tyOfParam :: PC String String -> String -> Maybe String
 tyOfParam pc n = 
-  appl (tgt pc) (the $ img (inv . src $ pc) [n] `intersec`  es_of_ety pc (show_cmm_e CMM_Etype))
+  let ptys = img (inv . src $ pc) [n] `intersec`  es_of_ety pc (show_cmm_e CMM_Etype) in
+  if null ptys then Nothing else applM (tgt pc) (the ptys)
+  --applM (tgt pc) (the $ img (inv . src $ pc) [n] `intersec`  es_of_ety pc (show_cmm_e CMM_Etype))
 
-pparams :: Foldable t => PC String String->t String ->[(String, String)]
+pparams :: Foldable t => PC String String->t String ->[(String, Maybe String)]
 pparams pc ps = 
   let ips = foldr (\p ps'->(getOrdering p, (nmOfNamed pc p, tyOfParam pc p)):ps') nil ps
       ops = quicksortp (\(k1, _) (k2, _)->k1 <= k2) ips in
@@ -254,21 +261,32 @@ pparams pc ps =
      intOfFst (k, _) = read k::Int
      getOrdering p = intOfFst (splitAtStr "_" (snd (splitAtStr "_param_" p)))
 
-paramsOf ::PC String String-> String -> [(String, String)]
+paramsOf ::PC String String-> String -> [(String, Maybe String)]
 paramsOf pc n = 
    let ps = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eparams) in
    pparams pc ps
 
-bindingsOf ::PC String String-> String -> [Either String [String]]
-bindingsOf pc n = 
-   let bs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Ebindings) in
-   pbindings pc bs
+expsOf ::PC String String-> String -> [Either String [String]]
+expsOf pc n = 
+   let bs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps) in
+   pexps pc bs
 
-anyExpOfAt ::PC String String->String->Maybe (String, Either String [String])
-anyExpOfAt pc n = 
-   let ps = img (tgt pc) $ (img (inv $ src pc) [n ++ "_anyExp"]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_Evar) in
-   let ps'= img (tgt pc) $ (img (inv $ src pc) [n ++ "_anyExp"]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_Eof) in
-   if isNil ps' then Nothing else Just (if null ps then "" else the ps, the $ pbindings pc ps')
+expOfAtom ::PC String String-> String -> Maybe String
+expOfAtom pc n = 
+  let es = expsOf pc n in 
+  if null es then Nothing else takeFrE . head $ es
+  where takeFrE (Left e) = Just e
+        takeFrE  (Right _) = Nothing
+
+enumValsOf ::PC String String-> String -> Set String
+enumValsOf pc n = 
+   img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EenumVals)
+
+--anyExpOfAt ::PC String String->String->Maybe (String, Either String [String])
+--anyExpOfAt pc n = 
+--   let ps = img (tgt pc) $ (img (inv $ src pc) [n ++ "_anyExp"]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_Evar) in
+--   let ps'= img (tgt pc) $ (img (inv $ src pc) [n ++ "_anyExp"]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_Eof) in
+--   if isNil ps' then Nothing else Just (if null ps then "" else the ps, the $ pbindings pc ps')
 
 renamingsOf ::PC String String->String->Rel String String
 renamingsOf pc n = 
@@ -311,11 +329,11 @@ nmOfRefF mmi pc n =
   let rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
   if null rn then the $ successorsOf mmi pc rc else rn 
 
-bindingsOfRef :: MMI String String->PC String String->String->[Either String [String]]
-bindingsOfRef mmi pc n =
+expsOfRef :: MMI String String->PC String String->String->[Either String [String]]
+expsOfRef mmi pc n =
   let rn = nmOfRef pc n in
   let rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
-  if null rn then bindingsOf pc rc else bindingsOf pc n
+  if null rn then expsOf pc rc else expsOf pc n
 
 opValId :: SGr String String -> PC String String -> String -> String
 opValId sg_mm pc n = 
@@ -324,8 +342,28 @@ opValId sg_mm pc n =
 opValOfOp :: SGr String String -> PC String String -> String -> String
 opValOfOp sg_mm pc n =
    let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_ECombination_op)) in
-   let op = opValId sg_mm pc nOpVal in
-   if isNodeOfTys nOpVal [CMM_Operator] sg_mm pc then op else ""
+   opValId sg_mm pc nOpVal
+
+opQuantifiedOp :: SGr String String -> PC String String -> String -> String
+opQuantifiedOp sg_mm pc n =
+   let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EopOfQuantifiedOp)) in   
+   opValId sg_mm pc nOpVal
+
+varBQuantifiedOp ::PC String String->String->(String, Either String [String])
+varBQuantifiedOp pc n = 
+   let ps = img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Evar) 
+       ps'= img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Eexps) in
+   (if null ps then "" else the ps, the $ pexps pc ps')
+
+quantifiedOpStart::MMI String String->PC String String->String->String
+quantifiedOpStart mmi pc n = 
+  let bC = successorsOf mmi pc n `intersec` img (inv $ fV pc) [show_cmm_n CMM_BranchC] in
+   the $ successorsOf mmi pc (the bC)
+   
+--expQuantifiedOp ::PC String String->String->Either String [String]
+--expQuantifiedOp pc n = 
+--   let ps'= img (tgt pc) $ (img (inv $ src pc) [n]) `intersec` (es_of_ety pc $ show_cmm_e CMM_Eexps) in
+--   the $ pexps pc ps'
 
 combinePAsU::(Eq a1, Eq a2)=>(Set a1, Set a2) -> (Set a1, Set a2) -> (Set a1, Set a2)
 combinePAsU (x, y) (x', y') = (x `union` x', y `union` y') 
@@ -346,6 +384,7 @@ withinRelWithAux mmi pc n n' pcs
    | isNodeOfTys n' [CMM_Reference] (gCRSG mmi) pc = (nil, nil) 
    | isNodeOfTys n' [CMM_Combination] (gCRSG mmi) pc = let ns = nextNodes mmi pc n' in withinRelWiths mmi pc n ns pcs
    | isNodeOfTys n' [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = (nil, nil) 
+   | isNodeOfTys n' [CMM_QuantifiedOp] (gCRSG mmi) pc = (singles (n, n'), nil) `combinePAsU` withinRelWithOpt (nextNode mmi pc n')
    where withinRelWithOpt Nothing = (nil, nil) 
          withinRelWithOpt (Just k) = if k `elem` pcs then (nil, nil)  else withinRelWithAux mmi pc n k pcs
          --nilR = (nil, nil)
@@ -389,8 +428,8 @@ innerKs mmi pc n = innerKsOf mmi pc (singles $ compoundStart mmi pc n) (singles 
 innerRefKsOf :: MMI String String -> PC String String ->Set String-> Set String -> Set String
 innerRefKsOf _ _ EmptyS _ = nil
 innerRefKsOf mmi pc (Set n ns) vns
-  | isNodeOfTys n [CMM_Atom,CMM_Compound] (gCRSG mmi) pc = 
-      if n `elem` vns then innerRefKsOf mmi pc ns vns else  innerRefKsOf mmi pc ((nextNodesAfter mmi pc n)`union` ns) vns
+  | isNodeOfTys n [CMM_Atom,CMM_Compound, CMM_QuantifiedOp] (gCRSG mmi) pc = 
+      if n `elem` vns then innerRefKsOf mmi pc ns vns else  innerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns
   | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = 
       innerRefKsOf mmi pc ((nextNodes mmi pc n) `union` ns) vns
   | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = innerRefKsOf mmi pc ns vns 
@@ -438,7 +477,7 @@ commonInnerKs mmi pc n = gunion (divergentInnerKs mmi pc n)
 
 nextKsOf::MMI String String->PC String String->String->Set String
 nextKsOf mmi pc n =
-  let nns = if isNxtNAtfer then  nextNodesAfter mmi pc n else nextNodes mmi pc n in
+  let nns = if isNxtNAtfer then nextNodesAfter mmi pc n else nextNodes mmi pc n in
   foldr (\n' ns->if isCompound n' then n' `intoSet` ns else (nextKsOf mmi pc n') `union` ns) EmptyS nns
   where isNxtNAtfer = isNodeOfTys n [CMM_Atom, CMM_Reference] (gCRSG mmi) pc
         isCompound sn = isNodeOfTys sn [CMM_Compound] (gCRSG mmi) pc

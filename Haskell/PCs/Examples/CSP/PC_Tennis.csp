@@ -1,0 +1,3 @@
+include "PC_TennisP.csp"
+
+channel gameB, gameA, pointA

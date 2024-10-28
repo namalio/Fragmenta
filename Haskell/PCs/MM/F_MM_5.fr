@@ -1,25 +1,38 @@
 fragment F_MM_5 {
   SG SG_MM_5 {
-    proxy PNode
-    proxy PBinding
-    proxy PAction
-    proxy POperator
-    node Stop
-    node Skip
-    node Combination
-    virtual Bindable
-    inh Stop->PNode
-    inh Skip->PNode
-    inh Combination->PNode
-    inh Combination->Bindable
-    inh Stop->PAction
-    inh Skip->PAction
-    inh Combination->PAction
-    relu Combination->POperator[Combination_op]
-    relu Bindable->PBinding[bindings]:*
+     node QuantifiedOp
+     proxy PNamedNode2
+     proxy PAction
+     proxy PName
+     proxy POpQuantifiedOp
+     proxy PBindable
+     proxy PAtom
+     proxy PGuarded
+     nodea TxtExp
+     node ExpSet
+     node ExpSingle
+     node ValueExp
+     virtual Combinable
+     inh QuantifiedOp->PNamedNode2
+     inh QuantifiedOp->PAction
+     inh ExpSet->TxtExp
+     inh ExpSingle->TxtExp
+     inh QuantifiedOp->PBindable
+     inh QuantifiedOp->PGuarded
+     inh QuantifiedOp->Combinable
+     relu QuantifiedOp->PName[var]:0..1
+     relu ExpSet->ValueExp[vExps]:*
+     relu ExpSingle->ValueExp[vExp]
+     relu QuantifiedOp->POpQuantifiedOp[opOfQuantifiedOp]
+     rel PBindable->TxtExp[exps]:1;*
+     derived QuantifiedOp->TxtExp[D1 <-> exps]:0..1;1
+     derived PAtom->TxtExp[D2 <-> exps]:0..1;0..1
   }
-  ref PNode->Node
-  ref PBinding->Binding
+  ref PNamedNode2->NamedNode
   ref PAction->Action
-  ref POperator->Operator
+  ref PName->Name
+  ref POpQuantifiedOp->OpQuantifiedOp
+  ref PBindable->Bindable
+  ref PAtom->Atom
+  ref PGuarded->Guarded
 }

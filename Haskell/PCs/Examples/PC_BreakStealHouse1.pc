@@ -1,12 +1,9 @@
 PC PC_BreakStealHouse1@BreakAndStealHouse
+enum MeansBreakIn : Window,stolenKey,Door
 compound BreakAndStealHouse@GetInside
-compound GetInside@OpGetInside
-atom breakDoor
-atom breakWindow
-atom stolenKey
+compound GetInside@BreakIn
+quantifiedOp BreakIn.IntChoice x : 'MeansBreakIn'
+atom break.'x'
+op_connector BreakIn->break
 atom stealTV
-operator OpGetInside.Choice
 after_connector GetInside->stealTV
-op_connector OpGetInside->breakDoor
-op_connector OpGetInside->breakWindow
-op_connector OpGetInside->stolenKey

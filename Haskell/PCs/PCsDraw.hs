@@ -19,23 +19,30 @@ import TheNil
 import MyMaybe
 import PCs.PCs_MM_Names
 import SimpleFuns (butLast)
-import MMI
+import MMI ( gCRSG, MMI )
 import PCs.PCsCommon
 
 type Guard = Maybe String
+type BindingExp = String
+
 -- A parameter is a string and a type
-data NodeInfo = Compound [Param] | Atom String Guard (Maybe (String, String)) 
+data NodeInfo = Compound [Param] | Atom Id Guard
     | Reference Bool String [String] (Rel String String) Guard
-    | Start | Stop | Skip | Import | Op String [String]
+    | Start | Stop | Skip | Import | Op OpKind [String]
+    | QuantifiedOp OpKind Id BindingExp Guard 
     deriving(Eq, Show) 
-data Node = Node String NodeInfo deriving(Eq, Show) 
+data Node = Node Id NodeInfo deriving(Eq, Show) 
 data ConnectorInfo = CDef | CAfter Bool | CRef [String] Bool 
    | CStart | CBranch | CBranchIf String 
    | CBranchElse 
    | CBranchJump 
    deriving(Eq, Show) 
-data Connector = Connector String ConnectorInfo String String deriving(Eq, Show) 
-data PCDrawing = PCDrawing String [Node] [Connector] (Set (Set String)) deriving(Eq, Show) 
+data Connector = Connector String ConnectorInfo String String 
+   deriving(Eq, Show) 
+data Definition = Definition Id (Set String)
+   deriving(Eq, Show)
+data PCDrawing = PCDrawing String [Node] [Connector] [Definition] (Set (Set String)) 
+   deriving(Eq, Show)
 
 nmOfNode :: Node -> String
 nmOfNode (Node nm _) = nm 
@@ -56,38 +63,44 @@ sames' r (Set x xs) ls
 sames :: Eq b=>Rel b b -> Set (Set b)
 sames r = sames' r (dom_of r) nil
 
-fillAnyExp::Maybe(String, Either String [String])->Maybe (String, String)
-fillAnyExp Nothing = Nothing
-fillAnyExp (Just (v, b)) = Just (v, strOfBinding b) 
+--fillVarBOfAtomPack::(String, Either String [String])->(String, String)
+--fillVarBOfAtomPack v b = (v, strOfBinding b)
+--fillVarBOfAtomPack (Just (v, b)) = Just (v, strOfBinding b) 
 
-toNodeKind :: PC String String -> String -> PCs_CMM_Ns -> NodeInfo
-toNodeKind pc n CMM_Compound  = Compound $ fmap (uncurry cParam) (paramsOf pc n)
-toNodeKind pc n CMM_Atom      = Atom (nmOfNamed pc n) (guardOf pc n) (fillAnyExp $ anyExpOfAt pc n) 
-toNodeKind pc n CMM_Reference = Reference (inner_Ref pc n) (nmOfRef pc n) (strsOfBindings $ bindingsOf pc n) (renamingsOf pc n) (guardOf pc n)
-toNodeKind _ _ CMM_Skip       = Skip
-toNodeKind _ _ CMM_Stop       = Stop
-toNodeKind _ _ CMM_StartN     = Start
-toNodeKind _ _ CMM_Import     = Import
+toNodeKind :: SGr String String ->PC String String -> String -> PCs_CMM_Ns -> NodeInfo
+toNodeKind _ pc n CMM_Compound  = Compound $ fmap (uncurry cParam) (paramsOf pc n)
+toNodeKind _ pc n CMM_Atom      = 
+   let e = expOfAtom pc n
+       rest = if isNil e then "" else "." ++ (the e) in
+   Atom (nmOfNamed pc n ++ rest) (guardOf pc n) --(fillAnyExp $ anyExpOfAt pc n) 
+toNodeKind _ pc n CMM_Reference = Reference (inner_Ref pc n) (nmOfRef pc n) (strOfTxtExps $ expsOf pc n) (renamingsOf pc n) (guardOf pc n)
+toNodeKind _ _ _ CMM_Skip       = Skip
+toNodeKind _ _ _ CMM_Stop       = Stop
+toNodeKind _ _ _ CMM_StartN     = Start
+toNodeKind _ _ _ CMM_Import     = Import
+toNodeKind sg_mm pc n CMM_QuantifiedOp  = 
+   let (v, e) = varBQuantifiedOp pc n in
+   QuantifiedOp (readOp . read_cmm $ opQuantifiedOp sg_mm pc n) v (strOfTxtExp e) (guardOf pc n) 
 
-toOp :: PCs_CMM_Ns -> String
-toOp CMM_VOpIf            = "If"
-toOp CMM_VOpChoice        = "◻︎"
-toOp CMM_VOpIntChoice     = "⊓"
-toOp CMM_VOpParallel      = "||"
-toOp CMM_VOpInterleave    = "|||"
-toOp CMM_VOpThrow         = "Θ"
+--toOp :: PCs_CMM_Ns -> String
+--toOp CMM_VOpIf            = "If"
+--toOp CMM_VOpChoice        = "◻︎"
+--toOp CMM_VOpIntChoice     = "⊓"
+--toOp CMM_VOpParallel      = "||"
+--toOp CMM_VOpInterleave    = "|||"
+--toOp CMM_VOpThrow         = "Θ"
 
 consDrawingNode :: SGr String String -> PC String String -> String -> Node
 consDrawingNode sg_mm pc n = 
    let nt = read_cmm $ tyOfN n pc in
-   let nts = [CMM_Compound, CMM_Atom, CMM_Reference, CMM_Stop, CMM_Skip, CMM_StartN, CMM_Import] in
-   if nt `elem` nts then Node n $ toNodeKind pc n nt else Node n $ Op (toOp . read_cmm $ opValOfOp sg_mm pc n) (strsOfBindings $ bindingsOf pc n)
+   let nts = [CMM_Compound, CMM_Atom, CMM_Reference, CMM_Stop, CMM_Skip, CMM_StartN, CMM_Import, CMM_QuantifiedOp] in
+   if nt `elem` nts then Node n $ toNodeKind sg_mm pc n nt else Node n $ Op (readOp . read_cmm $ opValOfOp sg_mm pc n) (strOfTxtExps $ expsOf pc n)
 
 toConnectorKind :: PC String String -> String -> PCs_CMM_Ns -> ConnectorInfo
 toConnectorKind _ _ CMM_DefinesC     = CDef
 toConnectorKind _ _ CMM_StartC       = CStart
 toConnectorKind pc c CMM_AfterC      = CAfter (openAC pc c)
-toConnectorKind pc c CMM_ReferenceC  = CRef (strsOfBindings $ bindingsOf pc c) (hidden_RC pc c)
+toConnectorKind pc c CMM_ReferenceC  = CRef (strOfTxtExps $ expsOf pc c) (hidden_RC pc c)
 toConnectorKind _ _ CMM_BranchC      = CBranch 
 toConnectorKind pc c CMM_BMainIfC    = CBranchIf (the $ guardOf pc c)
 toConnectorKind _ _ CMM_BElseC       = CBranchElse
@@ -99,6 +112,10 @@ consDrawingNodes sg_mm pc = foldr (\n ns'->(consDrawingNode sg_mm pc n):ns') []
 consConnectors :: Foldable t => MMI String String -> PC String String -> t String -> [Connector]
 consConnectors mmi pc cs = foldr (\c cs'->(Connector c (toConnectorKind pc c (read_cmm $ tyOfN c pc)) (srcOf mmi pc c) (tgtOf mmi pc c)):cs') [] cs
 
+consDefinitions :: Foldable t => MMI String String -> PC String String -> t String -> [Definition]
+consDefinitions mmi pc ds = foldr (\d ds'->(Definition d $ enumValsOf pc d):ds') [] ds
+
+
 --getStartName nm = "start_" ++ nm 
 
 --consCStart pc m = let c = (getPCDef m) in
@@ -106,13 +123,14 @@ consConnectors mmi pc cs = foldr (\c cs'->(Connector c (toConnectorKind pc c (re
 
 toPCDrawing :: MMI String String -> PC String String -> PCDrawing
 toPCDrawing mmi pc = 
-   let nodes = consDrawingNodes (gCRSG mmi) pc (ntyNsPC (gCRSG mmi) pc CMM_Node)  in
-   let cs = consConnectors mmi pc (ntyNsPC (gCRSG mmi) pc CMM_Connector)  in
-   let r_after = afterCRel mmi pc in
-   let freeFromSameRefs = filterS (\n->length (img (inv r_after) [n])>1) (ntyNsPC (gCRSG mmi) pc CMM_Reference)  in
-   let ss_r = (rsub r_after freeFromSameRefs) `sminus` (inv $ trancl $ withinRel mmi pc) in
-   let ss' = set [getPCStart (gCRSG mmi) pc, startCompound mmi pc] `intoSet` (sames ss_r) in
-   PCDrawing (getPCDef pc) nodes cs ss'
+   let nodes = consDrawingNodes (gCRSG mmi) pc (ntyNsPC (gCRSG mmi) pc CMM_Node)
+       cs = consConnectors mmi pc (ntyNsPC (gCRSG mmi) pc CMM_Connector) 
+       ds = consDefinitions mmi pc (ntyNsPC (gCRSG mmi) pc CMM_Definition) 
+       r_after = afterCRel mmi pc
+       freeFromSameRefs = filterS (\n->length (img (inv r_after) [n])>1) (ntyNsPC (gCRSG mmi) pc CMM_Reference)
+       ss_r = (rsub r_after freeFromSameRefs) `sminus` (inv $ trancl $ withinRel mmi pc)
+       ss' = set [getPCStart (gCRSG mmi) pc, startCompound mmi pc] `intoSet` (sames ss_r) in
+   PCDrawing (getPCDef pc) nodes cs ds ss'
 
 wrParamsLabel :: (Foldable t, Functor t) => String -> t Param -> String
 wrParamsLabel nm ps = 
@@ -158,29 +176,32 @@ wrBindingsOfOp nm bss = "\n"++ nm ++ "_bs" ++  "[shape=rect,fillcolor=yellow,sty
    ++ wrOperatorLabel bss ++ "\"];\n" 
    ++ nm ++"->" ++ nm ++ "_bs [dir=none,color=\"black:invis:black\"];\n" ++ "{rank=same;" ++ nm ++ "," ++ nm ++ "_bs}"
 
-wrAtomCommon :: [Char] -> [Char]
-wrAtomCommon nm = nm ++ " [shape=ellipse,fillcolor=greenyellow,style = filled,label=" 
-wrAtomAny0 :: Maybe String -> [Char]
-wrAtomAny0 g = "<" ++ wrGuard g True
-wrAtomAny :: String -> Maybe String -> [Char]
-wrAtomAny "" g = (wrAtomAny0 g) ++ "<I>anyof</I> " 
-wrAtomAny atv g = (wrAtomAny0 g) ++ "<I>any</I> " ++ butLast atv ++ ":"
+--wrAtomCommon :: [Char] -> [Char]
+--wrAtomCommon nm = nm ++ " [shape=ellipse,fillcolor=greenyellow,style = filled,label=" 
+--wrAtomAny0 :: Maybe String -> [Char]
+--wrAtomAny0 g = "<" ++ wrGuard g True
+--wrAtomAny :: String -> Maybe String -> [Char]
+--wrAtomAny "" g = (wrAtomAny0 g) ++ "<I>anyof</I> " 
+--wrAtomAny atv g = (wrAtomAny0 g) ++ "<I>any</I> " ++ butLast atv ++ ":"
 
 -- Writes graphviz code of a PC node
-wrNode :: Node ->String
-wrNode (Node nm (Compound ps)) =  nm ++ " [shape=box,fillcolor=deepskyblue,style = filled,label=" ++ (wrParamsLabel nm ps) ++ "];" 
-wrNode (Node nm (Atom rnm g Nothing)) =  (wrAtomCommon nm) ++ "\"" ++ (wrGuard g False) ++ rnm ++ "\"];"
-wrNode (Node nm (Atom rnm g (Just (atv, atS)))) = (wrAtomCommon nm) ++ (wrAtomAny atv g) ++ atS  
-    ++ "<br/>[" ++ rnm ++ "]>];"
-wrNode (Node nm (Reference b rnm bs rs g)) = nm 
+drawNode :: Node ->String
+drawNode (Node nm (Compound ps)) =  nm ++ " [shape=box,fillcolor=deepskyblue,style = filled,label=" ++ (wrParamsLabel nm ps) ++ "];" 
+drawNode (Node nm (Atom rnm g)) =  nm ++ " [shape=ellipse,fillcolor=greenyellow,style=filled,label=" ++ "\"" ++ (wrGuard g False) ++ rnm ++ "\"];"
+--drawNode (Node nm (Atom rnm g)) = (wrAtomCommon nm) ++ (wrAtomAny atv g) -- ++ atS  
+--    ++ "<br/>[" ++ rnm ++ "]>];"
+drawNode (Node nm (Reference b rnm bs rs g)) = nm 
     ++ " [shape=rectangle,fillcolor=" ++ fillColor 
     ++ ",style=\"rounded,filled,dashed\",label="++ (wrRefLabelPsRens rnm bs rs g b) ++"];"
     where fillColor = if b then "\"#CBD7EB\"" else "gray"
-wrNode (Node nm (Op op bs)) = nm ++ " [shape=diamond,fillcolor=yellow,style = filled,label=\"" ++ op ++ "\"];" 
+drawNode (Node nm (Op op bs)) = nm ++ " [shape=diamond,fillcolor=yellow,style=filled,label=\"" ++ show op ++ "\"];" 
    ++ wrBindingsOfOp nm bs
-wrNode (Node nm Stop) = nm ++ " [shape=box,fillcolor=mistyrose2,style = filled,label=\"STOP\"];"
-wrNode (Node nm Skip) = nm ++ " [shape=box,fillcolor=\"#B9E0A5\",style = filled,label=\"SKIP\"];"
-wrNode (Node nm Import) = nm ++ " [shape=hexagon,fillcolor=orangered,style=filled,label =" ++  nm ++ "];" 
+drawNode (Node nm Stop) = nm ++ " [shape=box,fillcolor=mistyrose2,style = filled,label=\"STOP\"];"
+drawNode (Node nm Skip) = nm ++ " [shape=box,fillcolor=\"#B9E0A5\",style = filled,label=\"SKIP\"];"
+drawNode (Node nm Import) = nm ++ " [shape=hexagon,fillcolor=orangered,style=\"filled,rounded\",label =" ++  nm ++ "];" 
+drawNode (Node nm (QuantifiedOp op v b g)) = 
+   nm ++ " [shape=hexagon,fillcolor=gold1,style=filled,label=<" 
+   ++ show op ++ " " ++ (butLast v) ++ ":" ++ b ++ (wrGuard g False) ++ ">];"
 
 wrConnectorSettings :: ConnectorInfo -> String
 wrConnectorSettings CDef = "[arrowhead=\"onormal\",penwidth=2,label=\"=\"];"
@@ -196,14 +217,28 @@ wrConnector :: Connector -> String
 wrConnector (Connector _ (CRef _ True) _ _) = ""
 wrConnector (Connector nm ek s t) = s ++ "->" ++ t ++ (wrConnectorSettings ek)
 
-wrNodes :: Foldable t => t Node -> String
-wrNodes ns  = foldr (\n ns'-> (wrNode n)++ "\n" ++ns') "" ns
 
-wrConnectors :: Foldable t => t Connector -> String
-wrConnectors cs  = foldr (\c cs'-> (wrConnector c)++ "\n" ++cs') "" cs 
+drawDefVal::String->String
+drawDefVal dv = dv ++ "[shape=box,fillcolor=darkolivegreen1,style=\"filled\",label=" ++ dv ++"];\n" 
+drawDef :: Definition -> String
+drawDef (Definition nm vs) =  
+   "subgraph cluster_" ++ nm ++ " {\n" ++ "style=\"filled,rounded\";\n"
+   ++ "label =" ++ nm ++ ";\n"
+   ++ "fillcolor = cadetblue1;\n"
+   ++ foldr (\dv s->drawDefVal dv ++ s) "" vs
+   ++ "}\n"
+
+drawDefs :: Foldable t => t Definition -> String
+drawDefs = foldr (\d ds'-> (drawDef d)++ "\n" ++ ds') ""
+
+drawNodes :: Foldable t => t Node -> String
+drawNodes = foldr (\n ns'-> (drawNode n)++ "\n" ++ns') ""
+
+drawConnectors :: Foldable t => t Connector -> String
+drawConnectors = foldr (\c cs'-> (wrConnector c)++ "\n" ++cs') ""
 
 wrSamesLs :: Foldable t =>t String->String
-wrSamesLs ls = (foldr (\n ns-> if null ns then n else n ++ "," ++ ns) "" ls) ++ "}"
+wrSamesLs ls = foldr (\n ns-> if null ns then n else n ++ "," ++ ns) "" ls ++ "}"
 
 wrSameRank :: Foldable t => t String->String
 wrSameRank ls = "{rank=same;" ++ wrSamesLs ls
@@ -225,8 +260,8 @@ wrStartNode :: String -> String -> String
 wrStartNode snm nm = snm ++  " [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =" ++  nm ++ "];" 
 
 wrPCDrawing :: PCDrawing -> String
-wrPCDrawing (PCDrawing nm ns cs ss) = "digraph {\n" ++ (wrStartNode (startNode ns) nm) ++ "\n" 
-   ++ (wrNodes $ filter (not . isNodeStart) ns) ++ "\n" ++ (wrSames ss) ++ "\n" ++ (wrConnectors cs) ++ "}"
+wrPCDrawing (PCDrawing nm ns cs ds ss) = "digraph {\n" ++ drawDefs ds ++ "\n" ++ (wrStartNode (startNode ns) nm) ++ "\n" 
+   ++ (drawNodes $ filter (not . isNodeStart) ns) ++ "\n" ++ (wrSames ss) ++ "\n" ++ (drawConnectors cs) ++ "}"
 
 wrPCAsGraphviz :: MMI String String -> PC String String -> String
 wrPCAsGraphviz mmi pc = wrPCDrawing $ toPCDrawing mmi pc

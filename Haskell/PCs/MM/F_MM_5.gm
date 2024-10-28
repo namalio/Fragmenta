@@ -1,16 +1,24 @@
 Morphism F_MM_5 {
 	nodes {
-		PNode->Node
-		PBinding->Attribute
-		Stop->Node
-		Skip->Node
-		Combination->Node
-		PAction->Node
-		POperator->Attribute
-		Bindable->Trait
+      QuantifiedOp->Node
+      PNamedNode2->Node
+      PAction->Node
+      PAtom->Node
+	  TxtExp->Attribute
+	  ExpSet->Attribute
+	  ExpSingle->Attribute
+	  ValueExp->Attribute
+	  PName->Attribute
+	  POpQuantifiedOp->Trait
+	  PBindable->Trait
+	  PGuarded->Trait
+	  Combinable->Node
 	}
 	edges {
-	   Combination_op->Has
-	   bindings->Has
+	   var->Has
+	   vExps->Has
+	   vExp->Has
+	   opOfQuantifiedOp->Has
+	   exps->Has
 	}
 }

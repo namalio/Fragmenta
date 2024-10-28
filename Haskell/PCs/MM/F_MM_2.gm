@@ -1,19 +1,11 @@
 Morphism F_MM_2 {
 	nodes {
-		PNamedNode->Node
-	    Import->Node
-		Compound->Node
-        Atom->Node
-		TargetOfRef->Node
-		Action->Node
-		Guarded->Trait
-	    Parameter->Attribute
-		Guard->Attribute
-		PNamed->Trait
+	    PDefinition->Definition
+	    PNamed->Trait
+		EnumType->Definition
+		EnumVal->Attribute
 	}
 	edges {
-	   params->Has
-	   guard->Has
-	   type->Has
+	   enumVals->Has
 	}
 }

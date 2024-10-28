@@ -10,8 +10,8 @@ module ShowUtils(
    , slimStr
    , slimShow
    , showNodes
-   , strOfBinding
-   , strsOfBindings
+   , strOfTxtExp
+   , strOfTxtExps
    , do_indent) where
 import SimpleFuns (butLast)
 
@@ -68,9 +68,9 @@ wrSepElems ss sep spaced ind i =
    -- | otherwise = 
    -- dind++s++sep++spc++(wrSepElems ss sep spaced False i)
 
-strOfBinding::Either String [String]->String
-strOfBinding (Left b) = b
-strOfBinding (Right bs) = "{" ++ showStrs bs "," ++ "}"
+strOfTxtExp::Either String [String]->String
+strOfTxtExp (Left b) = b
+strOfTxtExp (Right bs) = "{" ++ showStrs bs "," ++ "}"
 
-strsOfBindings::[Either String [String]]->[String]
-strsOfBindings = fmap strOfBinding
+strOfTxtExps::[Either String [String]]->[String]
+strOfTxtExps = fmap strOfTxtExp

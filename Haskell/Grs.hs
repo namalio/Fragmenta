@@ -78,8 +78,8 @@ okG g = tfun (src g) (es g) (ns g) && tfun (tgt g) (es g) (ns g)
 
 errorsG:: (GR g, Eq a, Eq b, Show a, Show b) => g a b-> [ErrorTree]
 errorsG g =
-   let errs1 = if tfun (src g) (es g) (ns g) then nile else consET ("Function 'src' is ill defined.") [reportFT (src g) (es g) (ns g)] in
-   let errs2 = if tfun (tgt g) (es g) (ns g) then nile else consET ("Function 'tgt' is ill defined.") [reportFT (tgt g) (es g) (ns g)] in
+   let errs1 = if tfun (src g) (es g) (ns g) then nile else consET ("Function 'src' is ill defined.") [reportFT (src g) (es g) (ns g)]
+       errs2 = if tfun (tgt g) (es g) (ns g) then nile else consET ("Function 'tgt' is ill defined.") [reportFT (tgt g) (es g) (ns g)] in
    [errs1, errs2]
 
 reportG :: (Eq a, Eq b, GR g, Show a, Show b) => String -> g a b -> ErrorTree

@@ -294,8 +294,8 @@ mults_wf = all multwf
 -- Checks whether a SG is well-formed either totally or partially
 okaySGz::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
 okaySGz sg = okayG Nothing (g_sg sg)
-   && tfun (nty sg) (ns sg) (sgnty_set) 
-   && tfun (ety sg) (es sg) (sgety_set)
+   && tfun (nty sg) (ns sg) sgnty_set
+   && tfun (ety sg) (es sg) sgety_set
    && (dom_of . srcm $ sg) <= es sg  
    && (dom_of . tgtm $ sg) <= es sg
 
@@ -401,8 +401,8 @@ check_mult_etys_ok sg =
 errsSGz::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsSGz sg = 
    let err1 = err_prepend "The underlying graph is malformed." (faultsG "SG" Nothing $ g_sg sg)
-       err2 = err_prepend "Function 'nty' is not total. " $ reportFT (nty sg) (ns sg) (sgnty_set)
-       err3 = err_prepend "Function 'ety' is not total. " $ reportFT (ety sg) (es sg) (sgety_set)
+       err2 = err_prepend "Function 'nty' is not total. " $ reportFT (nty sg) (ns sg) sgnty_set
+       err3 = err_prepend "Function 'ety' is not total. " $ reportFT (ety sg) (es sg) sgety_set
        err4 = err_prepend "Source multplicity function is not total. " $ reportFT' (srcma sg) (esM sg)
        err5 = err_prepend "Target multplicity function is not total. " $ reportFT' (tgtm sg) (esM sg) in
    [err1, err2, err3, err4, err5]
@@ -419,12 +419,12 @@ rInhOk sg =
 
 errsSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsSG sg = 
-   let errs = errsSGz sg in
-   let err1 = if mults_wf (ran_of $ srcm sg) then nile else consSET "Well-formedness errors in edge source multiplicities." in
-   let err2 = if mults_wf (ran_of $ tgtm sg) then nile else consSET "Well-formedness errors in edge target multiplicities." in
-   let err3 = check_mult_etys_ok sg in
+   let errs = errsSGz sg 
+       err1 = if mults_wf (ran_of $ srcm sg) then nile else consSET "Well-formedness errors in edge source multiplicities." 
+       err2 = if mults_wf (ran_of $ tgtm sg) then nile else consSET "Well-formedness errors in edge target multiplicities." 
+       err3 = check_mult_etys_ok sg 
 --   let err4 = check_optsVoluntary sg in
-   let err4 = rInhOk sg in
+       err4 = rInhOk sg in
    errs ++ [err1, err2, err3, err4]
 
 rOkaySG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
@@ -789,7 +789,11 @@ sg_refines_ety (sgc, m) sga = all (sgs_ety_leq sgc m sga) $ esA sgc
 
 -- SG refinement of node types
 sgs_nty_leq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> a -> Bool
-sgs_nty_leq sgc m sga n  = appl (nty sgc) n <= appl ((nty sga) `bcomp` (fV m)) n
+sgs_nty_leq sgc m sga n  = 
+   let ntc = applM (nty sgc) n 
+       nta = applM ((nty sga) `bcomp` (fV m)) n in
+   if isSomething ntc && isSomething nta then (the ntc) <= (the nta) else False
+
 sg_refines_nty::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
 sg_refines_nty (sgc, m) sga = all (sgs_nty_leq sgc m sga) $ ns sgc
 
@@ -823,9 +827,12 @@ check_sg_refines_ety (sgc, m) sga =
 
 check_sg_refines_nty::(GRM gm, Eq a, Eq b, Show a, Show b) =>(SGr a b, gm a b) -> SGr a b -> ErrorTree
 check_sg_refines_nty (sgc, m) sga = 
-   if (sgc, m) `sg_refines_nty` sga then nile else consSET $ "Certain instance nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)
+   let nswM = filterS (\n->applM ((nty sga) `bcomp` (fV m)) n == Nothing) (ns sgc) 
+       err1 =  consSET $ "Certain instance nodes lack a metamodel type: "++ (showNodes nswM ) in
+   if (sgc, m) `sg_refines_nty` sga then nile else consET ("Certain instance nodes fail to preserve their type kinds: " ++ (showNodes ns_n_ref)) [err1]
    where ns_n_ref = filterS (not . sgs_nty_leq sgc m sga) (ns sgc)
 
+errs_sg_refinesz :: (GRM gm, Eq a, Eq b, Show a, Show b) => (SGr a b, gm a b) -> SGr a b -> [ErrorTree]
 errs_sg_refinesz (sgc, m) sga = 
    let err1 = check_sg_refines_nty (sgc, m) sga in
    let err2 = check_sg_refines_ety (sgc, m) sga in
@@ -867,7 +874,8 @@ okRefinedIn (sga, me) (sgc, m) =
 -- Total SG refinement conditions
 tsg_refinesz::(Eq a, Eq b)=>(SGr a b, GrM a b)->SGr a b->Bool
 tsg_refinesz (sgc, m) sga = 
-   (sgc, m) `sg_refinesz` sga && (sgc, m) `tsg_refines_aes` sga && m `tsg_refines_ans` sga
+   (sgc, m) `sg_refinesz` sga 
+   && (sgc, m) `tsg_refines_aes` sga && m `tsg_refines_ans` sga
 
 -- Total SG refinement
 tsg_refines::(Eq a, Eq b)=>(SGr a b, GrM a b)->SGr a b->Bool

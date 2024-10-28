@@ -2,13 +2,13 @@ CCVM = GetandGive(0); CCVM
 
 GetandGive(x) = 
    let 
-      Give = x>=100 & giveMe -> (x==150 & latte -> SKIP
-             |~| (x==100 & macchiato -> SKIP
-             |~| (x==100 & espresso -> SKIP
-             |~| x==150 & cappuccino -> SKIP)))
-      Get = x<=50 & coinPound -> GetandGive(x+100)
-            [] x<=100 & coin50p -> GetandGive(x+50)
+      Get = x<=100 & coin50p -> GetandGive(x+50)
+            [] x<=50 & coinPound -> GetandGive(x+100)
+      Give = x>=100 & giveMe -> (x>150 & cappuccino -> SKIP
+             |~| (x>100 & espresso -> SKIP
+             |~| (x>100 & macchiato -> SKIP
+             |~| x>150 & latte -> SKIP)))
    within
-      Give
+      x>0 & return -> SKIP
          [] Get
-         [] x>0 & return -> SKIP
+         [] Give
