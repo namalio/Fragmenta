@@ -5,9 +5,15 @@ digraph {graph[label=Bicyle_Car_I1,labelloc=tl,labelfontsize=12];
 "C1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":C1 :: Car"];
 "LM"[shape=box,fillcolor="#CCFFFF",style = filled,label=":LM :: SideMirror"];
 "RM"[shape=box,fillcolor="#CCFFFF",style = filled,label=":RM :: SideMirror"];
+"BrB1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":BrB1 :: Name"];
+"BrC1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":BrC1 :: Name"];
+"v10000"[shape=box,fillcolor="#CCFFFF",style = filled,label=":v10000 :: Nat"];
 
 "B1"->"WF"[label=":B1_WF ::CPair_fst▼",arrowhead=vee];
 "B1"->"WB"[label=":B1_WB ::CPair_snd▼",arrowhead=vee];
 "C1"->"LM"[label=":C1_LM ::CPair_fst▼",arrowhead=vee];
 "C1"->"RM"[label=":C1_RM ::CPair_snd▼",arrowhead=vee];
+"B1"->"BrB1"[label=":B1_BrB1 ::brand▼",arrowhead=vee];
+"C1"->"BrC1"[label=":C1_BrC1 ::brand▼",arrowhead=vee];
+"C1"->"v10000"[label=":C1_v10000 ::kilometers▼",arrowhead=vee];
 }

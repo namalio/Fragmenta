@@ -4,4 +4,6 @@ GrwT Bicycle_I1 {
    node WB : Wheel
    edge B1->WF : CPair_fst
    edge B1->WB : CPair_snd
+   node vRim : VRim
+   edge B1->vRim: brakes
 }

@@ -7,9 +7,11 @@ Morphism F_PW4 {
      Facility->Room
      Toilet->Room
      Grooming->Room
+     PNat1->Other
   }
   edges {
     Hosts->Hosts
     roomid->AnyRel
+    rcapacity->AnyRel
   }
 }

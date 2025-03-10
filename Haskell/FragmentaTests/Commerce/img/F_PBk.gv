@@ -1,0 +1,31 @@
+digraph {graph[label=F_PBk,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PBk{style=dashed;label=F_PBk;
+"Book"[shape=record,fillcolor=lightskyblue1,style = filled,label="Book"];
+"PProduct"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product<br/>(P)>];
+"PNat4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat4<br/>(P)>];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"PPiece"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Piece<br/>(P)>];
+"PNational"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<National<br/>(P)>];
+"Author"[shape=record,fillcolor=lightskyblue1,style = filled,label="Author"];
+"Publisher"[shape=record,fillcolor=lightskyblue1,style = filled,label="Publisher"];
+"V10"[shape=cds,fillcolor="#FFF2CC",style = filled,label="10"];
+
+"Book"->"PProduct"[arrowhead=onormal,arrowsize=2.0];
+"V10"->"PNat4"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"PNational"[arrowhead=onormal,arrowsize=2.0];
+"Book"->"PNat4"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"Author"[label="authors",arrowhead=vee,headlabel="1..*",arrowsize=.5];
+"Book"->"Publisher"[label="publisher",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"V10"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Book"->"PPiece"[arrowhead=vee,style=dashed,label="unit ="];
+
+
+}
+
+
+
+
+
+}

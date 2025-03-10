@@ -9,12 +9,10 @@ fragment F_PW6 {
     proxy PFacility
     node PHCardId
     proxy PNat
-    proxy PNat1
     rel PetHotel->HotelGroup[OfGroup]:*;0..1
     compu PetHotel->PPHCard[lcards]:*
     compu PetHotel->PFacility[facilities]:*
     compu PetHotel->PPetRoom[rooms]:*
-    relu PPetRoom->PNat1[rcapacity]
     relu PPHCard->PNat[points]
     rel PPHCard->PHCardId[cid]:0..1;1
     inh PetHotel->PNamed2
@@ -28,5 +26,4 @@ fragment F_PW6 {
   ref PFacility->Facility
   ref PPHCard->PHCard
   ref PNat->Nat
-  ref PNat1->Nat1
 }

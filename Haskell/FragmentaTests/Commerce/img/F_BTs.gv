@@ -1,10 +1,21 @@
 digraph {graph[label=F_BTs,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_BTs{style=dashed;label=F_BTs;
 "Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
-"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Nat1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat1"];
 "Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
+"National"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>National</I><br/>(V)}>];
+"V1"[shape=cds,fillcolor="#FFF2CC",style = filled,label="1"];
+"V20"[shape=cds,fillcolor="#FFF2CC",style = filled,label="20"];
 
 "Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Nat1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V20"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Nat1"->"V1"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"National"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 }

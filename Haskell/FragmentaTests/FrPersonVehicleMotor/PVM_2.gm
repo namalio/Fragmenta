@@ -7,9 +7,9 @@ Morphism PVM_2 {
 		 Car->Vehicle
 		 Motorbike->Vehicle
 		 Motortrike->Vehicle
-		 PTwoWheeler->Manner
-		 PThreeWheeler->Manner
-		 PFourWheeler->Manner
+		 PTwoWheeler->Trait
+		 PThreeWheeler->Trait
+		 PFourWheeler->Trait
 	}
 	edges {}
 }

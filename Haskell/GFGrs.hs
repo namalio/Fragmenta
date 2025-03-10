@@ -36,7 +36,7 @@ instance GR GFGr where
 refsOf::(Eq a, Eq b)=> GFGr a b->Rel a a
 refsOf = trancl . relOfG . gOf
 
-okayGFG:: (Eq a, Eq b, GNumSets a) => GFGr a b -> Bool
+okayGFG:: (Eq a, Eq b, Show a, GNumSets a) => GFGr a b -> Bool
 okayGFG gfg = okayG Nothing (gOf gfg) && acyclicG (restrict gfg $ (es gfg) `sminus` (esId gfg))
 
 errsGFG::(Eq a, Eq b, Show a, Show b, GNumSets a) => String->GFGr a b -> [ErrorTree]
@@ -55,7 +55,7 @@ reportGFG' :: (Eq a, Eq b, GNumSets a, Show a, Show b) =>String -> p -> GFGr a b
 reportGFG' id _ = reportGFG id
 
 instance G_WF_CHK GFGr where
-   okayG :: (Eq a, Eq b, GNumSets a)=>
+   okayG :: (Eq a, Eq b, Show a, GNumSets a)=>
       Maybe TK->GFGr a b->Bool
    okayG _ = okayGFG
    faultsG :: (Eq a, Eq b, Show a, Show b, GNumSets a)=>

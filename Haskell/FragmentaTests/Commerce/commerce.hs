@@ -24,6 +24,35 @@ saveDrawings = do
    draw_def def_path img_path "CI1.gwt"
    draw_def def_path img_path "CI2.gwt"
 
+check_fs_and_ms :: IO ()
+check_fs_and_ms = do 
+   (nm_fnf, fnf)<-loadF def_path "F_NF.fr"
+   (nm_fp, fp)<-loadF def_path "F_P.fr"
+   (nm_fap, fap)<-loadF def_path "F_AP.fr"
+   (nm_fbts, fbts)<-loadF def_path "F_BTs.fr"
+   (nm_fe, fe)<-loadF def_path "F_E.fr"
+   (nm_fpp, fpp)<-loadF def_path "F_PP.fr"
+   (nm_fbk, fbk)<-loadF def_path "F_PBk.fr"
+   (nm_fpf, fpf)<-loadF def_path "F_PF.fr"
+   (nm_fbe, fbe)<-loadF def_path "F_PBe.fr"
+   check_report_wf nm_fnf (Just Partial) fnf True
+   check_report_wf nm_fp (Just Partial) fp True
+   check_report_wf nm_fap (Just Partial) fap True
+   check_report_wf nm_fbts (Just Partial) fbts True
+   check_report_wf nm_fe (Just Partial) fe True
+   check_report_wf nm_fpp (Just Partial) fpp True
+   check_report_wf nm_fbk (Just Partial) fbk True
+   check_report_wf nm_fpf (Just Partial) fpf True
+   check_report_wf nm_fbe (Just Partial) fbe True
+   --check_morphism ("Morphism '" ++ nm_m1 ++ "' (Partial)") (Just PartialM) f1 m1 af True
+   --check_morphism ("Morphism '" ++ nm_m1 ++ "' (Partial)") (Just PartialM) f2 m2 af True
+   --check_morphism ("Morphism '" ++ nm_m2 ++ "' (Partial)") (Just PartialM) f3 m3 af True
+   --check_morphism ("Morphism '" ++ nm_m3 ++ "' (Partial)") (Just PartialM) f4 m4 af True
+   --check_morphism ("Morphism '" ++ nm_m4 ++ "' (Partial)") (Just PartialM) f5 m5 af True
+   --check_morphism ("Morphism '" ++ nm_m5 ++ "' (Partial)") (Just PartialM) f6 m6 af True
+   --check_morphism ("Morphism '" ++ nm_m6 ++ "' (Partial)") (Just PartialM) f7 m7 af True
+   --check_morphism ("Morphism '" ++ nm_m7 ++ "' (Partial)") (Just PartialM) f8 m8 af True
+
 do_main :: IO ()
 do_main = do 
     (amdl_nm, amdl)<-loadMdl def_path "M_AC"

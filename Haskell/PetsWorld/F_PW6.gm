@@ -5,7 +5,6 @@ Morphism F_PW6 {
      PetHotel->Hotel
      PPHCard->Other
      PNat->Other
-     PNat1->Other
      PHCardId->Other
      PPetRoom->Room
      PFacility->Room
@@ -14,10 +13,9 @@ Morphism F_PW6 {
   edges {
     rooms->Hotel_rooms
     lcards->AnyRel
-	facilities->AnyRel
+	  facilities->AnyRel
     cid->AnyRel
     points->AnyRel
     OfGroup->AnyRel
-    rcapacity->AnyRel
   }
 }

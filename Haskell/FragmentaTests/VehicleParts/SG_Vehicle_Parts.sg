@@ -1,9 +1,12 @@
 SG SG_Vehicle_Parts {
    node Vehicle
    virtual Composite
+   virtual Trait
    node Part
    comp Composite->Part[HasParts]:0..1;*
    inh Vehicle->Composite
+   inh Vehicle->Trait
    node Other
-   rel Vehicle->Other[ORel]:*;*
+   inh Other->Trait
+   rel Trait->Other[ORel]:*;*
 }

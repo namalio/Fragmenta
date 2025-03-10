@@ -1,6 +1,7 @@
 fragment F_PW4 {
   SG SG_PW4 {
     proxy PPet2
+    proxy PNat1
     node PetRoom
     node RoomId
     nodea Facility
@@ -13,6 +14,8 @@ fragment F_PW4 {
     inh Facility->HotelRoom
     inh Toilet->Facility
     inh Grooming->Facility
+    relu PetRoom->PNat1[rcapacity]
   }
   ref PPet2->Pet
+  ref PNat1->Nat1
 }

@@ -9,4 +9,10 @@ GrwT Bicyle_Car_I1 {
    node RM : SideMirror
    edge C1->LM : CPair_fst
    edge C1->RM : CPair_snd
+   node BrB1 : Name
+   node BrC1 : Name
+   edge B1->BrB1 : brand
+   edge C1->BrC1 : brand
+   node v10000 : Nat
+   edge C1->v10000 : kilometers
 }

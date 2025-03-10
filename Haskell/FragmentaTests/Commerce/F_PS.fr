@@ -1,0 +1,37 @@
+fragment F_PBe {
+  SG SG_PBe {
+    proxy PNat7
+    proxy PPiece2
+    proxy PProduct4
+    proxy PNamed3
+    proxy PNational2
+    proxy PV20_2
+    node ShoeSize
+    inh ShoeSize->PNat7
+    value 27
+    value 49
+    inh V27->PNat7
+    inh V49->PNat7
+    vcnt ShoeSize->V27[sz_geq: ≥]
+    vcnt ShoeSize->V49[sz_leq: ≤]
+    node Brand
+    node Shoe
+    inh Shoe->PProduct4
+    inh Brand->PNational2
+    inh Brand->PNamed3
+    relu Shoe->Brand[brand]
+    relu Shoe->ShoeSize[size]
+    enum Gender: Male, Female
+    relu Shoe->Gender[gender]
+    enum AgeGroup: Adult, Child, Junior
+    relu Shoe->AgeGroup[ageg]
+    vcnt Shoe->PPiece2[sunit_eq: unit =]
+    vcnt Shoe->PV20_2[svat_eq: vat =]
+  }
+  ref PProduct4->Product
+  ref PNat7->Nat
+  ref PPiece2->VPiece
+  ref PV20_2->V20
+  ref PNamed3->Named
+  ref PNational2->National
+}

@@ -7,6 +7,8 @@ digraph {graph[label=Vehicle_Wheels_I2,labelloc=tl,labelfontsize=12];
 "W2a"[shape=box,fillcolor="#CCFFFF",style = filled,label=":W2a :: Wheel"];
 "W2b"[shape=box,fillcolor="#CCFFFF",style = filled,label=":W2b :: Wheel"];
 "W2c"[shape=box,fillcolor="#CCFFFF",style = filled,label=":W2c :: Wheel"];
+"v4"[shape=box,fillcolor="#CCFFFF",style = filled,label=":v4 :: Nat2To5"];
+"v2"[shape=box,fillcolor="#CCFFFF",style = filled,label=":v2 :: Nat2To5"];
 
 "V1"->"W1a"[label=":V1_W1a ::HasWheels▼",arrowhead=vee];
 "V1"->"W1b"[label=":V1_W1b ::HasWheels▼",arrowhead=vee];
@@ -14,4 +16,6 @@ digraph {graph[label=Vehicle_Wheels_I2,labelloc=tl,labelfontsize=12];
 "V2"->"W2a"[label=":V2_W2a ::HasWheels▼",arrowhead=vee];
 "V2"->"W2b"[label=":V2_W2b ::HasWheels▼",arrowhead=vee];
 "V2"->"W2c"[label=":V2_W2c ::HasWheels▼",arrowhead=vee];
+"V1"->"v4"[label=":V1_v4 ::noDoors▼",arrowhead=vee];
+"V2"->"v2"[label=":V2_v2 ::noDoors▼",arrowhead=vee];
 }

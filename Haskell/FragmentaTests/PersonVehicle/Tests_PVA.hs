@@ -11,6 +11,7 @@ import Mdls
 import Utils ( option_main_save )
 import CheckUtils
 import LoadCheckDraw
+import NumString
 
 def_path :: String
 def_path = "FragmentaTests/PersonVehicle/"
@@ -49,15 +50,15 @@ saveDrawings= do
 test1 :: IO ()
 test1 = do
     putStrLn "Test 1"
-    mdl<-load_mdl_def def_path "m_person_vehicle_any"
-    check_report_wf "M_PVA" (Just Total) mdl True
-    check_report_wf "M_PVA_UF " (Just Total) (mufs mdl) True
-    check_report_wf "◉ M_PVA" (Just Total) (reso_m mdl) True
+    (nmMdl, mdl)<-loadMdl def_path "m_person_vehicle_any"
+    check_report_wf nmMdl (Just Total) mdl True
+    check_report_wf (nmMdl++"_UF ") (Just Total) (mufs mdl) True
+    check_report_wf (nmMdl++ "◉ M_PVA") (Just Total) (reso_m mdl) True
 
 test2 :: IO ()
 test2 = do
     putStrLn "Test 2"
-    mdl<-load_mdl_def def_path "m_person_vehicle_inh"
+    (nmMdl, mdl)<-loadMdl def_path "m_person_vehicle_inh"
     check_report_wf "M_PVI" (Just Total) mdl True
     check_report_wf "M_PVI_UF " (Just Total) (mufs mdl) True
     check_report_wf "◉ M_PVI" (Just Total) (reso_m mdl) True
@@ -97,13 +98,13 @@ test3 = do
 test4 :: IO ()
 test4 = do
     putStrLn "Test 4"
-    amdl<-load_mdl_def def_path "m_person_vehicle_any"
-    cmdl<-load_mdl_def def_path "m_person_vehicle_inh"
+    (nm_amdl, amdl)<-loadMdl def_path "m_person_vehicle_any"
+    (nm_cmdl, cmdl)<-loadMdl def_path "m_person_vehicle_inh"
     (nm_m1, m1)<-loadM def_path "m_PVI_PV.gm"
     (nm_m2, m2)<-loadM def_path "m_PC_PVA.gm"
     (nm_m3, m3)<-loadM def_path "m_V_PVA.gm"
     let m4 = m1 `unionGM` (m2 `unionGM` m3)
-    check_morphism ("(M_PVA, " ++ nm_m1 ++ " U " ++ nm_m2 ++ " U " ++ nm_m3 ++ ") ⊐ M_PVI") (Just TotalM) cmdl m4 amdl True
+    check_morphism ("(" ++ nm_amdl ++ ", " ++ nm_m1 ++ " U " ++ nm_m2 ++ " U " ++ nm_m3 ++ ") ⊐ " ++ nm_cmdl) (Just TotalM) cmdl m4 amdl True
 
 test5 :: IO ()
 test5 = do
@@ -119,10 +120,10 @@ test5 = do
 test6 :: IO ()
 test6 = do
     putStrLn "Test 6"
-    mdl<-load_mdl_def def_path "m_person_vehicle_inh"
+    (nm_mdl, mdl)<-loadMdl def_path "m_person_vehicle_inh"
     (nm_gwt, gwt) <- loadGwT def_path "carlos_joana2.gwt"
     check_report_wf ("GwT " ++ nm_gwt) Nothing gwt True
-    check_report_wf "Model M_PVI" (Just Total) mdl True
+    check_report_wf ("Model " ++ nm_mdl) (Just Total) mdl True
     check_ty_morphism (nm_gwt ++ " ⋑ " ++  "M_PVI") (Just TotalM) gwt mdl True
 
 do_main :: IO ()

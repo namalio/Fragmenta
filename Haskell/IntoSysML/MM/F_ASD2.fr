@@ -2,8 +2,8 @@ fragment F_ASD2 {
   SG SG_ASD2 {
     proxy PAType2
     proxy PNamed2
-    virtual TypedName
-    virtual Initialisable
+    nodea TypedName
+    nodea Initialisable
     node Exp
     node Field
     node FieldI

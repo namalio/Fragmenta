@@ -2,7 +2,9 @@ digraph {graph[label=Bicycle_I2,labelloc=tl,labelfontsize=12];
 "B1"[shape=box,fillcolor="#CCFFFF",style = filled,label=":B1 :: Bicycle"];
 "WF"[shape=box,fillcolor="#CCFFFF",style = filled,label=":WF :: X"];
 "WB"[shape=box,fillcolor="#CCFFFF",style = filled,label=":WB :: Y"];
+"vDisk"[shape=box,fillcolor="#CCFFFF",style = filled,label=":vDisk :: VDisk"];
 
 "B1"->"WF"[label=":B1_WF ::CPair_fst▼",arrowhead=vee];
 "B1"->"WB"[label=":B1_WB ::CPair_snd▼",arrowhead=vee];
+"B1"->"vDisk"[label=":B1_vDisk ::brakes▼",arrowhead=vee];
 }

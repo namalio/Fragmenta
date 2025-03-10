@@ -2,6 +2,7 @@ digraph {graph[label=SG_Pair_Bicycle_Car,labelloc=tl,labelfontsize=12];
 "CPair"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>CPair</I><br/>(V)}>];
 "X"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>X</I><br/>(V)}>];
 "Y"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Y</I><br/>(V)}>];
+"Brand"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Brand</I><br/>(V)}>];
 "Wheel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Wheel"];
 "SideMirror"[shape=record,fillcolor=lightskyblue1,style = filled,label="SideMirror"];
 "Bicycle"[shape=record,fillcolor=lightskyblue1,style = filled,label="Bicycle"];
@@ -22,5 +23,7 @@ digraph {graph[label=SG_Pair_Bicycle_Car,labelloc=tl,labelfontsize=12];
 "Car"->"SideMirror"[label="Car_l: CPair_fst ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
 "Car"->"SideMirror"[label="Car_r: CPair_snd ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
 "Car"->"Nat"[label="kilometers",arrowhead=vee,headlabel="",arrowsize=.5];
-"Bicycle"->"Name"[label="brand",arrowhead=vee,headlabel="",arrowsize=.5];
+"Bicycle"->"Brand"[arrowhead=onormal,arrowsize=2.0];
+"Car"->"Brand"[arrowhead=onormal,arrowsize=2.0];
+"Brand"->"Name"[label="brand",arrowhead=vee,headlabel="",arrowsize=.5];
 }

@@ -44,24 +44,26 @@ consMdl gfg fd = Mdl {gfg_ = gfg, fd_ = fd}
 mufs::(Eq a, Eq b)=>Mdl a b->Fr a b
 mufs = unionFs . ran_of . mfd
 
-from' :: (Eq a, Eq b) => a -> Rel a (Fr a b) -> a
+from' :: (Eq a, Show a, Eq b) => a -> Rel a (Fr a b) -> a
+from' n EmptyS = error $ "Could not find fragment of node" ++ show n
 from' n (Set (gf, f) mf) 
    | n `elem` (ns . fsg $ f) = gf
    | otherwise = from' n mf
 
-from::(Eq a, Eq b)=>Mdl a b->a->a
+from::(Eq a, Eq b, Show a)=>Mdl a b->a->a
 from m n = from' n (mfd m)
 
+is_ref_ok :: (Eq a, Eq b, Show a) => Mdl a b -> a -> Bool
 is_ref_ok m p = (from m p, from m (appl (refs (mufs m)) p)) `elem` (refsOf . mgfg $ m)
 
-complyGFG :: (Eq a, Eq b) => Mdl a b -> Bool
+complyGFG :: (Eq a, Eq b, Show a) => Mdl a b -> Bool
 complyGFG m = all (is_ref_ok m) (nsP . fsg . mufs $ m)
 
 errs_complyGFG :: (Show a, Eq a, Eq b) => Mdl a b -> ErrorTree
 errs_complyGFG m = if complyGFG m then nile else consSET ("The following proxies are not complying with the referencing of the model's GFG: " ++ (showElems' ps))
     where ps = filterS (not . is_ref_ok m)(nsP . fsg . mufs $ m)
 
-okayMdl :: (Eq a, Eq b, GNumSets a) => Mdl a b -> Bool
+okayMdl :: (Eq a, Eq b, Show a, GNumSets a) => Mdl a b -> Bool
 okayMdl m = okayG Nothing (mgfg m)  
    && tfun' (mfd m) (ns . mgfg $ m) 
    && (disjFs . toList. ran_of . mfd $ m)
@@ -97,7 +99,7 @@ reso_m::(Eq a, Eq b)=>Mdl a b->Fr a b
 reso_m = reso_f . mufs
 
 -- Checks that a morphism between models is well-formed 
-okayMGM :: (Eq a, Eq b, GNodesNumConv a, GNumSets a) 
+okayMGM :: (Eq a, Eq b, GNodesNumConv a, Show a, GNumSets a) 
     => (Mdl a b, GrM a b, Mdl a b) -> Bool
 okayMGM (mdls, m, mdlt) = okayGM Nothing (mufs mdls, m, mufs mdlt)
 
@@ -113,7 +115,8 @@ reportMGM :: (Eq a, Eq b, Show a, Show b, GNodesNumConv a, GNumSets a)
 reportMGM nm (mdls, m, mdlt) = reportWF (mdls, m, mdlt) nm okayMGM (errsMGM nm)
 
 -- Checks that one model refines another
-mrefines :: (Eq a, Eq b, GNodesNumConv a, GNumSets a, Foldable t, GRM gm) => (Mdl a b, t (gm a b)) -> Mdl a b -> Bool
+mrefines :: (Eq a, Eq b, Show a, GNodesNumConv a, GNumSets a, Foldable t, GRM gm) 
+    => (Mdl a b, t (gm a b)) -> Mdl a b -> Bool
 mrefines (mdls, ms) mdlt = okayGM (Just TotalM) (mufs mdls, unionGMs ms, mufs mdlt) 
 
 errs_mrefines nm (mdls, ms, mdlt) = 
@@ -181,7 +184,7 @@ rOkayETCMdls id mdls mdlt =
     let err = if okETC (mufs mdls) (mufs mdlt) then nile else consET (id ++ " is invalid") [faultsETC id (mufs mdls) (mufs mdlt)] in
     err
 
-etCompliesMdl::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a) 
+etCompliesMdl::(Eq a, Eq b, Read a, Show a, GNodesNumConv a, GNumSets a) 
     =>(GrwET a b, Mdl a b)->(GrwT a b, Mdl a b)->Bool
 etCompliesMdl (gwet, mdls) (gwt, mdlt) = okayETGM (gwet, mufs mdls) (gwt, mufs mdlt)
 

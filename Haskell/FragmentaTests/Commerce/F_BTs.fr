@@ -1,8 +1,18 @@
 fragment F_BTs {
   SG SG_N {
     node Nat
-    node Name
+    node Nat1
     virtual Named
+    node Name
+    node Country
+    virtual National
     relu Named->Name[name]
+    inh Nat1->Nat
+    value 1
+    value 20
+    inh V1->Nat
+    inh V20->Nat
+    vcnt Nat1->V1[nat1_geq: ≥]
+    relu National->Country[country]
   }
 }

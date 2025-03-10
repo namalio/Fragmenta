@@ -2,10 +2,26 @@ fragment F_PP {
   SG SG_PP {
     virtual Product
     proxy PPercentage
+    enum Unit: Kg, Gr, Piece, Ml, Litre
     proxy PEuro
+    proxy PNamed
+    proxy PNat3
+    proxy PNat11
+    value 0
     relu Product->PEuro[price]
     relu Product->PPercentage[vat]
+    relu Product->Unit[unit]
+    relu Product->PNat11[quantity]
+    inh Product->PNamed
+    vcnt Product->V0[vat_geq: vat >]
+    inh V0->PNat3
+    virtual Volume
+    inh VMl->Volume
+    inh VLitre->Volume
   }
   ref PPercentage->Percentage
   ref PEuro->Euro
+  ref PNamed->Named
+  ref PNat3->Nat
+  ref PNat11->Nat
 }

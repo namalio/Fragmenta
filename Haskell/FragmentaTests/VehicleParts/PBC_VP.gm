@@ -8,6 +8,7 @@ Morphism M_PBC_VP {
        Car->Vehicle
        SideMirror->Part
 	   Nat->Other
+	   Brand->Trait
 	   Name->Other
 	}
 	edges {

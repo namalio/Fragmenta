@@ -7,10 +7,11 @@
 --------------------------
 import Gr_Cls
 import Frs
+import Mdls
 import Utils ( option_main_save )
 import CheckUtils
 import LoadCheckDraw
-import Mdls
+import NumString
 
 def_path :: String
 def_path = "FragmentaTests/MammalFelineCanidae/"
@@ -34,23 +35,23 @@ saveDrawings= do
 -- Figures 9d and 9e 
 do_tst_fr :: IO ()
 do_tst_fr = do
-    (nm_f1, f1)<-load_fr_def def_path "F_M.fr"
-    (nm_f2, f2)<-load_fr_def def_path "F_FC.fr"
+    (nm_f1, f1)<-loadF def_path "F_M.fr"
+    (nm_f2, f2)<-loadF def_path "F_FC.fr"
     check_report_wf nm_f1 (Just Partial) f1 True
     check_report_wf nm_f2 (Just Partial) f2 True
-    let ufs = f1 `union_f` f2
+    let ufs = f1 `unionF` f2
     let rf = reso_f ufs
     check_report_wf "UFs_MammalFelineCanidae" (Just Total) ufs True
     check_report_wf "Rf_UFs_MammalFelineCanidae" (Just Total) rf True
 
 do_tst_mdl :: IO ()
 do_tst_mdl = do
-    mdl<-load_mdl_def def_path "m_feline_canidae"
+    (nm_mdl, mdl)<-loadMdl def_path "m_feline_canidae"
     --(nm_f1, f1)<-load_fr_def def_path "F_M.fr"
     --(nm_f2, f2)<-load_fr_def def_path "F_FC.fr"
     --(nm_gfg, gfg)<-load_gfg_def def_path "m_feline-canidae.gfg"
     --let mdl = cons_mdl gfg [(nm_f1, f1), (nm_f2, f2)]
-    check_report_wf "M_MFC" (Just Total) mdl True
+    check_report_wf nm_mdl (Just Total) mdl True
 
 do_main :: IO ()
 do_main = do

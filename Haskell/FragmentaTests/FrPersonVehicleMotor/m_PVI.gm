@@ -1,7 +1,7 @@
 Morphism M_PVI_To_PVA {
 	nodes {
 		 Person->Person
-	   Vehicle->Vehicle
+	     Vehicle->Vehicle
 		 PVehicle->Vehicle
 		 Motor->Vehicle
 		 Bicycle->Vehicle
@@ -13,14 +13,14 @@ Morphism M_PVI_To_PVA {
 		 TwoWheeler->Vehicle
 		 ThreeWheeler->Vehicle
 		 FourWheeler->Vehicle
-		 PlateNo->Any
+		 PlateNo->Other
 		 Employee->Person
 		 Customer->Person
-		 Wheel->Any
+		 Wheel->Other
 	}
 	edges {
 		Owns->Owns
-	  	Motor_plateNo->MannerRel
-		HasWheels->MannerRel
+	  	Motor_plateNo->OtherRel
+		HasWheels->OtherRel
 	}
 }

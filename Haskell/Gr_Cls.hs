@@ -75,7 +75,7 @@ codg:: (Eq a, Eq b, GRM gm)=> gm a b->(Set a, Set b)
 codg gm = (ran_of . fV $ gm, ran_of . fE $ gm) 
 
 class G_WF_CHK g where
-   okayG::(Eq a, Eq b, GNumSets a) =>Maybe TK->g a b-> Bool
+   okayG::(Eq a, Eq b, Show a, GNumSets a) =>Maybe TK->g a b-> Bool
    faultsG::(Eq a, Eq b, Show a, Show b, GNumSets a) =>String->Maybe TK->g a b-> ErrorTree
 
 data GrM a b = GrM {mV_ :: Rel a a, mE_:: Rel b b} deriving(Eq, Show) 
@@ -109,7 +109,7 @@ instance GRM GrM where
    fE GrM {mV_ = _, mE_ = ef} = ef
 
 class GM_CHK g g' where
-   okayGM::(Eq a, Eq b, GNodesNumConv a, GNumSets a)
+   okayGM::(Eq a, Eq b, Show a, GNodesNumConv a, GNumSets a)
       =>Maybe MK->(g a b, GrM a b, g' a b)->Bool 
    faultsGM::(Eq a, Eq b, Show a, Show b, GNodesNumConv a, GNumSets a)
       => String->Maybe MK->(g a b, GrM a b, g' a b)->ErrorTree
@@ -132,7 +132,7 @@ class Ok_ETC_CHK gt where
    faultsETC::(Eq a, Eq b, Show a, Show b, GET gt)=>String->gt a b->gt a b->ErrorTree
 
 class ET_GM_CHK gi gi' gt where
-   okayETGM::(Eq a, Eq b, Read a, GWET gi, GWT gi', GNodesNumConv a, GNumSets a)=>(gi a b, gt a b)->(gi' a b, gt a b)->Bool 
+   okayETGM::(Eq a, Eq b, Read a, Show a, GWET gi, GWT gi', GNodesNumConv a, GNumSets a)=>(gi a b, gt a b)->(gi' a b, gt a b)->Bool 
    faultsETGM::(Eq a, Eq b, Read a, Show a, Show b, GWET gi, GWT gi', GNodesNumConv a, GNumSets a)=>String->(gi a b, gt a b)->(gi' a b, gt a b)->ErrorTree
 
 -- Numerical conversion for graphs
