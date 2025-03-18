@@ -4,4 +4,6 @@ GrwT Bicycle_I2 {
    node WB : Y
    edge B1->WF : CPair_fst
    edge B1->WB : CPair_snd
+   node vDisk : VDisk
+   edge B1->vDisk: brakes
 }

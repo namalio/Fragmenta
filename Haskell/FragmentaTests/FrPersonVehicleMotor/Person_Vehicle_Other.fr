@@ -1,0 +1,13 @@
+fragment F_Person_Vehicle_Other {
+  SG SG_Person_Vehicle_Other {
+    node Person
+    node Vehicle
+    rel Person->Vehicle[Owns]:1;*
+    node Other
+    virtual Trait
+    rel Trait->Other[OtherRel]:*;*
+    inh Person->Trait
+    inh Vehicle->Trait
+    inh Other->Trait
+   }
+}

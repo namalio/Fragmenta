@@ -64,7 +64,7 @@ instance GWET GrwET where
     etm = get
 
 -- well-formedness
-okGWET :: (Eq a, Eq b, GNumSets a)=>GrwET a b -> Bool
+okGWET :: (Eq a, Eq b, Show a, GNumSets a)=>GrwET a b -> Bool
 okGWET gwet = okayG Nothing (ggwt gwet) && (domg gwet <= els gwet)
 
 errsGWET :: (Show a, Show b, Eq b, Eq a, GNumSets a) => String -> GrwET a b -> [ErrorTree]

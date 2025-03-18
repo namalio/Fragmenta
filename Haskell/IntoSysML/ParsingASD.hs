@@ -93,11 +93,11 @@ parse_venum :: ReadP VTypeDef
 parse_venum = do
    string "enum"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    char ':'
    skipSpaces
-   ls<-manyTill (skipSpaces >> parse_id) (char '\n') 
+   ls<-manyTill (skipSpaces >> parseId) (char '\n') 
    return (VTypeEnum nm ls)
 
 parse_init_exp :: ReadP String
@@ -118,7 +118,7 @@ parse_atype_pty= do
 
 parse_atype_tyid :: ReadP AType
 parse_atype_tyid = do
-   ty_id <- parse_id
+   ty_id <- parseId
    return (ATypeId ty_id)
 
 parse_atype::ReadP AType
@@ -128,7 +128,7 @@ parse_atype = do
 
 parse_TN_pair :: ReadP (Name, AType)
 parse_TN_pair = do
-  nm<-parse_id 
+  nm<-parseId 
   skipSpaces
   vty<-parse_atype
   skipSpaces
@@ -169,7 +169,7 @@ parse_vstrt :: ReadP VTypeDef
 parse_vstrt = do
   string "strt"
   skipSpaces
-  nm<-parse_id 
+  nm<-parseId 
   skipSpaces
   char '{'
   skipSpaces
@@ -216,7 +216,7 @@ parse_dtype :: ReadP VTypeDef
 parse_dtype = do
    string "dtype"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    pt<-parse_ptype
    skipSpaces
@@ -226,7 +226,7 @@ parse_utype :: ReadP VTypeDef
 parse_utype = do
    string "utype"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    pt<-parse_ptype
    skipSpaces
@@ -238,7 +238,7 @@ parse_operation :: ReadP Operation
 parse_operation = do
    string "operation"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    aty<-parse_atype
    skipSpaces
@@ -252,7 +252,7 @@ parse_interface :: ReadP VTypeDef
 parse_interface = do
    string "interface"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    char '{'
    skipSpaces
@@ -287,7 +287,7 @@ parse_outfport = do
   skipSpaces
   p<-parse_inner_prop_info
   skipSpaces
-  ds<-between (char '{') (char '}') (sepBy (skipSpaces>>parse_id) (char ','))
+  ds<-between (char '{') (char '}') (sepBy (skipSpaces>>parseId) (char ','))
   return (OutFlowPort p ds)
 
 parse_apiport_requires :: ReadP APIPortKind
@@ -331,7 +331,7 @@ parse_bsys :: ReadP Block
 parse_bsys = do
    string "system"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    fps<-parse_ports <++ return []
    skipSpaces
@@ -356,7 +356,7 @@ parse_bcompound :: ReadP Block
 parse_bcompound = do
    string "compound"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    pk<-parse_bphenomena
    skipSpaces
@@ -368,7 +368,7 @@ parse_belement :: ReadP Block
 parse_belement = do
    string "element"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    c<-parse_bcomponent
    skipSpaces
@@ -429,13 +429,13 @@ parse_composition ::ReadP ASDElem
 parse_composition = do
    string "composition"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
-   b1<-parse_id 
+   b1<-parseId 
    skipSpaces
    string "->"
    skipSpaces
-   b2<-parse_id 
+   b2<-parseId 
    skipSpaces
    char ':'
    skipSpaces
@@ -453,7 +453,7 @@ parse_ASD :: ReadP ASD
 parse_ASD = do
    string "ASD"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    char ':'
    skipSpaces
@@ -810,7 +810,7 @@ test2 = readP_to_S parse_mults "*"
 test3 = readP_to_S parse_ptype "Int"
 test4 = readP_to_S parse_ptype "Interval 5 6"
 test5a = readP_to_S parse_venum "enum OpenClosed : open closed\n"
-test5b = readP_to_S (manyTill (skipSpaces>>parse_id) eof) "open closed"
+test5b = readP_to_S (manyTill (skipSpaces>>parseId) eof) "open closed"
 test6a = readP_to_S parse_ITN  "v1 OpenClosed \"closed\""
 test6b = readP_to_S parse_port "out v1 OpenClosed \"closed\" {}"
 test6c = readP_to_S parse_port "out v1 OpenClosed \"closed\" {v2}"

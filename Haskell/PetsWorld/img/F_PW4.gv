@@ -1,6 +1,7 @@
 digraph {graph[label=F_PW4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PW4{style=dashed;label=F_PW4;
 "PPet2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet2<br/>(P)>];
+"PNat1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat1<br/>(P)>];
 "PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
 "RoomId"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomId"];
 "Facility"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Facility</I><br/>(A)}>];
@@ -14,7 +15,9 @@ subgraph cluster_F_PW4{style=dashed;label=F_PW4;
 "Facility"->"HotelRoom"[arrowhead=onormal,arrowsize=2.0];
 "Toilet"->"Facility"[arrowhead=onormal,arrowsize=2.0];
 "Grooming"->"Facility"[arrowhead=onormal,arrowsize=2.0];
+"PetRoom"->"PNat1"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
+
 
 }

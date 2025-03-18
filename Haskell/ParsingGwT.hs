@@ -89,6 +89,7 @@ parse_gwt = do
    g_nm<-parseId
    skipSpaces
    elems<-between (char '{') (char '}') (many parse_gwt_elem) 
+   skipSpaces
    return (GwTDef g_nm elems)
 
 --parseFr ls = 

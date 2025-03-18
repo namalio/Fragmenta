@@ -2,7 +2,7 @@ fragment F_M {
   SG F_Mammal {
     node Feline
     node Canidae
-    node Mammal
+    nodea Mammal
     inh Feline->Mammal
     inh Canidae->Mammal
   }

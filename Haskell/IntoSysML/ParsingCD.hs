@@ -34,17 +34,17 @@ parsePortI :: ReadP PortI
 parsePortI = do
    string "port"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
-   parse_id >>= return . PortI nm
+   parseId >>= return . PortI nm
 
 parseBlockI :: ReadP CDElem
 parseBlockI = do
    string "block"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
-   ty<-parse_id 
+   ty<-parseId 
    skipSpaces
    ps<-between (char '{') (skipSpaces >>char '}') (many (skipSpaces >> parsePortI))
    return (ElemB $ BlockI nm ty ps)
@@ -53,40 +53,40 @@ parseCompositionI :: ReadP CDElem
 parseCompositionI = do
    string "composition"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
-   ty<-parse_id
+   ty<-parseId
    skipSpaces
    char ':'
    skipSpaces
-   bls<-parse_id
+   bls<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   blt<-parse_id
+   blt<-parseId
    return (ElemCn $ CompositionI nm ty bls blt)
 
 parseConnector :: ReadP CDElem
 parseConnector = do
    string "connector"
    skipSpaces
-   nm<-option "" parse_id
+   nm<-option "" parseId
    skipSpaces
    char ':'
    skipSpaces
-   ty<-parse_id
+   ty<-parseId
    skipSpaces
    char '@'
    skipSpaces
-   sBl<-parse_id -- name of source block
+   sBl<-parseId -- name of source block
    char '.'
-   sp<-parse_id -- name of source port
+   sp<-parseId -- name of source port
    skipSpaces
    string "->"
    skipSpaces
-   tBl<-parse_id -- name of target block
+   tBl<-parseId -- name of target block
    char '.'
-   tp<-parse_id -- name of target port
+   tp<-parseId -- name of target port
    return (ElemCr $ Connector nm ty (sBl, sp) (tBl, tp))
 
 parseCDElem :: ReadP CDElem
@@ -97,7 +97,7 @@ parseCD :: ReadP CD
 parseCD = do
    string "CD"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    char ':'
    manyTill (skipSpaces >> parseCDElem) (skipSpaces >> eof) >>= return . CD nm

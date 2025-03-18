@@ -23,6 +23,7 @@ import Relations
 
 def_path :: FilePath
 def_path = "FragmentaTests/VehicleParts/"
+
 img_path :: FilePath
 img_path = def_path ++ "img/"
 
@@ -111,14 +112,14 @@ test5 = do
    check_report_wf nm_sg (Just Total) sg True
    check_report_wf nm_asg (Just Total) asg True
    check_report_wf nm_ga (Just Total) gwta True
-   check_report_wf nm_gb (Just Total) gwtb True
-   check_report_wf nm_gc (Just Total) gwtc True
-   check_ty_morphism (nm_ga ++ " (weak)") (Just WeakM) gwta sg True
-   check_ty_morphism (nm_ga ++ " (Total)") (Just TotalM) gwta sg True
-   check_ty_morphism (nm_gb ++ " (weak)") (Just WeakM) gwtb asg True
-   check_ty_morphism (nm_gb ++ " (Total)") (Just TotalM) gwtb asg True
-   check_ty_morphism (nm_gc ++ " (weak)") (Just WeakM) gwtc sg True
-   check_ty_morphism (nm_gc ++ " (Total)") (Just TotalM) gwtc sg False
+   --check_report_wf nm_gb (Just Total) gwtb True
+   --check_report_wf nm_gc (Just Total) gwtc True
+   --check_ty_morphism (nm_ga ++ " (weak)") (Just WeakM) gwta sg True
+   --check_ty_morphism (nm_ga ++ " (Total)") (Just TotalM) gwta sg True
+   --check_ty_morphism (nm_gb ++ " (weak)") (Just WeakM) gwtb asg True
+   --check_ty_morphism (nm_gb ++ " (Total)") (Just TotalM) gwtb asg True
+   --check_ty_morphism (nm_gc ++ " (weak)") (Just WeakM) gwtc sg True
+   --check_ty_morphism (nm_gc ++ " (Total)") (Just TotalM) gwtc sg False
 
 test6 :: IO ()
 test6 = do

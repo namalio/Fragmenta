@@ -168,7 +168,7 @@ reso_f f = consF (reso_sg f) es' (dres (srcR f) es') (dres (tgtR f) es') (fet f)
     where es' = rEsR f
 
 -- Base well-formedness predicate
-okayFz :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
+okayFz :: (Eq a, Eq b, Show a, GNumSets a) => Fr a b -> Bool
 okayFz f = okayG Nothing (fsg f) && disjoint [fLEs f, esR f] 
     && fun_bij (srcR f) (esR f) (nsP . fsg $ f) 
     && tfun' (tgtR f) (esR f) 
@@ -176,11 +176,11 @@ okayFz f = okayG Nothing (fsg f) && disjoint [fLEs f, esR f]
     -- && disjoint [ran_of . tgtR $ f, nsO . fsg $ f]
 
 -- Base well-formedness with acyclicity
-okayFa :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
+okayFa :: (Eq a, Eq b, Show a, GNumSets a) => Fr a b -> Bool
 okayFa f = okayFz f && acyclicG (refsG f)
 
 -- Partial well-formedness of fragments
-okayF :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
+okayF :: (Eq a, Eq b, Show a, GNumSets a) => Fr a b -> Bool
 okayF f = okayFa f && okayG (Just Partial) (reso_sg f)
 
 -- Says whether flow of references goes from one fragment into another
@@ -196,7 +196,7 @@ refsLocal :: (Eq a, Eq b) => Fr a b -> Bool
 refsLocal f = fRNs f <= fLNs f
 
 -- Well-formedness of total fragments
-okayTF :: (Eq a, Eq b, GNumSets a) => Fr a b -> Bool
+okayTF :: (Eq a, Eq b, Show a, GNumSets a) => Fr a b -> Bool
 okayTF f = okayFa f 
    -- && refsLocal f && okayG (Just Total) (reso_sg f)
 
@@ -238,7 +238,7 @@ rOkayTF :: (Eq a, Eq b, Show a, Show b, GNumSets a) => String -> Fr a b -> Error
 rOkayTF id f = reportWF f id okayTF (errsTF id) -- check_wf_of f nm is_wf_tf (errors_tfr nm)
 
 instance G_WF_CHK Fr where
-   okayG :: (Eq a, Eq b, GNumSets a) => Maybe TK -> Fr a b -> Bool
+   okayG :: (Eq a, Eq b, Show a, GNumSets a) => Maybe TK -> Fr a b -> Bool
    okayG Nothing = okayFz
    okayG (Just Total) = okayTF
    okayG (Just Partial) = okayF
@@ -255,7 +255,7 @@ mres m (fs, ft) =
     consGM mv (fE m)
 
 -- Checks that a morphism between fragments is well-formed 
-okayFGM :: (GRM gm, Eq a, Eq b, GNodesNumConv a, GNumSets a) 
+okayFGM :: (GRM gm, Eq a, Eq b, Show a, GNodesNumConv a, GNumSets a) 
     => (Fr a b, gm a b, Fr a b) -> Bool
 okayFGM (fs, m, ft) = tfun (fV m) (fLNs fs) (fLNs ft) 
     && tfun (fE m) (fEsA fs) (fEsA ft)
@@ -276,7 +276,7 @@ reportFGM::(GRM gm, Eq a, Eq b, Show a, Show b, GNodesNumConv a, GNumSets a)
 reportFGM nm (fs, m, ft) = reportWF (fs, m, ft) nm okayFGM errsFGM
 
 -- Partial fragment refinement
-frefines::(Eq a, Eq b, GRM gm, GNodesNumConv a, GNumSets a)=>(Fr a b, gm a b)->Fr a b->Bool
+frefines::(Eq a, Eq b, GRM gm, Show a, GNodesNumConv a, GNumSets a)=>(Fr a b, gm a b)->Fr a b->Bool
 frefines (fc, m) fa = okayFGM (fc, m, fa) 
     && sg_refinesz (reso_sg fc, mres m (fc, fa)) (reso_sg fa)
 
@@ -293,7 +293,8 @@ report_frefines nm (fc, m, fa) = reportWF (fc, m, fa) nm (appl frefines) (appl $
     where appl f = (\(fc, m, fa)->f (fc, m) fa)
 
 -- Total fragment refinement
-tfrefines::(GRM gm, Eq a, Eq b, GNumSets a, GNodesNumConv a)=>(Fr a b, gm a b)->Fr a b->Bool
+tfrefines::(GRM gm, Eq a, Eq b, Show a, GNumSets a, GNodesNumConv a)=>
+    (Fr a b, gm a b)->Fr a b->Bool
 tfrefines (fc, m) fa = okayFGM (fc, m, fa) 
     && okayG (Just Total) fc 
     && okayG (Just Total) fa
@@ -384,7 +385,7 @@ okayETCFs fs ft = (not . isEmptyGM . fet $ fs) && okETSGs (reso_sg fs, fet fs) (
 -- (iii) the domain of the extra typing morphism is the same as the domain of the typing morphism composed with the fragemnt's extra typing,
 -- (iv) the extra typing is a partial morphism from the instance graph into the type graph,
 -- (v) the graph's type fragment is an instance of the fragment which is a type of the given extra type graph (okayETFs)
-etCompliesF::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a) =>(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->Bool
+etCompliesF::(Eq a, Eq b, Read a, Show a, GNodesNumConv a, GNumSets a) =>(GrwET a b, Fr a b)->(GrwT a b, Fr a b)->Bool
 etCompliesF (gwet, f1) (gwt, f2) = 
     okayGM' (Just PartialM) (gwet, f1)
     && okayGM' (Just PartialM) (gwt, f2) 

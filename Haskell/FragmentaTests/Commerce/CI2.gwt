@@ -2,20 +2,30 @@ GrwT CI2 {
 	node bO : Book
 	node Othelo : Name
 	edge bO->Othelo:name
+	node ThomasWalkley : Publisher
+	edge bO->ThomasWalkley:publisher
+	node vKg : VKg
+	edge bO->vKg : unit
 	node pO : Euro
 	node v30: Nat
 	node v0: Nat
 	edge pO->v30:euros
 	edge pO->v0:cents
 	edge bO->pO:price
-	node v1603 : Nat
-	edge bO->v1603:year
+	node v1: Nat
+	edge bO->v1:quantity
+	node v-5 : Nat
+	edge bO->v-5:year
 	node v10:Percentage
 	edge bO->v10:vat
 	node bBD : Book
 	edge bBD->v10:vat
+	edge bBD->v1:quantity
 	node The_Book_of_disquiet : Name
 	edge bBD->The_Book_of_disquiet:name
+	node TintaDaChina : Publisher
+	edge bBD->TintaDaChina : publisher
+	edge bBD->vKg : unit
 	node aFP:Author
 	edge bBD->aFP:authors
 	node Fernando_Pessoa : Name
@@ -33,6 +43,8 @@ GrwT CI2 {
 	node fB : Food
 	node Banana : Name
 	edge fB->Banana:name
+	edge fB->vKg:unit
+	edge fB->v0:quantity
 	node v-4: Percentage
 	edge fB->v-4:vat
 	node vFruitVeg : VFruitVeg
@@ -42,17 +54,42 @@ GrwT CI2 {
 	edge pB->v0:euros
 	edge pB->v102:cents
 	edge fB->pB:price
-	node fGY : Food
-	node Great_Yoghurt : Name
-	edge fGY->Great_Yoghurt:name
-	node v5: Percentage
-	edge fGY->v5:vat
-	node vDairy : VDairy
-	edge fGY->vDairy :category
-	node pGY : Euro
-	node v1: Nat
-	node v6: Nat
-	edge pGY->v1:euros
-	edge pGY->v6:cents
-	edge fGY->pGY:price
+	node vPiece : VPiece
+	node bGW : NonAlcoholic
+	node Great_Water : Name
+	edge bGW->Great_Water:name
+	edge bGW->vPiece:unit
+	edge bGW->v0:quantity
+	node v7: Percentage
+	edge bGW->v7:vat
+	node pGW : Euro
+	node v110: Nat
+	edge pGW->v0:euros
+	edge pGW->v110:cents
+	edge bGW->pGW:price
+	node sNB : Shoe
+	node White_500 : Name
+	edge sNB->White_500:name
+	edge sNB->vPiece:unit
+	node bNB : Brand
+	edge sNB->bNB:brand
+	node NewBalance : Name
+	edge bNB->NewBalance:name
+	node US:Country
+	edge bNB->US:country
+	node vMale : VMale
+	node vAdult : VAdult
+	edge sNB->vMale:gender
+	edge sNB->vAdult:ageg
+	node pSNB : Euro
+	node v91: Nat
+	node v50: Nat
+	edge pSNB->v91:euros
+	edge pSNB->v50:cents
+	edge sNB->pSNB:price
+	node v20: Percentage
+	edge sNB->v20:vat
+	edge sNB->v1:quantity
+	node v18: ShoeSize
+	edge sNB->v18:size
 }

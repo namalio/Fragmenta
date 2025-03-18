@@ -1,0 +1,23 @@
+fragment F_PBe {
+  SG SG_PBe {
+    proxy PNat6
+    proxy PVolume
+    proxy PV20_1
+    nodea Beverage
+    node Alcoholic
+    node NonAlcoholic
+    value 7
+    inh V7->PNat6
+    inh Alcoholic->Beverage
+    inh NonAlcoholic->Beverage
+    proxy PProduct3
+    inh Beverage->PProduct3
+    vcnt Alcoholic->PV20_1[alvat_eq: vat =]
+    vcnt NonAlcoholic->V7[nalvat_eq: vat =]
+    derived Beverage->PVolume[UB <-> unit]:*;1
+  }
+  ref PProduct3->Product
+  ref PNat6->Nat
+  ref PVolume->Volume
+  ref PV20_1->V20
+}

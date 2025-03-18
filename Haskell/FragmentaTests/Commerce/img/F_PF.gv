@@ -1,10 +1,9 @@
 digraph {graph[label=F_PF,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_PF{style=dashed;label=F_PF;
 "Food"[shape=record,fillcolor=lightskyblue1,style = filled,label="Food"];
-"PNat4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat4<br/>(P)>];
+"PNat5"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat5<br/>(P)>];
 "V4"[shape=cds,fillcolor="#FFF2CC",style = filled,label="4"];
 "PProduct2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product2<br/>(P)>];
-"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
 "FoodGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="FoodGroup\l(enum)"];
 "VFruitVeg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="FruitVeg"];
 "VStarchy"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Starchy"];
@@ -13,8 +12,7 @@ subgraph cluster_F_PF{style=dashed;label=F_PF;
 "VProtein"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Protein"];
 
 "Food"->"PProduct2"[arrowhead=onormal,arrowsize=2.0];
-"Food"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
-"V4"->"PNat4"[arrowhead=onormal,arrowsize=2.0];
+"V4"->"PNat5"[arrowhead=onormal,arrowsize=2.0];
 "VFruitVeg"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
 "VStarchy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
 "VDairy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
@@ -25,7 +23,6 @@ subgraph cluster_F_PF{style=dashed;label=F_PF;
 
 
 }
-
 
 
 }

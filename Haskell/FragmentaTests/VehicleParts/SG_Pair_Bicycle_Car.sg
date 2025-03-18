@@ -2,6 +2,7 @@ SG SG_Pair_Bicycle_Car {
    virtual CPair
    virtual X
    virtual Y
+   virtual Brand
    comp CPair->X[CPair_fst]:0..1;*
    comp CPair->Y[CPair_snd]:0..1;*
    node Wheel
@@ -21,5 +22,7 @@ SG SG_Pair_Bicycle_Car {
    node Nat
    node Name
    relu Car->Nat[kilometers]
-   relu Bicycle->Name[brand]
+   inh Bicycle->Brand
+   inh Car->Brand
+   relu Brand->Name[brand]
 }

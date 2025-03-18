@@ -17,8 +17,8 @@ GrwT Car_Wheels_I1a {
    edge C2->W2b : HasWheels
    edge C2->W2c : HasWheels
    edge C2->W2d : HasWheels
-   node v1000:Nat
-   node v10000:Nat
-   edge C1->v1000:kilometers
-   edge C2->v10000:kilometers
+   node v1000 : Nat
+   node v10000 : Nat
+   edge C1->v1000 : kilometers
+   edge C2->v10000 : kilometers
 }

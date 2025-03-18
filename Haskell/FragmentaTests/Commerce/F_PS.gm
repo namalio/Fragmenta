@@ -1,0 +1,28 @@
+Morphism F_PBk {
+	nodes {
+	 PNat7->Nat
+	 PPiece2->OtherF
+	 PProduct4->Product
+	 PNamed3->Feature
+	 PNational2->Feature
+	 PV20_2->Nat
+	 ShoeSize->Nat
+	 Brand->OtherF
+	 Shoe->Product
+	 Gender->OtherF
+	 VMale->OtherF
+	 VFemale->OtherF
+	 V27->Nat
+	 V49->Nat
+	 AgeGroup->OtherF
+	 VAdult->OtherF
+	 VChild->OtherF
+	 VJunior->OtherF
+	}
+	edges {
+	   size->HasAttributes
+	   gender->HasAttributes
+	   ageg->HasAttributes
+	   brand->HasAttributes
+	}
+}

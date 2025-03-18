@@ -43,7 +43,7 @@ instance GWT GrwT where
     ty = t'
 
 -- well-formedness
-okGWT :: (Eq a, Eq b, GNumSets a)=>GrwT a b -> Bool
+okGWT :: (Eq a, Eq b, Show a, GNumSets a)=>GrwT a b -> Bool
 okGWT gwt = 
     okayG Nothing (gOf gwt) && domg gwt == els gwt 
 

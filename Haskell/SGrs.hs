@@ -292,7 +292,7 @@ mults_wf :: Set (Mult) -> Bool
 mults_wf = all multwf
 
 -- Checks whether a SG is well-formed either totally or partially
-okaySGz::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
+okaySGz::(Eq a, Eq b, Show a, GNumSets a)=>SGr a b->Bool
 okaySGz sg = okayG Nothing (g_sg sg)
    && tfun (nty sg) (ns sg) sgnty_set
    && tfun (ety sg) (es sg) sgety_set
@@ -300,7 +300,7 @@ okaySGz sg = okayG Nothing (g_sg sg)
    && (dom_of . tgtm $ sg) <= es sg
 
 -- Checks whether a SG is well-formed partially
-okaySG::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
+okaySG::(Eq a, Eq b, Show a, GNumSets a)=>SGr a b->Bool
 okaySG sg = okaySGz sg
    && mults_wf (ran_of . srcm $ sg) && mults_wf (ran_of . tgtm $ sg) 
    && tfun' (srcma sg) (esM sg) && tfun' (tgtm sg) (esM sg)
@@ -384,7 +384,7 @@ isInhTree :: (Eq a, Eq b) => SGr a b -> Bool
 isInhTree sg = pfun (inhMinus sg) (ns sg) (ns sg) 
 
 -- WF of total SGs
-okayTSG::(Eq a, Eq b, GNumSets a)=>SGr a b->Bool
+okayTSG::(Eq a, Eq b, Show a, GNumSets a)=>SGr a b->Bool
 okayTSG sg = okaySG sg && etherealInherited sg 
    && esCntsOk sg && isInhTree sg 
 
@@ -1395,14 +1395,19 @@ okRealCnt sg t ns op nt =
 --       errs2 = errsSatisfiesARealCnt sg t ns op nt in
 --   if okIntCnt sg t ns op nt || okRealCnt sg t ns op nt then nile else consET mMsg [errs1, errs2]
 
-satisfiesACnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
+satisfiesCnt::(Eq a, Eq b, Read a, GRM gm, GNumSets a, GNodesNumConv a)
    =>SGr a b->gm a b->a->SGVCEOP->a->Bool
-satisfiesACnt sg t ns op nt = 
-   let ons = toNum sg ns (appl (fV t) ns)
+satisfiesCnt sg t ns op nt = 
+   let mns = appl (fV t) ns
+       ons = toNum sg ns mns
        ont = toNum sg nt nt
        bothInt = isNumInt ons && isNumInt ont
-       bothReal = isNumReal ons && isNumReal ont in
-   ns `elem` dom_of (fV t) && (bothInt && rOp op (gIntFrNum ons) (gIntFrNum ont) || bothReal && rOp op (gRealFrNum ons) (gRealFrNum ont))
+       bothReal = isNumReal ons && isNumReal ont 
+       eqAndbothVal = op == Eq && mns == nt && nt `elem` nsVa sg in
+   ns `elem` dom_of (fV t) 
+   && (bothInt && rOp op (gIntFrNum ons) (gIntFrNum ont)
+   || bothReal && rOp op (gRealFrNum ons) (gRealFrNum ont)
+   || eqAndbothVal)
 
 satisfiesVCEECnt::(Eq a, Eq b, Read a, GR g, GRM g, GWT g, GNumSets a, GNodesNumConv a)
    =>SGr a b->g a b->b->Bool
@@ -1411,14 +1416,14 @@ satisfiesVCEECnt sg gwt vce =
        op = fst . appl (vcei sg) $ vce 
        nt = appl (tgt sg) vce 
        ies = filterS (\e->appl (fV gwt) (appl (src gwt) e) == appl (src sg) vce) $ img (inv . fE $ gwt) (maybeToSet . snd . appl (vcei sg) $ vce) in
-   all (\e->satisfiesACnt sg (ty gwt) (ns e) op nt) ies
+   all (\e->satisfiesCnt sg (ty gwt) (ns e) op nt) ies
 
 satisfiesVCENCnt::(Eq a, Eq b, Read a, GNumSets a, GNodesNumConv a)
    =>SGr a b->GrwT a b->b->Bool
 satisfiesVCENCnt sg gwt vce = 
    let op = fst . appl (vcei sg) $ vce 
        nt = appl (tgt sg) vce in
-   all (\n->satisfiesACnt sg (ty gwt) n op nt) (img (inv . fV $ gwt) (img (src sg) $ singles vce))
+   all (\n->satisfiesCnt sg (ty gwt) n op nt) (img (inv . fV $ gwt) (img (src sg) $ singles vce))
 
 errsSatisfiesVCEECnt::(Eq a, Eq b, Read a, Show b, GNumSets a, GNodesNumConv a)
    =>SGr a b->GrwT a b->b->ErrorTree
@@ -1428,7 +1433,7 @@ errsSatisfiesVCEECnt sg gwt vce =
        op = fst . appl (vcei sg) $ vce 
        nt = appl (tgt sg) vce
        ies = filterS (\e->appl (fV gwt) (appl (src gwt) e) == appl (src sg) vce) $ img (inv . fE $ gwt) (maybeToSet . snd . appl (vcei sg) $ vce) 
-       errIEs = filterS (\e->not $ satisfiesACnt sg (ty gwt) (ns e) op nt) ies
+       errIEs = filterS (\e->not $ satisfiesCnt sg (ty gwt) (ns e) op nt) ies
        --errs = map (\ie->errsSatisfiesACnt sg (ty gwt) (appl (tgt gwt) ie) op nt) (toList errIEs)
        msg = "Several instance edges breach the SG value constraint edge '"
        err = consSET (msg ++ vce' ++ "': " ++ showEdges errIEs) in
@@ -1440,7 +1445,7 @@ errsSatisfiesVCENCnt sg gwt vce =
    let vce' = tail . slimShow $ vce
        op = fst . appl (vcei sg) $ vce 
        nt = appl (tgt sg) vce
-       errINs = filterS (\n->not $ satisfiesACnt sg (ty gwt) n op nt) $ img (inv . fV $ gwt) (img (src sg) $ singles vce)
+       errINs = filterS (\n->not $ satisfiesCnt sg (ty gwt) n op nt) $ img (inv . fV $ gwt) (img (src sg) $ singles vce)
        --errs = map (\ie->errsSatisfiesACnt sg (ty gwt) (appl (tgt gwt) ie) op nt) (toList errIEs)
        msg = "Several instance nodes breach the SG value constraint edge '"
        err = consSET (msg ++ vce' ++ "': " ++ showThemSlimmed errINs) in

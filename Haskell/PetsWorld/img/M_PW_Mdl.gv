@@ -80,6 +80,7 @@ subgraph cluster_F_PW3{style=dashed;label=F_PW3;
 
 subgraph cluster_F_PW4{style=dashed;label=F_PW4;
 "PPet2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Pet2<br/>(P)>];
+"PNat1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat1<br/>(P)>];
 "PetRoom"[shape=record,fillcolor=lightskyblue1,style = filled,label="PetRoom"];
 "RoomId"[shape=record,fillcolor=lightskyblue1,style = filled,label="RoomId"];
 "Facility"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Facility</I><br/>(A)}>];
@@ -93,8 +94,10 @@ subgraph cluster_F_PW4{style=dashed;label=F_PW4;
 "Facility"->"HotelRoom"[arrowhead=onormal,arrowsize=2.0];
 "Toilet"->"Facility"[arrowhead=onormal,arrowsize=2.0];
 "Grooming"->"Facility"[arrowhead=onormal,arrowsize=2.0];
+"PetRoom"->"PNat1"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
+
 
 subgraph cluster_F_PW5{style=dashed;label=F_PW5;
 "PHotelRoom"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<HotelRoom<br/>(P)>];
@@ -129,13 +132,11 @@ subgraph cluster_F_PW6{style=dashed;label=F_PW6;
 "PFacility"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Facility<br/>(P)>];
 "PHCardId"[shape=record,fillcolor=lightskyblue1,style = filled,label="PHCardId"];
 "PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
-"PNat1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat1<br/>(P)>];
 
 "PetHotel"->"HotelGroup"[label="OfGroup▼",dir=none,taillabel="*",headlabel="0..1"];
 "PetHotel"->"PPHCard"[label="lcards",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PetHotel"->"PFacility"[label="facilities",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PetHotel"->"PPetRoom"[label="rooms",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
-"PPetRoom"->"PNat1"[label="rcapacity",arrowhead=vee,headlabel="",arrowsize=.5];
 "PPHCard"->"PNat"[label="points",arrowhead=vee,headlabel="",arrowsize=.5];
 "PPHCard"->"PHCardId"[label="cid▼",dir=none,taillabel="0..1",headlabel=""];
 "PetHotel"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
@@ -144,7 +145,6 @@ subgraph cluster_F_PW6{style=dashed;label=F_PW6;
 "HotelGroup"->"PLocatable"[arrowhead=onormal,arrowsize=2.0];
 
 }
-
 
 
 

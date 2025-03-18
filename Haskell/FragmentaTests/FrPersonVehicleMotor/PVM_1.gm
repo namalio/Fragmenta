@@ -5,10 +5,10 @@ Morphism PVM_1 {
 	  Motor->Vehicle
 	  Employee->Person
 	  Customer->Person
-      PlateNo->Any
+      PlateNo->Other
 	}
 	edges {
 	  Owns->Owns
-	  Motor_plateNo->MannerRel
+	  Motor_plateNo->OtherRel
 	}
 }

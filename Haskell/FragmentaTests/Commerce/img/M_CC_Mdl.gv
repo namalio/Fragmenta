@@ -1,4 +1,23 @@
 digraph {graph[label=M_CC,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_BTs{style=dashed;label=F_BTs;
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Nat1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat1"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
+"National"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>National</I><br/>(V)}>];
+"V1"[shape=cds,fillcolor="#FFF2CC",style = filled,label="1"];
+"V20"[shape=cds,fillcolor="#FFF2CC",style = filled,label="20"];
+
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Nat1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V20"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Nat1"->"V1"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"National"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
+
+}
 subgraph cluster_F_P{style=dashed;label=F_P;
 "Percentage"[shape=record,fillcolor=lightskyblue1,style = filled,label="Percentage"];
 "PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
@@ -24,54 +43,103 @@ subgraph cluster_F_E{style=dashed;label=F_E;
 
 }
 
-subgraph cluster_F_BTs{style=dashed;label=F_BTs;
-"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
-"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
-"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
-
-"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
-
-}
 subgraph cluster_F_PP{style=dashed;label=F_PP;
 "Product"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Product</I><br/>(V)}>];
 "PPercentage"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Percentage<br/>(P)>];
+"Unit"[shape=record,fillcolor="#FFCCFF",style = filled,label="Unit\l(enum)"];
+"VKg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Kg"];
+"VGr"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Gr"];
+"VPiece"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Piece"];
+"VMl"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Ml"];
+"VLitre"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Litre"];
 "PEuro"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Euro<br/>(P)>];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"PNat3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat3<br/>(P)>];
+"PNat11"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat11<br/>(P)>];
+"V0"[shape=cds,fillcolor="#FFF2CC",style = filled,label="0"];
+"Volume"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Volume</I><br/>(V)}>];
 
+"VKg"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VGr"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VPiece"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VMl"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VLitre"->"Unit"[arrowhead=onormal,arrowsize=2.0];
 "Product"->"PEuro"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
 "Product"->"PPercentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Unit"[label="unit",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PNat11"[label="quantity",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"V0"[arrowhead=vee,style=dashed,label="vat >"];
+
+"V0"->"PNat3"[arrowhead=onormal,arrowsize=2.0];
+"VMl"->"Volume"[arrowhead=onormal,arrowsize=2.0];
+"VLitre"->"Volume"[arrowhead=onormal,arrowsize=2.0];
 
 }
 
 
-subgraph cluster_F_PB{style=dashed;label=F_PB;
+
+
+
+subgraph cluster_F_PBk{style=dashed;label=F_PBk;
 "Book"[shape=record,fillcolor=lightskyblue1,style = filled,label="Book"];
 "PProduct"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product<br/>(P)>];
-"PNat3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat3<br/>(P)>];
-"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"PNat4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat4<br/>(P)>];
+"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"PPiece"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Piece<br/>(P)>];
+"PNational"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<National<br/>(P)>];
 "Author"[shape=record,fillcolor=lightskyblue1,style = filled,label="Author"];
-"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
+"Publisher"[shape=record,fillcolor=lightskyblue1,style = filled,label="Publisher"];
 "V10"[shape=cds,fillcolor="#FFF2CC",style = filled,label="10"];
 
 "Book"->"PProduct"[arrowhead=onormal,arrowsize=2.0];
-"V10"->"PNat3"[arrowhead=onormal,arrowsize=2.0];
-"Book"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
-"Author"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
-"Book"->"PNat3"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
+"V10"->"PNat4"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"PNational"[arrowhead=onormal,arrowsize=2.0];
+"Book"->"PNat4"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
 "Book"->"Author"[label="authors",arrowhead=vee,headlabel="1..*",arrowsize=.5];
-"Author"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"Publisher"[label="publisher",arrowhead=vee,headlabel="",arrowsize=.5];
 "Book"->"V10"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Book"->"PPiece"[arrowhead=vee,style=dashed,label="unit ="];
 
 
 }
+
+
+
+
+
+subgraph cluster_F_PBe{style=dashed;label=F_PBe;
+"PNat6"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat6<br/>(P)>];
+"PVolume"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Volume<br/>(P)>];
+"PV20_1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<V20_1<br/>(P)>];
+"Beverage"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Beverage</I><br/>(A)}>];
+"Alcoholic"[shape=record,fillcolor=lightskyblue1,style = filled,label="Alcoholic"];
+"NonAlcoholic"[shape=record,fillcolor=lightskyblue1,style = filled,label="NonAlcoholic"];
+"V7"[shape=cds,fillcolor="#FFF2CC",style = filled,label="7"];
+"PProduct3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product3<br/>(P)>];
+
+"V7"->"PNat6"[arrowhead=onormal,arrowsize=2.0];
+"Alcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
+"NonAlcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
+"Beverage"->"PProduct3"[arrowhead=onormal,arrowsize=2.0];
+"Alcoholic"->"PV20_1"[arrowhead=vee,style=dashed,label="vat ="];
+
+"NonAlcoholic"->"V7"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Beverage"->"PVolume"[label="UB: unit ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+
+}
+
 
 
 
 subgraph cluster_F_PF{style=dashed;label=F_PF;
 "Food"[shape=record,fillcolor=lightskyblue1,style = filled,label="Food"];
-"PNat4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat4<br/>(P)>];
+"PNat5"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat5<br/>(P)>];
 "V4"[shape=cds,fillcolor="#FFF2CC",style = filled,label="4"];
 "PProduct2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product2<br/>(P)>];
-"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
 "FoodGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="FoodGroup\l(enum)"];
 "VFruitVeg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="FruitVeg"];
 "VStarchy"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Starchy"];
@@ -80,8 +148,7 @@ subgraph cluster_F_PF{style=dashed;label=F_PF;
 "VProtein"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Protein"];
 
 "Food"->"PProduct2"[arrowhead=onormal,arrowsize=2.0];
-"Food"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
-"V4"->"PNat4"[arrowhead=onormal,arrowsize=2.0];
+"V4"->"PNat5"[arrowhead=onormal,arrowsize=2.0];
 "VFruitVeg"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
 "VStarchy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
 "VDairy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
@@ -92,6 +159,56 @@ subgraph cluster_F_PF{style=dashed;label=F_PF;
 
 
 }
+
+
+subgraph cluster_F_PS{style=dashed;label=F_PS;
+"PNat7"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat7<br/>(P)>];
+"PPiece2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Piece2<br/>(P)>];
+"PProduct4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product4<br/>(P)>];
+"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
+"PNational2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<National2<br/>(P)>];
+"PV20_2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<V20_2<br/>(P)>];
+"ShoeSize"[shape=record,fillcolor=lightskyblue1,style = filled,label="ShoeSize"];
+"V27"[shape=cds,fillcolor="#FFF2CC",style = filled,label="27"];
+"V49"[shape=cds,fillcolor="#FFF2CC",style = filled,label="49"];
+"Brand"[shape=record,fillcolor=lightskyblue1,style = filled,label="Brand"];
+"Shoe"[shape=record,fillcolor=lightskyblue1,style = filled,label="Shoe"];
+"Gender"[shape=record,fillcolor="#FFCCFF",style = filled,label="Gender\l(enum)"];
+"VMale"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Male"];
+"VFemale"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Female"];
+"AgeGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="AgeGroup\l(enum)"];
+"VAdult"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Adult"];
+"VChild"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Child"];
+"VJunior"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Junior"];
+
+"ShoeSize"->"PNat7"[arrowhead=onormal,arrowsize=2.0];
+"V27"->"PNat7"[arrowhead=onormal,arrowsize=2.0];
+"V49"->"PNat7"[arrowhead=onormal,arrowsize=2.0];
+"ShoeSize"->"V27"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"ShoeSize"->"V49"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"Shoe"->"PProduct4"[arrowhead=onormal,arrowsize=2.0];
+"Brand"->"PNational2"[arrowhead=onormal,arrowsize=2.0];
+"Brand"->"PNamed3"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"Brand"[label="brand",arrowhead=vee,headlabel="",arrowsize=.5];
+"Shoe"->"ShoeSize"[label="size",arrowhead=vee,headlabel="",arrowsize=.5];
+"VMale"->"Gender"[arrowhead=onormal,arrowsize=2.0];
+"VFemale"->"Gender"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"Gender"[label="gender",arrowhead=vee,headlabel="",arrowsize=.5];
+"VAdult"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"VChild"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"VJunior"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"AgeGroup"[label="ageg",arrowhead=vee,headlabel="",arrowsize=.5];
+"Shoe"->"PPiece2"[arrowhead=vee,style=dashed,label="unit ="];
+
+"Shoe"->"PV20_2"[arrowhead=vee,style=dashed,label="vat ="];
+
+
+}
+
+
+
 
 
 

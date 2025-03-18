@@ -1,0 +1,14 @@
+Morphism F_PBe {
+	nodes {
+	 PNat6->Nat
+	 Beverage->Product
+	 PProduct3->Product
+	 V7->Nat
+	 PV20_1->Nat
+	 Alcoholic->Product
+	 NonAlcoholic->Product
+	 PVolume->Feature
+	}
+	edges {
+	}
+}

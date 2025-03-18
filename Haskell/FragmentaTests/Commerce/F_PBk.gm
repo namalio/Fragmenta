@@ -1,16 +1,18 @@
-Morphism F_PB {
+Morphism F_PBk {
 	nodes {
-	 PNat3->Nat
+	 PNat4->Nat
 	 PProduct->Product
 	 Book->Product
 	 V10->Nat
 	 Author->OtherF
-	 Country->OtherF
-	 PNamed->Feature
+	 Publisher->OtherF
+	 PNamed2->Feature
+	 PNational->Feature
+	 PPiece->OtherF
 	}
 	edges {
 	   year->HasAttributes
 	   authors->HasAttributes
-	   country->HasAttributes
+	   publisher->HasAttributes
 	}
 }
