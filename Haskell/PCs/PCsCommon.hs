@@ -11,11 +11,24 @@ import ParseUtils
 import PCs.PCs_MM_Names
 
 type Id = String
-data Type = Int | Bool | Event | Set Type | None
+data Type 
+    = Int 
+    | Bool 
+    | Event 
+    | Set Type 
+    | None
     deriving (Eq, Show)
+
 data Param = Param Id Type
     deriving(Eq) 
-data OpKind = Choice | IntChoice | Interleave | Throw | If | Parallel
+
+data OpKind 
+    = Choice 
+    | IntChoice 
+    | Interleave 
+    | Throw 
+    | If 
+    | Parallel
    deriving(Eq, Read) 
 
 instance Show Param where

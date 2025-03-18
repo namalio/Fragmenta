@@ -1,6 +1,7 @@
 module Sets (
    Set(..)
    , singles
+   , set1
    , filterS
    , zipS
    , set
@@ -32,16 +33,12 @@ instance Nil Set where
    nil = EmptyS
    isNil EmptyS = True
    isNil _ = False
---nilSet :: Set a
---nilSet = EmptyS
-
---instance Unique Set where
---   unique :: Eq a => Set a -> Bool
---   unique EmptyS = True
---   unique (x `Set` xs) = if x `elem` xs then False else unique xs
 
 singles :: a -> Set a
 singles x = x `Set` EmptyS
+
+set1 :: a -> Set a
+set1 = singles
 
 joinS::Set a->Set a->Set a
 joinS EmptyS s = s

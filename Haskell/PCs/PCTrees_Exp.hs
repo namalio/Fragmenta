@@ -10,6 +10,7 @@ module PCs.PCTrees_Exp
     , PCEBinOp(..)
     , PCE(..)
     , PCEUnOp(..)
+    , PCELitBool(..)
     , PCEAtom(..)
     , cIdExp)
 where
@@ -18,25 +19,49 @@ import PCs.PCsCommon(Id)
 import ShowUtils
 import SGrs (SGVCEOP(Neq))
 
-data PCERelOp =  OGT | OLT | OLEQ | OGEQ | OEQ | ONEQ 
+data PCERelOp 
+    =  OGT 
+    | OLT 
+    | OLEQ 
+    | OGEQ 
+    | OEQ 
+    | ONEQ 
     deriving Eq
 
 pcteOps::[PCERelOp]
 pcteOps = [OGT, OLT, OLEQ, OGEQ, OEQ, ONEQ]
 
-data PCEBinOp = Plus | Minus | Prod | Div | Remainder | And | Or 
+data PCEBinOp 
+    = Plus 
+    | Minus 
+    | Prod 
+    | Div 
+    | Remainder 
+    | And 
+    | Or 
     deriving Eq
 
-data PCEUnOp = UMinus | UNot
+data PCEUnOp 
+    = UMinus 
+    | UNot
+    deriving Eq
+
+data PCELitBool
+    = TrueL
+    | FalseL
     deriving Eq
 
 -- A PCTEAtom 
-data PCEAtom = IdExp Id | TrueExp | FalseExp | NumExp Int 
-    | ParExp PCE | DotExp Id PCEAtom
+data PCEAtom 
+    = IdExp Id 
+    | BLit PCELitBool
+    | NumExp Int 
+    | ParExp PCE 
+    | DotExp Id PCEAtom
     deriving Eq
 
-data PCE = 
-    ExpAtom PCEAtom
+data PCE 
+    = ExpAtom PCEAtom
     | RelOpExp PCERelOp PCEAtom PCE
     | BinExp PCEBinOp PCEAtom PCE 
     | UnExp PCEUnOp PCE 
@@ -69,11 +94,13 @@ instance Show PCEUnOp where
 --instance Show PCExpC where
     --show::PCExpAtom->String
 
+instance Show PCELitBool where
+    show TrueL = "True"
+    show FalseL = "False"
 
 instance Show PCEAtom where
     show (IdExp id) = id
-    show TrueExp = "True"
-    show FalseExp = "False"
+    show (BLit lb) = show lb
     show (NumExp k) = show k
     show (ParExp e) = ('(':show e)++")"
     show (DotExp id e) = id ++ ('.':show e)

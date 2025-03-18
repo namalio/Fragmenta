@@ -4,7 +4,7 @@
 -- Description: The MMI (meta-model information) structure
 -- Author: Nuno Amálio
 ------------------------
-
+{-# LANGUAGE TemplateHaskell #-}
 module MMI (
   MMI
   , consMMI
@@ -18,31 +18,33 @@ import Gr_Cls
 import Grs
 import SGrs
 import Mdls 
+import Control.Lens
 
-data MMI a b = MMI (Mdl a b) (Mdl a b) (GrM a b) (SGr a b) 
-  deriving (Show)
+data MMI a b = MMI 
+  {_cmm :: Mdl a b -- concrete metamodel
+  , _amm :: Mdl a b -- abstract metamodel
+  , _rm :: GrM a b -- refinement morphism
+  , _crsg :: SGr a b -- concrete and resolved SG
+  } deriving (Show)
+
+makeLenses ''MMI
 
 consMMI::Mdl a b->Mdl a b->GrM a b->SGr a b->MMI a b
 consMMI = MMI 
 
 -- extracts concrete metamodel
 gCMM::MMI a b->Mdl a b
-gCMM (MMI cmm _ _ _) = cmm
+gCMM mmi = mmi^.cmm
+
 -- extracts abstract metamodel
 gAMM::MMI a b->Mdl a b
-gAMM (MMI _ amm _ _) = amm
+gAMM mmi = mmi^.amm
+
 -- extracts refinement morphism
 gRM::MMI a b->GrM a b
-gRM (MMI _ _ rm _) = rm
+gRM mmi = mmi^.rm
 
 -- extracts metamodel's concrete and resolved SG 
 gCRSG::MMI a b->SGr a b
-gCRSG (MMI _ _ _ sgcmm) = sgcmm
--- extracts the graph with typing 
---gGwT::MMI a b->Maybe (GrwT a b)
---gGwT(MMI _ _ _ _ gwt) = gwt
+gCRSG mmi = mmi^.crsg
 
---mmi_cmm MMI {cmm_ = cmm, amm_ = _, rm_ = _, sg_cmm_ = _} = cmm
---mmi_amm MMI {cmm_ = _, amm_ = amm, rm_ = _, sg_cmm_ = _} = amm
---mmi_rm MMI {cmm_ = _, amm_ = _, rm_ = rm, sg_cmm_ = _} = rm
---mmi_sg_cmm MMI {cmm_ = _, amm_ = _, rm_ = _ , sg_cmm_ = sgcmm} = sgcmm

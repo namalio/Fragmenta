@@ -24,7 +24,10 @@ import PCs.PCsCommon(Id)
 
 
 -- A PCT type designator (int, bool, or some datatype)
-data PCTTypeD = Int | Bool | DT Id
+data PCTTypeD 
+  = Int 
+  | Bool 
+  | DT Id
   deriving (Eq)
 
 
@@ -62,8 +65,8 @@ instance Show Param where
 type G = PCE
 
 -- A Tree operator
-data TOp = 
-  OpExtChoice -- external choice
+data TOp 
+  = OpExtChoice -- external choice
   | OpIntChoice -- internal choice
   | OpSeq Bool -- Sequential composition (boolean indicates whether it is open or closed)
   | OpParallel [PCE] -- parallel operator
@@ -78,20 +81,21 @@ data ROp = OpRExtChoice Id Id
   deriving(Eq, Show)  
 
 -- Process Trees
-data PT = Atom PCEAtom (Maybe G)  -- An atom is an atomic expression and a guard
+data PT 
+  = Atom PCEAtom (Maybe G)  -- An atom is an atomic expression and a guard
   | OpB TOp PT PT 
-  | Kappa PDT 
+  | Kappa PD
   | OpKappa Id ROp PT 
   | Rho Id (Maybe G) [PCE] (Rel Id Id) -- Optional expression represents guard
   | NilT | StopT | SkipT 
   deriving(Eq, Show)
 
--- A data type definition
+-- A data type definition: takes an identifier and a set of literals
 data DTDef = DTDef Id (Set Id) 
   deriving(Eq, Show)
 
--- Process definition trees
-data PDT = PDT Id [Param] [PDT] PT 
+-- Process definition 
+data PD = PD Id [Param] [PDT] PT 
   deriving(Eq, Show)
 
 data PCTD = PCTD Id [DTDef] [PDT] 

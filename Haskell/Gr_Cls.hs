@@ -32,24 +32,26 @@ import Relations ( appl, applM, dom_of, ran_of, Rel )
 import ErrorAnalysis ( ErrorTree )
 import Sets ( filterS, Set(..) )
 
-data Gr a b = Gr {
-   ns_ :: Set a, 
-   es_ ::  Set b,
-   src_ :: Rel b a,
-   tgt_ :: Rel b a} 
-   deriving(Eq, Show) 
+data Gr a b = Gr 
+   { ns_ :: Set a 
+   , es_ ::  Set b
+   , src_ :: Rel b a
+   , tgt_ :: Rel b a
+   } deriving(Eq, Show) 
 
 -- constructor
 consG :: Set a -> Set b -> Rel b a -> Rel b a -> Gr a b
-consG ns' es' s t =  Gr {ns_ = ns', es_ = es', src_ = s, tgt_ = t}
+consG  =  Gr 
 
-data TK = Total | Partial deriving (Eq, Show)
+data TK = Total | Partial 
+   deriving (Eq, Show)
 
 isKTotal :: TK -> Bool
 isKTotal t = t == Total
 
 --The three kinds of morphism: weak, partial, full (either total or partial) 
-data MK = WeakM | PartialM | TotalM deriving (Eq, Show)
+data MK = WeakM | PartialM | TotalM 
+   deriving (Eq, Show)
 
 class GR g where
    ns ::  (Eq a, Eq b) =>g a b-> Set a

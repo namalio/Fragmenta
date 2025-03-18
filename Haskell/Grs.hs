@@ -6,7 +6,7 @@
 -----------------
 
 {-# LANGUAGE MultiParamTypeClasses #-}
-
+{-# LANGUAGE TemplateHaskell #-}
 module Grs (
    Gr
    , TK(..)
@@ -48,6 +48,8 @@ import ErrorAnalysis
     ( reportFT, reportPF, consET, consSET, nile, ErrorTree ) 
 import Utils (reportWF)
 import TheNil
+
+--makeLenses ''Gr
 
 
 -- projection functions

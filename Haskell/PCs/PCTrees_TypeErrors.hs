@@ -6,6 +6,7 @@ where
 import PCs.PCsCommon(Id)
 import PCs.PCTrees_Exp
 
+type OpS = String
 type Ty = String
 type SE = String
 data TyError = IdExists Id | TyUnknown Id 
@@ -14,8 +15,12 @@ data TyError = IdExists Id | TyUnknown Id
     | ExpNotOfExpectedType SE Ty Ty | AtomTypeCannotIncludeNone PCEAtom
     | InvalidAtomExpression PCEAtom | ParamIdNotUnique Id Id
     | CouldNotMatchExpectedType Ty Ty
+    | IncompatibleTypesInExp OpS Ty Ty
+    | IncompatibleTypesInUExp OpS Ty
     | IncompatibleTypesInCompoundReferences Id Ty Ty 
     | Test String
+    | TypesDoNotUnify Ty Ty
+    | UnificationOccursError String Ty
     deriving (Show)
 
 errorMsg::TyError->String

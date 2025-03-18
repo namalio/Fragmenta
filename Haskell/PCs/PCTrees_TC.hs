@@ -22,25 +22,29 @@ import Data.Fixed (E1)
 import Control.Monad ( foldM, when)
 import MyMaybe
 import PCs.PCTrees_Exp
+import Control.Monad.Except
+import Control.Monad.State
 
---type Env = SymMap Id Type 
+type Env = SymMap Id Type 
 
-data Env = Env {
-    sm_::SymMap Id Type, 
-    cnts_::Rel Id Type}
-    deriving (Show)
+--data Env = Env {
+--    sm_::SymMap Id Type, 
+--    cnts_::Rel Id Type}
+--    deriving (Show)
 
-empty_env::Env
-empty_env = Env{sm_ = emptySM, cnts_ = nil} 
+--type Env = 
 
-upd_sm::Env->SymMap Id Type->Env
-upd_sm env sm = Env {sm_ = sm, cnts_ = cnts_ env} 
+nilEnv::Env
+nilEnv = emptySM 
 
-add_Kcnt::Env->Id->Type->Env
-add_Kcnt env id t = Env {sm_ = sm_ env, cnts_ = singles (id, t) `union` (cnts_ env)} 
+--upd_sm::Env->SymMap Id Type->Env
+--upd_sm env sm = Env {sm_ = sm, cnts_ = cnts_ env} 
 
-get_Kcnts::Env->Id->Set Type
-get_Kcnts env id = img (cnts_ env) [id]
+--add_Kcnt::Env->Id->Type->Env
+--add_Kcnt env id t = Env {sm_ = sm_ env, cnts_ = singles (id, t) `union` (cnts_ env)} 
+
+--get_Kcnts::Env->Id->Set Type
+--get_Kcnts env id = img (cnts_ env) [id]
 
 --rm_ref::Env->Id->(Maybe Ref, Env)
 --rm_ref env id = (applM  (urs_ env) id, Env {sm_ = sm_ env, urs_ = dsub (urs_ env) (singles id)})
@@ -48,72 +52,104 @@ get_Kcnts env id = img (cnts_ env) [id]
 --is_unresolved::Env->Id->Bool
 --is_unresolved env id = id `elem` dom_of (urs_ env)
 
-data TyErr a = Ok a | Fail TyError
-    deriving (Show)
+--data TyErr a = Ok a | Fail TyError
+--    deriving (Show)
 
-instance The TyErr where
-   the :: TyErr a -> a
-   the (Ok x) = x
+type TyErr a = ExceptT TyError (State Int) a
 
-instance Functor TyErr where
-    fmap f (Ok t) = Ok $ f t
-    fmap _ (Fail te) = Fail te
 
-instance Applicative TyErr where
-    pure = Ok
-    Fail te <*> _ = Fail te
-    Ok f <*> te = fmap f te
+--instance The TyErr where
+--   the :: TyErr a -> a
+--   the (Right x) = x
 
-instance Monad TyErr where
-    return = pure
-    Fail err >>= _ = Fail err
-    Ok o >>= f = f o
+--instance Functor TyErr where
+--    fmap f (Ok t) = Ok $ f t
+--    fmap _ (Fail te) = Fail te
+
+--instance Applicative TyErr where
+--    pure = Ok
+--    Fail te <*> _ = Fail te
+--    Ok f <*> te = fmap f te
+
+--instance Monad TyErr where
+--    return = pure
+--    Fail err >>= _ = Fail err
+--    Ok o >>= f = f o
 
 --isErr::TyErr a->Bool
 --isErr (Fail _) = True
 --isErr _ = False
 
 failure::TyError->TyErr a 
-failure = Fail
+failure = throwError
+
+mgu::Type -> Type ->TyErr Subst
+mgu (TFun t1 t2) (TFun t1' t2') = mgu0 t1 t2 t1' t2'
+mgu (TDot t1 t2) (TDot t1' t2') = mgu0 t1 t2 t1' t2'
+mgu (TDot t1 t2) (TDot t1' t2') = mgu0 t1 t2 t1' t2'
+mgu (TId id) t = varSubst id t
+mgu t (TId id) = varSubst id t
+--mgu (PTy t1) (PTy t2) = if t1 == t2 then return nil else failure $ TypesDoNotUnify (show t1) (show t2)
+mgu (TBool) (TBool) = return nil
+mgu (TInt) (TInt) = return nil
+mgu (TEvent) (TEvent) = return nil
+mgu (TProc) (TProc) = return nil
+mgu t1 t2 = failure $ TypesDoNotUnify (show t1) (show t2)
+
+mgu0::Type->Type->Type->Type->TyErr Subst
+mgu0 t1 t2 t1' t2' = do
+    s1 <- mgu t1 t1'
+    s2 <- mgu (apply s1 t2) (apply s1 t2') 
+    return $ s2 `scomp` s1  
+
+varSubst::Id->Type->TyErr Subst
+varSubst id t 
+    | t == TId id = return nil
+    | id `elem` freeVars t = failure $ UnificationOccursError id (show t)
+    | otherwise = return $ set1 (id, t)
 
 class TypeOf_PCT a where
-    typeOf::a->Env->TyErr Type
+    tyCheck::a->Env->Type->TyErr Subst
 
 --type EnvWithErr = Either TyError Env
 
 instance TypeOf_PCT PCTTypeD where
-    typeOf Int _ = return $ PTy TInt
-    typeOf Bool _ = return $ PTy TBool
-    typeOf (DT id) _ = return $ PTy TData
+    tyCheck Int _ t    = inferTypeTD t TInt
+    tyCheck Bool _ t   = inferTypeTD t TBool
+    tyCheck (DT id) _ t = inferTypeTD t TData
 
+inferTypeTD::Type->Type->TyErr Subst
+inferTypeTD t t1 = mgu t t1
+--    s <- mgu t t1
+--    return $ apply s t
 
 lookupId::Env->Id->TyErr Type
 lookupId env id = do
-    let ot = PCs.SymbMap.lookup (sm_ env) id
-    if isNil ot then 
-        do failure (TyUnknown id)
-    else do return (the ot)
+    let ot = PCs.SymbMap.lookup env id
+    case ot of
+        Nothing -> failure $ TyUnknown id
+        Just t -> return t
+
+newTId::TyErr Type
+newTId = do
+    k<-get
+    Control.Monad.State.put $ k +1
+    return (TId $ "a" ++ show k)
 
 instance TypeOf_PCT PCEAtom where
-    typeOf (IdExp id) env = lookupId env id
-    typeOf (NumExp _) _ = return $ PTy TInt
-    typeOf TrueExp _ = return $ PTy TBool
-    typeOf FalseExp _ = return $ PTy TBool
-    typeOf (ParExp  e) env =  typeOf e env 
-    typeOf (DotExp id e) env = do
-        t<-lookupId env id 
-        t2<-typeOf e env 
-        return $ Dot t t2
-
-checkBinaryExp::PCE->PCEAtom->PCE->Env->PCEBinOp->TyErr Type
-checkBinaryExp e e1 e2 env op = do
-    let et = if op `elem` [And, Or] then PTy TBool else PTy TInt
-    t1 <- typeOf e1 env 
-    t2 <- typeOf e2 env 
-    --failure $ Test (show t2)
-    if t1 <= t2 || t2 <= t1 then
-        do return et
-        else failure (IncompatibleTypesInArithmeticExp e (show op))
+    tyCheck (IdExp id) env t = do
+        t'<-lookupId env id
+        return $ mgu t t'
+    tyCheck (NumExp _) _ t = mgu t TInt
+    tyCheck (BLit l) _ t = mgu t TBool
+    tyCheck (ParExp  e) env t = tyCheck e env t 
+    tyCheck (DotExp id e) env t = do
+        beta1 <-newTId
+        beta2 <-newTId
+        s1<-tyCheck (IdExp id) env beta1
+        s2<-tyCheck e env beta2
+        s<-mgu t ((apply s1 beta1) `Dot` (apply s2 beta2))
+        return $ scomp s (scomp s1 s2)
     
 
 --checkBinaryArithExp::PCExp->PCExpAtom->PCExp->Env->String->TyErr Type
@@ -132,64 +168,106 @@ checkBinaryExp e e1 e2 env op = do
 --        do return $ PTy TBool
 --        else failure (IncompatibleTypesInBooleanExp e op)
 
-checkUnaryExp::PCEUnOp->PCE->PCE->Env->TyErr Type
-checkUnaryExp UMinus e e1 env = do
-    t<-typeOf e env 
-    if t <= PTy TInt then
-        do return $ PTy TInt
-    else 
-        do failure $ NotIntegerExp (show e)
-checkUnaryExp UNot e e1 env = do
-    t<-typeOf e env 
-    if t <= PTy TBool then
-        do return $ PTy TBool
-    else 
-        do failure $ NotBooleanExp e
+checkRelOpExp::PCERelOp->PCEAtom->PCE->Env->Type->TyErr Subst
+checkRelOpExp op ea e env t = do
+    beta1 <-newTId
+    beta2 <-newTId
+    s1<-tyCheck ea env beta1
+    s2<-tyCheck e env beta2
+    let t1 = apply s1 beta1
+    let t2 = apply s2 beta2
+    s3<-mgu t TBool
+    unless (okTypes t1 t2 op) $ failure IncompatibleTypesInExp op (show t1) (show t2)
+    return $ s3 `scomp` (s2 `scomp` s1)    
+    where 
+        okTypes TInt TInt _ = True
+        okTypes TBool TBool op = op `elem` [OEQ, ONEQ] 
+        okTypes (TId id1) (TId id2) op = id1 == id2 && op `elem` [OEQ, ONEQ] 
+        okTypes (TDt id1) (TDt id2) op = id1 == id2 && op `elem` [OEQ, ONEQ] 
+        okTypes _ _ _ = False
 
-checkRelOpExp::PCERelOp->PCEAtom->PCE->Env->TyErr Type
-checkRelOpExp op ea e env = do
-    t1<-typeOf ea env
-    t2<-typeOf e env
-    if t1 <= PTy TInt && t2 <= PTy TInt then
-        do return $ PTy TBool
-    else 
-        if not $ t1 <= PTy TInt then
-           do failure $ NotIntegerExp (show ea)
-        else
-           do failure $ NotIntegerExp (show e)
+checkBOpExp::PCEBinOp->PCEAtom->PCE->Env->Type->TyErr Subst 
+checkBOpExp op ea e env t = do
+    beta1 <-newTId
+    beta2 <-newTId
+    s1 <- tyCheck ea env beta1 
+    s2 <- tyCheck e env beta2
+    let t1 = apply s1 beta1
+    let t2 = apply s2 beta2
+    let et = if op `elem` [And, Or] then TBool else TInt
+    s3<-mgu t et
+    unless (okTypes t1 t2 et) $ failure IncompatibleTypesInExp op (show t1) (show t2)
+    return $ s3 `scomp` (s2 `scomp` s1) 
+    where 
+        okTypes TInt TInt TInt = True
+        okTypes TBool TBool TBool = True
+        okTypes _ _ _ = False
+    --failure $ Test (show t2)
+    --if t1 <= t2 || t2 <= t1 then
+    --    do return et
+    --    else failure (IncompatibleTypesInArithmeticExp e (show op))
+
+checkUOpExp::PCEUnOp->PCE->Env->Type->TyErr Type
+checkUOpExp uop e env t = do
+    beta <-newTId
+    s1<-tyCheck e env beta
+    let t' = apply s1 beta
+    let et = if op == UMinus then TInt else TBool
+    s2<-mgu t et
+    unless (t' == et) $ failure IncompatibleTypesInUExp (show uop) (show t')
+    return $ s2 `scomp` s1
+--checkUOpExp UNot e env t = do
+--    beta <-newTId
+--    s1<-tyCheck e env beta
+--    let t' = apply s1 beta
+--    s2<-mgu t TBool
+--    unless (t' == TBool) $ failure IncompatibleTypesInUExp (show UNot) (show t')
+--    return $ s2 `scomp` s1
+    --if t <= PTy TBool then
+    --    do return $ PTy TBool
+    --else 
+    --    do failure $ NotBooleanExp e
 
 instance TypeOf_PCT PCE where
-    typeOf (ExpAtom ea) env = typeOf ea env 
-    typeOf e@(BinExp op e1 e2) env = checkBinaryExp e e1 e2 env op
-    typeOf e@(UnExp op e1) env = checkUnaryExp op e e1 env
-    typeOf (RelOpExp op ea e) env = checkRelOpExp op ea e env
-
+    tyCheck (ExpAtom ea) = tyCheck ea 
+    tyCheck (RelOpExp op ea e) = checkRelOpExp op ea e
+    tyCheck (BinExp op ea e) = checkBOExp op ea e
+    tyCheck (UnExp op e) = checkUOpExp op e
 
 class TypeCheck_PCT a where
-    typecheck::a->Env->TyErr Env
-
+    typeCheck::a->Env->TyErr (Env, Subst)
 
 newId::Id->Env->Type->TyErr Env
 newId id env ty 
-   | keyOf id (sm_ env) = failure (IdExists id)
-   | otherwise = return (upd_sm env (put (sm_ env) id ty))
+   | keyOf id env = failure $ IdExists id
+   | otherwise = return $ PCs.SymbMap.put env id ty
 
 instance TypeCheck_PCT DTDef where
-    typecheck (DTDef id ids) env = 
-        newId id env (PTy TData) >>= do_ids
-        where do_ids env' = foldl (\tcr' id'->tcr'>>= \env''->newId id' env'' (PTy $ TId id)) (return env') ids
+    typecheck (DTDef id ids) env = do
+        env' <- newId id env TData 
+        envr<-foldM (\env'' id'->newId id' env'' (TId id)) env' ids
+        return (envr, nil)
+        -- >>= do_ids
+        --where do_ids env' = foldl (\tcr' id'->tcr'>>= \env''->newId id' env'' (TId id)) (return env') ids
 
 instance TypeCheck_PCT [DTDef] where
-    typecheck ds env = foldl (\tcr d->tcr>>=(\env'-> typecheck d env)) (return env) ds
+    typecheck ds env = foldM (\(env', s) d->do
+                                  (env'', s')<-typecheck d env'
+                                  return (env'', s `override` s')) 
+                            (env, nil) ds
 
 --checkIsOfType::PCExpAtom->Env->Type->TyErr ()
-checkIsOfType :: (TypeOf_PCT a, Show a) => a -> Env -> Type -> TyErr ()
+checkIsOfType :: (TypeCheck_PCT a, Show a) => a -> Env -> Type -> TyErr ()
 checkIsOfType e env t = do
-    t1<-typeOf e env 
-    if t1 <= t then do
-        return ()
-    else do
-        failure $ ExpNotOfExpectedType (show e) (show t1) (show t)
+    --t1<-typeOf e env 
+    beta <-newTId
+    t'<-typeCheck e env beta
+    
+    failure $ ExpNotOfExpectedType (show e) (show t1) (show t)
+    --if t1 <= t then do
+    --    return ()
+    --else do
+        
 
 checkIdsUnique::Id->[Id]->TyErr ()
 checkIdsUnique _ [] = return ()
@@ -197,38 +275,39 @@ checkIdsUnique idk (x:xs) =
     if x `elem` xs then failure (ParamIdNotUnique idk x) else checkIdsUnique idk xs
 
 checkParams::Id->[Param]->Env->TyErr Env
-checkParams idk ps env = do
+checkParams idk ps env = do 
     checkIdsUnique idk (map gParamId ps)
-    return $ foldl (\env' p->upd_sm env (put (sm_ env') (gParamId p) (gty p env'))) env ps
+    return $ foldl (\env' p->PCs.SymbMap.put env' (gParamId p) (gty p env')) env ps
     where
-        gty p env = if gParamTyD p == nil then PTy TNone else the $ typeOf (the . gParamTyD $ p) env
+        gty p env = if gParamTyD p == nil then PTy TNone else thet $ typeOf (the . gParamTyD $ p) env
+        thet (Right t) = t
 
-strongest::Id->Type->Type->TyErr Type
-strongest _ t@(PTy TProc) (PTy TProc) = return t
-strongest id (Fun t t') (Fun y y') = do
-    let ost =  pick_strogest t y
-    if isNil ost then
-        do failure $ IncompatibleTypesInCompoundReferences id (show t) (show t')
-    else 
-        do return $ Fun y (the ost)
-    where pick_strogest t t' 
-             | t <= y = Just y 
-             | y <= t = Just t
-             | otherwise = Nothing
+--strongest::Id->Type->Type->TyErr Type
+--strongest _ t@(PTy TProc) (PTy TProc) = return t
+--strongest id (Fun t t') (Fun y y') = do
+--    let ost =  pick_strogest t y
+--   if isNil ost then
+--        do failure $ IncompatibleTypesInCompoundReferences id (show t) (show t')
+--    else 
+--        do return $ Fun y (the ost)
+--    where pick_strogest t t' 
+--             | t <= y = Just y 
+--             | y <= t = Just t
+--             | otherwise = Nothing
 
 
-strongest_type::Id->Set Type->TyErr (Maybe Type)
-strongest_type id EmptyS = return Nothing
-strongest_type id (Sets.Set t ts) = foldM (strongest id) t ts >>= return . Just
+--strongest_type::Id->Set Type->TyErr (Maybe Type)
+--strongest_type id EmptyS = return Nothing
+--strongest_type id (Sets.Set t ts) = foldM (strongest id) t ts >>= return . Just
 
-updParamTys::Type->[Param]->Env->TyErr Env
-updParamTys (PTy TProc) [] env = return env
-updParamTys (Fun t t') (p:ps) env = do
-    t''<-lookupId env (gParamId p)
-    (if t''<= t then 
-        do return $ upd_sm env $ put (sm_ env) (gParamId p) t
-    else 
-        do return env) >>= updParamTys t' ps
+--updParamTys::Type->[Param]->Env->TyErr Env
+--updParamTys (PTy TProc) [] env = return env
+--updParamTys (Fun t t') (p:ps) env = do
+--    t''<-lookupId env (gParamId p)
+--    (if t''<= t then 
+--        return $ put env (gParamId p) t
+--    else 
+--        return env) >>= updParamTys t' ps
 
 instance TypeCheck_PCT PDT where
     typecheck (PDT id ps cts pct) env = do
@@ -239,13 +318,13 @@ instance TypeCheck_PCT PDT where
             t'<-lookupId env1 (gParamId p)
             return (Fun t' t)) (PTy TProc) ps
         -- Checks if there are constraints associated with the type
-        ost <- strongest_type id $ get_Kcnts env1 id
+        --ost <- strongest_type id $ get_Kcnts env1 id
         --failure $ Test (show ost)
-        let t' = if isSomething ost then if t<= the ost then the ost else t else t 
-        env2<-if isSomething ost then 
-                 do updParamTys (the ost) ps env1
-              else do return env1 
-        (newId id env2 t' >>= typecheck cts)>>=typecheck pct
+        --let t' = if isSomething ost then if t<= the ost then the ost else t else t 
+        --env2<-if isSomething ost then 
+        --         do updParamTys (the ost) ps env1
+        --      else do return env1 
+        (newId id env1 t >>= typecheck cts)>>=typecheck pct
         --where updParamTys (PTy TProc) [] env = env
         --      updParamTys (Fun t t') (p:ps) env = 
         --         lookupId env (gParamId p) >>= \t''->if t<= t''then 
@@ -284,9 +363,9 @@ checkGuard (Just eg) env = checkIsOfType eg env (PTy TBool)
 checkAtom::PCEAtom->Maybe PCE->Env->TyErr Env
 checkAtom e@(IdExp id) og env = do
     checkGuard og env
-    let ot = PCs.SymbMap.lookup (sm_ env) id
+    let ot = PCs.SymbMap.lookup env id
     if isNil ot then 
-        do return $ upd_sm env (put (sm_ env) id (PTy TEvent))
+        do return $ put env id (PTy TEvent)
     else do
         checkIsOfType e env (PTy TEvent)
         return env
@@ -296,9 +375,9 @@ checkAtom (DotExp id e) og env = do
     if hasNone t2 then
         do failure $ AtomTypeCannotIncludeNone e 
     else do
-        let ot = PCs.SymbMap.lookup (sm_ env) id
+        let ot = PCs.SymbMap.lookup env id
         if isNil ot then 
-            do return $ upd_sm env (put (sm_ env) id (Dottable t2 (PTy TEvent)))
+            do return $ put env id (Dottable t2 (PTy TEvent))
         else do 
             checkIsOfType e env (Dottable t2 (PTy TEvent))
             return env
@@ -307,14 +386,14 @@ checkAtom e _ _ = failure $ InvalidAtomExpression e
 checkBOp::Id->String->Env->TyErr Env
 checkBOp id e env = do
    t<-lookupId env e 
-   return . upd_sm env $ put (sm_ env) id t
+   return $ put env id t
 
 instance TypeCheck_PCT ROp where
     typecheck (OpRExtChoice id e) env = checkBOp id e env
     typecheck (OpRIntChoice id e) env = checkBOp id e env
 
 pcallComplies::Type->[PCE]->Env->TyErr ()
-pcallComplies t@(PTy TProc) es _ = 
+pcallComplies t@(TProc) es _ = 
     if null es then return () else failure $ CouldNotMatchExpectedType (show t) ""
 pcallComplies (Fun t t') [] _ = failure $ CouldNotMatchExpectedType (show t) ""
 pcallComplies (Fun t t') (e:es) env = do
@@ -353,18 +432,19 @@ instance TypeCheck_PCT PT  where
         (typecheck bop env >>= \env'-> newId id env' (PTy TProc)) >>= typecheck pct
     typecheck (Rho id og bs rs) env = do
         checkGuard og env
-        let ot = PCs.SymbMap.lookup (sm_ env) id
+        let ot = PCs.SymbMap.lookup env id
         when (isSomething ot) $ do 
             pcallComplies (the ot) bs env
             foldl (\r (_, y)->r>>checkIsOfType (IdExp y) env (PTy TEvent)) (return ()) rs
-        if constrains ot then do  
-            t <- foldM (\t e->do
-                t'<-typeOf e env
-                return (Fun t' t)) (PTy TProc) bs
-            return $ add_Kcnt env id t
-        else do 
-            return env
-        where constrains ot = isNil ot || hasNone(the ot)
+        return env
+        --if constrains ot then do  
+        --    t <- foldM (\t e->do
+        --        t'<-typeOf e env
+        --        return (Fun t' t)) (PTy TProc) bs
+        --    return $ add_Kcnt env id t
+        --else do 
+        --    return env
+        --where constrains ot = isNil ot || hasNone(the ot)
     typecheck StopT env = return env
     typecheck SkipT env = return env
     typecheck NilT env = return env
@@ -375,6 +455,6 @@ instance TypeCheck_PCT [PT] where
 
 typecheck_pctd::PCTD->TyErr Env
 typecheck_pctd (PCTD _ dts pts) = do
-    typecheck dts empty_env >>= typecheck pts
+    typecheck dts nilEnv >>= typecheck pts
     --foldM (\env' (_, r)->typecheck r env') env (urs_ env)
 
