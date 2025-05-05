@@ -15,10 +15,14 @@ parseIdExp::ReadP PCEAtom
 parseIdExp = skipSpaces >> parseId >>= return . IdExp
 
 parseTrue::ReadP PCEAtom
-parseTrue = string "true" >> return TrueExp
+parseTrue = do
+    string "true"
+    return (BLit TrueL)
 
 parseFalse::ReadP PCEAtom
-parseFalse = string "false" >> return FalseExp
+parseFalse = do
+    string "false" 
+    return (BLit FalseL)
 
 parseNumExp::ReadP PCEAtom
 parseNumExp = do

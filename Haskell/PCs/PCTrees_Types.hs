@@ -34,7 +34,7 @@ data Type
     | TDt Id -- A custom data type
     | TDot Type Type 
     | TSet Type 
-    --| Dottable Type Type 
+    -- | Dottable Type Type 
     | TFun Type Type -- Is this needed?
     deriving (Eq, Show)
 

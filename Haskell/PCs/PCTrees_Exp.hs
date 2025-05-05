@@ -60,12 +60,13 @@ data PCEAtom
     | DotExp Id PCEAtom
     deriving Eq
 
+-- A PC expression
 data PCE 
-    = ExpAtom PCEAtom
-    | RelOpExp PCERelOp PCEAtom PCE
-    | BinExp PCEBinOp PCEAtom PCE 
-    | UnExp PCEUnOp PCE 
-    | SetE [PCE]
+   = ExpAtom PCEAtom
+   | RelOpExp PCERelOp PCEAtom PCE
+   | BinExp PCEBinOp PCEAtom PCE 
+   | UnExp PCEUnOp PCE 
+   | SetE [PCE]
    deriving Eq
 
 instance Show PCERelOp where

@@ -8,12 +8,12 @@ module PCs.PCTrees_AST (
     , gParamTyD
     , TOp(..)
     , PT(..)
-    , PDT(..)
+    , PD(..)
     , DTDef(..)
     , PCTD(..)
     , ROp(..)
-    , thePDT
-    , idPDT)
+    , thePD
+    , idPD)
 where
 
 import Sets
@@ -23,7 +23,7 @@ import PCs.PCTrees_Exp
 import PCs.PCsCommon(Id)
 
 
--- A PCT type designator (int, bool, or some datatype)
+-- A PCT type designator — int, bool, or some datatype
 data PCTTypeD 
   = Int 
   | Bool 
@@ -45,7 +45,7 @@ instance Show PCTTypeD where
   show Bool = "Bool"
   show (DT id) = "DT " ++ id 
 
--- A parameter: an id and a type designator
+-- A parameter: an id and an optional type designator
 data Param = Param Id (Maybe PCTTypeD)
   deriving (Eq)
 
@@ -86,23 +86,24 @@ data PT
   | OpB TOp PT PT 
   | Kappa PD
   | OpKappa Id ROp PT 
-  | Rho Id (Maybe G) [PCE] (Rel Id Id) -- Optional expression represents guard
+  | Rho Id (Maybe G) [PCE] (Rel Id Id) -- identifier, optional guard, list of PCEs, renaming
   | NilT | StopT | SkipT 
   deriving(Eq, Show)
 
--- A data type definition: takes an identifier and a set of literals
+-- A data type definition: an identifier and a set of literals
 data DTDef = DTDef Id (Set Id) 
   deriving(Eq, Show)
 
 -- Process definition 
-data PD = PD Id [Param] [PDT] PT 
+data PD = PD Id [Param] [PT] PT 
   deriving(Eq, Show)
 
-data PCTD = PCTD Id [DTDef] [PDT] 
+-- A PC tree definition
+data PCTD = PCTD Id [DTDef] [PD] 
   deriving(Eq, Show)
 
-thePDT :: PT -> PDT
-thePDT  (Kappa pdt) = pdt
+thePD :: PT -> PD
+thePD  (Kappa pd) = pd
 
-idPDT::PDT->Id
-idPDT (PDT id _ _ _) = id
+idPD::PD->Id
+idPD (PD id _ _ _) = id

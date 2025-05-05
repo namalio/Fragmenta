@@ -4,7 +4,7 @@ module PCs.PCTrees_ExpToCSP (
 
 import qualified CSP.CSP_AST as CSP
 import qualified PCs.PCTrees_Exp as PCTsExp
-import PCs.PCTrees_Exp (PCEBinOp(Prod))
+import PCs.PCTrees_Exp (PCEBinOp(Prod), PCELitBool(..))
 
 toCSPBOp::PCTsExp.PCEBinOp->CSP.BOp
 toCSPBOp PCTsExp.Plus = CSP.Plus
@@ -31,8 +31,8 @@ toCSPExpA::PCTsExp.PCEAtom->CSP.Exp
 toCSPExpA (PCTsExp.IdExp id) = CSP.ExpId id
 toCSPExpA (PCTsExp.NumExp k) = CSP.ExpToken (CSP.TokenInt k)
 toCSPExpA (PCTsExp.DotExp id e) = CSP.ExpChannel id $ toCSPExpA e
-toCSPExpA PCTsExp.TrueExp = CSP.ExpToken CSP.TokenT
-toCSPExpA PCTsExp.FalseExp = CSP.ExpToken CSP.TokenF
+toCSPExpA (PCTsExp.BLit bl) = if bl == TrueL then CSP.ExpToken CSP.TokenT else CSP.ExpToken CSP.TokenF
+-- toCSPExpA PCTsExp.FalseExp = 
 toCSPExpA (PCTsExp.ParExp e) = CSP.ExpPar (toCSPExp e)
 
 toCSPExp::PCTsExp.PCE->CSP.Exp

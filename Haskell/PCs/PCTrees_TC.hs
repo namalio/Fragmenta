@@ -243,7 +243,7 @@ newId id env ty
    | otherwise = return $ PCs.SymbMap.put env id ty
 
 instance TypeCheck_PCT DTDef where
-    typecheck (DTDef id ids) env = do
+    typeCheck (DTDef id ids) env = do
         env' <- newId id env TData 
         envr<-foldM (\env'' id'->newId id' env'' (TId id)) env' ids
         return (envr, nil)
@@ -251,7 +251,7 @@ instance TypeCheck_PCT DTDef where
         --where do_ids env' = foldl (\tcr' id'->tcr'>>= \env''->newId id' env'' (TId id)) (return env') ids
 
 instance TypeCheck_PCT [DTDef] where
-    typecheck ds env = foldM (\(env', s) d->do
+    typeCheck ds env = foldM (\(env', s) d->do
                                   (env'', s')<-typecheck d env'
                                   return (env'', s `override` s')) 
                             (env, nil) ds
@@ -309,8 +309,8 @@ checkParams idk ps env = do
 --    else 
 --        return env) >>= updParamTys t' ps
 
-instance TypeCheck_PCT PDT where
-    typecheck (PDT id ps cts pct) env = do
+instance TypeCheck_PCT PD where
+    typeCheck (PD id ps cts pct) env = do
         -- checks well-formedness of parameters
         env1<-checkParams id ps env
         -- calculates type of compound

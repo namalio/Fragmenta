@@ -42,7 +42,7 @@ opseqC = OpSeq False
 opseqO :: TOp
 opseqO = OpSeq True
 
-rearrangeT :: PT -> PDT
+rearrangeT :: PT -> PD
 rearrangeT (OpB opseqC (Kappa (PDT k ps cts t1)) t2) = PDT k ps nil (OpB opseqC (Kappa (PDT (k++"0") nil cts t1)) t2)
 rearrangeT (Kappa pdt) = pdt
 
