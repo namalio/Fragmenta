@@ -11,6 +11,7 @@ import Mdls
 import Utils
 import CheckUtils
 import LoadCheckDraw
+import NumString
 
 def_path = "FragmentaTests/Job_Employee_Building/"
 img_path = "FragmentaTests/Job_Employee_Building/img/"
@@ -19,8 +20,8 @@ saveDrawings= do
     draw_mdl def_path img_path "m_JEB"
 
 do_main = do
-    mdl<-load_mdl_def def_path "m_JEB"
-    check_report_wf "M_JEB" (Just Total) mdl True
+    (nm_mdl, mdl)<-loadMdl def_path "m_JEB"
+    check_report_wf nm_mdl (Just Total) mdl True
 
 main = do
    option_main_save do_main saveDrawings

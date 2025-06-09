@@ -3,7 +3,7 @@ fragment F_EL {
     node Employee
     node Building
     node String
-    rel Employee->Building[WorksAt]:*,1
+    rel Employee->Building[WorksAt]:*;1
     relu Building->String[Building_address]
   }
 }

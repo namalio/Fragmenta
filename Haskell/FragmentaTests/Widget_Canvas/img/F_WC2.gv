@@ -1,8 +1,8 @@
 digraph {graph[label=F_WC2,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_WC2{style=dashed;label=F_WC2;
+"PCanvas"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canvas<br/>(P)>];
 "PWidget"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Widget<br/>(P)>];
 "Component"[shape=record,fillcolor=lightskyblue1,style = filled,label="Component"];
-"PCanvas"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canvas<br/>(P)>];
 
 "PWidget"->"Component"[arrowhead=onormal,arrowsize=2.0];
 "Component"->"PCanvas"[arrowhead=onormal,arrowsize=2.0];

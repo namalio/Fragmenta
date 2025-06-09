@@ -2,5 +2,5 @@ digraph {graph[label=m_JEB_gfg,labelloc=tl,labelfontsize=12];
 "F_BE"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_BE"];
 "F_EL"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_EL"];
 
-"F_BE"->"F_EL"[label=" ",arrowhead=veevee];
+"F_BE"->"F_EL"[label=" ",dir=forward,arrowhead=vee];
 }

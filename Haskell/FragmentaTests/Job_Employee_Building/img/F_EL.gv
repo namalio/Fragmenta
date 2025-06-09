@@ -5,7 +5,7 @@ subgraph cluster_F_EL{style=dashed;label=F_EL;
 "String"[shape=record,fillcolor=lightskyblue1,style = filled,label="String"];
 
 "Employee"->"Building"[label="WorksAt▼",dir=none,taillabel="*",headlabel=""];
-"Building"->"String"[label="Building_address▼",arrowhead=vee,headlabel="",arrowsize=.5];
+"Building"->"String"[label="Building_address",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 }

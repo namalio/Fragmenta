@@ -1,14 +1,14 @@
 digraph {graph[label=m_WC2_rf,labelloc=tl,labelfontsize=12];
 subgraph cluster_m_WC2_rf{style=dashed;label=m_WC2_rf;
-"Panel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Panel"];
 "Widget"[shape=record,fillcolor=lightskyblue1,style = filled,label="Widget"];
+"Panel"[shape=record,fillcolor=lightskyblue1,style = filled,label="Panel"];
 "Container"[shape=record,fillcolor=lightskyblue1,style = filled,label="Container"];
 "Canvas"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canvas"];
 
 "Canvas"->"Widget"[arrowhead=onormal,arrowsize=2.0];
-"Widget"->"Container"[arrowhead=onormal,arrowsize=2.0];
 "Container"->"Panel"[arrowhead=onormal,arrowsize=2.0];
 "Panel"->"Canvas"[arrowhead=onormal,arrowsize=2.0];
+"Widget"->"Container"[arrowhead=onormal,arrowsize=2.0];
 
 }
 }

@@ -198,7 +198,7 @@ refsLocal f = fRNs f <= fLNs f
 -- Well-formedness of total fragments
 okayTF :: (Eq a, Eq b, Show a, GNumSets a) => Fr a b -> Bool
 okayTF f = okayFa f 
-   -- && refsLocal f && okayG (Just Total) (reso_sg f)
+   && refsLocal f && okayG (Just Total) (reso_sg f)
 
 errsFz::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->Fr a b -> [ErrorTree]
 errsFz nm f =

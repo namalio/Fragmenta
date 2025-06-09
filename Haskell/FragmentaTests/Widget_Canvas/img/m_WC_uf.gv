@@ -2,15 +2,15 @@ digraph {graph[label=m_WC_uf,labelloc=tl,labelfontsize=12];
 subgraph cluster_m_WC_uf{style=dashed;label=m_WC_uf;
 "Canvas"[shape=record,fillcolor=lightskyblue1,style = filled,label="Canvas"];
 "Widget"[shape=record,fillcolor=lightskyblue1,style = filled,label="Widget"];
-"PWidget"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Widget<br/>(P)>];
 "Component"[shape=record,fillcolor=lightskyblue1,style = filled,label="Component"];
+"PWidget"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Widget<br/>(P)>];
 "PCanvas"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Canvas<br/>(P)>];
 
 "Canvas"->"Widget"[arrowhead=onormal,arrowsize=2.0];
-"PWidget"->"Component"[arrowhead=onormal,arrowsize=2.0];
 "Component"->"PCanvas"[arrowhead=onormal,arrowsize=2.0];
+"PWidget"->"Component"[arrowhead=onormal,arrowsize=2.0];
 
 }
-"PCanvas"->"Canvas"[arrowhead=normalnormal];
 "PWidget"->"Widget"[arrowhead=normalnormal];
+"PCanvas"->"Canvas"[arrowhead=normalnormal];
 }

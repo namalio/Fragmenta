@@ -4,7 +4,7 @@ fragment F_BE {
     node Nat
     proxy PEmployee
     proxy PString
-    rel PEmployee->Job[WorksAs]:1..*,1..2
+    rel PEmployee->Job[WorksAs]:1..*;1..2
     relu Job->PString[Job_title]
     relu PEmployee->Nat[Employee_id]
   }
