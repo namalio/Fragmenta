@@ -239,7 +239,7 @@ parse_multc = do
 
 parse_mult::ReadP Mult
 parse_mult = do
-   ms<-sepBy (parse_multc) (char ',')
+   ms<-sepBy1 (parse_multc) (char ',')
    return (Mult . set $ ms)   
 
 parse_edge_info::ReadP(String, String, String)
@@ -605,7 +605,8 @@ parse_sg = do
    skipSpaces
    sg_nm<-parseId
    skipSpaces
-   elems<-between (char '{') (char '}') (many parse_sg_elem) 
+   elems<-between (char '{') (char '}') (many (parse_sg_elem ))
+   skipSpaces
    return (SGDef sg_nm elems)
 
 parseProxyRef::ReadP FrRef
@@ -680,9 +681,9 @@ test_sg = "SG SG_Person1 {\n"
    ++ "node Hotel\n"
    ++ "node City\n"
    ++ "node Vehicle\n"
-   ++ "rel Hotel->Person[Hosts]: 1,*\n"
+   ++ "rel Hotel->Person[Hosts]: 1;*\n"
    ++ "relu Person->City[lives]: 1\n"
-   ++ "rel Person->Vehicle[Owns]:1,*\n"
+   ++ "rel Person->Vehicle[Owns]:1;*\n"
    ++ "}"
 
 
@@ -712,17 +713,21 @@ loadSG fn = do
          return(Just (sgdName sgd, cons_sg_fr_sgd sgd))
    return osg
 
-test1 :: IO ()
-test1 = do
-   fr<-loadFragment "Tests/f_Person1.fr"
-   putStrLn $ show fr
+--test1 :: IO ()
+--test1 = do
+--   fr<-loadFragment "Tests/f_Person1.fr"
+--   putStrLn $ show fr
 
 test2 :: IO ()
 test2 = do
-   sg<-loadSG "Tests/SG_Employee_Car.sg"
-   putStrLn $ show sg
+   sg<-loadSG "FragmentaTests/SGTests/SG_EC.sg"
+   --contents <- readFile "FragmentaTests/SGTests/SG_EC.sg"
+   --o<-readP_to_S parse_sg contents
+   print sg
 
-test3 = readP_to_S parse_rel "rel Pet->POther[AnyRel1]: *,*"
+--test1 = readP_to_S parseId "abc"
+
+test3 = readP_to_S parse_rel "rel Pet->POther[AnyRel1]:*;*"
 test4a :: [(Mult, String)]
 test4a = readP_to_S parse_mult "4"
 test4b :: [(Mult, String)]

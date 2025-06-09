@@ -1,7 +1,7 @@
 -------------------------
 -- Project: PCs/Fragmenta
 -- Module: 'SG_tests'
--- Description: Test focused on SGs, morphisms and refinement following many examples given in the SGs section of the Fragmenta paper
+-- Description: Tests for SGs, morphisms and refinement following many examples given in the SGs section of the Fragmenta paper
 -- Author: Nuno Amálio
 -------------------------
 import SGrs
@@ -14,6 +14,7 @@ import SGElemTys
 import Mult
 import SimpleFuns
 import Utils
+import NumString
 
 def_path = "FragmentaTests/SGTests/"
 img_path = "FragmentaTests/SGTests/img/"
@@ -123,15 +124,15 @@ test1a = do
 --   check_morphism (nm_m4 ++ ": " ++ nm3 ++ "->" ++ nm1 ++ " (Total)") (Just TotalM) sg3 m4 sg1 True
 
 -- Example used in PCs paper 
--- Morphisms from the two SGs of Fig. 6c into Fig. 6a
+-- Morphisms from the two SGs of Fig. 7c into Fig. 7a
 test2 :: IO ()
 test2 = do
    (nm1, sg1)<-loadSG def_path "SG_PVO.sg" -- Fig 7a
    (nm2, sg2)<-loadSG def_path "SG_PGC.sg" -- Fig 7c
    (nm3, sg3)<-loadSG def_path "SG_PVI.sg" -- Fig 7c
-   (nm_m1, m1)<-loadM def_path "m_PGC_PVO.gm"
-   (nm_m2, m2)<-loadM def_path "m_PVI_PVO.gm"
-   (nm_m3, m3)<-loadM def_path "m_P_PVI_PVO.gm"
+   (nm_m1, m1)<-loadM def_path "m_PGC_PVO.gm" -- m5 in paper
+   (nm_m2, m2)<-loadM def_path "m_PVI_PVO.gm" -- m6 in paper
+   (nm_m3, m3)<-loadM def_path "m_P_PVI_PVO.gm" -- m7 in paper
    putStrLn "Test 2:"
    check_report_wf (nm1 ++ " (Total)") (Just Total) sg1 True
    check_report_wf (nm2 ++ " (Partial)") (Just Partial) sg2 True
@@ -142,6 +143,7 @@ test2 = do
    check_morphism ("(" ++ nm2 ++ ", " ++ nm_m1  ++ ") ⊒ " ++ nm1) (Just PartialM) sg2 m1 sg1 True
    check_morphism ("(" ++ nm3 ++ ", " ++ nm_m2  ++ ") ⇛ " ++ nm1) Nothing sg3 m2 sg1 True
    check_morphism ("(" ++ nm3 ++ ", " ++ nm_m2  ++ ") ⊒ " ++ nm1) (Just PartialM) sg3 m2 sg1 True
+   check_morphism ("(" ++ nm3 ++ ", " ++ nm_m3  ++ ") ⇛ " ++ nm1) (Just TotalM) sg3 m3 sg1 False
    check_morphism ("(" ++ nm3 ++ ", " ++ nm_m3  ++ ") ⇛p " ++ nm1) (Just WeakM) sg3 m3 sg1 True
    check_morphism ("(" ++ nm3 ++ " U " ++ nm2 ++ ", " ++ nm_m1 ++ " U " ++ nm_m2 ++ ") ⇛ " ++ nm1) (Just WeakM) (sg2 `unionSG` sg3) (m1 `unionGM` m2) sg1 True
    check_morphism ("(" ++ nm3 ++ " U " ++ nm2 ++ ", " ++ nm_m1 ++ " U " ++ nm_m2 ++ ") ⊐ " ++ nm1) (Just TotalM) (sg2 `unionSG` sg3) (m1 `unionGM` m2) sg1 True
@@ -186,8 +188,8 @@ test2 = do
 
 test3 :: IO ()
 test3 = do
-   (nm1, sg1)<-loadSG def_path "SG_PVa.sg" -- A variation of Fig 6b (variant of upper SG)
-   (nm2, sg2)<-loadSG def_path "SG_PVIc.sg" -- A variation of Fig 6d
+   (nm1, sg1)<-loadSG def_path "SG_PVa.sg" -- A variation of Fig 7b (variant of upper SG)
+   (nm2, sg2)<-loadSG def_path "SG_PVIc.sg" -- A variation of Fig 7d
    (nm3, sg3)<-loadSG def_path "SG_EC.sg"
    (nm_m1, m1)<-loadM def_path "m_PVIc_PV.gm"
    (nm_m2, m2)<-loadM def_path "m_PVa_PVIc.gm"

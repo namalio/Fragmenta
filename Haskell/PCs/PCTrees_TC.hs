@@ -335,8 +335,8 @@ instance TypeCheck_PCT PD where
         --env3<-typecheck pct env2
         -- 
 
-instance TypeCheck_PCT [PDT] where
-    typecheck cts env = 
+instance TypeCheck_PCT [PD] where
+    typeCheck cts env = 
         foldM (\env' ct->typecheck ct env') env cts 
         --    env2<-typecheck ct env'
         --    if idCT ct == "CCVM" then
@@ -345,15 +345,15 @@ instance TypeCheck_PCT [PDT] where
         --        return env2) env cts 
 
 instance TypeCheck_PCT TOp where
-    typecheck OpExtChoice env = return env
-    typecheck OpIntChoice env = return env
-    typecheck (OpSeq _) env = return env
-    typecheck (OpParallel es) env = 
+    typeCheck OpExtChoice env = return env
+    typeCheck OpIntChoice env = return env
+    typeCheck (OpSeq _) env = return env
+    typeCheck (OpParallel es) env = 
         foldl (\r e->r>>checkIsOfType e env (PTy TEvent)) (return ()) es >> return env
-    typecheck OpInterleave env = return env
-    typecheck (OpThrow es) env = 
+    typeCheck OpInterleave env = return env
+    typeCheck (OpThrow es) env = 
         foldl (\r e->r>>checkIsOfType e env (PTy TEvent)) (return ()) es >> return env
-    typecheck (OpIf e) env = 
+    typeCheck (OpIf e) env = 
         checkIsOfType e env (PTy TBool) >> return env
 
 checkGuard::Maybe PCE->Env->TyErr ()
@@ -365,7 +365,7 @@ checkAtom e@(IdExp id) og env = do
     checkGuard og env
     let ot = PCs.SymbMap.lookup env id
     if isNil ot then 
-        do return $ put env id (PTy TEvent)
+        do return $ PCs.SymbMap.put env id (PTy TEvent)
     else do
         checkIsOfType e env (PTy TEvent)
         return env
@@ -377,7 +377,7 @@ checkAtom (DotExp id e) og env = do
     else do
         let ot = PCs.SymbMap.lookup env id
         if isNil ot then 
-            do return $ put env id (Dottable t2 (PTy TEvent))
+            do return $ PCs.SymbMap.put env id (Dottable t2 (PTy TEvent))
         else do 
             checkIsOfType e env (Dottable t2 (PTy TEvent))
             return env

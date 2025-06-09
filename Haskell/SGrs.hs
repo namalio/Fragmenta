@@ -676,8 +676,14 @@ igRMNsEs gwt sg mns mes = (igRMEs gwt mes) `restrictNs` (ins (ty gwt) sg mns)
 
 -- SG multiplicity refinement (leq == '<=')
 sgs_mult_leq :: (GRM gm, Eq a, Eq b) =>SGr a b -> gm a b -> SGr a b -> b -> Bool
-sgs_mult_leq sgc m sga e  = (appl (srcma sgc) e)  `mcsLeq` (appl ((srcma sga) `bcomp` (fE m)) e) 
-                            && (appl (tgtm sgc) e) `mcsLeq` (appl ((tgtm sga) `bcomp` (fE m)) e)
+sgs_mult_leq sgc m sga e  = 
+   let srcma_sgc =  applM (srcma sgc) e 
+       srcma_sga = applM ((srcma sga) `bcomp` (fE m)) e 
+       tgtm_sgc = applM (tgtm sgc) e
+       tgtm_sga = applM ((tgtm sga) `bcomp` (fE m)) e in
+   if any isNil [srcma_sgc, srcma_sga, tgtm_sgc, tgtm_sga] then False
+      else the srcma_sgc  `mcsLeq` the srcma_sga
+           && the tgtm_sgc `mcsLeq` the tgtm_sga
 
 refinesM :: (GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
 refinesM (sgc, m) sga = all (sgs_mult_leq sgc m sga) (esA sgc)
@@ -783,7 +789,11 @@ sg_refines_mcnts (sgc, m) sga = all (refines_mcnt sgc m sga) $ esD sga
    
 -- SG refinement of edge types
 sgs_ety_leq::(GRM gm, Eq a, Eq b) =>SGr a b->gm a b->SGr a b->b->Bool
-sgs_ety_leq sgc m sga e  = appl (ety sgc) e <= appl ((ety sga) `bcomp` (fE m)) e
+sgs_ety_leq sgc m sga e  =
+   let ety_sgc =  applM (ety sgc) e
+       ety_sga = applM (ety sgc) e in
+   if any isNil [ety_sgc, ety_sga] then False else the ety_sgc <= the ety_sga 
+   --appl (ety sgc) e <= appl ((ety sga) `bcomp` (fE m)) e
 sg_refines_ety::(GRM gm, Eq a, Eq b) =>(SGr a b, gm a b) -> SGr a b -> Bool
 sg_refines_ety (sgc, m) sga = all (sgs_ety_leq sgc m sga) $ esA sgc
 
@@ -834,18 +844,18 @@ check_sg_refines_nty (sgc, m) sga =
 
 errs_sg_refinesz :: (GRM gm, Eq a, Eq b, Show a, Show b) => (SGr a b, gm a b) -> SGr a b -> [ErrorTree]
 errs_sg_refinesz (sgc, m) sga = 
-   let err1 = check_sg_refines_nty (sgc, m) sga in
-   let err2 = check_sg_refines_ety (sgc, m) sga in
-   let err3 = check_sg_refines_m (sgc, m) sga in
-   let err4 = check_sg_refines_mcnts (sgc, m) sga in
+   let err1 = check_sg_refines_nty (sgc, m) sga 
+       err2 = check_sg_refines_ety (sgc, m) sga 
+       err3 = check_sg_refines_m (sgc, m) sga 
+       err4 = check_sg_refines_mcnts (sgc, m) sga in
    [err1, err2, err3, err4]
 
 -- errors of SG refinement
 errs_sg_refines :: (Eq a, Eq b, Show a, Show b) =>String -> (SGr a b, GrM a b, SGr a b) -> [ErrorTree]
 errs_sg_refines id (sgc, m, sga) = 
    --let m' = totaliseForDer m sgc in 
-   let err1 = rOkSGM id sgc m sga in
-   let errs2 = errs_sg_refinesz (sgc, m) sga in
+   let err1 = rOkSGM id sgc m sga 
+       errs2 = errs_sg_refinesz (sgc, m) sga in
    (err1:errs2)
 
 check_sg_refines :: (Eq a, Eq b, Show a, Show b) =>String -> (SGr a b, GrM a b) -> SGr a b -> ErrorTree
@@ -896,9 +906,9 @@ check_tsg_refines_aes (sgc, m) sga =
 
 errs_tsg_refinesz::(Eq a, Eq b, Show a, Show b)=>(SGr a b, GrM a b)->SGr a b->[ErrorTree]
 errs_tsg_refinesz (sgc, m) sga =
-   let errs1 = errs_sg_refinesz (sgc, m) sga in
-   let err2 = check_tsg_refines_ans m sga in
-   let err3 = check_tsg_refines_aes (sgc, m) sga in
+   let errs1 = errs_sg_refinesz (sgc, m) sga 
+       err2 = check_tsg_refines_ans m sga 
+       err3 = check_tsg_refines_aes (sgc, m) sga in
    errs1 ++ [err2, err3]
 
 check_tsg_refines::(Eq a, Eq b, Show a, Show b)=>String->(SGr a b, GrM a b)->SGr a b->ErrorTree

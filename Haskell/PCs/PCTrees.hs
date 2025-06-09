@@ -43,7 +43,7 @@ opseqO :: TOp
 opseqO = OpSeq True
 
 rearrangeT :: PT -> PD
-rearrangeT (OpB opseqC (Kappa (PDT k ps cts t1)) t2) = PDT k ps nil (OpB opseqC (Kappa (PDT (k++"0") nil cts t1)) t2)
+rearrangeT (OpB opseqC (Kappa (PD k ps cts t1)) t2) = PD k ps nil (OpB opseqC (Kappa (PD (k++"0") nil cts t1)) t2)
 rearrangeT (Kappa pdt) = pdt
 
 show_top :: TOp -> String
@@ -55,8 +55,8 @@ show_top (OpInterleave) = "⦀"
 show_top (OpThrow ps) = "𝛩" ++ (show ps)
 show_top (OpIf g) = "𝜄" ++ (show g)
 
-show_pdts :: Foldable t => t PDT -> String
-show_pdts pdts = if null pdts then "" else "{" ++ foldr (\ct scts->(show_pt $ Kappa ct) ++ "∙" ++  scts) "" pdts ++ "}"
+show_pds :: Foldable t => t PD -> String
+show_pds pds = if null pds then "" else "{" ++ foldr (\ct scts->(show_pt $ Kappa ct) ++ "∙" ++  scts) "" pds ++ "}"
 
 show_params :: (Foldable t, Functor t) => t Param -> String
 show_params ps = 
@@ -97,7 +97,7 @@ show_bop (OpRIntChoice v id) = "⊓" ++ (show_bop0 v id)
 
 show_pt :: PT -> String
 show_pt (Atom e og) = "𝛼" ++ show e ++ (show_guard og)
-show_pt (Kappa (PDT id ps pdts pct)) = "𝜅 " ++ id ++ (show_params ps) ++ (show_pdts pdts)++ " @ " ++ (show_pt pct)
+show_pt (Kappa (PD id ps cts pt)) = "𝜅 " ++ id ++ (show_params ps) ++ (show_pdts cts)++ " @ " ++ (show_pt pt)
 show_pt (OpKappa id bop pct) = "𝛾𝜅 " ++ id ++ (show_bop bop) ++ " @ " ++ (show_pt pct)
 show_pt (OpB op pct1 pct2) = "[𝛾 " ++ show_top op ++ "]" ++ (show_pt pct1) ++ " [" ++ (show_pt pct2) ++ "]"
 show_pt (Rho id og es rs) = "𝜌" ++ id ++ (showPCExps es) ++ (show_renamings rs) ++ (show_guard og)
@@ -105,8 +105,11 @@ show_pt NilT = "𝜑"
 show_pt StopT = "𝛉"
 show_pt SkipT = "𝜉"
 
+show_pts :: [PT] -> String
+show_pts = foldr (\pt s->show_pt pt  ++ "∙" ++ s) ""
+
 show_pctd :: PCTD -> String
-show_pctd (PCTD id ds pts) = "PC " ++ id ++ (show_pdts pts)
+show_pctd (PCTD id ds pts) = "PC " ++ id ++ (show_pts pts)
 
 andThenO :: (Eq a1, Eq a2) => (PT, Set a1, Set a2) -> (PT, Set a1, Set a2) -> (PT, Set a1, Set a2)
 andThenO (t, rs, gcs) (t', rs', gcs') = (OpB opseqO t t', rs `union` rs', gcs `union` gcs')
@@ -177,13 +180,13 @@ compoundBoundedOp mmi pc r n gcs =
       (v, e) = varBQuantifiedOp pc n in 
   (OpKappa  n (bOpOf (opQuantifiedOp sg_mm  pc n) (butLast v) (strOfTxtExp e)) t, rs, gunion [singles n, gcs, gcs2])
 
-compound::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, Set Id, Set Id)
+compound::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PD, Set Id, Set Id)
 compound mmi pc r n gcs = 
   let ns = img r [n] `intersec` img ( trancl $ r `rcomp`  r) [n]
-      (pts, rs1, gcs1) = seqCTs mmi pc r (ns `union` innerRefKs mmi pc n) (n `intoSet` gcs) 
+      (pts, rs1, gcs1) = seqPTs mmi pc r (ns `union` innerRefKs mmi pc n) (n `intoSet` gcs) 
       --(cts, rs1, gcs1) = seqCTs mmi pc ((innerRefKs mmi pc n) `union` (commonInnerKs mmi pc n)) (n `intoSet` gcs) 
       (t, rs2, gcs2) = consBranch mmi pc r (compoundStart mmi pc n) (gunion [singles n, gcs, gcs1]) in
-  (Kappa  $ PDT n (fmap (\(id, t)->cParam id (read_opctty t)) $ paramsOf pc n) pts t, rs1 `union` rs2, gunion [singles n, gcs1, gcs2])
+  (PD n (fmap (\(id, t)->cParam id (read_opctty t)) $ paramsOf pc n) pts t, rs1 `union` rs2, gunion [singles n, gcs1, gcs2])
 
 compoundAB::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, Set Id, Set Id)
 compoundAB mmi pc r n gcs = 
@@ -283,12 +286,12 @@ opBranches mmi pc r op (Set b bs) cs =
    (tc, rs, cs') `withOp`  (op, opBranches mmi pc r op bs $ cs' `union` cs)
 
 --followedBy t ts = if t' == NilT then t else TSeq t t'
-seqCTs::MMI String String->PC String String->Rel Id Id->Set Id->Set Id->([PDT], Set Id, Set Id)
-seqCTs _ _ _ EmptyS gks = (nil, nil, gks)
-seqCTs mmi pc r (Set n ns) gks = 
-    let (t, rns1, gks1)  = compoundAB mmi pc r n gks in
-    let (pdts, rns2, gks2) = seqCTs mmi pc r ((ns `union` rns1) `sminus` gks1) (gks `union` gks1) in 
-    (rearrangeT t:pdts, gunion [ns, rns1, rns2], gunion [gks, gks1, gks2])
+seqPTs::MMI String String->PC String String->Rel Id Id->Set Id->Set Id->([PT], Set Id, Set Id)
+seqPTs _ _ _ EmptyS gks = (nil, nil, gks)
+seqPTs mmi pc r (Set n ns) gks = 
+    let (t, rns1, gks1)  = compoundAB mmi pc r n gks 
+        (pts, rns2, gks2) = seqPTs mmi pc r ((ns `union` rns1) `sminus` gks1) (gks `union` gks1) in 
+    (rearrangeT t:pts, gunion [ns, rns1, rns2], gunion [gks, gks1, gks2])
 --where modify_t (OpB opseqC (Kappa (CT k ps cts t1)) t2) = CT k ps [] (OpB opseqC (Kappa (CT (k++"0") [] cts t1)) t2)
 
 consDef::PC String String->String->DTDef
@@ -298,8 +301,8 @@ consPCTD::MMI String String->PC String String->PCTD
 consPCTD mmi pc = 
   let r = relKs mmi pc
       ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
-      (pdts, _, _) = seqCTs mmi pc r (singles $ startCompound mmi pc) nil in 
-  PCTD (getPCDef pc) ds pdts
+      (pts, _, _) = seqPTs mmi pc r (singles $ startCompound mmi pc) nil in 
+  PCTD (getPCDef pc) ds pts
 
 -- Need to make more general here in the future
 revname :: PCEAtom -> Id -> Id -> PCEAtom
@@ -311,8 +314,8 @@ revname e _ _ = e
 rename :: PT -> Id -> Id -> PT
 rename (Atom e og) k p = Atom (revname e k p) og
 rename (OpB op t1 t2) k p = OpB op (rename t1 k p) (rename t2 k p)
-rename (Kappa (PDT nm ps cts t)) k p = 
-  Kappa (PDT nm ps (map thePDT $ foldr (\t' ts->(rename t' k p):ts) [] (fmap Kappa cts)) (rename t k p))
+rename (Kappa (PD nm ps cts t)) k p = 
+  Kappa (PD nm ps (foldr (\t' ts->(rename t' k p):ts) [] cts) (rename t k p))
 rename pct _ _ = pct
 --rename NilT _ _ = NilT
 --rename StopT _ _ = StopT
@@ -321,31 +324,31 @@ rename pct _ _ = pct
 within :: PT -> Set Id
 within (Atom e _) = atomsOfPCExpA e
 within (OpB _ t1 t2) = (within t1) `union` (within t2)
-within (Kappa (PDT nm _ cts t)) = (foldr (\ct wcts->(within $ Kappa ct) `union` wcts) nil cts) `union` (singles nm) `union` (within t)
+within (Kappa (PD nm _ cts t)) = (foldr (\ct wcts->(within ct) `union` wcts) nil cts) `union` (singles nm) `union` (within t)
 within (Rho _ _ _ _) = nil
 within NilT = nil
 within StopT = nil
 within SkipT = nil
 
-relWithinRel_pdts :: [PDT] -> Rel Id Id
-relWithinRel_pdts = foldr (\pdt rct->(relWithin $ Kappa pdt) `union` rct) nil
+relWithinRel_pts :: [PT] -> Rel Id Id
+relWithinRel_pts = foldr (\pt rct->(relWithin pt) `union` rct) nil
 
 relWithinRel :: Id -> PT -> Rel Id Id
 relWithinRel nc (Atom e _) = foldr (\a r-> pairUp nc a `intoSet` r) nil (atomsOfPCExpA e)
 relWithinRel nc (OpB _ t1 t2) =  (relWithinRel nc t1) `union` (relWithinRel nc t2)
-relWithinRel nc (Kappa (PDT nm _ pdts t)) = singles (nc, nm) `union` (relWithinRel_pdts pdts) `union` (relWithin t)
+relWithinRel nc (Kappa (PD nm _ cts t)) = singles (nc, nm) `union` (relWithinRel_pts cts) `union` (relWithin t)
 relWithinRel _ (Rho _ _ _ _) = nil
 relWithinRel _ NilT = nil
 relWithinRel _ StopT = nil
 relWithinRel _ SkipT = nil
 
 relWithin :: PT -> Rel Id Id
-relWithin (Kappa (PDT nm _ pdts t)) = (relWithinRel_pdts pdts) `union` relWithinRel nm t
+relWithin (Kappa (PD nm _ cts t)) = (relWithinRel_pts cts) `union` relWithinRel nm t
 --relWithin (TSeq t1 t2) = relWithin t1 ++ relWithin t2
 relWithin _ = nil
 
 atomsPCTD :: PCTD ->Set Id
-atomsPCTD (PCTD _ _ pdts) = atomsOfPDT pdts
+atomsPCTD (PCTD _ _ pdts) = atomsOfPD pdts
 
 --unionp::(Eq a, Eq b)=>(Set a, Set b)->(Set a, Set b)->(Set a, Set b)
 --unionp (sx1, sy1) (sx2, sy2) = (sx1 `union` sx2, sy1 `union` sy2)
@@ -353,8 +356,8 @@ atomsPCTD (PCTD _ _ pdts) = atomsOfPDT pdts
 --nilp :: (Set a1, Set a2)
 --nilp = (EmptyS, EmptyS)
 
-atomsOfPDT :: Foldable t=>t PDT ->Set Id
-atomsOfPDT = 
+atomsOfPD :: Foldable t=>t PD ->Set Id
+atomsOfPD = 
   foldr (\ct p_as_rs ->atomsOfPCT (Kappa ct) `union` p_as_rs) nil
 
 atomsOfPCTs :: PT -> PT ->Set Id
@@ -377,7 +380,7 @@ atomsOfPCT (Atom e _) = atomsOfPCExpA e
 --  if head ats == '{' && last ats == '}' then set $ words' (== ',') (drop 1 (take ((length ats) - 1) ats)) else nil
 atomsOfPCT (OpB (OpThrow as) t1 t2) = gunion (fmap atomsOfPCExp as) `union` atomsOfPCTs t1 t2
 atomsOfPCT (OpB _ t1 t2) = atomsOfPCTs t1 t2
-atomsOfPCT (Kappa (PDT _ _ cts t)) = foldr (\ct ps->(atomsOfPCT $ Kappa ct) `union` ps) nil cts `union` (atomsOfPCT t)
+atomsOfPCT (Kappa (PD _ _ cts t)) = foldr (\ct ps->(atomsOfPCT ct) `union` ps) nil cts `union` (atomsOfPCT t)
 atomsOfPCT (Rho _ _ _ rs) = foldr (\(_, to) ps->(singles to) `union` ps) nil rs
 atomsOfPCT NilT = nil
 --atomsOfPCT (TSeq t1 t2) = (atomsOfPCT t1) `union` (atomsOfPCT t2)

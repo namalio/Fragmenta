@@ -83,19 +83,19 @@ data ROp = OpRExtChoice Id Id
 -- Process Trees
 data PT 
   = Atom PCEAtom (Maybe G)  -- An atom is an atomic expression and a guard
-  | OpB TOp PT PT 
-  | Kappa PD
+  | OpB TOp PT PT -- An operator that combines process trees
+  | Kappa PD -- An inner process definition
   | OpKappa Id ROp PT 
   | Rho Id (Maybe G) [PCE] (Rel Id Id) -- identifier, optional guard, list of PCEs, renaming
   | NilT | StopT | SkipT 
   deriving(Eq, Show)
 
--- A data type definition: an identifier and a set of literals
-data DTDef = DTDef Id (Set Id) 
-  deriving(Eq, Show)
-
 -- Process definition 
 data PD = PD Id [Param] [PT] PT 
+  deriving(Eq, Show)
+
+-- A data type definition: an identifier and a set of literals
+data DTDef = DTDef Id (Set Id) 
   deriving(Eq, Show)
 
 -- A PC tree definition
