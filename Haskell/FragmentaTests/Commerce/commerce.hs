@@ -35,6 +35,7 @@ check_fs_and_ms = do
    (nm_fbk, fbk)<-loadF def_path "F_PBk.fr"
    (nm_fpf, fpf)<-loadF def_path "F_PF.fr"
    (nm_fbe, fbe)<-loadF def_path "F_PBe.fr"
+   (nm_fps, fps)<-loadF def_path "F_PS.fr"
    check_report_wf nm_fnf (Just Partial) fnf True
    check_report_wf nm_fp (Just Partial) fp True
    check_report_wf nm_fap (Just Partial) fap True

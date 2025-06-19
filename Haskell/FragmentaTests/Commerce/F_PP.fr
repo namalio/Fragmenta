@@ -18,6 +18,7 @@ fragment F_PP {
     virtual Volume
     inh VMl->Volume
     inh VLitre->Volume
+    inh Volume->Unit
   }
   ref PPercentage->Percentage
   ref PEuro->Euro

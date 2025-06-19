@@ -115,6 +115,7 @@ subgraph cluster_M_CC_rf{style=dashed;label=M_CC_rf;
 "NonAlcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
 "Alcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
 "V7"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Volume"->"Unit"[arrowhead=onormal,arrowsize=2.0];
 "VLitre"->"Volume"[arrowhead=onormal,arrowsize=2.0];
 "VMl"->"Volume"[arrowhead=onormal,arrowsize=2.0];
 "V0"->"Nat"[arrowhead=onormal,arrowsize=2.0];

@@ -1,29 +1,8 @@
 GrwT CI1 {
-	node bO : Book
-	node Othelo : Name
-	edge bO->Othelo:name
-	node ThomasWalkley : Publisher
-	edge bO->ThomasWalkley:publisher
 	node vPiece : VPiece
-	edge bO->vPiece : unit
-	node pO : Euro
-	node v30: Nat
 	node v0: Nat
 	node v1: Nat
-	edge pO->v30:euros
-	edge pO->v0:cents
-	edge bO->pO:price
-	edge bO->v1:quantity
-	node v1603 : Nat
-	edge bO->v1603:year
 	node v10:Percentage
-	edge bO->v10:vat
-	node aWS : Author
-	node William_Shakespeare : Name
-	edge bO->aWS:authors
-	edge aWS->William_Shakespeare:name
-	node England:Country
-	edge aWS->England:country
 	node bBD : Book
 	edge bBD->v10:vat
 	node The_Book_of_disquiet : Name

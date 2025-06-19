@@ -30,6 +30,7 @@ subgraph cluster_F_PP{style=dashed;label=F_PP;
 "V0"->"PNat3"[arrowhead=onormal,arrowsize=2.0];
 "VMl"->"Volume"[arrowhead=onormal,arrowsize=2.0];
 "VLitre"->"Volume"[arrowhead=onormal,arrowsize=2.0];
+"Volume"->"Unit"[arrowhead=onormal,arrowsize=2.0];
 
 }
 

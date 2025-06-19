@@ -1,23 +1,9 @@
 GrwT CI2 {
-	node bO : Book
-	node Othelo : Name
-	edge bO->Othelo:name
-	node ThomasWalkley : Publisher
-	edge bO->ThomasWalkley:publisher
 	node vKg : VKg
-	edge bO->vKg : unit
-	node pO : Euro
-	node v30: Nat
+	node vLitre : VLitre
 	node v0: Nat
-	edge pO->v30:euros
-	edge pO->v0:cents
-	edge bO->pO:price
 	node v1: Nat
-	edge bO->v1:quantity
-	node v-5 : Nat
-	edge bO->v-5:year
 	node v10:Percentage
-	edge bO->v10:vat
 	node bBD : Book
 	edge bBD->v10:vat
 	edge bBD->v1:quantity
@@ -25,13 +11,11 @@ GrwT CI2 {
 	edge bBD->The_Book_of_disquiet:name
 	node TintaDaChina : Publisher
 	edge bBD->TintaDaChina : publisher
-	edge bBD->vKg : unit
+	edge bBD->vLitre : unit
 	node aFP:Author
 	edge bBD->aFP:authors
 	node Fernando_Pessoa : Name
 	edge aFP->Fernando_Pessoa: name
-	node Portugal:Country
-	edge aFP->Portugal:country
 	node v1982 : Nat
 	edge bBD->v1982 : year
 	node pBD : Euro
@@ -58,7 +42,7 @@ GrwT CI2 {
 	node bGW : NonAlcoholic
 	node Great_Water : Name
 	edge bGW->Great_Water:name
-	edge bGW->vPiece:unit
+	edge bGW->vKg:unit
 	edge bGW->v0:quantity
 	node v7: Percentage
 	edge bGW->v7:vat
