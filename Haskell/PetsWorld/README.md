@@ -1,5 +1,5 @@
 # Pets World
-The Pets World layered model in Fragmenta. This corresponds to section 2 of [1]. There are two models corresponding to the abstract layer, the hotel worl model (Fig. 1), the concrete layer, the Pets world model (Fig. 2), and the instances of the concrete layer (includes the valid instance of Fig. 4).
+The Pets World layered model in Fragmenta, corresponding to section 2 of [1]. There are two models corresponding to the abstract layer, the hotel worl model (Fig. 1), the concrete layer, the Pets world model (Fig. 2), and the instances of the concrete layer (includes the valid instance of Fig. 4).
 
 The files with extension .fr, .gfg, .gm, gwt provide the definitions of fragments, GFGs/models, type morphisms, and instances (graphs with typing), respectively, using a textual notation.
 

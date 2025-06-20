@@ -1,6 +1,6 @@
 # E-Commerce
 
-The E-commerce layered model in Fragmenta. This corresponds to section 4 of [1]. There are two models corresponding to abstract (Fig. 19a) and concrete layers (Fig. 19 b), and the two instances of the concrete layer, one valid (Fig. 19c) and another invalid (Fig. 19d).
+The E-commerce layered model in Fragmenta, corresponding to section 4 of [1]. There are two models corresponding to abstract (Fig. 19a) and concrete layers (Fig. 19 b), and the two instances of the concrete layer, one valid (Fig. 19c) and another invalid (Fig. 19d).
 
 The files with extension .fr, .gfg, .gm, gwt provide the definitions of fragments, GFGs/models, type morphisms, and instances (graphs with typing), respectively, using a textual notation.
 
