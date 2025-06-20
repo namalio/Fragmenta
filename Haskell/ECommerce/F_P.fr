@@ -1,0 +1,11 @@
+fragment F_P {
+  SG SG_P {
+    node Percentage
+    proxy PNat
+    inh Percentage->PNat
+    value 100
+    inh V100->PNat
+    vcnt Percentage->V100[percentage_leq: ≤]
+  }
+  ref PNat->Nat
+}

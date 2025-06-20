@@ -1,0 +1,16 @@
+Morphism F_BTs {
+	nodes {
+	 Nat->Nat
+	 Name->OtherF
+	 Named->Feature
+	 V1->Nat
+	 V20->Nat
+	 Nat1->Nat
+	 National->Feature
+	 Country->OtherF
+	}
+	edges {
+		name->HasAttributes
+		country->HasAttributes
+	}
+}

@@ -13,9 +13,9 @@ import NumString
 import Utils
 
 def_path :: String
-def_path = "Commerce/"
+def_path = "FragmentaTests/Commerce/"
 img_path :: String
-img_path = "Commerce/img/"
+img_path = "FragmentaTests/Commerce/img/"
 
 saveDrawings :: IO ()
 saveDrawings = do

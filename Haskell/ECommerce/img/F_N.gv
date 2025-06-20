@@ -1,0 +1,7 @@
+digraph {graph[label=F_N,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_N{style=dashed;label=F_N;
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+
+
+}
+}

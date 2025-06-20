@@ -1,0 +1,140 @@
+digraph {graph[label=M_CC_rf,labelloc=tl,labelfontsize=12];
+subgraph cluster_M_CC_rf{style=dashed;label=M_CC_rf;
+"Percentage"[shape=record,fillcolor=lightskyblue1,style = filled,label="Percentage"];
+"V100"[shape=cds,fillcolor="#FFF2CC",style = filled,label="100"];
+"Product"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Product</I><br/>(V)}>];
+"Unit"[shape=record,fillcolor="#FFCCFF",style = filled,label="Unit\l(enum)"];
+"VKg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Kg"];
+"VGr"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Gr"];
+"VPiece"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Piece"];
+"VMl"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Ml"];
+"VLitre"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Litre"];
+"V0"[shape=cds,fillcolor="#FFF2CC",style = filled,label="0"];
+"Volume"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Volume</I><br/>(V)}>];
+"Beverage"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Beverage</I><br/>(A)}>];
+"Alcoholic"[shape=record,fillcolor=lightskyblue1,style = filled,label="Alcoholic"];
+"NonAlcoholic"[shape=record,fillcolor=lightskyblue1,style = filled,label="NonAlcoholic"];
+"V7"[shape=cds,fillcolor="#FFF2CC",style = filled,label="7"];
+"ShoeSize"[shape=record,fillcolor=lightskyblue1,style = filled,label="ShoeSize"];
+"V27"[shape=cds,fillcolor="#FFF2CC",style = filled,label="27"];
+"V49"[shape=cds,fillcolor="#FFF2CC",style = filled,label="49"];
+"Brand"[shape=record,fillcolor=lightskyblue1,style = filled,label="Brand"];
+"Shoe"[shape=record,fillcolor=lightskyblue1,style = filled,label="Shoe"];
+"Gender"[shape=record,fillcolor="#FFCCFF",style = filled,label="Gender\l(enum)"];
+"VMale"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Male"];
+"VFemale"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Female"];
+"AgeGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="AgeGroup\l(enum)"];
+"VAdult"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Adult"];
+"VChild"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Child"];
+"VJunior"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Junior"];
+"VProtein"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Protein"];
+"VFat"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Fat"];
+"VDairy"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Dairy"];
+"VStarchy"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Starchy"];
+"VFruitVeg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="FruitVeg"];
+"FoodGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="FoodGroup\l(enum)"];
+"V4"[shape=cds,fillcolor="#FFF2CC",style = filled,label="4"];
+"Food"[shape=record,fillcolor=lightskyblue1,style = filled,label="Food"];
+"V10"[shape=cds,fillcolor="#FFF2CC",style = filled,label="10"];
+"Publisher"[shape=record,fillcolor=lightskyblue1,style = filled,label="Publisher"];
+"Author"[shape=record,fillcolor=lightskyblue1,style = filled,label="Author"];
+"Book"[shape=record,fillcolor=lightskyblue1,style = filled,label="Book"];
+"V99"[shape=cds,fillcolor="#FFF2CC",style = filled,label="99"];
+"Euro"[shape=record,fillcolor=lightskyblue1,style = filled,label="Euro"];
+"V20"[shape=cds,fillcolor="#FFF2CC",style = filled,label="20"];
+"V1"[shape=cds,fillcolor="#FFF2CC",style = filled,label="1"];
+"National"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>National</I><br/>(V)}>];
+"Country"[shape=record,fillcolor=lightskyblue1,style = filled,label="Country"];
+"Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
+"Named"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Named</I><br/>(V)}>];
+"Nat1"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat1"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+
+"Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
+"Nat1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V1"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V20"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Nat1"->"V1"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"National"->"Country"[label="country",arrowhead=vee,headlabel="",arrowsize=.5];
+"Euro"->"Nat"[label="cents",arrowhead=vee,headlabel="",arrowsize=.5];
+"Euro"->"Nat"[label="euros",arrowhead=vee,headlabel="",arrowsize=.5];
+"V99"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Euro"->"V99"[arrowhead=vee,style=dashed,label="cents ≤"];
+
+"Book"->"Product"[arrowhead=onormal,arrowsize=2.0];
+"V10"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Author"->"National"[arrowhead=onormal,arrowsize=2.0];
+"Book"->"Nat"[label="year",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"Author"[label="authors",arrowhead=vee,headlabel="1..*",arrowsize=.5];
+"Book"->"Publisher"[label="publisher",arrowhead=vee,headlabel="",arrowsize=.5];
+"Book"->"V10"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Book"->"VPiece"[arrowhead=vee,style=dashed,label="unit ="];
+
+"Food"->"Product"[arrowhead=onormal,arrowsize=2.0];
+"V4"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"VFruitVeg"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VStarchy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VDairy"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VFat"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"VProtein"->"FoodGroup"[arrowhead=onormal,arrowsize=2.0];
+"Food"->"FoodGroup"[label="category",arrowhead=vee,headlabel="",arrowsize=.5];
+"Food"->"V4"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Shoe"->"V20"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Shoe"->"VPiece"[arrowhead=vee,style=dashed,label="unit ="];
+
+"Shoe"->"AgeGroup"[label="ageg",arrowhead=vee,headlabel="",arrowsize=.5];
+"VJunior"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"VChild"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"VAdult"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"Gender"[label="gender",arrowhead=vee,headlabel="",arrowsize=.5];
+"VFemale"->"Gender"[arrowhead=onormal,arrowsize=2.0];
+"VMale"->"Gender"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"ShoeSize"[label="size",arrowhead=vee,headlabel="",arrowsize=.5];
+"Shoe"->"Brand"[label="brand",arrowhead=vee,headlabel="",arrowsize=.5];
+"Brand"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Brand"->"National"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"Product"[arrowhead=onormal,arrowsize=2.0];
+"ShoeSize"->"V49"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"ShoeSize"->"V27"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"V49"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"V27"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"ShoeSize"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Beverage"->"Volume"[label="UB: unit ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"NonAlcoholic"->"V7"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Alcoholic"->"V20"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Beverage"->"Product"[arrowhead=onormal,arrowsize=2.0];
+"NonAlcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
+"Alcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
+"V7"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Volume"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VLitre"->"Volume"[arrowhead=onormal,arrowsize=2.0];
+"VMl"->"Volume"[arrowhead=onormal,arrowsize=2.0];
+"V0"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"V0"[arrowhead=vee,style=dashed,label="vat >"];
+
+"Product"->"Named"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"Nat"[label="quantity",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Unit"[label="unit",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Percentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Euro"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"VLitre"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VMl"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VPiece"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VGr"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VKg"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"V100"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"V100"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"Nat"[arrowhead=onormal,arrowsize=2.0];
+
+}
+}

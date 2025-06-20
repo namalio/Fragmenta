@@ -1,0 +1,30 @@
+digraph {graph[label=M_AC_uf,labelloc=tl,labelfontsize=12];
+subgraph cluster_M_AC_uf{style=dashed;label=M_AC_uf;
+"OtherF"[shape=record,fillcolor=lightskyblue1,style = filled,label="OtherF"];
+"Product"[shape=record,fillcolor=lightskyblue1,style = filled,label="Product"];
+"PFeature"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Feature<br/>(P)>];
+"PPercentage"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Percentage<br/>(P)>];
+"Currency"[shape=record,fillcolor=lightskyblue1,style = filled,label="Currency"];
+"Nat"[shape=record,fillcolor=lightskyblue1,style = filled,label="Nat"];
+"Feature"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Feature</I><br/>(V)}>];
+"V100"[shape=cds,fillcolor="#FFF2CC",style = filled,label="100"];
+"PNat"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat<br/>(P)>];
+"Percentage"[shape=record,fillcolor=lightskyblue1,style = filled,label="Percentage"];
+
+"OtherF"->"PFeature"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"Currency"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PPercentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"PFeature"->"PFeature"[label="HasAttributes▼",dir=none,taillabel="*",headlabel="*"];
+"Product"->"PFeature"[arrowhead=onormal,arrowsize=2.0];
+"Currency"->"PFeature"[arrowhead=onormal,arrowsize=2.0];
+"Nat"->"Feature"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"V100"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"V100"->"PNat"[arrowhead=onormal,arrowsize=2.0];
+"Percentage"->"PNat"[arrowhead=onormal,arrowsize=2.0];
+
+}
+"PFeature"->"Feature"[arrowhead=normalnormal];
+"PPercentage"->"Percentage"[arrowhead=normalnormal];
+"PNat"->"Nat"[arrowhead=normalnormal];
+}

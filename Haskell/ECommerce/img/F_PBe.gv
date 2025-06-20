@@ -1,0 +1,27 @@
+digraph {graph[label=F_PBe,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PBe{style=dashed;label=F_PBe;
+"PNat6"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat6<br/>(P)>];
+"PVolume"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Volume<br/>(P)>];
+"PV20_1"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<V20_1<br/>(P)>];
+"Beverage"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Beverage</I><br/>(A)}>];
+"Alcoholic"[shape=record,fillcolor=lightskyblue1,style = filled,label="Alcoholic"];
+"NonAlcoholic"[shape=record,fillcolor=lightskyblue1,style = filled,label="NonAlcoholic"];
+"V7"[shape=cds,fillcolor="#FFF2CC",style = filled,label="7"];
+"PProduct3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product3<br/>(P)>];
+
+"V7"->"PNat6"[arrowhead=onormal,arrowsize=2.0];
+"Alcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
+"NonAlcoholic"->"Beverage"[arrowhead=onormal,arrowsize=2.0];
+"Beverage"->"PProduct3"[arrowhead=onormal,arrowsize=2.0];
+"Alcoholic"->"PV20_1"[arrowhead=vee,style=dashed,label="vat ="];
+
+"NonAlcoholic"->"V7"[arrowhead=vee,style=dashed,label="vat ="];
+
+"Beverage"->"PVolume"[label="UB: unit ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+
+}
+
+
+
+
+}

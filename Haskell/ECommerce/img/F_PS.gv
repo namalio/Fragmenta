@@ -1,0 +1,53 @@
+digraph {graph[label=F_PS,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PS{style=dashed;label=F_PS;
+"PNat7"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat7<br/>(P)>];
+"PPiece2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Piece2<br/>(P)>];
+"PProduct4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Product4<br/>(P)>];
+"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
+"PNational2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<National2<br/>(P)>];
+"PV20_2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<V20_2<br/>(P)>];
+"ShoeSize"[shape=record,fillcolor=lightskyblue1,style = filled,label="ShoeSize"];
+"V27"[shape=cds,fillcolor="#FFF2CC",style = filled,label="27"];
+"V49"[shape=cds,fillcolor="#FFF2CC",style = filled,label="49"];
+"Brand"[shape=record,fillcolor=lightskyblue1,style = filled,label="Brand"];
+"Shoe"[shape=record,fillcolor=lightskyblue1,style = filled,label="Shoe"];
+"Gender"[shape=record,fillcolor="#FFCCFF",style = filled,label="Gender\l(enum)"];
+"VMale"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Male"];
+"VFemale"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Female"];
+"AgeGroup"[shape=record,fillcolor="#FFCCFF",style = filled,label="AgeGroup\l(enum)"];
+"VAdult"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Adult"];
+"VChild"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Child"];
+"VJunior"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Junior"];
+
+"ShoeSize"->"PNat7"[arrowhead=onormal,arrowsize=2.0];
+"V27"->"PNat7"[arrowhead=onormal,arrowsize=2.0];
+"V49"->"PNat7"[arrowhead=onormal,arrowsize=2.0];
+"ShoeSize"->"V27"[arrowhead=vee,style=dashed,label=" ≥"];
+
+"ShoeSize"->"V49"[arrowhead=vee,style=dashed,label=" ≤"];
+
+"Shoe"->"PProduct4"[arrowhead=onormal,arrowsize=2.0];
+"Brand"->"PNational2"[arrowhead=onormal,arrowsize=2.0];
+"Brand"->"PNamed3"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"Brand"[label="brand",arrowhead=vee,headlabel="",arrowsize=.5];
+"Shoe"->"ShoeSize"[label="size",arrowhead=vee,headlabel="",arrowsize=.5];
+"VMale"->"Gender"[arrowhead=onormal,arrowsize=2.0];
+"VFemale"->"Gender"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"Gender"[label="gender",arrowhead=vee,headlabel="",arrowsize=.5];
+"VAdult"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"VChild"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"VJunior"->"AgeGroup"[arrowhead=onormal,arrowsize=2.0];
+"Shoe"->"AgeGroup"[label="ageg",arrowhead=vee,headlabel="",arrowsize=.5];
+"Shoe"->"PPiece2"[arrowhead=vee,style=dashed,label="unit ="];
+
+"Shoe"->"PV20_2"[arrowhead=vee,style=dashed,label="vat ="];
+
+
+}
+
+
+
+
+
+
+}

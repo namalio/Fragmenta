@@ -1,0 +1,79 @@
+GrwT CI2 {
+	node vKg : VKg
+	node vLitre : VLitre
+	node v0: Nat
+	node v1: Nat
+	node v10:Percentage
+	node bBD : Book
+	edge bBD->v10:vat
+	edge bBD->v1:quantity
+	node The_Book_of_disquiet : Name
+	edge bBD->The_Book_of_disquiet:name
+	node TintaDaChina : Publisher
+	edge bBD->TintaDaChina : publisher
+	edge bBD->vLitre : unit
+	node aFP:Author
+	edge bBD->aFP:authors
+	node Fernando_Pessoa : Name
+	edge aFP->Fernando_Pessoa: name
+	node v1982 : Nat
+	edge bBD->v1982 : year
+	node pBD : Euro
+	node v25: Nat
+	node v55: Nat
+	edge pBD->v25:euros
+	edge pBD->v55:cents
+	edge bBD->pBD:price
+	node fB : Food
+	node Banana : Name
+	edge fB->Banana:name
+	edge fB->vKg:unit
+	edge fB->v0:quantity
+	node v-4: Percentage
+	edge fB->v-4:vat
+	node vFruitVeg : VFruitVeg
+	edge fB->vFruitVeg :category
+	node pB : Euro
+	node v102: Nat
+	edge pB->v0:euros
+	edge pB->v102:cents
+	edge fB->pB:price
+	node vPiece : VPiece
+	node bGW : NonAlcoholic
+	node Great_Water : Name
+	edge bGW->Great_Water:name
+	edge bGW->vKg:unit
+	edge bGW->v0:quantity
+	node v7: Percentage
+	edge bGW->v7:vat
+	node pGW : Euro
+	node v110: Nat
+	edge pGW->v0:euros
+	edge pGW->v110:cents
+	edge bGW->pGW:price
+	node sNB : Shoe
+	node White_500 : Name
+	edge sNB->White_500:name
+	edge sNB->vPiece:unit
+	node bNB : Brand
+	edge sNB->bNB:brand
+	node NewBalance : Name
+	edge bNB->NewBalance:name
+	node US:Country
+	edge bNB->US:country
+	node vMale : VMale
+	node vAdult : VAdult
+	edge sNB->vMale:gender
+	edge sNB->vAdult:ageg
+	node pSNB : Euro
+	node v91: Nat
+	node v50: Nat
+	edge pSNB->v91:euros
+	edge pSNB->v50:cents
+	edge sNB->pSNB:price
+	node v20: Percentage
+	edge sNB->v20:vat
+	edge sNB->v1:quantity
+	node v18: ShoeSize
+	edge sNB->v18:size
+}

@@ -1,0 +1,11 @@
+Morphism F_E {
+	nodes {
+	 Euro->Currency
+     PNat2->Nat
+     V99->Nat
+	}
+	edges {
+	   cents->HasAttributes
+	   euros->HasAttributes
+	}
+}

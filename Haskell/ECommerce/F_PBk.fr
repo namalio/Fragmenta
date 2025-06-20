@@ -1,0 +1,27 @@
+fragment F_PBk {
+  SG SG_PBk {
+    node Book
+    proxy PProduct
+    proxy PNat4
+    proxy PNamed2
+    proxy PPiece
+    proxy PNational
+    node Author
+    node Publisher
+    value 10
+    inh Book->PProduct
+    inh V10->PNat4
+    inh Author->PNamed2
+    inh Author->PNational
+    relu Book->PNat4[year]
+    relu Book->Author[authors]:1..*
+    relu Book->Publisher[publisher]
+    vcnt Book->V10[bvat_eq: vat =]
+    vcnt Book->PPiece[bkunit_eq: unit =]
+  }
+  ref PProduct->Product
+  ref PNat4->Nat
+  ref PNamed2->Named
+  ref PPiece->VPiece
+  ref PNational->National
+}

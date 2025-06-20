@@ -1,0 +1,24 @@
+Morphism F_PP {
+	nodes {
+	 PPercentage->Percentage
+	 Product->Product
+	 PEuro->Currency
+	 PNamed->Feature
+	 Unit->OtherF
+	 PNat3->Nat
+	 PNat11->Nat
+	 V0->Nat
+	 VPiece->OtherF
+	 VKg->OtherF
+	 VGr->OtherF
+	 VMl->OtherF
+	 VLitre->OtherF
+	 Volume->Feature
+	}
+	edges {
+	 vat->vat
+	 price->price
+	 unit->HasAttributes
+	 quantity->HasAttributes
+	}
+}

@@ -1,0 +1,41 @@
+digraph {graph[label=F_PP,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_PP{style=dashed;label=F_PP;
+"Product"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Product</I><br/>(V)}>];
+"PPercentage"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Percentage<br/>(P)>];
+"Unit"[shape=record,fillcolor="#FFCCFF",style = filled,label="Unit\l(enum)"];
+"VKg"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Kg"];
+"VGr"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Gr"];
+"VPiece"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Piece"];
+"VMl"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Ml"];
+"VLitre"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Litre"];
+"PEuro"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Euro<br/>(P)>];
+"PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
+"PNat3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat3<br/>(P)>];
+"PNat11"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Nat11<br/>(P)>];
+"V0"[shape=cds,fillcolor="#FFF2CC",style = filled,label="0"];
+"Volume"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Volume</I><br/>(V)}>];
+
+"VKg"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VGr"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VPiece"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VMl"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"VLitre"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"PEuro"[label="price",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PPercentage"[label="vat",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"Unit"[label="unit",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PNat11"[label="quantity",arrowhead=vee,headlabel="",arrowsize=.5];
+"Product"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
+"Product"->"V0"[arrowhead=vee,style=dashed,label="vat >"];
+
+"V0"->"PNat3"[arrowhead=onormal,arrowsize=2.0];
+"VMl"->"Volume"[arrowhead=onormal,arrowsize=2.0];
+"VLitre"->"Volume"[arrowhead=onormal,arrowsize=2.0];
+"Volume"->"Unit"[arrowhead=onormal,arrowsize=2.0];
+
+}
+
+
+
+
+
+}

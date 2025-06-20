@@ -1,0 +1,17 @@
+Morphism F_PF {
+	nodes {
+	 PNat5->Nat
+	 PProduct2->Product
+	 Food->Product
+	 V4->Nat
+	 FoodGroup->OtherF
+	 VFruitVeg->OtherF
+	 VStarchy->OtherF
+	 VDairy->OtherF
+	 VFat->OtherF
+	 VProtein->OtherF
+	}
+	edges {
+	 category->HasAttributes
+	}
+}
