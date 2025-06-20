@@ -1,7 +1,9 @@
 # Haskell
 The haskell code of Fragmenta with several sample models, including the four layered models given in [1]:
 - [Hotel and pet hotel](PetsWorld/). 
-- 
+- [E-Commerce] (ECommerce/).
+- [Statecharts] (Statecharts/).
+- [Into-SysML] (IntoSysML/).
 
 ## References
 
