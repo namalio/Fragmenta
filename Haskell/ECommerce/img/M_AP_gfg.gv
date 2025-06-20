@@ -1,8 +1,0 @@
-digraph {graph[label=M_AP_gfg,labelloc=tl,labelfontsize=12];
-"F_AP"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_AP"];
-"F_PE"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_PE"];
-"F_NF"[shape=oval,fillcolor="#FFCCCC",style ="filled",label="F_NF"];
-
-"F_PE"->"F_NF"[label=" ",dir=forward,arrowhead=vee];
-"F_AP"->"F_PE"[label=" ",dir=forward,arrowhead=vee];
-}
