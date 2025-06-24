@@ -7,16 +7,16 @@ subgraph cluster_WBuzzer {
 style="filled,rounded";
 label ="WBuzzer";
 fillcolor = lightgray;
-init2_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
-
-Buzzing [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Buzzing];
-Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
 init1_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
+Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
+Buzzing [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Buzzing];
+init2_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-init2_St->Muted[label="",  ];
-Buzzing->Muted[label="after(3sec)/mute",  ];
-Muted->Buzzing[label="buzz",  ];
+
 init1_St->init2_St[label="",  ];
+Muted->Buzzing[label="buzz",  ];
+Buzzing->Muted[label="after(3sec)/mute",  ];
+init2_St->Muted[label="",  ];
 }
 }

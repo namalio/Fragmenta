@@ -9,7 +9,6 @@ label ="TVSet";
 fillcolor = lightgray;
 init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-OffStandBy [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=OffStandBy];
 subgraph cluster_TVOn {
 style="filled,rounded";
 label ="TVOn";
@@ -20,39 +19,40 @@ label ="Volume";
 fillcolor = lightgray;
 initVolume_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-Sounding [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Sounding];
 Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
+Sounding [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Sounding];
 
 initVolume_St->Sounding[label="",  ];
-Sounding->Muted[label="muteButton",  ];
 Muted->Sounding[label="muteButton",  ];
 Sounding->Sounding[label="volumeUp",  ];
+Sounding->Muted[label="muteButton",  ];
 }
 subgraph cluster_Source {
 style="filled,rounded";
 label ="Source";
 fillcolor = lightgray;
-initSource_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
-
 historySource_St [shape = circle,fillcolor=black,label="H"];
 
-HDMI [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=HDMI];
 VGA [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=VGA];
 Aerial [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Aerial];
+HDMI [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=HDMI];
+initSource_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-initSource_St->historySource_St[label="",  ];
+
 historySource_St->HDMI[label="",  ];
-HDMI->VGA[label="sourceButton",  ];
 VGA->Aerial[label="sourceButton",  ];
 Aerial->HDMI[label="sourceButton",  ];
+HDMI->VGA[label="sourceButton",  ];
+initSource_St->historySource_St[label="",  ];
 }
 }
 
+OffStandBy [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=OffStandBy];
 
 init_St->OffStandBy[label="",  ];
-OffStandBy->initVolume_St[label="anyButton",  lhead=cluster_TVOn];
-initVolume_St->initVolume_St[label="channelUp", ltail=cluster_TVOn lhead=cluster_TVOn];
-initVolume_St->initVolume_St[label="channelDown", ltail=cluster_TVOn lhead=cluster_TVOn];
-initVolume_St->OffStandBy[label="powerButton", ltail=cluster_TVOn ];
+initSource_St->initSource_St[label="channelUp", ltail=cluster_TVOn lhead=cluster_TVOn];
+initSource_St->OffStandBy[label="powerButton", ltail=cluster_TVOn ];
+initSource_St->initSource_St[label="channelDown", ltail=cluster_TVOn lhead=cluster_TVOn];
+OffStandBy->initSource_St[label="anyButton",  lhead=cluster_TVOn];
 }
 }

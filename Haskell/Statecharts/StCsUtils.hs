@@ -24,6 +24,7 @@ import SimpleFuns
 import MMI
 import GrswT ( GrwT )
 import NumString
+import Utils ( option_main_save )
 
 mm_path :: String
 mm_path   = "Statecharts/MM/"
@@ -84,21 +85,25 @@ check_draw_BoolSetter = do
 
 check_draw_Buzzer :: IO ()
 check_draw_Buzzer = do
+    print "The Simple Buzzer (Valid)"
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "Buzzer.stc"
 
 check_draw_WBuzzer :: IO ()
 check_draw_WBuzzer = do
+    print "The Simple Buzzer with two initial states (Invalid)"
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "WBuzzer.stc"
 
 check_draw_BuzzerWStatus :: IO ()
 check_draw_BuzzerWStatus = do
+    print "A Buzzer with status of Fig. 12.c (Valid)"
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "BuzzerWStatus.stc"
 
 check_draw_WBuzzerWStatus :: IO ()
 check_draw_WBuzzerWStatus = do
+    print "The Buzzer with status of Fig. 12.d with a missing initial state(Invalid)"
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "WBuzzerWStatus.stc"
 
@@ -119,11 +124,13 @@ check_draw_SimpleWatch = do
 
 check_draw_Gland :: IO ()
 check_draw_Gland = do
+    print "The Gland example of Fig. 22a in paper (Valid)"
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "Gland.stc"
 
 check_draw_RGland :: IO ()
 check_draw_RGland = do
+    print "The Ressuscitating Gland example of Fig. 22b in paper (Invalid)"
     mmi<-load_stcs_mmi mm_path
     check_draw_stc stcs_path stc_img_path mmi "RGland.stc"
 
@@ -144,6 +151,18 @@ draw_WBuzzer = do
     stc <- loadStC (stcs_path ++ "WBuzzer.stc") 
     writeStCDrawingToFile stc_img_path mmi stc
 
+draw_WBuzzerWStatus :: IO ()
+draw_WBuzzerWStatus = do
+    mmi<-load_stcs_mmi mm_path
+    stc <- loadStC (stcs_path ++ "WBuzzerWStatus.stc") 
+    writeStCDrawingToFile stc_img_path mmi stc
+
+draw_WBuzzerWStatus2 :: IO ()
+draw_WBuzzerWStatus2 = do
+    mmi<-load_stcs_mmi mm_path
+    stc <- loadStC (stcs_path ++ "WBuzzerWStatus2.stc") 
+    writeStCDrawingToFile stc_img_path mmi stc
+
 test :: IO ()
 test = do
     mmi<-load_stcs_mmi mm_path
@@ -159,3 +178,27 @@ test = do
     -- putStrLn $ show $ gMutableStateDescs stc "ProcessingSt"
     -- putStrLn $ getStCName stc
     -- putStrLn $ show $ getMainDescInfo (stc_sg_cmm mmi) stc
+
+do_main :: IO ()
+do_main = do
+    print "Checking the Statecharts metamodel"
+    check_stcs_MM
+
+main :: IO ()
+main = do
+    option_main_save do_main saveMMDrawings
+    check_draw_BoolSetter
+    check_draw_Buzzer
+    check_draw_WBuzzer
+    draw_WBuzzer
+    check_draw_BuzzerWStatus 
+    check_draw_WBuzzerWStatus 
+    draw_WBuzzerWStatus
+    check_draw_WBuzzerWStatus2
+    draw_WBuzzerWStatus2
+    check_draw_Lasbscs 
+    check_draw_SimpleWatch
+    check_draw_Gland
+    check_draw_RGland
+    draw_RGland
+    check_draw_TVSet

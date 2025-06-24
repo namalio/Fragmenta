@@ -104,7 +104,7 @@ stc_model :: ReadP StCModel
 stc_model = do
    string "StCModel"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    char ':'
    skipSpaces
@@ -116,7 +116,7 @@ stc_desc :: ReadP StCDesc
 stc_desc = do
    string "StC"
    skipSpaces
-   nm<-parse_id 
+   nm<-parseId 
    skipSpaces
    char '{'
    skipSpaces
@@ -137,7 +137,7 @@ stc_state :: ReadP State
 stc_state = do
    string "state"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    descs<- stc_state_inner <++ return [] 
    skipSpaces
@@ -147,7 +147,7 @@ stc_start_state :: ReadP State
 stc_start_state = do
    string "start"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    return (State nm StartSt [])
 
@@ -155,7 +155,7 @@ stc_end_state :: ReadP State
 stc_end_state = do
    string "end"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    return (State nm EndSt [])
 
@@ -163,7 +163,7 @@ stc_history_state :: ReadP State
 stc_history_state = do
    string "history"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
    return (State nm HistorySt [])
 
@@ -183,20 +183,20 @@ tguard = do
 taction :: ReadP (Maybe Action)
 taction = do
    char '/'
-   a <- parse_id
+   a <- parseId
    return (Just a)
 
 stc_transition :: ReadP Transition
 stc_transition = do
    string "transition"
    skipSpaces
-   nm<-parse_id
+   nm<-parseId
    skipSpaces
-   src<-parse_id
+   src<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   tgt<-parse_id
+   tgt<-parseId
    skipSpaces
    ev<-option Nothing tevent
    skipSpaces

@@ -28,10 +28,10 @@ import LoadCheckDraw
 import Frs
 import Statecharts.StCs_MM_Names
 import SimpleFuns
-import Relations (appl, dom_of, img, rcomp)
+import Relations (appl, dom_of, img, rcomp, applM)
 import TheNil
 import Sets ( intersec )
-import MyMaybe ( applM )
+import MyMaybe
 import MMI ( consMMI, MMI )
 
 type StC a b = GrwT a b

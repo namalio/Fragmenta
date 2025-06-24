@@ -7,102 +7,102 @@ subgraph cluster_AlarmStatus {
 style="filled,rounded";
 label ="AlarmStatus";
 fillcolor = lightgray;
-historyAlarmStatus_St [shape = circle,fillcolor=black,label="H"];
-
-OnAlarm [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=OnAlarm];
-OffAlarm [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=OffAlarm];
 initAlarmStatus_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
+OffAlarm [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=OffAlarm];
+OnAlarm [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=OnAlarm];
+historyAlarmStatus_St [shape = circle,fillcolor=black,label="H"];
 
-historyAlarmStatus_St->OffAlarm[label="",  ];
-OnAlarm->OffAlarm[label="alarmOff",  ];
-OffAlarm->OnAlarm[label="alarmOn",  ];
+
 initAlarmStatus_St->historyAlarmStatus_St[label="",  ];
+OffAlarm->OnAlarm[label="alarmOn",  ];
+OnAlarm->OffAlarm[label="alarmOff",  ];
+historyAlarmStatus_St->OffAlarm[label="",  ];
 }
 subgraph cluster_Lights {
 style="filled,rounded";
 label ="Lights";
 fillcolor = lightgray;
-LightOff [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=LightOff];
-LightOn [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=LightOn];
 initLights_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
+LightOn [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=LightOn];
+LightOff [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=LightOff];
 
-LightOff->LightOn[label="lightOnPress",  ];
-LightOn->LightOff[label="lightOnRelease",  ];
 initLights_St->LightOff[label="",  ];
+LightOn->LightOff[label="lightOnRelease",  ];
+LightOff->LightOn[label="lightOnPress",  ];
 }
 subgraph cluster_Time {
 style="filled,rounded";
 label ="Time";
 fillcolor = lightgray;
+ShowTime [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=ShowTime];
+ShowDate [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=ShowDate];
 initTime_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-ShowDate [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=ShowDate];
-ShowTime [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=ShowTime];
 
-initTime_St->ShowTime[label="",  ];
-ShowDate->ShowTime[label="showDateRelease",  ];
 ShowTime->ShowDate[label="showDatePress",  ];
+ShowDate->ShowTime[label="showDateRelease",  ];
+initTime_St->ShowTime[label="",  ];
 }
 subgraph cluster_AlarmSetting {
 style="filled,rounded";
 label ="AlarmSetting";
 fillcolor = lightgray;
-initAlarmSetting_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
-
+NotSetting [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=NotSetting];
 subgraph cluster_SettingAlarm {
 style="filled,rounded";
 label ="SettingAlarm";
 fillcolor = lightgray;
-subgraph cluster_AlarmOnOff {
-style="filled,rounded";
-label ="AlarmOnOff";
-fillcolor = lightgray;
-HistorySt1_St [shape = circle,fillcolor=black,label="H"];
-
-AlarmOn [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=AlarmOn];
-AlarmOff [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=AlarmOff];
-initAlarmOnOff_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
-
-
-HistorySt1_St->AlarmOff[label="",  ];
-AlarmOff->AlarmOn[label="rotateDown",  ];
-AlarmOn->AlarmOff[label="rotateDown",  ];
-AlarmOff->NotSetting[label="ok/alarmOff",  ];
-AlarmOn->initSetAlarmTime_St[label="ok",  lhead=cluster_SetAlarmTime];
-AlarmOn->AlarmOff[label="rotateUp",  ];
-AlarmOff->AlarmOn[label="rotateUp",  ];
-initAlarmOnOff_St->HistorySt1_St[label="",  ];
-}
+initSettingAlarm_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
 subgraph cluster_SetAlarmTime {
 style="filled,rounded";
 label ="SetAlarmTime";
 fillcolor = lightgray;
+Hours [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Hours];
+Minutes [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Minutes];
 initSetAlarmTime_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-Minutes [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Minutes];
-Hours [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Hours];
 
-initSetAlarmTime_St->Hours[label="",  ];
-Hours->Hours[label="rotateDown",  ];
-Minutes->Minutes[label="rotateUp",  ];
-Minutes->NotSetting[label="ok/alarmOn",  ];
-Minutes->Minutes[label="rotateDown",  ];
-Hours->Minutes[label="ok",  ];
 Hours->Hours[label="rotateUp",  ];
+Hours->Minutes[label="ok",  ];
+Minutes->Minutes[label="rotateDown",  ];
+Minutes->NotSetting[label="ok/alarmOn",  ];
+Minutes->Minutes[label="rotateUp",  ];
+Hours->Hours[label="rotateDown",  ];
+initSetAlarmTime_St->Hours[label="",  ];
 }
 
-initSettingAlarm_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
+subgraph cluster_AlarmOnOff {
+style="filled,rounded";
+label ="AlarmOnOff";
+fillcolor = lightgray;
+initAlarmOnOff_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
+
+AlarmOff [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=AlarmOff];
+AlarmOn [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=AlarmOn];
+HistorySt1_St [shape = circle,fillcolor=black,label="H"];
+
+
+initAlarmOnOff_St->HistorySt1_St[label="",  ];
+AlarmOff->AlarmOn[label="rotateUp",  ];
+AlarmOn->AlarmOff[label="rotateUp",  ];
+AlarmOn->initSetAlarmTime_St[label="ok",  lhead=cluster_SetAlarmTime];
+AlarmOff->NotSetting[label="ok/alarmOff",  ];
+AlarmOn->AlarmOff[label="rotateDown",  ];
+AlarmOff->AlarmOn[label="rotateDown",  ];
+HistorySt1_St->AlarmOff[label="",  ];
+}
 
 
 initSettingAlarm_St->initAlarmOnOff_St[label="",  lhead=cluster_AlarmOnOff];
 }
 
-NotSetting [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=NotSetting];
+initAlarmSetting_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-initAlarmSetting_St->NotSetting[label="",  ];
+
 NotSetting->initSettingAlarm_St[label="setAlarm",  lhead=cluster_SettingAlarm];
+initAlarmSetting_St->NotSetting[label="",  ];
 }
 }

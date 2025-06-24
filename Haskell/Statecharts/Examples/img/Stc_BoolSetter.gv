@@ -7,17 +7,17 @@ subgraph cluster_BoolSetter {
 style="filled,rounded";
 label ="BoolSetter";
 fillcolor = lightgray;
-VFalse [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=VFalse];
-VTrue [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=VTrue];
 init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
+VTrue [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=VTrue];
+VFalse [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=VFalse];
 
-VFalse->VTrue[label="assignT",  ];
-VTrue->VTrue[label="assignT",  ];
-VFalse->VFalse[label="assignF",  ];
-VFalse->VFalse[label="getF",  ];
-VTrue->VTrue[label="getT",  ];
-VTrue->VFalse[label="assignF",  ];
 init_St->VFalse[label="",  ];
+VTrue->VFalse[label="assignF",  ];
+VTrue->VTrue[label="getT",  ];
+VFalse->VFalse[label="getF",  ];
+VFalse->VFalse[label="assignF",  ];
+VTrue->VTrue[label="assignT",  ];
+VFalse->VTrue[label="assignT",  ];
 }
 }

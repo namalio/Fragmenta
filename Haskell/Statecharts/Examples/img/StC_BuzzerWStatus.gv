@@ -3,32 +3,33 @@ compound=true;
 rankdir=LR;
 label="StC_BuzzerWStatus";
 labelloc=t;
-subgraph cluster_Status {
+subgraph cluster_tatus {
 style="filled,rounded";
-label ="Status";
+label ="tatus";
 fillcolor = lightgray;
-hStatus_St [shape = circle,fillcolor=black,label="H"];
-
-Happy [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Happy];
-Angry [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Angry];
 initStatus_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
+Angry [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Angry];
+Happy [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Happy];
+hStatus_St [shape = circle,fillcolor=black,label="H"];
 
+
+initStatus_St->hStatus_St[label="",  ];
 Happy->Angry[label="chSound[in(Muted)]",  ];
 Angry->Happy[label="chSound[in(Muted)]",  ];
-initStatus_St->Happy[label="",  ];
+hStatus_St->Happy[label="",  ];
 }
 subgraph cluster_Buzzer {
 style="filled,rounded";
 label ="Buzzer";
 fillcolor = lightgray;
+Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
+Buzzing [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Buzzing];
 init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-Buzzing [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Buzzing];
-Muted [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Muted];
 
-init_St->Muted[label="",  ];
-Buzzing->Muted[label="after(3sec)/mute",  ];
 Muted->Buzzing[label="buzz",  ];
+Buzzing->Muted[label="after(3sec)/mute",  ];
+init_St->Muted[label="",  ];
 }
 }

@@ -9,25 +9,25 @@ label ="Lasbscs";
 fillcolor = lightgray;
 init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-final_St [shape=doublecircle,height=.3,width=.3,fixedsize=true,fillcolor=black,style=filled,label=""];
 subgraph cluster_Processing {
 style="filled,rounded";
 label ="Processing";
 fillcolor = lightgray;
+DoingAs [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=DoingAs];
+DoingCs [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=DoingCs];
+DoingBs [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=DoingBs];
 initProcessing_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-DoingAs [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=DoingAs];
-DoingBs [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=DoingBs];
-DoingCs [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=DoingCs];
 
-initProcessing_St->DoingAs[label="",  ];
 DoingAs->DoingBs[label="b",  ];
-DoingAs->DoingAs[label="a",  ];
 DoingBs->DoingBs[label="b",  ];
-DoingBs->DoingCs[label="c",  ];
 DoingCs->DoingCs[label="c",  ];
+DoingBs->DoingCs[label="c",  ];
+DoingAs->DoingAs[label="a",  ];
+initProcessing_St->DoingAs[label="",  ];
 }
 
+final_St [shape=doublecircle,height=.3,width=.3,fixedsize=true,fillcolor=black,style=filled,label=""];
 
 init_St->initProcessing_St[label="",  lhead=cluster_Processing];
 initProcessing_St->final_St[label="nil", ltail=cluster_Processing ];

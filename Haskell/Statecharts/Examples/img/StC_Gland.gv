@@ -9,13 +9,13 @@ label ="Gland";
 fillcolor = lightgray;
 init_St [shape = point,fillcolor=black,height=.2,width=.2,label=""];
 
-Idle [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Idle];
 Secreting [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Secreting];
 final_St [shape=doublecircle,height=.3,width=.3,fixedsize=true,fillcolor=black,style=filled,label=""];
+Idle [shape=box,fillcolor=darkseagreen,style="filled,rounded",label=Idle];
 
 init_St->Idle[label="",  ];
-Idle->Secreting[label="secrete",  ];
 Secreting->Idle[label="after(1sec)",  ];
 Idle->final_St[label="apostosis",  ];
+Idle->Secreting[label="secrete",  ];
 }
 }
