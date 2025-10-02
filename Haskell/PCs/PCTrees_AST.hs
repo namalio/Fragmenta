@@ -1,8 +1,9 @@
 module PCs.PCTrees_AST (
     PCE(..)
     , PCTTypeD(..)
+    , read_pctty
     , read_opctty
-    , Param
+    , Param(..)
     , cParam
     , gParamId
     , gParamTyD
@@ -13,7 +14,8 @@ module PCs.PCTrees_AST (
     , PCTD(..)
     , ROp(..)
     , thePD
-    , idPD)
+    , idPD
+    , gPDs)
 where
 
 import Sets
@@ -21,6 +23,7 @@ import Relations ( Rel )
 import ShowUtils(showStrs)
 import PCs.PCTrees_Exp 
 import PCs.PCsCommon(Id)
+import TheNil
 
 
 -- A PCT type designator — int, bool, or some datatype
@@ -59,7 +62,7 @@ gParamTyD::Param->Maybe PCTTypeD
 gParamTyD(Param _ otd) = otd
 
 instance Show Param where
-  show (Param nm ty) = nm ++ " : " ++ show ty
+  show (Param nm ty) = nm ++ (if isSomething ty then  " : " ++ show (the ty) else "")
 
 -- The Guard type (an expression)
 type G = PCE
@@ -76,8 +79,8 @@ data TOp
   deriving(Eq, Show)  
 
 -- A replicated operator
-data ROp = OpRExtChoice Id Id
-  | OpRIntChoice Id Id
+data ROp = OpRExtChoice Id PCTTypeD
+  | OpRIntChoice Id PCTTypeD
   deriving(Eq, Show)  
 
 -- Process Trees
@@ -107,3 +110,6 @@ thePD  (Kappa pd) = pd
 
 idPD::PD->Id
 idPD (PD id _ _ _) = id
+
+gPDs::PCTD->[PD]
+gPDs (PCTD _ _ pds) = pds 

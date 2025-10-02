@@ -1,5 +1,5 @@
 PC PC_Timer@Timer
-compound Timer.t:int@OpTimer
+compound Timer.t@OpTimer
 operator OpTimer.If
 operator OpIfChoice.Choice
 stop STOP
@@ -10,5 +10,5 @@ atom tock{t>0}
 op_connector OpIfChoice->timeout
 op_connector OpIfChoice->tock
 reference RefTimer
-after_connector tock->RefTimer
+after tock->RefTimer
 ref_connector RefTimer->Timer.'t-1'

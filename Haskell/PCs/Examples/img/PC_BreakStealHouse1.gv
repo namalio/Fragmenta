@@ -4,8 +4,8 @@ style="filled,rounded";
 label =MeansBreakIn;
 fillcolor = cadetblue1;
 stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label=stolenKey];
-Door[shape=box,fillcolor=darkolivegreen1,style="filled",label=Door];
-Window[shape=box,fillcolor=darkolivegreen1,style="filled",label=Window];
+door[shape=box,fillcolor=darkolivegreen1,style="filled",label=door];
+window[shape=box,fillcolor=darkolivegreen1,style="filled",label=window];
 }
 
 

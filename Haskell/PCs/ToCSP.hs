@@ -22,9 +22,11 @@ import PCs.PCs_MM_Names
 import GrswT
 import SimpleFuns
 import MMI
-import PCs.PCTrees_AST(ROp(..), gParamId, PCE)
+import PCs.PCTrees_AST(ROp(..), gParamId, PCE, thePD, DTDef(..))
 import PCs.PCTrees_ExpToCSP(toCSPExp, toCSPExpA)
 import PCs.PCTrees_Exp
+import PCs.PCTrees_Types
+import PCs.SymbMap 
 
 genAfterC :: MMI String String -> PC String String -> String -> Exp
 genAfterC mmi pc n
@@ -78,32 +80,37 @@ findAfterAtom pc m n = (predecessors pc n) `intersec` (ran_of $ rres (src pc) $ 
 --   let buildExp e = if (not $ null $ cns) then LetW (genDeclsForCompounds pc m cns) e else e in 
 --   EqDecl (ExpId n) $ buildExp (genCompoundDef pc m (findCompoundStart pc m n))
 
-cspAtoms :: Foldable t=>t PDT -> Set Id -> Set Id
-cspAtoms pdt ias = (atomsOfPDT pdt) `union` ias
-   --Channel $ foldl(\ns n-> let n' = nmOfNamed pc m n in if n' `elem` ias then ns else insert n' ns) [] (getAtoms m)
+--cspAtoms :: Foldable t=>t PD -> Set Id ->Env->Rel Id Type
+cspAtoms :: Env->[Decl]
+cspAtoms env = 
+   --let as = (atomsOfPD pdt) `union` ias in
+   let r = filterS (\(_, t)->isEventTy t) (rel env) in
+      foldl (\ds t->(Channel  (img (inv r) $ singles t) (cspOfTy t)):ds) [] (reduce . ran_of $ r)
+   where
+      cspOfTy TEvent = Nothing
+      cspOfTy (TDot t1 TEvent) = Just $ cspTy t1
+      cspOfTy (TDot t1 t2) = Just $ cspTy t1 ++ "."  ++ (the . cspOfTy $ t2)
+      cspTy (TInt) = "Int"
+      cspTy (TBool) = "Bool"
+      cspTy (TId id) = id
+
+--Channel $ foldl(\ns n-> let n' = nmOfNamed pc m n in if n' `elem` ias then ns else insert n' ns) [] (getAtoms m)
 
 --cspPImports sg_mm pc = Include $ map (\mn->mn ++ "P") (importsOf sg_mm pc)
 
 cspImports :: Set String -> Decl
 cspImports is = Include $ is
 
---cspMainImports :: Eq b=>PC String b -> Decl
---cspMainImports pc = Include $ set [(getPCDef pc) ++ "P", (getPCDef pc) ++ "_base"]
-
---isOperator (OpB OpChoice _ _) = True
---isOperator (OpB (OpParallel  _) _ _) = True
---isOperator (OpB OpInterleave _ _) = True
---isOperator(Op (OpSyncInterrupt  _) _ _) = True
---isOperator (OpB (OpThrow  _) _ _) = True
---isOperator _ = False
+cspDataType::DTDef->Decl
+cspDataType (DTDef id ids) = DataTy id ids
 
 --cspDecl (ts@(TSeq _ _)) = snd $ cspExp ts
 --cspDecl (c@(Compound n ps t)) = 
 --   let (e, cds) = cspExp c in
 --   [LetW cds e] 
 --cspDecl (OpB _ t1 t2) = cspDecl t1 ++ cspDecl t2
-cspDecl :: Foldable t => t PDT -> [Decl]
-cspDecl cts = foldr (\ct scts->(snd $ cspExp  (Kappa ct)) ++ scts) [] cts
+cspDecl :: Foldable t => t PD -> [Decl]
+cspDecl pds = foldr (\pd scts->(snd $ cspExp  (Kappa pd)) ++ scts) [] pds
 
 --cspDecls ts = foldr (\t ts'-> (cspDecl t)++ts') [] ts
 
@@ -189,6 +196,11 @@ consLetW ds e = LetW ds e
 --  --let e2 = ExpPar $ RExtChoice atv ats $ Prfx (ExpId atv) e1 in
 --  if isNil og then (e2, ds) else (GExp (ExpId $ the og) e2, ds) 
 
+cspTD::PCTTypeD->String
+cspTD Int = "Int" 
+cspTD Bool = "Bool"
+cspTD (DT id) = id
+
 cspExp :: PT -> (Exp, [Decl])
 cspExp NilT = (SKIP, [])
 cspExp StopT = (STOP, [])
@@ -196,16 +208,16 @@ cspExp SkipT = (SKIP, [])
 cspExp (Atom e og) = 
     --let e = if isNil oe then ExpId a else ExpChannel a (ExpId $ the oe) in
     pairUp (if isNil og then toCSPExpA e else GExp (toCSPExp $ the og) (toCSPExpA e)) [] 
-cspExp (Kappa (PDT n ps cts t))  = 
+cspExp (Kappa (PD n ps cts t))  = 
    let e1 = cspPRef n Nothing (map (cIdExp . gParamId) ps) nil
        e2 = cspPDef t
-       e2' = if isSomething cts then consLetW (cspDecl cts) e2 else e2 in
+       e2' = if isSomething cts then consLetW (cspDecl $ map thePD cts) e2 else e2 in
    (e1, [EqDecl e1 e2'])
 cspExp (OpKappa n op t)  =
    let e1 = cspPDef t in
    (rOpOf op e1, [])
-   where rOpOf (OpRExtChoice v id) e1 = RExtChoice v id e1
-         rOpOf (OpRIntChoice v id) e1 = RIntChoice v id e1
+   where rOpOf (OpRExtChoice v td) e1 = RExtChoice v (cspTD td) e1
+         rOpOf (OpRIntChoice v td) e1 = RIntChoice v (cspTD td)  e1
 
 cspExp (Rho n g bs rs) = (cspPRef n g bs rs, [])
 cspExp (OpB (OpIf g) t1 t2) = 
@@ -237,9 +249,10 @@ cspExp (OpB OpInterleave t1 t2) =
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both isComposite isComposite) in
    (Interleave e1 e2, cds)
 
-toCSP::MMI String String->PC String String->Set String->Set String->(Set Id, CSPSpec, CSPSpec)
-toCSP mmi pc ias is = 
-   let (PCTD _ _ cts) = consPCTD mmi pc 
-       as = cspAtoms cts ias
+toCSP::MMI String String->PC String String->Set String->Env->(CSPSpec, CSPSpec)
+toCSP mmi pc is env = 
+   let (PCTD _ dts cts) = consPCTD mmi pc [] -- Could change here
+       ads = cspAtoms env
+       dts' = foldl (\dts' dt->(cspDataType dt):dts') [] dts
        is' = cspImports (fmap (++"P") ((getPCDef pc) `intoSet` is )) in
-   (as, CSP [is', Channel as], CSP $ cspDecl cts)
+   (CSP ([is'] ++ dts' ++ ads ), CSP $ cspDecl cts)

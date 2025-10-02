@@ -1,29 +1,30 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Lasbscs];
 Doas [shape=box,fillcolor=deepskyblue,style = filled,label="Doas "];
-b [shape=ellipse,fillcolor=greenyellow,style = filled,label="b"];
-nil [shape=ellipse,fillcolor=greenyellow,style = filled,label="nil"];
-OpDobs [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+b [shape=ellipse,fillcolor=greenyellow,style=filled,label="b"];
+nil [shape=ellipse,fillcolor=greenyellow,style=filled,label="nil"];
+OpDobs [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 Dobs [shape=box,fillcolor=deepskyblue,style = filled,label="Dobs "];
 Docs [shape=box,fillcolor=deepskyblue,style = filled,label="Docs "];
-OpDocs [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-OpDoas [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-c [shape=ellipse,fillcolor=greenyellow,style = filled,label="c"];
-a [shape=ellipse,fillcolor=greenyellow,style = filled,label="a"];
+OpDocs [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+OpDoas [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+c [shape=ellipse,fillcolor=greenyellow,style=filled,label="c"];
+a [shape=ellipse,fillcolor=greenyellow,style=filled,label="a"];
 
 {rank=same;Doas,StartN_}
 
-OpDocs->c[arrowhead="open"];
-OpDobs->b[arrowhead="open"];
-b->Dobs[arrowtail=dot,dir=both,label="after"];
+OpDocs->nil[arrowhead="open"];
+OpDobs->Docs[arrowhead="open"];
+c->Docs[arrowtail=dot,dir=both,label="after"];
+a->Doas[arrowtail=dot,dir=both,label="after"];
+OpDoas->a[arrowhead="open"];
 OpDoas->Dobs[arrowhead="open"];
-StartN_->Doas[label="starts"];
+b->Dobs[arrowtail=dot,dir=both,label="after"];
+OpDobs->b[arrowhead="open"];
+OpDocs->c[arrowhead="open"];
 Doas->OpDoas[arrowhead="onormal",penwidth=2,label="="];
 Dobs->OpDobs[arrowhead="onormal",penwidth=2,label="="];
 Docs->OpDocs[arrowhead="onormal",penwidth=2,label="="];
-OpDoas->a[arrowhead="open"];
-a->Doas[arrowtail=dot,dir=both,label="after"];
-c->Docs[arrowtail=dot,dir=both,label="after"];
-OpDobs->Docs[arrowhead="open"];
-OpDocs->nil[arrowhead="open"];
+StartN_->Doas[label="starts"];
 }

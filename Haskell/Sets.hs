@@ -9,6 +9,7 @@ module Sets (
    , intoSet
    , rest
    , card
+   , subseteq
    , sminus
    , union
    , gunion
@@ -163,9 +164,9 @@ instance MonadPlus Set where
    mplus = (<|>)
 
 -- set difference
-sminus :: Eq a => Set a -> Set a -> Set a
+sminus :: (Foldable t, Eq a) => Set a -> t a -> Set a
 sminus EmptyS _ = EmptyS
-sminus a EmptyS = a
+--sminus a EmptyS = a
 sminus (Set x a) b 
   | x `elem` b = a `sminus` b
   | otherwise  = intoSet x ( a `sminus` b)

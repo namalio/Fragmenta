@@ -1,19 +1,27 @@
 digraph {
+subgraph cluster_MeansBreakIn {
+style="filled,rounded";
+label =MeansBreakIn;
+fillcolor = cadetblue1;
+stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label=stolenKey];
+door[shape=box,fillcolor=darkolivegreen1,style="filled",label=door];
+window[shape=box,fillcolor=darkolivegreen1,style="filled",label=window];
+}
+
 subgraph cluster_Stealable {
 style="filled,rounded";
 label =Stealable;
 fillcolor = cadetblue1;
-TV[shape=box,fillcolor=darkolivegreen1,style="filled",label=TV];
-Jewels[shape=box,fillcolor=darkolivegreen1,style="filled",label=Jewels];
-Other[shape=box,fillcolor=darkolivegreen1,style="filled",label=Other];
 Laptop[shape=box,fillcolor=darkolivegreen1,style="filled",label=Laptop];
+Other[shape=box,fillcolor=darkolivegreen1,style="filled",label=Other];
+Jewels[shape=box,fillcolor=darkolivegreen1,style="filled",label=Jewels];
+TV[shape=box,fillcolor=darkolivegreen1,style="filled",label=TV];
 }
 
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse2];
 BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
-OpGetInside [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
-breakWindow [shape=ellipse,fillcolor=greenyellow,style=filled,label="breakWindow"];
+QOpGetInside [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];
 Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal "];
 StealO [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:Stealable>];
 doneStealing [shape=ellipse,fillcolor=greenyellow,style=filled,label="doneStealing"];
@@ -23,8 +31,7 @@ getOut [shape=ellipse,fillcolor=greenyellow,style=filled,label="getOut"];
 RefSteal [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 steal [shape=ellipse,fillcolor=greenyellow,style=filled,label="steal.x"];
 OpSteal [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
-stolenKey [shape=ellipse,fillcolor=greenyellow,style=filled,label="stolenKey"];
-breakDoor [shape=ellipse,fillcolor=greenyellow,style=filled,label="breakDoor"];
+break [shape=ellipse,fillcolor=greenyellow,style=filled,label="break.x"];
 GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
 
 {rank=same;run,getOut}
@@ -36,9 +43,7 @@ getOut->run[arrowtail=dot,dir=both,label="after"];
 RefSteal->Steal[arrowhead="normalnormal",fillcolor=white,label=" "];
 OpSteal->doneStealing[arrowhead="open"];
 StealO->steal[arrowhead="open"];
-OpGetInside->stolenKey[arrowhead="open"];
-OpGetInside->breakDoor[arrowhead="open"];
-OpGetInside->breakWindow[arrowhead="open"];
+QOpGetInside->break[arrowhead="open"];
 GetInside->Steal[arrowtail=dot,dir=both,label="after"];
 OpSteal->StealO[arrowhead="open"];
 steal->RefSteal[arrowtail=dot,dir=both,label="after"];
@@ -46,6 +51,6 @@ Steal->RunAway[arrowtail=dot,dir=both,label="after"];
 BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
 Steal->OpSteal[arrowhead="onormal",penwidth=2,label="="];
 RunAway->getOut[arrowhead="onormal",penwidth=2,label="="];
-GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
+GetInside->QOpGetInside[arrowhead="onormal",penwidth=2,label="="];
 StartN_->BreakAndStealHouse[label="starts"];
 }

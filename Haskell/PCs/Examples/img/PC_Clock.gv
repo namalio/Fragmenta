@@ -1,11 +1,12 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Clock];
 Clock [shape=box,fillcolor=deepskyblue,style = filled,label="Clock "];
-tick [shape=ellipse,fillcolor=greenyellow,style = filled,label="tick"];
+tick [shape=ellipse,fillcolor=greenyellow,style=filled,label="tick"];
 
 {rank=same;Clock,StartN_}
 
-StartN_->Clock[label="starts"];
-Clock->tick[arrowhead="onormal",penwidth=2,label="="];
 tick->Clock[arrowtail=dot,dir=both,label="after"];
+Clock->tick[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Clock[label="starts"];
 }

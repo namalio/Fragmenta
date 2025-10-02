@@ -4,6 +4,7 @@ fragment F_MM_12 {
     proxy PCombinable2
     proxy PAction5
     proxy PGuarded3
+    proxy PGuard
     node BMainIfC
     node BElseC
     node BJumpC
@@ -15,9 +16,11 @@ fragment F_MM_12 {
     inh BranchC->PConnector4
     rel BranchC->PCombinable2[BranchCSrc]:1..*;1
     relu BranchC->PAction5[BranchCTgt]
+    derived BMainIfC->PGuard[DIf <-> guard]:0..1;1
   }
   ref PConnector4->Connector
   ref PCombinable2->Combinable
   ref PAction5->Action
   ref PGuarded3->Guarded
+  ref PGuard->Guard
 }

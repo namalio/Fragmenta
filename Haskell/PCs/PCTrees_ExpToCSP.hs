@@ -38,5 +38,6 @@ toCSPExpA (PCTsExp.ParExp e) = CSP.ExpPar (toCSPExp e)
 toCSPExp::PCTsExp.PCE->CSP.Exp
 toCSPExp (PCTsExp.ExpAtom ea) = toCSPExpA ea
 toCSPExp (PCTsExp.BinExp op ea e) = CSP.ExpBOp (toCSPExpA ea) (toCSPBOp op) (toCSPExp e)
+toCSPExp (PCTsExp.RelOpExp op ea e) = CSP.ExpBOp (toCSPExpA ea) (toCSPRelOp op) (toCSPExp e)
 toCSPExp (PCTsExp.UnExp op e) = CSP.ExpUOp (toCSPUOp op) (toCSPExp e)
 toCSPExp (PCTsExp.SetE es) = CSP.ExpSetE (map toCSPExp es)

@@ -1,7 +1,7 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Timer];
-Timer [shape=box,fillcolor=deepskyblue,style = filled,label="Timer (t : Int)"];
+Timer [shape=box,fillcolor=deepskyblue,style = filled,label="Timer (t)"];
 OpIfChoice [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 timeout [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {t=0}
 timeout"];

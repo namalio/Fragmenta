@@ -1,6 +1,6 @@
 PC PC_BiscuitJar@BiscuitJar
 atom openJar
-compound BiscuitJar.n:int,m:int@openJar
+compound BiscuitJar.n,m@openJar
 compound JarOpened.n,m@OpJarOpenedIf
 stop STOP
 operator OpJarOpenedIf.If
@@ -16,13 +16,13 @@ op_connector OpJarOpened->closeJar
 reference RefJarOpened
 atom openJar
 ref_connector RefJarOpened->JarOpened.'n','m'
-after_connector openJar->RefJarOpened
+after openJar->RefJarOpened
 reference RefJarOpenedTake
 ref_connector RefJarOpenedTake->JarOpened.'n-1','m'
 reference RefJarOpenedDrop
 ref_connector RefJarOpenedDrop->JarOpened.'n+1','m'
-after_connector takeBiscuit->RefJarOpenedTake
-after_connector dropBiscuit->RefJarOpenedDrop
+after takeBiscuit->RefJarOpenedTake
+after dropBiscuit->RefJarOpenedDrop
 reference RefBiscuitJar
 ref_connector RefBiscuitJar->BiscuitJar.'n','m'
-after_connector closeJar->RefBiscuitJar
+after closeJar->RefBiscuitJar

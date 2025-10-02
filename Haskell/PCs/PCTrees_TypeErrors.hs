@@ -1,10 +1,11 @@
 
-module PCs.PCTrees_TypeErrors (TyError(..))
+module PCs.PCTrees_TypeErrors (TyError(..), errorMsg)
 
 where
 
 import PCs.PCsCommon(Id)
 import PCs.PCTrees_Exp
+import ShowUtils
 
 type OpS = String
 type Ty = String
@@ -18,9 +19,9 @@ data TyError = IdExists Id | TyUnknown Id
     | IncompatibleTypesInExp OpS Ty Ty
     | IncompatibleTypesInUExp OpS Ty
     | IncompatibleTypesInCompoundReferences Id Ty Ty 
-    | Test String
     | TypesDoNotUnify Ty Ty
-    | UnificationOccursError String Ty
+    | UnificationOccursError Id Ty
+    | NoMatchingEvents [String]
     deriving (Show)
 
 errorMsg::TyError->String
@@ -46,4 +47,10 @@ errorMsg (InvalidAtomExpression e) = "Expression '" ++ show e ++ "' is invalid. 
 errorMsg (ParamIdNotUnique idk idp) = 
     "Parameter identifier '" ++ idp ++ "' of compound '" ++ idk ++ "' is not unique."
 errorMsg (CouldNotMatchExpectedType ety aty) = 
-    "" ++ ety
+    "Wrong expected type: expecting " ++ ety ++ " but got " ++ aty
+errorMsg (IncompatibleTypesInExp opS ty1 ty2) =
+    "Incompatible types in expression involving operator" ++ opS ++ ", where the types are: " ++ ty1 ++ ", " ++ ty2
+errorMsg (NoMatchingEvents ids) =
+    "There are no known events for some of the ids in the set " ++ (showStrs ids ",") ++ "."
+errorMsg (UnificationOccursError id t)= 
+    "Could not unify " ++ id ++ " with " ++ t

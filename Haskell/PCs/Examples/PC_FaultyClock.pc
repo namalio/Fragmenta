@@ -5,4 +5,4 @@ operator OpFaultyClock.IntChoice
 stop STOP
 op_connector OpFaultyClock->tick
 op_connector OpFaultyClock->STOP
-after_connector tick->FaultyClock
+after tick->FaultyClock

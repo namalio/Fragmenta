@@ -1,14 +1,8 @@
 BreakAndStealHouse = 
    let 
-      GetInside = breakWindow -> SKIP
-             |~| (breakDoor -> SKIP
-             |~| stolenKey -> SKIP)
-      Steal = 
-         let 
-            StealO = StealO
-         within
-            StealO
-                |~| doneStealing -> SKIP
+      GetInside = |~| x : MeansBreakIn @ break.x -> SKIP
+      Steal = (|~| x : Stealable @ steal.x -> Steal)
+             |~| doneStealing -> SKIP
       RunAway = getOut -> run -> SKIP
    within
       GetInside; (Steal; RunAway)

@@ -1,12 +1,12 @@
 digraph {graph[label=PCs_AMM_rf,labelloc=tl,labelfontsize=12];
 subgraph cluster_PCs_AMM_rf{style=dashed;label=PCs_AMM_rf;
-"Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
-"Element"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Element</I><br/>(A)}>];
-"PCDef"[shape=record,fillcolor=lightskyblue1,style = filled,label="PCDef"];
-"Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
-"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label="Node"];
-"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
 "Definition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Definition"];
+"Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
+"Node"[shape=record,fillcolor=lightskyblue1,style = filled,label="Node"];
+"Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
+"PCDef"[shape=record,fillcolor=lightskyblue1,style = filled,label="PCDef"];
+"Element"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Element</I><br/>(A)}>];
+"Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
 
 "PCDef"->"Element"[label="Contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Element"->"Trait"[arrowhead=onormal,arrowsize=2.0];

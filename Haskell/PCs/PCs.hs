@@ -44,6 +44,7 @@ module PCs.PCs(PC
     , innerKs
     , relKs
     , innerRefKs
+    , refKs
     , commonInnerKs
     , hidden_RC
     , inner_Ref
@@ -69,21 +70,6 @@ import Control.Monad(when)
 import MMI
 
 type PC a b = GrwT a b
-
---data MMInfo a b = MMInfo {cmm_ :: Mdl a b, amm_ :: Mdl a b, rm_:: GrM a b, sg_cmm_ :: SGr a b}
---  deriving (Show)
-
---cons_mm_info :: Mdl a b -> Mdl a b -> GrM a b -> SGr a b -> MMInfo a b
---cons_mm_info cmm amm rm sgcmm = MMInfo {cmm_ = cmm, amm_ = amm, rm_ = rm, sg_cmm_ = sgcmm}
-
---pc_cmm :: MMInfo a b -> Mdl a b
---pc_cmm MMInfo {cmm_ = cmm, amm_ = _, rm_ = _, sg_cmm_ = _} = cmm
---pc_amm :: MMInfo a b -> Mdl a b
---pc_amm MMInfo {cmm_ = _, amm_ = amm, rm_ = _, sg_cmm_ = _} = amm
---pc_rm :: MMInfo a b -> GrM a b
---pc_rm MMInfo {cmm_ = _, amm_ = _, rm_ = rm, sg_cmm_ = _} = rm
---gCRSG :: MMInfo a b -> SGr a b
---gCRSG MMInfo {cmm_ = _, amm_ = _, rm_ = _ , sg_cmm_ = sgcmm} = sgcmm
 
 load_pcs_amm :: String -> IO (Mdl String String)
 load_pcs_amm def_path = do
@@ -276,7 +262,7 @@ expOfAtom pc n =
   let es = expsOf pc n in 
   if null es then Nothing else takeFrE . head $ es
   where takeFrE (Left e) = Just e
-        takeFrE  (Right _) = Nothing
+        takeFrE (Right _) = Nothing
 
 enumValsOf ::PC String String-> String -> Set String
 enumValsOf pc n = 
@@ -439,6 +425,21 @@ innerRefKsOf mmi pc (Set n ns) vns
 
 innerRefKs::MMI String String -> PC String String -> String -> Set String
 innerRefKs mmi pc n = innerRefKsOf mmi pc (singles $ compoundStart mmi pc n) (singles n)
+
+refKsOf::MMI String String -> PC String String -> Set String -> Set String-> Set String
+refKsOf _ _ EmptyS _ = nil
+refKsOf mmi pc (Set n ns) vns
+   | isNodeOfTys n [CMM_Atom,CMM_Compound, CMM_QuantifiedOp] (gCRSG mmi) pc = 
+      if n `elem` vns then refKsOf mmi pc ns vns else refKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns
+   | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = 
+      refKsOf mmi pc ((nextNodes mmi pc n) `union` ns) vns
+   | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = refKsOf mmi pc ns vns 
+   | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc  = let rn = nmOfRefF mmi pc n in 
+      if set [n, rn] `subseteq` vns then refKsOf mmi pc ns vns else rn `intoSet` (refKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns)) (set [n, rn] `union` vns)
+   -- | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (inner_Ref pc n) = outerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns 
+
+refKs::MMI String String -> PC String String -> String -> Set String
+refKs mmi pc n = refKsOf mmi pc (singles $ compoundStart mmi pc n) (singles n)
 --commonInnerKsOf mmi pc [] _ = []
 --commonInnerKsOf mmi pc (n:ns) vns 
 --    | isNodeOfTys n [CMM_Atom, CMM_Reference] (gCRSG mmi) pc = commonInnerKs mmi pc ((nextNodesAfter mmi pc n)++ns) vns 
@@ -482,7 +483,6 @@ nextKsOf mmi pc n =
   where isNxtNAtfer = isNodeOfTys n [CMM_Atom, CMM_Reference] (gCRSG mmi) pc
         isCompound sn = isNodeOfTys sn [CMM_Compound] (gCRSG mmi) pc
   
-
 relKsOf::MMI String String->PC String String->Set String->Rel String String->Rel String String
 relKsOf mmi pc EmptyS r = r
 relKsOf mmi pc (n `Set` ns) r =

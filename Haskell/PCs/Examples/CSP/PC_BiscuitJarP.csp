@@ -1,6 +1,6 @@
 BiscuitJar(n, m) = openJar -> JarOpened(n, m)
 
-JarOpened(n, m) = if n
+JarOpened(n, m) = if (n>=0)and(n<=m)
    then
       n<m & dropBiscuit -> JarOpened(n+1, m)
       [] n>0 & takeBiscuit -> JarOpened(n-1, m)

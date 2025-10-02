@@ -58,7 +58,7 @@ data Node = Node String NodeDetails
 data ConnectorInfo = After Bool | Ref [TxtExp] Bool | Op | OpIfB Guard | OpElse | OpJump 
    deriving(Eq, Show) 
 -- An connector has a name, a type and source and target nodes
-data Connector = Connector ConnectorInfo String String 
+data Connector = Connector ConnectorInfo Name Name 
    deriving(Eq, Show) 
 -- A definition: An enumerated type has a name and a list of literals
 data Definition = DefEnum Name [Name]
@@ -282,7 +282,7 @@ pc_guard = do
 
 pcAtom :: ReadP Node
 pcAtom = do
-   string "atom "
+   string "atom"
    skipSpaces
    anm<-parseId
    skipSpaces 
@@ -401,7 +401,7 @@ pcImport = do
 
 pcAfterC :: ReadP Connector
 pcAfterC  = do
-   string "after_connector"
+   string "after"
    skipSpaces
    sopen <- string "open " <++ return ""
    let open = sopen == "open "
@@ -538,8 +538,8 @@ mkTxtExpNm nm k = nm ++ "_txtExp_"++ show k
 mkEPNm :: String -> String ->String
 mkEPNm nm p = "EParam" ++ nm ++ "_" ++ p 
 
-mkETxtExpNm :: String -> String ->String
-mkETxtExpNm nm b = "ETxtExp_" ++ nm ++ "_" ++ b
+mkETxtExpNm :: String -> String ->Int->String
+mkETxtExpNm nm b k = "ETxtExp_" ++ nm ++ "_" ++ b ++ "_" ++ (show k)
 
 mkEExpVal :: String -> String ->Int->Int->String
 mkEExpVal nm b k j= "EExpVal_" ++ nm ++ "_" ++ b++ "_" ++ (show k) ++ "_" ++ (show j) 
@@ -583,8 +583,8 @@ qurValExpQ nm b k j et = singleQUR ((expValNm b k j, show_cmm_n CMM_ValueExp),
 
 qurTxtExp::String->String->Int->PCs_CMM_Ns->PCs_CMM_Es->QuadURel String
 qurTxtExp nm b k bty e_ty_ps = singleQUR ((mkTxtExpNm nm k, show_cmm_n bty),
-    (mkETxtExpNm nm b, show_cmm_e e_ty_ps),
-    (mkETxtExpNm nm b, nm), (mkETxtExpNm nm b, mkTxtExpNm nm k))
+    (mkETxtExpNm nm b k, show_cmm_e e_ty_ps),
+    (mkETxtExpNm nm b k, nm), (mkETxtExpNm nm b k, mkTxtExpNm nm k))
     --where tnm = if nty == CMM_AnyExp then mkAEnnm nm else nm
 
 qurExpSingle ::String ->String->Int->PCs_CMM_Es->QuadURel String
@@ -600,7 +600,7 @@ qurExpSingle nm b k e_ty_ps =
 qurFrTxtExps ::String ->[String]->Int->Int->PCs_CMM_Es->QuadURel String
 qurFrTxtExps _ [] _ _ _ = nilQUR
 qurFrTxtExps nm (b:bs) k j e_ty_ps = 
-   qurTxtExp nm b k CMM_ExpSet e_ty_ps`join` qurValExpQ nm b k j CMM_EvExps
+   qurTxtExp nm b k CMM_ExpSet e_ty_ps `join` qurValExpQ nm b k j CMM_EvExps
    `join` qurFrTxtExps nm bs k (j+1) e_ty_ps
 --   where tnm = if nty == CMM_AnyExp then mkAEnnm nm else nm
 
@@ -902,7 +902,7 @@ test7a = readP_to_S pc_referenceC "ref_connector RefHouseAttacker->HouseAttacker
 test7b :: [(Connector, String)]
 test7b = readP_to_S pc_referenceC "ref_connector RefJarOpenedTake->JarOpened.'n-1','m'"
 test7c :: [(Connector, String)]
-test7c = readP_to_S pc_referenceC "ref_connector RefHouseAlarm0->HouseAlarm0.'False','False'"
+test7c = readP_to_S pc_referenceC "ref_connector RefHouseAlarm0->HouseAlarm0.'false','false'"
 test7d :: [(Connector, String)]
 test7d = readP_to_S pc_referenceC "ref_connector RefGetandGive->GetandGive.'0'"
 test7e :: [(Connector, String)]
@@ -913,7 +913,7 @@ test7g :: [(Connector, String)]
 test7g = readP_to_S pc_referenceC "ref_connector RefSeizeControl2->SeizeControl.'diff(ges, {e})'"
 
 test8 :: [(Connector, String)]
-test8 = readP_to_S pcAfterC "after_connector open a->b"
+test8 = readP_to_S pcAfterC "after open a->b"
 
 test9 :: [(Connector, String)]
 test9 = readP_to_S pc_opBG "op_connector_g OpAuthenticate->OpAuthenticateChoice{n>0}\n"

@@ -73,7 +73,7 @@ rres r a = filterS ((`elem` a) . snd) r
     --foldr (\p r'->if snd p `elem` a then p `intoSet` r' else r') nilSet r
 
 -- domain subtraction
-dsub :: (Eq a, Eq b) => Rel a b -> Set a -> Rel a b
+dsub :: (Foldable t, Eq a, Eq b) => Rel a b -> t a -> Rel a b
 dsub r a = dres r (dom_of r `sminus` a)
 --foldr (\p r'->if fst p `elem` a then r' else p `intoSet` r') nilSet r
 --filter ((\x -> not $ x `elem` xs) . fst) r

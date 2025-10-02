@@ -2,7 +2,7 @@ PC PC_CCVM@CCVM
 compound CCVM@RefGetandGive
 reference RefGetandGive
 ref_connector RefGetandGive->GetandGive.'0'
-after_connector RefGetandGive->CCVM
+after RefGetandGive->CCVM
 compound GetandGive.x@OpGetandGive
 atom giveMe{x≥100}
 operator OpGetandGive.Choice
@@ -14,7 +14,7 @@ op_connector OpGetandGive->Give
 atom return{x>0}
 op_connector OpGetandGive->return
 operator OpGive.IntChoice
-after_connector giveMe->OpGive
+after giveMe->OpGive
 atom espresso{x=100}
 atom macchiato{x=100}
 atom cappuccino{x=150}
@@ -31,5 +31,5 @@ reference RefGot50p
 ref_connector RefGot50p->GetandGive.'x+50'
 reference RefGotPound
 ref_connector RefGotPound->GetandGive.'x+100'
-after_connector coin50p->RefGot50p
-after_connector coinPound->RefGotPound
+after coin50p->RefGot50p
+after coinPound->RefGotPound

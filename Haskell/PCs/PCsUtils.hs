@@ -5,8 +5,12 @@
 -- Description: Utilities module of PCs
 -- Author: Nuno Amálio
 --------------------
-module PCs.PCsUtils(writeCSPToFile, checkWFAndGeneratePCTree, checkWF, optionsPCs, startPCOps, 
-   outputDrawing, outputCSP) where
+module PCs.PCsUtils(
+   writeCSPToFile
+   , checkWFAndGeneratePCTree
+   , checkWF
+   , outputDrawing
+   , outputCSP) where
 
 import Gr_Cls
 import PCs.PCs
@@ -16,7 +20,7 @@ import PCs.ToCSP ( toCSP )
 import PCs.PCTrees
 import CSP.CSPPrint
 import System.IO
-import Control.Monad(when, forM, unless, forM_)
+import Control.Monad(when, forM, unless, forM_, foldM)
 import PCs.PCsDraw
 import PCs.ParsingPCs
 import Relations
@@ -31,9 +35,13 @@ import NumString
 import PCs.PCs_MM_Names
 import MMI
 import ParseUtils
-import PCs.PCTrees_TC 
-import ShowUtils -- remove later
-import PCs.ParsingPCTxtExp -- remove later
+import PCs.PCTrees_TC2
+import PCs.PCTrees_TypeErrors
+import PCs.PCTrees_Types
+--import ShowUtils -- remove later
+--import PCs.ParsingPCTxtExp -- remove later
+import Control.Monad.Except
+import Control.Monad.State
 
 mm_path :: String
 mm_path = "PCs/MM/"
@@ -84,7 +92,7 @@ checkWFAndGeneratePCTree mmi pc = do
    b <- checkWF mmi pc 
    when b $ do 
      putStrLn "The PC treee is as follows:" 
-     putStrLn $ show_pctd $ consPCTD mmi pc
+     putStrLn $ show_pctd $ consPCTD mmi pc []
 
 check_MM :: (Eq a, Eq b, Show a, Show b, GNumSets a, GNodesNumConv a)=>MMI a b -> IO Bool
 check_MM mmi = do
@@ -118,24 +126,22 @@ checkWF mmi pc = do
 --   writeFile (csp_path ++ (getPCDef pc) ++ "P.csp") cspp
 --   writeFile (csp_path ++ (getPCDef pc) ++ ".csp") cspm
 
-wrCSPToFile :: FilePath -> String -> MMI String String -> PC String String -> IO (Set String)
-wrCSPToFile pcs_path csp_path mmi pc = do
+wrCSPToFile :: FilePath -> String -> MMI String String -> PC String String -> Env->IO ()
+wrCSPToFile pcs_path csp_path mmi pc env = do
    putStrLn "Writing the CSP file..." 
    --ias <- getImportedAtoms pcs_path (gCRSG mmi) pc 
    let sg_mm = gCRSG mmi
    is <-getImports pcs_path sg_mm pc 
-   ias<-forM is (\n-> do
+   forM is (\n-> do
       opc<-loadPC sg_mm (pcs_path ++ n ++".pc") 
       (if isSomething opc then
-         wrCSPToFile pcs_path csp_path mmi (the opc)
+         wrCSPToFile pcs_path csp_path mmi (the opc) env
       else 
-         return nil))
-   let (as, cspb, cspp) = toCSP mmi pc (gunion ias) is
-   --print cspm
-   --writeFile (csp_path ++ (getPCDef pc) ++ "_base.csp") (wrCSP cspm)
+         return ()))
+   let (cspb, cspp) = toCSP mmi pc is env
    writeFile (csp_path ++ (getPCDef pc) ++ "P.csp") (wrCSP cspp)
    writeFile (csp_path ++ (getPCDef pc) ++ ".csp") (wrCSP cspb)
-   return as
+   return ()
 
 
 wrPCDrawingToFile ::String->MMI String String -> PC String String -> IO ()
@@ -164,7 +170,7 @@ showAfterERel _ _ _ mmi pc = do
   putStrLn $ show $ afterCRel mmi pc
 
 showPCTree _ _ _ mmi pc = do
-   putStrLn $ show_pctd $ consPCTD mmi pc
+   putStrLn $ show_pctd $ consPCTD mmi pc []
 
 showWithinRel _ _ _ mmi pc= do
    putStrLn $ show $ withinRel mmi pc
@@ -172,9 +178,9 @@ showWithinRel _ _ _ mmi pc= do
 drawPCToFile _ img_path _ mmi pc = do
     wrPCDrawingToFile img_path mmi pc
 
-writeCSPToFile :: FilePath -> p -> FilePath -> MMI String String -> PC String String -> IO ()
-writeCSPToFile pcs_path _ csp_path mmi pc = 
-   wrCSPToFile pcs_path csp_path mmi pc >> putStrLn ""
+writeCSPToFile :: FilePath -> p -> FilePath -> MMI String String -> PC String String -> Env->IO ()
+writeCSPToFile pcs_path _ csp_path mmi pc env = 
+   wrCSPToFile pcs_path csp_path mmi pc env >> putStrLn ""
 
 --writeCSPToFile :: FilePath -> FilePath -> MMI String String -> PC String String -> IO ()
 --writeCSPToFile pcs_path csp_path mmi pc = 
@@ -189,23 +195,23 @@ menuStr = "1 - show graph and morphism\n"
    ++ "6 - generate CSP\n"
    ++ "0 - quit\n"
 
-dispatch =  [ (1, showPCAsGwT) 
-            , (2, showAfterERel)  
-            , (3, showPCTree)
-            , (4, showWithinRel)
-            , (5, drawPCToFile)  
-            , (6, writeCSPToFile)  
-            ]  
+--dispatch =  [ (1, showPCAsGwT) 
+--            , (2, showAfterERel)  
+--            , (3, showPCTree)
+--            , (4, showWithinRel)
+--            , (5, drawPCToFile)  
+--            , (6, writeCSPToFile)  
+--            ]  
 
-optionsPCs pcs_path img_path csp_path mmi pc = do
-    putStrLn menuStr
-    putStr "Which option? "  
-    optStr <- getLine 
-    let opt = (read optStr)
-    when (opt > 0 && opt <= 6) $ do
-       let (Just action) = lookup opt dispatch   
-       action pcs_path img_path csp_path mmi pc
-       optionsPCs pcs_path img_path csp_path mmi pc
+--optionsPCs pcs_path img_path csp_path mmi pc = do
+--    putStrLn menuStr
+--    putStr "Which option? "  
+--    optStr <- getLine 
+--    let opt = (read optStr)
+--    when (opt > 0 && opt <= 6) $ do
+--       let (Just action) = lookup opt dispatch   
+--       action pcs_path img_path csp_path mmi pc
+--       optionsPCs pcs_path img_path csp_path mmi pc
 
 loadAndCheck::String->String->MMI String String->IO (Maybe (PC String String))
 loadAndCheck pcs_path fnm mmi = do
@@ -220,32 +226,32 @@ loadAndCheck pcs_path fnm mmi = do
    else do
       return opc) >>= return
 
-askLoadAndOpsPCs :: MMI String String -> IO ()
-askLoadAndOpsPCs mmi = do
-  putStrLn "Name of directory with PC definitions? [enter for current directory]"
-  d <- getLine 
-  putStrLn "Name of PC file?"
-  fn <- getLine 
-  opc <- loadAndCheck d fn mmi
-  when (isSomething opc) $ do optionsPCs d (d++"img/") (d++"CSP/") mmi (the opc)
+--askLoadAndOpsPCs :: MMI String String -> IO ()
+--askLoadAndOpsPCs mmi = do
+--  putStrLn "Name of directory with PC definitions? [enter for current directory]"
+--  d <- getLine 
+--  putStrLn "Name of PC file?"
+--  fn <- getLine 
+--  opc <- loadAndCheck d fn mmi
+--  when (isSomething opc) $ do optionsPCs d (d++"img/") (d++"CSP/") mmi (the opc)
 
-startPCOps :: IO ()
-startPCOps = do
-    mmi<-load_mm_info mm_path
-    b <- check_MM mmi
-    if b
-        then askLoadAndOpsPCs mmi
-        else putStrLn "Errors in the metamodel definition."
+--startPCOps :: IO ()
+--startPCOps = do
+--    mmi<-load_mm_info mm_path
+--    b <- check_MM mmi
+--    if b
+--        then askLoadAndOpsPCs mmi
+--        else putStrLn "Errors in the metamodel definition."
 
 outputDrawing :: String -> String -> p -> String -> MMI String String -> IO ()
 outputDrawing pcs_path img_path csp_path fn mmi = do
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do drawPCToFile pcs_path img_path csp_path mmi (the opc) 
 
-outputCSP :: FilePath -> FilePath -> FilePath -> String -> MMI String String -> IO ()
-outputCSP pcs_path img_path csp_path fn mmi = do
+outputCSP :: FilePath -> FilePath -> FilePath -> String -> MMI String String -> Env-> IO ()
+outputCSP pcs_path img_path csp_path fn mmi env = do
    opc <- loadAndCheck pcs_path fn mmi
-   when (isSomething opc) $ do writeCSPToFile pcs_path img_path csp_path mmi (the opc) 
+   when (isSomething opc) $ writeCSPToFile pcs_path img_path csp_path mmi (the opc) env
 
 check :: String -> MMI String String -> String -> IO ()
 check pcs_path mmi fn = do
@@ -254,13 +260,39 @@ check pcs_path mmi fn = do
 
 --main = startPCOps
 
+loadPCs::Foldable t=>String -> MMI String String->t String->IO [PC String String]
+loadPCs pcs_path mmi pcns = 
+   foldM (\pcs pcn->do
+           opc <-loadPC (gCRSG mmi) (pcs_path ++ pcn ++".pc") 
+           return $ if isSomething opc then ((the opc):pcs) else pcs) [] pcns
+
+typeCheckPC::MMI String String->PC String String->IO Env
+typeCheckPC mmi pc = do 
+   let is = importsOf (gCRSG mmi) pc
+   pcs <-loadPCs pcs_path mmi is
+   let pctd  = consPCTD mmi pc pcs
+   putStrLn $ show_pctd pctd
+   let (r, _) = runState (runExceptT $ typecheck_pctd pctd) 0
+   if (isError r) then do 
+      showResult r
+      return nilEnv
+   else do
+     return $ gEnv r
+   where
+      isError (Left _) = True
+      isError _ = False
+      gEnv (Right env) = env
+      showResult (Left err) = putStrLn $ errorMsg err
+   
+   
 check_generate :: String -> String -> String -> MMI String String -> String -> IO ()
 check_generate pcs_path img_path csp_path mmi fn = do
    putStrLn $ "Processing '" ++ fn ++ "'" 
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do
       drawPCToFile pcs_path img_path csp_path mmi (the opc)
-      writeCSPToFile pcs_path img_path csp_path mmi (the opc)
+      env<-typeCheckPC mmi (the opc)
+      writeCSPToFile pcs_path img_path csp_path mmi (the opc) env
 
 generate_Clock :: MMI String String -> IO ()
 generate_Clock mmi = do
@@ -395,7 +427,7 @@ load_check_show_tree mmi fnm = do
     when (isSomething opc) $ do
        b<-checkWF mmi (the opc)
        when b $ do
-           let td = consPCTD mmi (the opc) 
+           let td = consPCTD mmi (the opc) [] -- Could change here
            putStrLn $ show_pctd td
 
 generate :: String -> IO ()
@@ -407,9 +439,26 @@ showPCT :: String -> IO ()
 showPCT fnm = do
   mmi<-load_mm_info mm_path
   opc <- loadPC (gCRSG mmi) (pcs_path ++ fnm ++ ".pc") 
-  --opc >>= print . (consPCTD mmi) 
   when (isSomething opc) $ do
-     print $ consPCTD mmi (the opc)
+     let is = importsOf (gCRSG mmi) (the opc)
+     pcs <-loadPCs pcs_path mmi is
+  --opc >>= print . (consPCTD mmi) 
+     putStrLn $ show_pctd $ consPCTD mmi (the opc) pcs
+
+showTypePCT :: String -> IO ()
+showTypePCT fnm = do
+   mmi<-load_mm_info mm_path
+   opc <- loadPC (gCRSG mmi) (pcs_path ++ fnm ++ ".pc") 
+   when (isSomething opc) $ do
+      typeCheckPC mmi (the opc) >>= putStrLn . show
+      --when (isSomething oenv) $ putStrLn $ show (the oenv)
+      return ()
+      --is<-getImports pcs_path (gCRSG mmi) (the opc)
+      --let pctd  = consPCTD mmi (the opc)
+      --putStrLn $ show_pctd pctd
+      --putStrLn $ show $ runState (runExceptT $ typecheck_pctd pctd) 0
+   --where
+   --   showResult (Left err, _) = putStrLn $ errorMsg err
 
 main :: IO ()
 main = do
@@ -418,13 +467,35 @@ main = do
 
 test :: IO ()
 test = do 
-    mmi<-load_mm_info mm_path
-    --load_check_show_tree mmi "PC_Buzzer.pc"
-    --generate_BiscuitJar mmi
-    --generate_TicketMachine mmi
-    --generate_BusRider mmi
-    opc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_BiscuitJar.pc")
-    let pc = the opc
+   --showTypePCT "PC_TCellActivation"
+   --showTypePCT "PC_Authentication"
+   --showTypePCT "PC_Timer"
+   --showTypePC "PC_CCVM"
+   --showTypePCT "PC_Buzzer"
+   mmi<-load_mm_info mm_path
+   opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_TCell.pc")
+   --putStrLn $ show (the opc)
+   let PCTD id ds pds = consPCTD mmi (the opc) []
+   putStrLn $ show pds
+   --putStrLn $ show_pctd  pctd
+   --putStrLn $ show $ innerRefKs mmi (the opc) "PositiveSignallingOn"
+   --putStrLn $ show $ innerKs mmi (the opc) "PositiveSignallingOn"
+   --atLeaf (the opc) "freeLigandTCR2"
+   --putStrLn $ "Expression of atom: " ++ show (expOfAtom (the opc) "showBal")
+   --print $ expsOf (the opc) "OpPosSigOff"
+   --print $ nextNode mmi (the opc) "OpPosSigOff" 
+   --putStrLn $ "Expression of atom: " ++ show (expOfAtom (the opc) "ShowBal")
+   --putStrLn $ "Inner referenced compunds: " ++ (show $ innerRefKs mmi (the opc) "BiscuitJar")
+   --putStrLn $ "Referenced compunds: " ++ (show $ refKs mmi (the opc) "BiscuitJar")
+   --load_check_show_tree mmi "PC_Buzzer.pc"
+   --generate_BiscuitJar mmi
+   --generate_TicketMachine mmi
+   --generate_BusRider mmi
+   -- opc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_BiscuitJar.pc")
+   -- let pc = the opc
+   --let pctd  = consPCTD mmi pc 
+   -- print pctd
+   -- print $ runState (runExceptT $ typecheck_pctd pctd) 0
     --print $ paramsOf pc "Timer"
     --print $ img (tgt pc) $ img (inv $ src pc) ["Timer"] `intersec` es_of_ety pc (show_cmm_e CMM_Eparams)
     --print $ tyOfParam pc "Timer_param_1_t"
@@ -441,13 +512,10 @@ test = do
     --print $ img (tgt pc) $ img (inv $ src pc) ["steal"] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps)
     --
     --print $ nextNode mmi pc "COpIfChoice_timeout"
-    let pctd  = consPCTD mmi pc 
-    print pctd
-    print $ typecheck_pctd pctd
+    --print env
     --print $ atomsPCTD pctd
     --putStrLn $ show $ nextKsOf mmi (the opc)  "Buzzing"
     --putStrLn $ nextNodes mmi pc n
-    --putStrLn $ show $ relKs mmi (the opc)
     --putStrLn $ show_pctd $ consPCTD mmi (the opc)
     --print $ isNodeOfTys "Bool" [CMM_Compound] (gCRSG mmi) (the opc)
     --putStrLn $ show $ compoundStart mmi (the opc)  "Bool"
@@ -527,38 +595,3 @@ test = do
     --generate_PC_CashMachine mmi
     --pc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_Clock.pc")
     --b<-checkWF mmi pc 
-    --when b $ do
-    --    let n = startCompound mmi pc 
-    --    putStrLn $ show $ nextNodeAfter mmi pc n
-    --    let (t, _, _) = consPCTNode mmi pc n nil_guard []
-    --    putStrLn $ show t
-    --load_check_show_tree mmi "PC_Clock.pc"
-    --load_check_show_tree mmi "PC_BreakStealHouse1.pc"
-    --load_check_show_tree mmi "GreetChat.pc"
-    --load_check_show_tree mmi "PC_BreakStealHouse2.pc"
-    --load_check_show_tree mmi "PC_Bool.pc"
---  when b $ do
---    let t = consPCTree mmi pc 
---    putStrLn $ show t
-  --let csp = genCSPDecl t
-  --putStrLn $ show csp
-  --putStrLn $ show $ generatePCTree pc tm 
-  --putStrLn $ show $ generateForOperator pc tm "OpProcessAuthenticate" ["ATM", "ProcessAuthenticate"]
-  --putStrLn $ show $ nextNodesInPC pc tm "ProcessAuthenticate"
-  --putStrLn $ show $ withinRelWith' pc tm "ATM" []
-  --putStrLn $ show $ withinRelOfPC pc tm
-  --putStrLn $ show $ drawPC pc tm 
-  --putStrLn $ show $ withinRelOfPC pc tm
-  --putStrLn $ show $ withinRelWith' pc tm "Bool" []
-  --putStrLn $ show $ nextNodesInPC pc tm "BoolT"
-  --putStrLn $ show $ nextNodesInPC pc tm "OpBoolT"
-  --putStrLn $ show $ withinRelWith' pc tm "BoolT" ["Bool"]
-  --putStrLn $ show $ withinRelWithAux pc tm "BoolT" "getT" ["Bool"]
-  --putStrLn $ show $ withinRelWithAux pc tm "BoolT" "RefBool" ["Bool"]
-  --putStrLn $ show $ typeOfN "OpChooseGive" tm 
-  --putStrLn $ show $ getOpVal pc tm "OpChoiceVal"
-  --putStrLn $ show $ getOperatorOp pc tm "OpChooseGive"
-  --putStrLn $ show $ getOperatorOp pc tm "OpChooseGive"
-  --putStrLn $ show pc
-  --b<-checkWF pc tm
-  --putStrLn $ show $ getPCStartCompound pc tm 

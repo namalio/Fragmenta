@@ -21,10 +21,16 @@ import Prelude hiding (GT, LT, EQ)
 --         | length bs == 1 = head bs 
 --          | otherwise = "{" ++ foldr (\b s-> b ++ if null s then "" else ",") "" bs ++ "}"
 
+wrChannelDecl0::Int->Set Id->String
+wrChannelDecl0 ind ids = "channel " ++ (wrSepElems ids "," True False ind)
+
 wrDecl :: Int -> Decl -> String
-wrDecl ind (Channel ids) = "channel " ++ (wrSepElems ids "," True False ind)
+wrDecl ind (Channel ids Nothing) = wrChannelDecl0 ind ids
+wrDecl ind (Channel ids (Just ty)) = wrChannelDecl0 ind ids ++ " : " ++ ty
 wrDecl ind (EqDecl e1 e2) = (do_indent ind) ++ (wrExp ind e1) ++ " = " ++ wrExp (ind +1) e2
 wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (toList ms)) "\n" False False ind
+wrDecl ind (DataTy id ids) = "datatype " ++ id ++ " = " ++ (wrSepElems ids " |" True False ind)  
+
 
 wrBOp::BOp->String
 wrBOp Plus = "+"
@@ -87,7 +93,7 @@ hasWait (LetW ds e) = (hasWaitDs ds) || hasWait e
 hasWait _ = False
 
 hasWaitD :: Decl -> Bool
-hasWaitD (Channel _) = False
+hasWaitD (Channel _ _) = False
 hasWaitD (Include _) = False
 hasWaitD (EqDecl _ e) = hasWait e
 

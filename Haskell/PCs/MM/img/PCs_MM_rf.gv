@@ -107,6 +107,7 @@ subgraph cluster_PCs_MM_rf{style=dashed;label=PCs_MM_rf;
 "ReferenceC"->"Reference"[label="ReferenceCSrc▼",dir=none,taillabel="",headlabel=""];
 "ReferenceC"->"TargetOfRef"[label="ReferenceCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
 "ReferenceC"->"YesNo"[label="ReferenceC_hidden",arrowhead=vee,headlabel="",arrowsize=.5];
+"BMainIfC"->"Guard"[label="DIf: guard ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
 "BranchC"->"Action"[label="BranchCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
 "BranchC"->"Combinable"[label="BranchCSrc▼",dir=none,taillabel="1..*",headlabel=""];
 "BranchC"->"Connector"[arrowhead=onormal,arrowsize=2.0];

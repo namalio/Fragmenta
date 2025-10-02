@@ -1,13 +1,11 @@
-
-
 HouseLiving = 
    let 
-      EnterRoom = intoRoom -> (roomWindow -> HouseLiving
-            [] EnterHall)
-      EnterHall = intoHall -> EnterRoom
-            [] (mainDoor -> HouseLiving
-            [] (intoKitchen -> EnterHall
-            [] intoLivingRoom -> EnterHall))
+      EnterHall = intoHall -> (EnterRoom
+            [] intoKitchen -> EnterHall
+            [] intoLivingRoom -> EnterHall
+            [] mainDoor2 -> HouseLiving)
+      EnterRoom = intoRoom -> (EnterHall
+            [] roomWindow2 -> HouseLiving)
    within
-      roomWindow -> EnterRoom
-         [] mainDoor -> EnterHall
+      mainDoor -> EnterHall
+         [] roomWindow -> EnterRoom

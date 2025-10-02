@@ -11,9 +11,9 @@ compound Dobs@OpDobs
 compound Docs@OpDocs
 op_connector OpDoas->a
 op_connector OpDoas->Dobs
-after_connector a->Doas
-after_connector b->Dobs
-after_connector c->Docs
+after a->Doas
+after b->Dobs
+after c->Docs
 op_connector OpDobs->b
 op_connector OpDobs->Docs
 op_connector OpDocs->c

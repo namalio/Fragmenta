@@ -1,5 +1,5 @@
 PC PC_HouseLiving@HouseLiving
-operator OpHouseLiving.OpChoice
+operator OpHouseLiving.Choice
 compound HouseLiving@OpHouseLiving
 atom mainDoor
 atom roomWindow
@@ -8,32 +8,32 @@ op_connector OpHouseLiving->mainDoor
 op_connector OpHouseLiving->roomWindow
 compound EnterHall@intoHall
 compound EnterRoom@intoRoom
-after_connector mainDoor->EnterHall
-after_connector roomWindow->EnterRoom
-after_connector intoHall->OpEnterHall
-operator OpEnterHall.OpChoice
-operator OpInsideRoom.OpChoice
+after mainDoor->EnterHall
+after roomWindow->EnterRoom
+after intoHall->OpEnterHall
+operator OpEnterHall.Choice
+operator OpInsideRoom.Choice
 atom intoRoom
 atom intoLivingRoom
 atom intoKitchen
-atom mainDoor2.mainDoor
+atom mainDoor2->mainDoor
 op_connector OpEnterHall->intoLivingRoom
 op_connector OpEnterHall->intoKitchen
 op_connector OpEnterHall->mainDoor2
-reference RefEnterHall.EnterHall
+reference RefEnterHall
 ref_connector hidden RefEnterHall->EnterHall
-reference RefEnterHall2.EnterHall
+reference RefEnterHall2
 ref_connector hidden RefEnterHall2->EnterHall
-reference RefEnterRoom.EnterRoom
+reference RefEnterRoom
 ref_connector hidden RefEnterRoom->EnterRoom
-after_connector intoLivingRoom->RefEnterHall
-after_connector intoKitchen->RefEnterHall
-after_connector mainDoor2->HouseLiving
+after intoLivingRoom->RefEnterHall
+after intoKitchen->RefEnterHall
+after mainDoor2->HouseLiving
 op_connector OpEnterHall->RefEnterRoom
-after_connector intoRoom->OpInsideRoom
+after intoRoom->OpInsideRoom
 op_connector OpInsideRoom->RefEnterHall2
-atom roomWindow2.roomWindow
+atom roomWindow2->roomWindow
 op_connector OpInsideRoom->roomWindow2
-reference RefHouseLiving.HouseLiving
+reference RefHouseLiving
 ref_connector hidden RefHouseLiving->HouseLiving
-after_connector roomWindow2->RefHouseLiving
+after roomWindow2->RefHouseLiving

@@ -9,6 +9,8 @@ where
 
 import ParseUtils
 import PCs.PCs_MM_Names
+import TheNil
+import MyMaybe
 
 type Id = String
 data Type 
@@ -16,10 +18,9 @@ data Type
     | Bool 
     | Event 
     | Set Type 
-    | None
     deriving (Eq, Show)
 
-data Param = Param Id Type
+data Param = Param Id (Maybe Type)
     deriving(Eq) 
 
 data OpKind 
@@ -32,7 +33,7 @@ data OpKind
    deriving(Eq, Read) 
 
 instance Show Param where
-   show (Param nm ty) = nm ++ " : " ++ (show ty)
+   show (Param nm oty) = nm ++ (if isSomething oty then " : " ++ (show $ the oty) else "")
 
 instance Show OpKind where
     show Choice = "◻︎"
@@ -64,9 +65,9 @@ cType0 "Boolean" = Bool
 cType0 "Event" = Event
 cType0 sty = let (_, ty) = splitAtStr "Set " sty in Set (cType0 ty)
 
-cType::Maybe Id->Type
-cType Nothing = None
-cType (Just ts) = cType0 ts
+cType::Maybe Id->Maybe Type
+cType Nothing = Nothing
+cType (Just ts) = Just $ cType0 ts
 
 cParam::Id->Maybe String->Param
 cParam id tys = Param id (cType tys)

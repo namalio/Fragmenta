@@ -2,7 +2,7 @@ digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BiscuitJar];
 openJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="openJar"];
-JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n : None,m : None)"];
+JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n,m)"];
 OpJarOpenedIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
 takeBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n>0}
 takeBiscuit"];
@@ -15,7 +15,7 @@ dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
 dropBiscuit"];
 OpJarOpened [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-BiscuitJar [shape=box,fillcolor=deepskyblue,style = filled,label="BiscuitJar (n : Int,m : Int)"];
+BiscuitJar [shape=box,fillcolor=deepskyblue,style = filled,label="BiscuitJar (n,m)"];
 
 {rank=same;RefBiscuitJar,closeJar}
 {rank=same;RefJarOpenedDrop,dropBiscuit}
@@ -29,7 +29,7 @@ RefJarOpenedDrop->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n+
 openJar->RefJarOpened[arrowtail=dot,dir=both,label="after"];
 OpJarOpened->closeJar[arrowhead="open"];
 OpJarOpened->takeBiscuit[arrowhead="open"];
-OpJarOpenedIf->OpJarOpened[arrowhead="open",label="n≥0 ⋀ n<=m"];
+OpJarOpenedIf->OpJarOpened[arrowhead="open",label="(n≥0) ⋀ (n≤m)"];
 OpJarOpenedIf->STOP[arrowhead="open",label="Else"];
 OpJarOpened->dropBiscuit[arrowhead="open"];
 RefJarOpened->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];

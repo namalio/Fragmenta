@@ -132,8 +132,8 @@ toPCDrawing mmi pc =
        ss' = set [getPCStart (gCRSG mmi) pc, startCompound mmi pc] `intoSet` (sames ss_r) in
    PCDrawing (getPCDef pc) nodes cs ds ss'
 
-wrParamsLabel :: (Foldable t, Functor t) => String -> t Param -> String
-wrParamsLabel nm ps = 
+wrParams :: (Foldable t, Functor t) => String -> t Param -> String
+wrParams nm ps = 
    let ps' = fmap show ps
        lps = if null ps then "" else "(" ++ (showStrs ps' ",") ++ ")" in
    "\"" ++ nm ++ " " ++ lps ++ "\""
@@ -186,7 +186,7 @@ wrBindingsOfOp nm bss = "\n"++ nm ++ "_bs" ++  "[shape=rect,fillcolor=yellow,sty
 
 -- Writes graphviz code of a PC node
 drawNode :: Node ->String
-drawNode (Node nm (Compound ps)) =  nm ++ " [shape=box,fillcolor=deepskyblue,style = filled,label=" ++ (wrParamsLabel nm ps) ++ "];" 
+drawNode (Node nm (Compound ps)) =  nm ++ " [shape=box,fillcolor=deepskyblue,style = filled,label=" ++ (wrParams nm ps) ++ "];" 
 drawNode (Node nm (Atom rnm g)) =  nm ++ " [shape=ellipse,fillcolor=greenyellow,style=filled,label=" ++ "\"" ++ (wrGuard g False) ++ rnm ++ "\"];"
 --drawNode (Node nm (Atom rnm g)) = (wrAtomCommon nm) ++ (wrAtomAny atv g) -- ++ atS  
 --    ++ "<br/>[" ++ rnm ++ "]>];"

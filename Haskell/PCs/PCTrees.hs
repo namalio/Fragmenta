@@ -1,22 +1,24 @@
------------------------
+---------------------------------------
 -- Project: PCs/Fragmenta
 -- Module: PCTrees
 -- Description: Handles representation of PCs as PCTs, a recursive datatype representation of abstract syntax
 -- Author: Nuno Amálio
------------------------
+-------------------------------------
 module PCs.PCTrees(PT(..)
   , TOp(..)
-  , PDT(..)
+  , PD(..)
   , PCTD(..)
+  , PCTTypeD(..)
   , withinRel
   , consPCTD
-  , atomsOfPDT
+  , atomsOfPD
   , atomsOfPCTs
   , show_pctd
   , isOperator
   , isAtom
   , isSole
-  , seqCTs)
+  , seqPTs
+  , atLeaf) --
   where
 
 import PCs.PCs
@@ -44,7 +46,7 @@ opseqO = OpSeq True
 
 rearrangeT :: PT -> PD
 rearrangeT (OpB opseqC (Kappa (PD k ps cts t1)) t2) = PD k ps nil (OpB opseqC (Kappa (PD (k++"0") nil cts t1)) t2)
-rearrangeT (Kappa pdt) = pdt
+rearrangeT (Kappa pd) = pd
 
 show_top :: TOp -> String
 show_top OpExtChoice = "◻︎"
@@ -56,8 +58,9 @@ show_top (OpThrow ps) = "𝛩" ++ (show ps)
 show_top (OpIf g) = "𝜄" ++ (show g)
 
 show_pds :: Foldable t => t PD -> String
-show_pds pds = if null pds then "" else "{" ++ foldr (\ct scts->(show_pt $ Kappa ct) ++ "∙" ++  scts) "" pds ++ "}"
-
+show_pds pds = 
+  if null pds then "" else (foldr (\pd pds'->(show_pt $ Kappa pd) ++ finish pds') "" pds) 
+  where finish pds'' = "∙" ++ if null pds then "" else "\n"
 show_params :: (Foldable t, Functor t) => t Param -> String
 show_params ps = 
   if null ps then "" else "(" ++ (showStrs (fmap show ps) ",") ++ ")"
@@ -78,28 +81,20 @@ show_renamings rs = if null rs then "" else "⟦" ++ (showStrs (foldr (\(fr, to)
 
 show_guard :: Maybe PCE -> String
 show_guard oe = if isNil oe then "" else " {" ++ (show $ the oe) ++ "}"
---show_atparams :: (Nil f, The f) => f (String, String) -> String
---show_atparams op = if isNil op then "" else " (" ++ (fst . the $ op) ++ "," ++ (snd . the $ op) ++ ")"
 
---show_atomTExp::Maybe String->String
---show_atomTExp Nothing = ""
---show_atomTExp (Just e) = "." ++ e
-
-show_bop0::String->String->String
-show_bop0 id e = id ++ ":" ++ e 
+show_bop0::String->PCTTypeD->String
+show_bop0 id td = id ++ ":" ++ (show td)
 
 show_bop::ROp->String
-show_bop (OpRExtChoice v id) = "◻︎" ++ (show_bop0 v id)
-show_bop (OpRIntChoice v id) = "⊓" ++ (show_bop0 v id)
-
---show_ref::Ref->String
---show_ref (Ref id og es rs) = "𝜌" ++ id ++ (showPCExps es) ++ (show_renamings rs) ++ (show_guard og)
+show_bop (OpRExtChoice v td) = "◻︎" ++ (show_bop0 v td)
+show_bop (OpRIntChoice v td) = "⊓" ++ (show_bop0 v td)
 
 show_pt :: PT -> String
 show_pt (Atom e og) = "𝛼" ++ show e ++ (show_guard og)
-show_pt (Kappa (PD id ps cts pt)) = "𝜅 " ++ id ++ (show_params ps) ++ (show_pdts cts)++ " @ " ++ (show_pt pt)
-show_pt (OpKappa id bop pct) = "𝛾𝜅 " ++ id ++ (show_bop bop) ++ " @ " ++ (show_pt pct)
-show_pt (OpB op pct1 pct2) = "[𝛾 " ++ show_top op ++ "]" ++ (show_pt pct1) ++ " [" ++ (show_pt pct2) ++ "]"
+show_pt (Kappa (PD id ps cts pt)) = 
+  "𝜅 " ++ id ++ (show_params ps) ++ "{" ++ (show_pts cts)++ "} @ " ++ (show_pt pt)
+show_pt (OpKappa id bop pt) = "𝛾𝜅 " ++ id ++ (show_bop bop) ++ " @ " ++ (show_pt pt)
+show_pt (OpB op pt1 pt2) = "[𝛾 " ++ show_top op ++ "]" ++ (show_pt pt1) ++ " [" ++ (show_pt pt2) ++ "]"
 show_pt (Rho id og es rs) = "𝜌" ++ id ++ (showPCExps es) ++ (show_renamings rs) ++ (show_guard og)
 show_pt NilT = "𝜑"
 show_pt StopT = "𝛉"
@@ -108,8 +103,15 @@ show_pt SkipT = "𝜉"
 show_pts :: [PT] -> String
 show_pts = foldr (\pt s->show_pt pt  ++ "∙" ++ s) ""
 
+show_dt::DTDef->String
+show_dt (DTDef id ids) = "𝛅 " ++ id ++ "{" ++ (foldl (\s id->id ++ (if null s then "" else ", ") ++ s) "" ids) ++ "}"
+
+-- Shows the data items
+show_dts::[DTDef]->String
+show_dts = foldr (\d s->show_dt d ++ "\n" ++ s) "" 
+
 show_pctd :: PCTD -> String
-show_pctd (PCTD id ds pts) = "PC " ++ id ++ (show_pts pts)
+show_pctd (PCTD id ds pds) = "PC " ++ id ++ "\n" ++ show_dts ds ++ (show_pds pds)
 
 andThenO :: (Eq a1, Eq a2) => (PT, Set a1, Set a2) -> (PT, Set a1, Set a2) -> (PT, Set a1, Set a2)
 andThenO (t, rs, gcs) (t', rs', gcs') = (OpB opseqO t t', rs `union` rs', gcs `union` gcs')
@@ -130,18 +132,14 @@ toTOp CMM_VOpInterleave _ _ = OpInterleave
 toTOp CMM_VOpThrow _ ps = OpThrow ps
 toTOp CMM_VOpIf og _ = OpIf (the og)
 
---fillAnyExp :: Maybe (String, Either String [String]) -> Maybe (Id, PCExp)
---fillAnyExp Nothing = Nothing
---fillAnyExp (Just (v, b)) = let v' = if null v then "e" else butLast v in 
---  Just (v', strOfBinding b)
-
 atLeaf::PC String String->Id->(PT, Set Id, Set Id)
 atLeaf pc n = 
     let oe = parsePCExpAtom . toStr $ expOfAtom pc n
-        og = parsePCExp . str_of_ostr $ guardOf pc n in
-    if isSomething oe then (Atom (the oe) og, nil, nil) else (Atom (IdExp n) og, nil, nil)
+        og = parsePCExp . str_of_ostr $ guardOf pc n 
+        n' = nmOfNamed pc n in
+    if isSomething oe then (Atom (DotExp n' (the oe)) og, nil, nil) else (Atom (IdExp n') og, nil, nil)
     where toStr Nothing = ""
-          toStr (Just s) = butLast . tail $ s
+          toStr (Just s) = s
 
 --atPLeaf::PC String String->Id->(PCT, Set Id, Set Id)
 --atPLeaf pc n = (Atom (strOfBinding $ expBOfAtomPack pc n) Nothing, nil, nil)
@@ -168,8 +166,8 @@ atomBranch mmi pc r n gcs =
 --   | isNodeOfTys n [CMM_AtomPack] (gCRSG mmi) pc = n ++ "_Op"
 --   | otherwise = compoundStart mmi pc n
 
-bOpOf::String->String->String->ROp
-bOpOf op v e = opOf op v e
+bOpOf::String->String->PCTTypeD->ROp
+bOpOf op v td = opOf op v td
   where opOf "VOpChoice" = OpRExtChoice
         opOf "VOpIntChoice" = OpRIntChoice
 
@@ -177,16 +175,20 @@ compoundBoundedOp::MMI String String->PC String String->Rel Id Id->Id->Set Id->(
 compoundBoundedOp mmi pc r n gcs =
   let (t, rs, gcs2) = consBranch mmi pc r (quantifiedOpStart mmi pc n) (gunion [singles n, gcs]) 
       sg_mm = gCRSG mmi 
-      (v, e) = varBQuantifiedOp pc n in 
-  (OpKappa  n (bOpOf (opQuantifiedOp sg_mm  pc n) (butLast v) (strOfTxtExp e)) t, rs, gunion [singles n, gcs, gcs2])
+      (v, etd) = varBQuantifiedOp pc n 
+      td = readtds etd in 
+  (OpKappa  n (bOpOf (opQuantifiedOp sg_mm  pc n) (butLast v) td) t, rs, gunion [singles n, gcs, gcs2])
+  where readtds (Left e_td) = read_pctty e_td
 
-compound::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PD, Set Id, Set Id)
+compound::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, Set Id, Set Id)
 compound mmi pc r n gcs = 
   let ns = img r [n] `intersec` img ( trancl $ r `rcomp`  r) [n]
-      (pts, rs1, gcs1) = seqPTs mmi pc r (ns `union` innerRefKs mmi pc n) (n `intoSet` gcs) 
+      gcs' = n `intoSet` gcs
+      (pts, rs1, gcs1) = seqPTs mmi pc r (ns `union` innerRefKs mmi pc n) gcs' 
+      --(pts, rs1, gcs1) = seqPTs mmi pc r ((ns `union` refKs mmi pc n) `sminus` gcs') gcs'
       --(cts, rs1, gcs1) = seqCTs mmi pc ((innerRefKs mmi pc n) `union` (commonInnerKs mmi pc n)) (n `intoSet` gcs) 
       (t, rs2, gcs2) = consBranch mmi pc r (compoundStart mmi pc n) (gunion [singles n, gcs, gcs1]) in
-  (PD n (fmap (\(id, t)->cParam id (read_opctty t)) $ paramsOf pc n) pts t, rs1 `union` rs2, gunion [singles n, gcs1, gcs2])
+  (Kappa  $ PD n (fmap (\(id, t)->cParam id (read_opctty t)) $ paramsOf pc n) pts t, rs1 `union` rs2, gunion [singles n, gcs1, gcs2])
 
 compoundAB::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, Set Id, Set Id)
 compoundAB mmi pc r n gcs = 
@@ -291,18 +293,28 @@ seqPTs _ _ _ EmptyS gks = (nil, nil, gks)
 seqPTs mmi pc r (Set n ns) gks = 
     let (t, rns1, gks1)  = compoundAB mmi pc r n gks 
         (pts, rns2, gks2) = seqPTs mmi pc r ((ns `union` rns1) `sminus` gks1) (gks `union` gks1) in 
-    (rearrangeT t:pts, gunion [ns, rns1, rns2], gunion [gks, gks1, gks2])
+    (t:pts, gunion [ns, rns1, rns2], gunion [gks, gks1, gks2])
 --where modify_t (OpB opseqC (Kappa (CT k ps cts t1)) t2) = CT k ps [] (OpB opseqC (Kappa (CT (k++"0") [] cts t1)) t2)
 
 consDef::PC String String->String->DTDef
 consDef pc n = DTDef n $ enumValsOf pc n
 
-consPCTD::MMI String String->PC String String->PCTD
-consPCTD mmi pc = 
+consPCTD0::MMI String String->PC String String->(Id, [DTDef], [PD])
+consPCTD0 mmi pc = 
   let r = relKs mmi pc
       ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
-      (pts, _, _) = seqPTs mmi pc r (singles $ startCompound mmi pc) nil in 
-  PCTD (getPCDef pc) ds pts
+      sc = startCompound mmi pc
+      (pts, _, _) = seqPTs mmi pc r (singles sc `union` refKs mmi pc sc) nil in 
+  (getPCDef pc, ds, map thePD pts)
+
+consPCTD::MMI String String->PC String String->[PC String String]->PCTD
+consPCTD mmi pc ipcs = 
+  let (id, ds, pds) = consPCTD0 mmi pc 
+      ids = map idPD pds
+      pds' = foldl (\pds' pc'->(thd' $ consPCTD0 mmi pc') ++ pds') [] ipcs
+  in
+    PCTD id ds (pds'++pds)
+  where thd'(x, y, z) = z
 
 -- Need to make more general here in the future
 revname :: PCEAtom -> Id -> Id -> PCEAtom
@@ -380,6 +392,7 @@ atomsOfPCT (Atom e _) = atomsOfPCExpA e
 --  if head ats == '{' && last ats == '}' then set $ words' (== ',') (drop 1 (take ((length ats) - 1) ats)) else nil
 atomsOfPCT (OpB (OpThrow as) t1 t2) = gunion (fmap atomsOfPCExp as) `union` atomsOfPCTs t1 t2
 atomsOfPCT (OpB _ t1 t2) = atomsOfPCTs t1 t2
+atomsOfPCT (OpKappa _ _ t) = atomsOfPCT t
 atomsOfPCT (Kappa (PD _ _ cts t)) = foldr (\ct ps->(atomsOfPCT ct) `union` ps) nil cts `union` (atomsOfPCT t)
 atomsOfPCT (Rho _ _ _ rs) = foldr (\(_, to) ps->(singles to) `union` ps) nil rs
 atomsOfPCT NilT = nil
@@ -394,9 +407,9 @@ isOperator _ = False
 isAtomic :: PT -> Bool
 isAtomic (Atom _ _) = True
 isAtomic (Kappa _) = True
-isAtomic (NilT) = True
-isAtomic (StopT) = True
-isAtomic (SkipT) = True
+isAtomic NilT = True
+isAtomic StopT = True
+isAtomic SkipT = True
 isAtomic (Rho _ _ _ _) = True
 isAtomic (OpB (OpSeq _) t NilT) = isAtom t
 isAtomic _ = False
@@ -405,9 +418,9 @@ isSole :: PT -> Bool
 isSole (Atom _ _) = True
 isSole (Kappa _) = True
 isSole (OpB _ t1 _) = isAtomic t1 
-isSole (NilT) = True
-isSole (StopT) = True
-isSole (SkipT) = True
+isSole NilT = True
+isSole StopT = True
+isSole SkipT = True
 isSole (Rho _ _ _ _) = True
 
 

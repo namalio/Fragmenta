@@ -21,8 +21,9 @@ import Sets
 import Data.Bits (And)
 
 type Id = String
+type TyS = String
 
-data Decl = Channel (Set Id) | EqDecl Exp Exp | Include (Set Id) 
+data Decl = Channel (Set Id) (Maybe TyS) | EqDecl Exp Exp | Include (Set Id) | DataTy Id (Set Id)
    deriving(Show) 
 
 data BOp = Plus | Minus | Product | Div | Remainder | Or | And | GEQ | LEQ | GT | LT | EQ | NEQ

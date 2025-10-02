@@ -1,2 +1,3 @@
 include "PC_HouseLivingP.csp"
-include "PC_HouseLiving_base.csp"
+
+channel roomWindow, intoRoom, roomWindow2, intoLivingRoom, mainDoor2, intoKitchen, intoHall, mainDoor
