@@ -1,6 +1,6 @@
 digraph {
 
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseLiving];
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseLiving_err];
 OpHouseLiving [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 mainDoor [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
 intoHall [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoHall"];

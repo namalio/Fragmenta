@@ -1,0 +1,3 @@
+include "PC_TCellP.csp"
+
+channel inactivatePTK2, inhibitorySignal2, PTKIActivates2, activatesPTK, inhibitorySignal, positiveSignal, offPositiveSignal, inactivatesPTK

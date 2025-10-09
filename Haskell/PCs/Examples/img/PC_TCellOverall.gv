@@ -1,0 +1,26 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCellOverall];
+OpTCellParallel [shape=diamond,fillcolor=yellow,style=filled,label="||"];
+OpTCellParallel_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="activatesPTK,inhibitorySignal,inactivatesPTK,positiveSignal,freeLigandTCR,bindLigandTCR"];
+OpTCellParallel->OpTCellParallel_bs [dir=none,color="black:invis:black"];
+{rank=same;OpTCellParallel,OpTCellParallel_bs}
+PC_TCR [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCR];
+PC_TCell [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCell];
+RefPTK [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑PTK "];
+RefTCell [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑TCell "];
+RefTCR [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑TCR "];
+PC_PTK [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_PTK];
+TCellOverall [shape=box,fillcolor=deepskyblue,style = filled,label="TCellOverall "];
+
+{rank=same;TCellOverall,StartN_}
+
+RefTCell->PC_TCell[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefTCR->PC_TCR[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpTCellParallel->RefPTK[arrowhead="open"];
+OpTCellParallel->RefTCR[arrowhead="open"];
+OpTCellParallel->RefTCell[arrowhead="open"];
+RefPTK->PC_PTK[arrowhead="normalnormal",fillcolor=white,label=" "];
+TCellOverall->OpTCellParallel[arrowhead="onormal",penwidth=2,label="="];
+StartN_->TCellOverall[label="starts"];
+}

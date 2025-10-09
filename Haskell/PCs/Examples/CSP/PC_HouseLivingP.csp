@@ -3,9 +3,9 @@ HouseLiving =
       EnterHall = intoHall -> (EnterRoom
             [] intoKitchen -> EnterHall
             [] intoLivingRoom -> EnterHall
-            [] mainDoor2 -> HouseLiving)
+            [] mainDoor -> HouseLiving)
       EnterRoom = intoRoom -> (EnterHall
-            [] roomWindow2 -> HouseLiving)
+            [] roomWindow -> HouseLiving)
    within
       mainDoor -> EnterHall
          [] roomWindow -> EnterRoom

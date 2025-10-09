@@ -67,20 +67,20 @@ sames r = sames' r (dom_of r) nil
 --fillVarBOfAtomPack v b = (v, strOfBinding b)
 --fillVarBOfAtomPack (Just (v, b)) = Just (v, strOfBinding b) 
 
-toNodeKind :: SGr String String ->PC String String -> String -> PCs_CMM_Ns -> NodeInfo
+toNodeKind :: MMI String String ->PC String String -> String -> PCs_CMM_Ns -> NodeInfo
 toNodeKind _ pc n CMM_Compound  = Compound $ fmap (uncurry cParam) (paramsOf pc n)
 toNodeKind _ pc n CMM_Atom      = 
    let e = expOfAtom pc n
        rest = if isNil e then "" else "." ++ (the e) in
    Atom (nmOfNamed pc n ++ rest) (guardOf pc n) --(fillAnyExp $ anyExpOfAt pc n) 
-toNodeKind _ pc n CMM_Reference = Reference (inner_Ref pc n) (nmOfRef pc n) (strOfTxtExps $ expsOf pc n) (renamingsOf pc n) (guardOf pc n)
+toNodeKind mmi pc n CMM_Reference = Reference (inner_Ref pc n) (nmOfRefF mmi pc n) (strOfTxtExps $ expsOf pc n) (renamingsOf pc n) (guardOf pc n)
 toNodeKind _ _ _ CMM_Skip       = Skip
 toNodeKind _ _ _ CMM_Stop       = Stop
 toNodeKind _ _ _ CMM_StartN     = Start
 toNodeKind _ _ _ CMM_Import     = Import
-toNodeKind sg_mm pc n CMM_QuantifiedOp  = 
+toNodeKind mmi pc n CMM_QuantifiedOp  = 
    let (v, e) = varBQuantifiedOp pc n in
-   QuantifiedOp (readOp . read_cmm $ opQuantifiedOp sg_mm pc n) v (strOfTxtExp e) (guardOf pc n) 
+   QuantifiedOp (readOp . read_cmm $ opQuantifiedOp (gCRSG mmi) pc n) v (strOfTxtExp e) (guardOf pc n) 
 
 --toOp :: PCs_CMM_Ns -> String
 --toOp CMM_VOpIf            = "If"
@@ -90,11 +90,11 @@ toNodeKind sg_mm pc n CMM_QuantifiedOp  =
 --toOp CMM_VOpInterleave    = "|||"
 --toOp CMM_VOpThrow         = "Θ"
 
-consDrawingNode :: SGr String String -> PC String String -> String -> Node
-consDrawingNode sg_mm pc n = 
+consDrawingNode :: MMI String String -> PC String String -> String -> Node
+consDrawingNode mmi pc n = 
    let nt = read_cmm $ tyOfN n pc in
    let nts = [CMM_Compound, CMM_Atom, CMM_Reference, CMM_Stop, CMM_Skip, CMM_StartN, CMM_Import, CMM_QuantifiedOp] in
-   if nt `elem` nts then Node n $ toNodeKind sg_mm pc n nt else Node n $ Op (readOp . read_cmm $ opValOfOp sg_mm pc n) (strOfTxtExps $ expsOf pc n)
+   if nt `elem` nts then Node n $ toNodeKind mmi pc n nt else Node n $ Op (readOp . read_cmm $ opValOfOp (gCRSG mmi)  pc n) (strOfTxtExps $ expsOf pc n)
 
 toConnectorKind :: PC String String -> String -> PCs_CMM_Ns -> ConnectorInfo
 toConnectorKind _ _ CMM_DefinesC     = CDef
@@ -106,8 +106,8 @@ toConnectorKind pc c CMM_BMainIfC    = CBranchIf (the $ guardOf pc c)
 toConnectorKind _ _ CMM_BElseC       = CBranchElse
 toConnectorKind _ _ CMM_BJumpC       = CBranchJump
 
-consDrawingNodes :: Foldable t => SGr String String -> PC String String -> t String -> [Node]
-consDrawingNodes sg_mm pc = foldr (\n ns'->(consDrawingNode sg_mm pc n):ns') []
+consDrawingNodes :: Foldable t => MMI String String -> PC String String -> t String -> [Node]
+consDrawingNodes mmi pc = foldr (\n ns'->(consDrawingNode mmi pc n):ns') []
 
 consConnectors :: Foldable t => MMI String String -> PC String String -> t String -> [Connector]
 consConnectors mmi pc cs = foldr (\c cs'->(Connector c (toConnectorKind pc c (read_cmm $ tyOfN c pc)) (srcOf mmi pc c) (tgtOf mmi pc c)):cs') [] cs
@@ -123,7 +123,7 @@ consDefinitions mmi pc ds = foldr (\d ds'->(Definition d $ enumValsOf pc d):ds')
 
 toPCDrawing :: MMI String String -> PC String String -> PCDrawing
 toPCDrawing mmi pc = 
-   let nodes = consDrawingNodes (gCRSG mmi) pc (ntyNsPC (gCRSG mmi) pc CMM_Node)
+   let nodes = consDrawingNodes mmi pc (ntyNsPC (gCRSG mmi) pc CMM_Node)
        cs = consConnectors mmi pc (ntyNsPC (gCRSG mmi) pc CMM_Connector) 
        ds = consDefinitions mmi pc (ntyNsPC (gCRSG mmi) pc CMM_Definition) 
        r_after = afterCRel mmi pc

@@ -35,7 +35,7 @@ import NumString
 import PCs.PCs_MM_Names
 import MMI
 import ParseUtils
-import PCs.PCTrees_TC2
+import PCs.PCTrees_TC
 import PCs.PCTrees_TypeErrors
 import PCs.PCTrees_Types
 --import ShowUtils -- remove later
@@ -266,7 +266,7 @@ loadPCs pcs_path mmi pcns =
            opc <-loadPC (gCRSG mmi) (pcs_path ++ pcn ++".pc") 
            return $ if isSomething opc then ((the opc):pcs) else pcs) [] pcns
 
-typeCheckPC::MMI String String->PC String String->IO Env
+typeCheckPC::MMI String String->PC String String->IO (Maybe Env)
 typeCheckPC mmi pc = do 
    let is = importsOf (gCRSG mmi) pc
    pcs <-loadPCs pcs_path mmi is
@@ -275,9 +275,9 @@ typeCheckPC mmi pc = do
    let (r, _) = runState (runExceptT $ typecheck_pctd pctd) 0
    if (isError r) then do 
       showResult r
-      return nilEnv
+      return Nothing
    else do
-     return $ gEnv r
+     return $ Just (gEnv r)
    where
       isError (Left _) = True
       isError _ = False
@@ -291,8 +291,11 @@ check_generate pcs_path img_path csp_path mmi fn = do
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do
       drawPCToFile pcs_path img_path csp_path mmi (the opc)
-      env<-typeCheckPC mmi (the opc)
-      writeCSPToFile pcs_path img_path csp_path mmi (the opc) env
+      oenv<-typeCheckPC mmi (the opc)
+      if isNil (oenv) then do
+         putStrLn $ "The PC is not type correct!"
+      else do
+         writeCSPToFile pcs_path img_path csp_path mmi (the opc) (the oenv)
 
 generate_Clock :: MMI String String -> IO ()
 generate_Clock mmi = do
@@ -442,7 +445,6 @@ showPCT fnm = do
   when (isSomething opc) $ do
      let is = importsOf (gCRSG mmi) (the opc)
      pcs <-loadPCs pcs_path mmi is
-  --opc >>= print . (consPCTD mmi) 
      putStrLn $ show_pctd $ consPCTD mmi (the opc) pcs
 
 showTypePCT :: String -> IO ()
@@ -472,11 +474,15 @@ test = do
    --showTypePCT "PC_Timer"
    --showTypePC "PC_CCVM"
    --showTypePCT "PC_Buzzer"
+   --showTypePCT "PC_HouseLiving"
    mmi<-load_mm_info mm_path
-   opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_TCell.pc")
-   --putStrLn $ show (the opc)
-   let PCTD id ds pds = consPCTD mmi (the opc) []
-   putStrLn $ show pds
+   opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_HouseLiving_err.pc")
+   putStrLn $ "Start K: " ++ show (startCompound mmi (the opc))
+   let pctd = consPCTD mmi (the opc) []
+   putStrLn $ show_pctd  pctd
+   --opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_HouseLiving.pc")
+   --putStrLn $ show $ nmOfRefF mmi (the opc) "RefEnterHall"
+   --putStrLn $ show pds
    --putStrLn $ show_pctd  pctd
    --putStrLn $ show $ innerRefKs mmi (the opc) "PositiveSignallingOn"
    --putStrLn $ show $ innerKs mmi (the opc) "PositiveSignallingOn"
@@ -510,7 +516,6 @@ test = do
     --print $ nextNode mmi pc "COpIfChoice_timeout"
     --print $ guardOf pc "timeout"
     --print $ img (tgt pc) $ img (inv $ src pc) ["steal"] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps)
-    --
     --print $ nextNode mmi pc "COpIfChoice_timeout"
     --print env
     --print $ atomsPCTD pctd
@@ -583,8 +588,7 @@ test = do
     --putStrLn $ show $ nextNodes mmi pc "OpChat"
     --generate_PC_SimpleLife mmi
     --generate_PC_Bool mmi
-    --pc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_SimpleLife.pc")
-    --putStrLn $ show $ nmOfRefF mmi pc "RefLive"
+   
     --putStrLn $ show $ paramsOfRef mmi pc "RefLive"
     --putStrLn $ show $ (successorsOf mmi pc "RefTimer") `intersec` (pc_ns_of_nty (gCRSG mmi) pc CMM_ReferenceC)
     --putStrLn $ show $ successorsOf mmi pc "CRefTimer"

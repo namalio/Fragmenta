@@ -106,7 +106,8 @@ data PCTD = PCTD Id [DTDef] [PD]
   deriving(Eq, Show)
 
 thePD :: PT -> PD
-thePD  (Kappa pd) = pd
+thePD (Kappa pd) = pd
+thePD pt = error $ "Unexpected error while processing a PT:" ++ (show pt)
 
 idPD::PD->Id
 idPD (PD id _ _ _) = id

@@ -1,3 +1,3 @@
 include "PC_HouseLivingP.csp"
 
-channel roomWindow, intoRoom, roomWindow2, intoLivingRoom, mainDoor2, intoKitchen, intoHall, mainDoor
+channel intoKitchen, mainDoor, intoHall, intoLivingRoom, roomWindow, intoRoom

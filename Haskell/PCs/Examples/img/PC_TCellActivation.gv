@@ -1,0 +1,41 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCellActivation];
+activatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
+OpStandBy [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+RefStandBy1 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitorySignal"];
+positiveOff [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {p}
+positiveOff"];
+RefStandBy2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+OpPosSigOff [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+RefStandBy3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactivatesPTK"];
+positiveOn [shape=ellipse,fillcolor=greenyellow,style=filled,label="positiveOn"];
+StandBy [shape=box,fillcolor=deepskyblue,style = filled,label="StandBy (i,p)"];
+Activation [shape=box,fillcolor=deepskyblue,style = filled,label="Activation "];
+
+{rank=same;OpPosSigOff,positiveOff}
+{rank=same;RefStandBy1,activatesPTK}
+{rank=same;RefStandBy2,inactivatesPTK}
+{rank=same;RefStandBy3,positiveOn}
+{rank=same;Activation,StartN_}
+
+positiveOff->OpPosSigOff[arrowtail=dot,dir=both,label="after"];
+OpPosSigOff->Activation[arrowhead="open",label="i"];
+RefStandBy3->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (i,true)"];
+RefStandBy2->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (true,p)"];
+OpStandBy->inhibitorySignal[arrowhead="open"];
+OpStandBy->inactivatesPTK[arrowhead="open"];
+RefStandBy1->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (false,false)"];
+activatesPTK->RefStandBy1[arrowtail=dot,dir=both,label="after"];
+OpStandBy->positiveOn[arrowhead="open"];
+OpStandBy->positiveOff[arrowhead="open"];
+inactivatesPTK->RefStandBy2[arrowtail=dot,dir=both,label="after"];
+positiveOn->RefStandBy3[arrowtail=dot,dir=both,label="after"];
+OpPosSigOff->SKIP[arrowhead="open",label="Else"];
+StandBy->OpStandBy[arrowhead="onormal",penwidth=2,label="="];
+Activation->activatesPTK[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Activation[label="starts"];
+}

@@ -22,6 +22,8 @@ data TyError = IdExists Id | TyUnknown Id
     | TypesDoNotUnify Ty Ty
     | UnificationOccursError Id Ty
     | NoMatchingEvents [String]
+    | NoProcessNamed Id
+    | ProcessAlreadyDefined Id
     deriving (Show)
 
 errorMsg::TyError->String
@@ -54,3 +56,7 @@ errorMsg (NoMatchingEvents ids) =
     "There are no known events for some of the ids in the set " ++ (showStrs ids ",") ++ "."
 errorMsg (UnificationOccursError id t)= 
     "Could not unify " ++ id ++ " with " ++ t
+errorMsg (NoProcessNamed id )= 
+    "Process " ++ id ++ " is undefined in the current context."
+errorMsg (ProcessAlreadyDefined id)= 
+    "Process " ++ id ++ " is already defined in the current context."

@@ -1,0 +1,26 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCell];
+OpTCell [shape=diamond,fillcolor=yellow,style=filled,label="||"];
+OpTCell_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn"];
+OpTCell->OpTCell_bs [dir=none,color="black:invis:black"];
+{rank=same;OpTCell,OpTCell_bs}
+PC_TCellActivation [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCellActivation];
+PC_TCellPositiveSignalling [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCellPositiveSignalling];
+RefInhibition [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Inhibition "];
+RefPositiveSignalling [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑PositiveSignalling "];
+RefActivation [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Activation "];
+PC_TCellInhibition [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCellInhibition];
+TCell [shape=box,fillcolor=deepskyblue,style = filled,label="TCell "];
+
+{rank=same;TCell,StartN_}
+
+RefPositiveSignalling->PC_TCellPositiveSignalling[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefActivation->PC_TCellActivation[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpTCell->RefInhibition[arrowhead="open"];
+OpTCell->RefActivation[arrowhead="open"];
+OpTCell->RefPositiveSignalling[arrowhead="open"];
+RefInhibition->PC_TCellInhibition[arrowhead="normalnormal",fillcolor=white,label=" "];
+TCell->OpTCell[arrowhead="onormal",penwidth=2,label="="];
+StartN_->TCell[label="starts"];
+}

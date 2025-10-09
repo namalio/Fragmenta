@@ -1,0 +1,52 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_PTK];
+bindLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="bindLigandTCR"];
+PTK [shape=box,fillcolor=deepskyblue,style = filled,label="PTK "];
+PTKActivating [shape=box,fillcolor=deepskyblue,style = filled,label="PTKActivating "];
+freeLigandTCR2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="freeLigandTCR"];
+RefPTKActive1 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactivatesPTK"];
+OpPTKActive [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+RefPTKActive2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+OpfreeLigandTCR [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+RefPTKActive3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitorySignal"];
+positiveOff [shape=ellipse,fillcolor=greenyellow,style=filled,label="positiveOff"];
+OpPTKInactivating [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+PTKActive [shape=box,fillcolor=deepskyblue,style = filled,label="PTKActive (i)"];
+activatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
+OpPTKActivating [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+freeLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="freeLigandTCR"];
+
+{rank=same;OpfreeLigandTCR,freeLigandTCR2}
+{rank=same;RefPTKActive2,inhibitorySignal}
+{rank=same;PTK,inactivatesPTK}
+{rank=same;PTKActivating,bindLigandTCR}
+{rank=same;RefPTKActive1,activatesPTK}
+{rank=same;RefPTKActive3,positiveOff}
+{rank=same;PTK,StartN_}
+
+OpfreeLigandTCR->RefPTKActive3[arrowhead="open",label="Else"];
+freeLigandTCR2->OpfreeLigandTCR[arrowtail=dot,dir=both,label="after"];
+inhibitorySignal->RefPTKActive2[arrowtail=dot,dir=both,label="after"];
+OpPTKActive->inhibitorySignal[arrowhead="open"];
+inactivatesPTK->PTK[arrowtail=dot,dir=both,label="after"];
+OpPTKInactivating->positiveOff[arrowhead="open"];
+RefPTKActive1->PTKActive[arrowhead="normalnormal",fillcolor=white,label=" (false)"];
+OpPTKActivating->activatesPTK[arrowhead="open"];
+bindLigandTCR->PTKActivating[arrowtail=dot,dir=both,label="after"];
+OpPTKActivating->freeLigandTCR[arrowhead="open"];
+freeLigandTCR->PTK[arrowtail=dot,dir=both,label="after"];
+activatesPTK->RefPTKActive1[arrowtail=dot,dir=both,label="after"];
+OpPTKInactivating->inactivatesPTK[arrowhead="open"];
+positiveOff->RefPTKActive3[arrowtail=dot,dir=both,label="after"];
+OpPTKActive->freeLigandTCR2[arrowhead="open"];
+RefPTKActive2->PTKActive[arrowhead="normalnormal",fillcolor=white,label=" (true)"];
+RefPTKActive3->PTKActive[arrowhead="normalnormal",fillcolor=white,label=" (i)"];
+OpfreeLigandTCR->OpPTKInactivating[arrowhead="open",label="¬i"];
+PTK->bindLigandTCR[arrowhead="onormal",penwidth=2,label="="];
+PTKActivating->OpPTKActivating[arrowhead="onormal",penwidth=2,label="="];
+PTKActive->OpPTKActive[arrowhead="onormal",penwidth=2,label="="];
+StartN_->PTK[label="starts"];
+}

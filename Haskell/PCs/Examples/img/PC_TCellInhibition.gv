@@ -1,0 +1,38 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCellInhibition];
+Inhibition [shape=box,fillcolor=deepskyblue,style = filled,label="Inhibition "];
+inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {¬full}
+inhibitorySignal"];
+FullInhibition [shape=box,fillcolor=deepskyblue,style = filled,label="FullInhibition (full)"];
+OpInhibiting [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+OpInhibitionDecay [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+activatesPTK2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
+RefFullInhibition2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+inhibitDecay [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitDecay"];
+InhibitionDecay [shape=box,fillcolor=deepskyblue,style = filled,label="InhibitionDecay "];
+RefFullInhibition [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactivatesPTK"];
+activatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
+
+{rank=same;Inhibition,inhibitDecay}
+{rank=same;InhibitionDecay,inactivatesPTK}
+{rank=same;RefFullInhibition2,inhibitorySignal}
+{rank=same;Inhibition,StartN_}
+
+inhibitDecay->Inhibition[arrowtail=dot,dir=both,label="after"];
+RefFullInhibition2->FullInhibition[arrowhead="normalnormal",fillcolor=white,label=" (true)"];
+OpInhibitionDecay->activatesPTK2[arrowhead="open"];
+OpInhibiting->inactivatesPTK[arrowhead="open"];
+inactivatesPTK->InhibitionDecay[arrowtail=dot,dir=both,label="after"];
+activatesPTK->RefFullInhibition[arrowtail=dot,dir=both,label="after"];
+RefFullInhibition->FullInhibition[arrowhead="normalnormal",fillcolor=white,label=" (false)"];
+OpInhibiting->inhibitorySignal[arrowhead="open"];
+OpInhibitionDecay->inhibitDecay[arrowhead="open"];
+activatesPTK2->RefFullInhibition[arrowtail=dot,dir=both,label="after"];
+inhibitorySignal->RefFullInhibition2[arrowtail=dot,dir=both,label="after"];
+Inhibition->activatesPTK[arrowhead="onormal",penwidth=2,label="="];
+FullInhibition->OpInhibiting[arrowhead="onormal",penwidth=2,label="="];
+InhibitionDecay->OpInhibitionDecay[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Inhibition[label="starts"];
+}

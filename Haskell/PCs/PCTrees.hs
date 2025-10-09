@@ -1,6 +1,6 @@
 ---------------------------------------
 -- Project: PCs/Fragmenta
--- Module: PCTrees
+-- Module: PCTrees (PCTs)
 -- Description: Handles representation of PCs as PCTs, a recursive datatype representation of abstract syntax
 -- Author: Nuno Amálio
 -------------------------------------
@@ -304,13 +304,13 @@ consPCTD0 mmi pc =
   let r = relKs mmi pc
       ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
       sc = startCompound mmi pc
-      (pts, _, _) = seqPTs mmi pc r (singles sc `union` refKs mmi pc sc) nil in 
-  (getPCDef pc, ds, map thePD pts)
+      (pts, _, _) = seqPTs mmi pc r (singles sc `union` refKs mmi pc sc) nil 
+      pd = rearrangeT . head $ pts in 
+  (getPCDef pc, ds, pd:(map thePD $ tail pts))
 
 consPCTD::MMI String String->PC String String->[PC String String]->PCTD
 consPCTD mmi pc ipcs = 
   let (id, ds, pds) = consPCTD0 mmi pc 
-      ids = map idPD pds
       pds' = foldl (\pds' pc'->(thd' $ consPCTD0 mmi pc') ++ pds') [] ipcs
   in
     PCTD id ds (pds'++pds)

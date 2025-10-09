@@ -1,0 +1,3 @@
+include "PC_PTKP.csp"
+
+channel inhibitorySignal, activatesPTK, freeLigandTCR, bindLigandTCR, inactivatesPTK, positiveOff
