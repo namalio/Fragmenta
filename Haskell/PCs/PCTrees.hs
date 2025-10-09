@@ -18,7 +18,7 @@ module PCs.PCTrees(PT(..)
   , isAtom
   , isSole
   , seqPTs
-  , atLeaf) --
+  , atLeaf) 
   where
 
 import PCs.PCs
@@ -60,7 +60,7 @@ show_top (OpIf g) = "𝜄" ++ (show g)
 show_pds :: Foldable t => t PD -> String
 show_pds pds = 
   if null pds then "" else (foldr (\pd pds'->(show_pt $ Kappa pd) ++ finish pds') "" pds) 
-  where finish pds'' = "∙" ++ if null pds then "" else "\n"
+  where finish pds_ =  if null pds_ then "" else "∙\n   " ++ pds_ 
 show_params :: (Foldable t, Functor t) => t Param -> String
 show_params ps = 
   if null ps then "" else "(" ++ (showStrs (fmap show ps) ",") ++ ")"

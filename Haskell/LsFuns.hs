@@ -88,15 +88,6 @@ quicksort (x:xs) =
         biggerSorted = quicksort (filter (>x) xs)   
     in  smallerSorted ++ [x] ++ biggerSorted 
 
---checks whether a relation has cycles
---cyclic [] = False
---cyclic ((x,y):r) =
---   let cyclic' r [] lv = False -- cyclic (dsub r lv) 
---       cyclic' r (v:vs) lv  
---          | v `elem` lv = True
---          | otherwise   = (cyclic' r vs lv) || (cyclic' r (img r [v]) (v:lv))  
---   in cyclic' r (y:(img r [x])) [x]
-
 data Lookup a = Done| Looking a
 
 carryIfNotFound Done _  = Done

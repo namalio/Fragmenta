@@ -1,0 +1,3 @@
+include "PC_HouseLiving2P.csp"
+
+channel leavePremises, intoRoom, roomWindow, intoLivingRoom, intoHall, mainDoor, intoKitchen, liveGarden

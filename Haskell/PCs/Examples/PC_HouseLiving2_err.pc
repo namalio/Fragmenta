@@ -1,11 +1,12 @@
-PC PC_HouseLiving_err@HouseLiving
-operator OpHouseLiving.Choice
-compound HouseLiving@OpHouseLiving
+PC PC_HouseLiving2_err@HouseLiving
+compound HouseLiving@LiveInside
+compound LiveInside@OpLiveInside
+operator OpLiveInside.Choice
 atom mainDoor
 atom roomWindow
 atom intoHall
-op_connector OpHouseLiving->mainDoor
-op_connector OpHouseLiving->roomWindow
+op_connector OpLiveInside->mainDoor
+op_connector OpLiveInside->roomWindow
 compound EnterHall@intoHall
 compound EnterRoom@intoRoom
 after mainDoor->EnterHall
@@ -28,14 +29,19 @@ reference RefEnterRoom
 ref_connector hidden RefEnterRoom->EnterRoom
 after intoLivingRoom->RefEnterHall
 after intoKitchen->RefEnterHall
-after mainDoor2->HouseLiving
 op_connector OpEnterHall->RefEnterRoom
 after intoRoom->OpInsideRoom
 op_connector OpInsideRoom->RefEnterHall2
 atom roomWindow2->roomWindow
 op_connector OpInsideRoom->roomWindow2
-reference RefHouseLiving
-ref_connector hidden RefHouseLiving->HouseLiving
-after roomWindow2->RefHouseLiving
-atom someOtherWayIn
-after HouseLiving->someOtherWayIn
+compound LiveOutside@OpLiveOutside
+after LiveInside->LiveOutside
+operator OpLiveOutside.Choice
+op_connector OpLiveOutside->LiveInside
+atom liveGarden
+op_connector OpLiveOutside->liveGarden
+reference RefEnterRoom2
+ref_connector hidden RefEnterRoom2->EnterRoom
+after liveGarden->RefEnterRoom2
+
+

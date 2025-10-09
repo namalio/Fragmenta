@@ -13,8 +13,8 @@ cappuccino [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=150}
 cappuccino"];
 coin50p [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤100}
 coin50p"];
-RefGot50p [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-RefGotPound [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefGot50p [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑GetandGive "];
+RefGotPound [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑GetandGive "];
 coinPound [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤50}
 coinPound"];
 latte [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=150}
@@ -26,7 +26,7 @@ OpGet [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 Give [shape=box,fillcolor=deepskyblue,style = filled,label="Give "];
 giveMe [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≥100}
 giveMe"];
-RefGetandGive [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefGetandGive [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑GetandGive "];
 
 {rank=same;RefGotPound,coinPound}
 {rank=same;OpGive,giveMe}

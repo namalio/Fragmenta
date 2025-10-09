@@ -480,7 +480,7 @@ nextKsOf::MMI String String->PC String String->String->Set String
 nextKsOf mmi pc n =
   let nns = if isNxtNAtfer then nextNodesAfter mmi pc n else nextNodes mmi pc n in
   foldr (\n' ns->if isCompound n' then n' `intoSet` ns else (nextKsOf mmi pc n') `union` ns) EmptyS nns
-  where isNxtNAtfer = isNodeOfTys n [CMM_Atom, CMM_Reference] (gCRSG mmi) pc
+  where isNxtNAtfer = isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc
         isCompound sn = isNodeOfTys sn [CMM_Compound] (gCRSG mmi) pc
   
 relKsOf::MMI String String->PC String String->Set String->Rel String String->Rel String String

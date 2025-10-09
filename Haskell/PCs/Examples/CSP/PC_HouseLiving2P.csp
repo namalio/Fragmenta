@@ -1,0 +1,18 @@
+HouseLiving = 
+   let 
+      LiveInside = 
+         let 
+            EnterHall = intoHall -> (intoKitchen -> EnterHall
+                  [] intoLivingRoom -> EnterHall
+                  [] mainDoor -> SKIP
+                  [] EnterRoom)
+            EnterRoom = intoRoom -> (roomWindow -> SKIP
+                  [] EnterHall)
+         within
+            mainDoor -> EnterHall
+               [] roomWindow -> EnterRoom
+      LiveOutside = LiveInside
+            [] liveGarden -> LiveOutside
+            [] leavePremises -> SKIP
+   within
+      LiveInside; LiveOutside

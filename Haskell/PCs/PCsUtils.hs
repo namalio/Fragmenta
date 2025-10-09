@@ -476,10 +476,21 @@ test = do
    --showTypePCT "PC_Buzzer"
    --showTypePCT "PC_HouseLiving"
    mmi<-load_mm_info mm_path
-   opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_HouseLiving_err.pc")
-   putStrLn $ "Start K: " ++ show (startCompound mmi (the opc))
+   opc<-loadPC (gCRSG mmi) (pcs_path ++ "BiscuitJar.pc")
+   --putStrLn $ "Start K: " ++ show (startCompound mmi (the opc))
+   --putStrLn $ "Referenced compunds: " ++ (show $ refKs mmi (the opc) "BiscuitJar")
+   --let r = relKs mmi (the opc)
+   --putStrLn $ "RelKs: " ++ show r
+   --putStrLn $ "SeqPTs: " ++ show (seqPTs mmi (the opc) r (singles "BiscuitJar" `union` refKs mmi (the opc) "BiscuitJar") nil )
+   --putStrLn $ "NextKsOf 'BiscuitJar':" ++ show (nextKsOf mmi (the opc) "BiscuitJar")
+   --putStrLn $ "Next nodes 'BiscuitJar':" ++ show (nextNodes mmi (the opc) "BiscuitJar")
+   --putStrLn $ "NextNodesAfter of 'openJar':" ++ show (nextNodesAfter mmi (the opc) "openJar")
+   --putStrLn $ "NextNodesAfter of 'RefJarOpened':" ++ show (nextNodesAfter mmi (the opc) "RefJarOpened")
+   --putStrLn $ "NextNodes of 'RefJarOpened':" ++ show (nextNodes mmi (the opc) "RefJarOpened")
    let pctd = consPCTD mmi (the opc) []
+   --putStrLn $ show  pctd
    putStrLn $ show_pctd  pctd
+   --seqPTs 
    --opc<-loadPC (gCRSG mmi) (pcs_path ++ "PC_HouseLiving.pc")
    --putStrLn $ show $ nmOfRefF mmi (the opc) "RefEnterHall"
    --putStrLn $ show pds
@@ -492,13 +503,9 @@ test = do
    --print $ nextNode mmi (the opc) "OpPosSigOff" 
    --putStrLn $ "Expression of atom: " ++ show (expOfAtom (the opc) "ShowBal")
    --putStrLn $ "Inner referenced compunds: " ++ (show $ innerRefKs mmi (the opc) "BiscuitJar")
-   --putStrLn $ "Referenced compunds: " ++ (show $ refKs mmi (the opc) "BiscuitJar")
    --load_check_show_tree mmi "PC_Buzzer.pc"
-   --generate_BiscuitJar mmi
    --generate_TicketMachine mmi
    --generate_BusRider mmi
-   -- opc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_BiscuitJar.pc")
-   -- let pc = the opc
    --let pctd  = consPCTD mmi pc 
    -- print pctd
    -- print $ runState (runExceptT $ typecheck_pctd pctd) 0
@@ -520,7 +527,6 @@ test = do
     --print env
     --print $ atomsPCTD pctd
     --putStrLn $ show $ nextKsOf mmi (the opc)  "Buzzing"
-    --putStrLn $ nextNodes mmi pc n
     --putStrLn $ show_pctd $ consPCTD mmi (the opc)
     --print $ isNodeOfTys "Bool" [CMM_Compound] (gCRSG mmi) (the opc)
     --putStrLn $ show $ compoundStart mmi (the opc)  "Bool"
@@ -528,7 +534,6 @@ test = do
     --putStrLn $ "Next nodes of " ++ "OpBreakAndStealHouse" ++ ":" ++ (show $ nextNodes mmi (the opc) "OpBreakAndStealHouse")
     --putStrLn $ "Inner Ks of "  ++ "BreakAndStealHouse" ++ ":" ++ (show $ innerKs mmi (the opc) "BreakAndStealHouse")
     --putStrLn $ "Inner Ref Ks of "  ++ "BreakAndStealHouse" ++ ":" ++ (show $ innerRefKs mmi (the opc) "BreakAndStealHouse")
-    --putStrLn $ "Start K: " ++ show (startCompound mmi (the opc))
     --putStrLn $ "Common Inner ks: " ++ show (commonInnerKs mmi (the opc) "BreakAndStealHouse")
     --putStrLn $ show $ compoundAB mmi (the opc) "BreakAndStealHouse" nil
     --putStrLn $ "Withrel: " ++ show (withinRel mmi (the opc))
@@ -542,7 +547,6 @@ test = do
     --putStrLn $ "NextKsOf 'RunAway':" ++ show (nextKsOf mmi (the opc) "RunAway")
     --putStrLn $ "NextKsOf 'GetInside':" ++ show (nextKsOf mmi (the opc) "GetInside")
     --putStrLn $ "NextKsOf 'Steal':" ++ show (nextKsOf mmi (the opc) "Steal")
-    --putStrLn $ "RelKs: " ++ show (relKs mmi (the opc))
     --putStrLn $ "Inner Ks of "  ++ "BreakAndStealHouse" ++ ":" ++ (show $ innerKs mmi (the opc) "BreakAndStealHouse")
     --checkWFAndGeneratePCTree mmi (the opc)
     --print $ toPCDrawing mmi (the opc) 
@@ -558,15 +562,6 @@ test = do
     --print $ img (tgt (the opc)) $ img (inv $ src (the opc)) ["BiscuitJar"] `intersec`  es_of_ety (the opc)  (show_cmm_e CMM_EHasParams)
     --is<-getImports pcs_path (gCRSG mmi) pc
     --putStrLn $ show is
-    --generate_Timer mmi
-    --generate_CashMachineOps mmi
-    --generate_HouseUnderAttack mmi
-    --generate_HouseAttacker mmi
-    --generate_SecuredHouse mmi
-    --generate_HouseAlarm mmi
-    --generate_ProtectedHouse mmi
-    --generate_SuccessfulHouseAttack mmi
-    --generate_SecureHouse mmi
     --let pc = the opc
     --let sg = gCRSG mmi
     --print $ rMultOk sg (show_cmm_e CMM_ERenamings) pc
@@ -588,7 +583,6 @@ test = do
     --putStrLn $ show $ nextNodes mmi pc "OpChat"
     --generate_PC_SimpleLife mmi
     --generate_PC_Bool mmi
-   
     --putStrLn $ show $ paramsOfRef mmi pc "RefLive"
     --putStrLn $ show $ (successorsOf mmi pc "RefTimer") `intersec` (pc_ns_of_nty (gCRSG mmi) pc CMM_ReferenceC)
     --putStrLn $ show $ successorsOf mmi pc "CRefTimer"

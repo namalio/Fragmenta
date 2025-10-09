@@ -1,0 +1,45 @@
+PC PC_HouseLiving2@HouseLiving
+compound HouseLiving@LiveInside
+compound LiveInside@OpLiveInside
+operator OpLiveInside.Choice
+atom mainDoor
+atom roomWindow
+atom intoHall
+op_connector OpLiveInside->mainDoor
+op_connector OpLiveInside->roomWindow
+compound EnterHall@intoHall
+compound EnterRoom@intoRoom
+after mainDoor->EnterHall
+after roomWindow->EnterRoom
+after intoHall->OpEnterHall
+operator OpEnterHall.Choice
+operator OpInsideRoom.Choice
+atom intoRoom
+atom intoLivingRoom
+atom intoKitchen
+atom mainDoor2->mainDoor
+op_connector OpEnterHall->intoLivingRoom
+op_connector OpEnterHall->intoKitchen
+op_connector OpEnterHall->mainDoor2
+reference RefEnterHall
+ref_connector hidden RefEnterHall->EnterHall
+reference RefEnterHall2
+ref_connector hidden RefEnterHall2->EnterHall
+reference RefEnterRoom
+ref_connector hidden RefEnterRoom->EnterRoom
+after intoLivingRoom->RefEnterHall
+after intoKitchen->RefEnterHall
+op_connector OpEnterHall->RefEnterRoom
+after intoRoom->OpInsideRoom
+op_connector OpInsideRoom->RefEnterHall2
+atom roomWindow2->roomWindow
+op_connector OpInsideRoom->roomWindow2
+compound LiveOutside@OpLiveOutside
+after LiveInside->LiveOutside
+operator OpLiveOutside.Choice
+op_connector OpLiveOutside->LiveInside
+atom liveGarden
+op_connector OpLiveOutside->liveGarden
+after liveGarden->LiveOutside
+atom leavePremises
+op_connector OpLiveOutside->leavePremises

@@ -1,3 +1,3 @@
 include "PC_BiscuitJarP.csp"
 
-channel openJar, dropBiscuit, closeJar, takeBiscuit
+channel closeJar, dropBiscuit, openJar, takeBiscuit

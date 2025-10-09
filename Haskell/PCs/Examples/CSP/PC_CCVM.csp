@@ -1,3 +1,3 @@
 include "PC_CCVMP.csp"
 
-channel return, cappuccino, macchiato, latte, espresso, giveMe, coin50p, coinPound
+channel latte, espresso, giveMe, coinPound, return, coin50p, cappuccino, macchiato

@@ -10,7 +10,6 @@ intoLivingRoom [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoLivi
 mainDoor2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
 RefEnterHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterHall "];
 roomWindow2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="roomWindow"];
-someOtherWayIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="someOtherWayIn"];
 RefHouseLiving [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑HouseLiving "];
 RefEnterRoom [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterRoom "];
 RefEnterHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterHall "];
@@ -21,35 +20,33 @@ EnterHall [shape=box,fillcolor=deepskyblue,style = filled,label="EnterHall "];
 roomWindow [shape=ellipse,fillcolor=greenyellow,style=filled,label="roomWindow"];
 HouseLiving [shape=box,fillcolor=deepskyblue,style = filled,label="HouseLiving "];
 
-{rank=same;someOtherWayIn,HouseLiving}
-{rank=same;OpEnterHall,intoHall}
-{rank=same;EnterHall,mainDoor}
-{rank=same;EnterRoom,roomWindow}
-{rank=same;OpInsideRoom,intoRoom}
 {rank=same;RefHouseLiving,roomWindow2}
+{rank=same;OpInsideRoom,intoRoom}
+{rank=same;EnterRoom,roomWindow}
+{rank=same;EnterHall,mainDoor}
+{rank=same;OpEnterHall,intoHall}
 {rank=same;HouseLiving,StartN_}
 
-HouseLiving->someOtherWayIn[arrowtail=dot,dir=both,label="after"];
-
-OpInsideRoom->RefEnterHall2[arrowhead="open"];
-OpEnterHall->RefEnterRoom[arrowhead="open"];
-intoKitchen->RefEnterHall[arrowtail=dot,dir=both,label="after"];
-
-
-OpEnterHall->intoKitchen[arrowhead="open"];
-intoHall->OpEnterHall[arrowtail=dot,dir=both,label="after"];
-mainDoor->EnterHall[arrowtail=dot,dir=both,label="after"];
-OpHouseLiving->mainDoor[arrowhead="open"];
-OpHouseLiving->roomWindow[arrowhead="open"];
-roomWindow->EnterRoom[arrowtail=dot,dir=both,label="after"];
-OpEnterHall->intoLivingRoom[arrowhead="open"];
-OpEnterHall->mainDoor2[arrowhead="open"];
-
-intoLivingRoom->RefEnterHall[arrowtail=dot,dir=both,label="after"];
-mainDoor2->HouseLiving[arrowtail=dot,dir=both,label="after"];
-intoRoom->OpInsideRoom[arrowtail=dot,dir=both,label="after"];
-OpInsideRoom->roomWindow2[arrowhead="open"];
 roomWindow2->RefHouseLiving[arrowtail=dot,dir=both,label="after"];
+OpInsideRoom->roomWindow2[arrowhead="open"];
+intoRoom->OpInsideRoom[arrowtail=dot,dir=both,label="after"];
+mainDoor2->HouseLiving[arrowtail=dot,dir=both,label="after"];
+intoLivingRoom->RefEnterHall[arrowtail=dot,dir=both,label="after"];
+
+OpEnterHall->mainDoor2[arrowhead="open"];
+OpEnterHall->intoLivingRoom[arrowhead="open"];
+roomWindow->EnterRoom[arrowtail=dot,dir=both,label="after"];
+OpHouseLiving->roomWindow[arrowhead="open"];
+OpHouseLiving->mainDoor[arrowhead="open"];
+mainDoor->EnterHall[arrowtail=dot,dir=both,label="after"];
+intoHall->OpEnterHall[arrowtail=dot,dir=both,label="after"];
+OpEnterHall->intoKitchen[arrowhead="open"];
+
+
+intoKitchen->RefEnterHall[arrowtail=dot,dir=both,label="after"];
+OpEnterHall->RefEnterRoom[arrowhead="open"];
+OpInsideRoom->RefEnterHall2[arrowhead="open"];
+
 EnterRoom->intoRoom[arrowhead="onormal",penwidth=2,label="="];
 EnterHall->intoHall[arrowhead="onormal",penwidth=2,label="="];
 HouseLiving->OpHouseLiving[arrowhead="onormal",penwidth=2,label="="];

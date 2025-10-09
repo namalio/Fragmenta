@@ -7,10 +7,10 @@ OpJarOpenedIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
 takeBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n>0}
 takeBiscuit"];
 closeJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="closeJar"];
-RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑JarOpened "];
+RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑BiscuitJar "];
+RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑JarOpened "];
+RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑JarOpened "];
 dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
 dropBiscuit"];
 OpJarOpened [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];

@@ -1,0 +1,63 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseLiving2_err];
+HouseLiving [shape=box,fillcolor=deepskyblue,style = filled,label="HouseLiving "];
+OpLiveInside [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+roomWindow [shape=ellipse,fillcolor=greenyellow,style=filled,label="roomWindow"];
+EnterHall [shape=box,fillcolor=deepskyblue,style = filled,label="EnterHall "];
+OpEnterHall [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+intoRoom [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoRoom"];
+intoKitchen [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoKitchen"];
+RefEnterHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterHall "];
+RefEnterRoom [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterRoom "];
+LiveOutside [shape=box,fillcolor=deepskyblue,style = filled,label="LiveOutside "];
+liveGarden [shape=ellipse,fillcolor=greenyellow,style=filled,label="liveGarden"];
+RefEnterRoom2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterRoom "];
+OpLiveOutside [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+roomWindow2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="roomWindow"];
+RefEnterHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑EnterHall "];
+mainDoor2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
+intoLivingRoom [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoLivingRoom"];
+OpInsideRoom [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+EnterRoom [shape=box,fillcolor=deepskyblue,style = filled,label="EnterRoom "];
+intoHall [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoHall"];
+mainDoor [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
+LiveInside [shape=box,fillcolor=deepskyblue,style = filled,label="LiveInside "];
+
+{rank=same;RefEnterRoom2,liveGarden}
+{rank=same;LiveOutside,LiveInside}
+{rank=same;EnterRoom,roomWindow}
+{rank=same;EnterHall,mainDoor}
+{rank=same;OpEnterHall,intoHall}
+{rank=same;OpInsideRoom,intoRoom}
+{rank=same;HouseLiving,StartN_}
+
+liveGarden->RefEnterRoom2[arrowtail=dot,dir=both,label="after"];
+OpLiveOutside->liveGarden[arrowhead="open"];
+LiveInside->LiveOutside[arrowtail=dot,dir=both,label="after"];
+OpInsideRoom->RefEnterHall2[arrowhead="open"];
+OpEnterHall->RefEnterRoom[arrowhead="open"];
+intoLivingRoom->RefEnterHall[arrowtail=dot,dir=both,label="after"];
+
+OpEnterHall->mainDoor2[arrowhead="open"];
+OpEnterHall->intoLivingRoom[arrowhead="open"];
+roomWindow->EnterRoom[arrowtail=dot,dir=both,label="after"];
+OpLiveInside->roomWindow[arrowhead="open"];
+OpLiveInside->mainDoor[arrowhead="open"];
+mainDoor->EnterHall[arrowtail=dot,dir=both,label="after"];
+intoHall->OpEnterHall[arrowtail=dot,dir=both,label="after"];
+OpEnterHall->intoKitchen[arrowhead="open"];
+
+
+intoKitchen->RefEnterHall[arrowtail=dot,dir=both,label="after"];
+intoRoom->OpInsideRoom[arrowtail=dot,dir=both,label="after"];
+OpInsideRoom->roomWindow2[arrowhead="open"];
+OpLiveOutside->LiveInside[arrowhead="open"];
+
+HouseLiving->LiveInside[arrowhead="onormal",penwidth=2,label="="];
+EnterHall->intoHall[arrowhead="onormal",penwidth=2,label="="];
+LiveOutside->OpLiveOutside[arrowhead="onormal",penwidth=2,label="="];
+EnterRoom->intoRoom[arrowhead="onormal",penwidth=2,label="="];
+LiveInside->OpLiveInside[arrowhead="onormal",penwidth=2,label="="];
+StartN_->HouseLiving[label="starts"];
+}
