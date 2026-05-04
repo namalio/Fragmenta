@@ -1,0 +1,4 @@
+include "PC_TimerP.csp"
+include "PC_MetabolicLifeP.csp"
+
+channel excrete, wake_up, eat, die, tock, timeout, move, rest

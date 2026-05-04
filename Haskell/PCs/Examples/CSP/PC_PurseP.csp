@@ -1,0 +1,18 @@
+Purse(n) = 
+   let 
+      TakeMoney = [] a : Int @ a > n & errInsufficientFunds -> Purse(n)
+            [] a <= n and a > 0 & takeMoney -> Purse(n - a)
+            [] a <= 0 & errInvalidAmount2 -> Purse(n)
+      PutMoney = [] a : Int @ if a > 0
+         then
+            putMoney -> Purse(n + a)
+         else
+            errInvalidAmount -> Purse(n)
+   within
+      if n >= 0
+      then
+         showBalance -> Purse(n)
+         [] TakeMoney
+         [] PutMoney
+      else
+         STOP

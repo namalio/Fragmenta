@@ -1,0 +1,9 @@
+PositiveSignalling = activatesPTK -> PositiveSignallingOn(false)
+
+PositiveSignallingOn(full) = freeLigandTCR -> PositiveSignallingDecay
+      [] not full & positiveOn -> PositiveSignallingOn(true)
+      [] inactivatesPTK -> PositiveSignallingDecay
+      [] inhibitorySignal -> PositiveSignallingDecay
+
+PositiveSignallingDecay = positiveOff -> PositiveSignalling
+      [] PositiveSignalling

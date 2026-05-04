@@ -1,0 +1,3 @@
+include "PC_TCellActivationP.csp"
+
+channel inactivatesPTK, bindLigandTCR, freeLigandTCR, activatesPTK, positiveOff, positiveOn, inhibitorySignal, inhibitDecay

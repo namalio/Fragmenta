@@ -1,0 +1,9 @@
+Inhibition = activatesPTK -> FullInhibition(false)
+
+FullInhibition(full) = 
+   let 
+      InhibitionDecay = inhibitDecay -> Inhibition
+            [] activatesPTK -> FullInhibition(false)
+   within
+      not full & inhibitorySignal -> FullInhibition(true)
+         [] inactivatesPTK -> InhibitionDecay

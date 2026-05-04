@@ -1,0 +1,1 @@
+TCellOverall = TCell[|{activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn,freeLigandTCR,bindLigandTCR,positiveOff}|](TCR[|{activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn,freeLigandTCR,bindLigandTCR,positiveOff}|]PTK)

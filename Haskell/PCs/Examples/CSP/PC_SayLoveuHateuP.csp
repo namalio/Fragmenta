@@ -1,0 +1,1 @@
+SayLoveuHateu = SayAtLeastOnce[[something <- loveu]] ||| SayAtLeastOnce[[something <- hateu]]

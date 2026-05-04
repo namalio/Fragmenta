@@ -1,0 +1,15 @@
+HouseLiving = 
+   let 
+      HouseLiving0 = 
+         let 
+            EnterRoom = intoRoom -> (roomWindow -> HouseLiving
+                  [] EnterHall)
+            EnterHall = intoHall -> (mainDoor -> HouseLiving
+                  [] intoLivingRoom -> EnterHall
+                  [] intoKitchen -> EnterHall
+                  [] EnterRoom)
+         within
+            roomWindow -> EnterRoom
+               [] mainDoor -> EnterHall
+   within
+      HouseLiving0; someOtherWayIn -> SKIP

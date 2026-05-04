@@ -1,0 +1,3 @@
+include "PC_HouseLivin_errP.csp"
+
+channel someOtherWayIn, intoLivingRoom, intoHall, mainDoor, intoRoom, roomWindow, intoKitchen

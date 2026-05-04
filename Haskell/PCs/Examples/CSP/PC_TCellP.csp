@@ -1,0 +1,1 @@
+TCell = PositiveSignalling[|{activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn}|](Activation[|{activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn}|]Inhibition)

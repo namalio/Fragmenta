@@ -1,0 +1,10 @@
+Activation = activatesPTK -> StandBy(false, false)
+
+StandBy(i, p) = p & positiveOff -> if i
+   then
+      Activation
+   else
+      SKIP
+      [] positiveOn -> StandBy(i, true)
+      [] inactivatesPTK -> StandBy(true, p)
+      [] inhibitorySignal -> SKIP

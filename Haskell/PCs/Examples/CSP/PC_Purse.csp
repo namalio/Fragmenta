@@ -1,0 +1,5 @@
+include "PC_PurseP.csp"
+
+datatype Error = InvalidPutAmount | InsufficientFunds | InvalidTakeAmount
+
+channel showBalance, errInvalidAmount, errInvalidAmount2, errInsufficientFunds, takeMoney, putMoney

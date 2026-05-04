@@ -1,0 +1,14 @@
+PTK = 
+   let 
+      PTKActivating = freeLigandTCR -> PTK
+            [] activatesPTK -> PTKActive(false)
+   within
+      bindLigandTCR -> PTKActivating
+
+PTKActive(i) = freeLigandTCR -> if not i
+   then
+      inactivatesPTK -> PTK
+      [] positiveOff -> PTKActive(i)
+   else
+      PTKActive(i)
+      [] inhibitorySignal -> PTKActive(true)

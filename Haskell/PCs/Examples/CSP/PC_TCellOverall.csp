@@ -1,0 +1,9 @@
+include "PC_PTKP.csp"
+include "PC_TCellP.csp"
+include "PC_TCRP.csp"
+include "PC_TCellInhibitionP.csp"
+include "PC_TCellPositiveSignallingP.csp"
+include "PC_TCellActivationP.csp"
+include "PC_TCellOverallP.csp"
+
+channel inactivatesPTK, bindLigandTCR, freeLigandTCR, activatesPTK, positiveOff, positiveOn, inhibitorySignal, inhibitDecay

@@ -1,0 +1,3 @@
+include "PC_LigandP.csp"
+
+channel abortLigandTCRBinding, dissociatesLigandTCR, bindsLigandTCR, bindingLigandTCR

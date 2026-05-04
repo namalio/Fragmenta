@@ -1,0 +1,6 @@
+Ligand = 
+   let 
+      Binding = bindsLigandTCR -> dissociatesLigandTCR -> Ligand
+            [] abortLigandTCRBinding -> Ligand
+   within
+      bindingLigandTCR -> Binding

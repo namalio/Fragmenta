@@ -1,0 +1,5 @@
+MetabolicLife = die -> STOP
+       |~| (move -> MetabolicLife
+       |~| (eat -> MetabolicLife
+       |~| (rest -> (Timer(3)[[timeout <- wake_up]]; MetabolicLife)
+       |~| excrete -> MetabolicLife)))

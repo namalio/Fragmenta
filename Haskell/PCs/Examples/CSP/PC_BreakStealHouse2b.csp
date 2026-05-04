@@ -1,0 +1,11 @@
+include "PC_BreakStealHouse2bP.csp"
+
+datatype Stealable = Laptop | Jewels | TV | Other
+
+datatype MeansBreakIn = stolenKey | window | door
+
+channel getOutAndRun
+
+channel break : MeansBreakIn
+
+channel steal : Stealable
