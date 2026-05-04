@@ -1,7 +1,7 @@
 digraph {graph[label=F_MM_4,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_4{style=dashed;label=F_MM_4;
-"PParameter"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameter<br/>(P)>];
-"PCType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PCType</I><br/>(A)}>];
+"PNamed3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named3<br/>(P)>];
+"PPCType"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<PCType<br/>(P)>];
 "YesNo"[shape=record,fillcolor="#FFCCFF",style = filled,label="YesNo\l(enum)"];
 "VYes"[shape=cds,fillcolor="#FFF2CC",style = filled,label="Yes"];
 "VNo"[shape=cds,fillcolor="#FFF2CC",style = filled,label="No"];
@@ -9,16 +9,19 @@ subgraph cluster_F_MM_4{style=dashed;label=F_MM_4;
 "Integer"[shape=record,fillcolor=lightskyblue1,style = filled,label="Integer"];
 "Event"[shape=record,fillcolor=lightskyblue1,style = filled,label="Event"];
 "Set"[shape=record,fillcolor=lightskyblue1,style = filled,label="Set"];
+"Custom"[shape=record,fillcolor=lightskyblue1,style = filled,label="Custom"];
 
 "VYes"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
 "VNo"->"YesNo"[arrowhead=onormal,arrowsize=2.0];
-"Boolean"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Integer"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Event"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Set"->"PCType"[arrowhead=onormal,arrowsize=2.0];
-"Set"->"PCType"[label="setOf",arrowhead=vee,headlabel="",arrowsize=.5];
-"PParameter"->"PCType"[label="type",arrowhead=vee,headlabel="0..1",arrowsize=.5];
+"Boolean"->"PPCType"[arrowhead=onormal,arrowsize=2.0];
+"Integer"->"PPCType"[arrowhead=onormal,arrowsize=2.0];
+"Event"->"PPCType"[arrowhead=onormal,arrowsize=2.0];
+"Set"->"PPCType"[arrowhead=onormal,arrowsize=2.0];
+"Custom"->"PPCType"[arrowhead=onormal,arrowsize=2.0];
+"Custom"->"PNamed3"[arrowhead=onormal,arrowsize=2.0];
+"Set"->"PPCType"[label="setOf",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
+
 
 }

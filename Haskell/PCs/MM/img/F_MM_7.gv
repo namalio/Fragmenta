@@ -1,27 +1,15 @@
 digraph {graph[label=F_MM_7,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_7{style=dashed;label=F_MM_7;
-"PNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node<br/>(P)>];
+"PWExp2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<WExp2<br/>(P)>];
+"PNamedNode4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode4<br/>(P)>];
 "PAction2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action2<br/>(P)>];
-"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
-"PBindable2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable2<br/>(P)>];
-"PCombinable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Combinable<br/>(P)>];
-"Stop"[shape=record,fillcolor=lightskyblue1,style = filled,label="Stop"];
-"Skip"[shape=record,fillcolor=lightskyblue1,style = filled,label="Skip"];
-"Combination"[shape=record,fillcolor=lightskyblue1,style = filled,label="Combination"];
+"AnyOf"[shape=record,fillcolor=lightskyblue1,style = filled,label="AnyOf"];
 
-"Stop"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Skip"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PBindable2"[arrowhead=onormal,arrowsize=2.0];
-"Stop"->"PAction2"[arrowhead=onormal,arrowsize=2.0];
-"Skip"->"PAction2"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PCombinable"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PAction2"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"POperator"[label="Combination_op",arrowhead=vee,headlabel="",arrowsize=.5];
+"AnyOf"->"PNamedNode4"[arrowhead=onormal,arrowsize=2.0];
+"AnyOf"->"PAction2"[arrowhead=onormal,arrowsize=2.0];
+"AnyOf"->"PWExp2"[arrowhead=onormal,arrowsize=2.0];
 
 }
-
-
 
 
 

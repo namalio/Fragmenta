@@ -10,12 +10,12 @@ op_connector OpHouseAlarm0->activateAlarm
 op_connector OpHouseAlarm0->disableAlarm
 reference RefHouseAlarm02
 ref_connector RefHouseAlarm02->HouseAlarm0.'True','False'
-after_connector activateAlarm->RefHouseAlarm02
+after activateAlarm->RefHouseAlarm02
 atom movement<:'aes'>{active and (not triggered)}
 op_connector OpHouseAlarm0->movement
 atom alarmSounds
-after_connector movement->alarmSounds
+after movement->alarmSounds
 reference RefHouseAlarm03
 ref_connector RefHouseAlarm03->HouseAlarm0.'active','True'
-after_connector alarmSounds->RefHouseAlarm03
-after_connector disableAlarm->RefHouseAlarm0
+after alarmSounds->RefHouseAlarm03
+after disableAlarm->RefHouseAlarm0

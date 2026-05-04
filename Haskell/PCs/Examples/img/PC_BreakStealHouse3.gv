@@ -1,61 +1,68 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse3];
-GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
-breakDoor [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakDoor"];
-stolenKey [shape=ellipse,fillcolor=greenyellow,style = filled,label="stolenKey"];
-OpRansack [shape=diamond,fillcolor=yellow,style = filled,label="|||"];
-RobSafes [shape=box,fillcolor=deepskyblue,style = filled,label="RobSafes "];
-OpStealValuables [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-stealLaptop [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealLaptop"];
-stealOther [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealOther"];
-OpRobSafes [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-abortSafe [shape=ellipse,fillcolor=greenyellow,style = filled,label="abortSafe"];
-getOut [shape=ellipse,fillcolor=greenyellow,style = filled,label="getOut"];
-runAway [shape=ellipse,fillcolor=greenyellow,style = filled,label="runAway"];
-Escape [shape=box,fillcolor=deepskyblue,style = filled,label="Escape "];
-breakAndSteal [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakAndSteal"];
-RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-stealMoney [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealMoney"];
-stealTV [shape=ellipse,fillcolor=greenyellow,style = filled,label="stealTV"];
-doneStealing [shape=ellipse,fillcolor=greenyellow,style = filled,label="doneStealing"];
-StealValuables [shape=box,fillcolor=deepskyblue,style = filled,label="StealValuables "];
-Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack "];
-breakWindow [shape=ellipse,fillcolor=greenyellow,style = filled,label="breakWindow"];
-OpGetInside [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
+subgraph cluster_Stealable {
+style="filled,rounded";
+label =Stealable;
+fillcolor = cadetblue1;
+TV[shape=box,fillcolor=darkolivegreen1,style="filled",label="TV"];
+Money[shape=box,fillcolor=darkolivegreen1,style="filled",label="Money"];
+Laptop[shape=box,fillcolor=darkolivegreen1,style="filled",label="Laptop"];
+Other[shape=box,fillcolor=darkolivegreen1,style="filled",label="Other"];
+Jewels[shape=box,fillcolor=darkolivegreen1,style="filled",label="Jewels"];
+}
 
-{rank=same;Escape,RefRansack}
-{rank=same;Ransack,GetInside}
-{rank=same;runAway,getOut}
+subgraph cluster_MeansBreakIn {
+style="filled,rounded";
+label =MeansBreakIn;
+fillcolor = cadetblue1;
+window[shape=box,fillcolor=darkolivegreen1,style="filled",label="window"];
+stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label="stolenKey"];
+door[shape=box,fillcolor=darkolivegreen1,style="filled",label="door"];
+}
+
+
+TV->StartN_[style=invis]
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse3];
+BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
+QOpGetInside [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];
+Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack (s)"];
+OpRansack [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+breakAndStealSafe [shape=ellipse,fillcolor=greenyellow,style=filled,label="breakAndStealSafe"];
+QStealO [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:Stealable>];
+RefSteal [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label="↑ 
+(Inner)"];
+RefRansack3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+getOutAndRun [shape=ellipse,fillcolor=greenyellow,style=filled,label="getOutAndRun"];
+RefRansack2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+steal [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = Other ⋁ ¬x ∊ s }
+steal.x"];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal (s)"];
+RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+break [shape=ellipse,fillcolor=greenyellow,style=filled,label="break.x"];
+GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
+
+{rank=same;getOutAndRun,RefRansack}
+{rank=same;getOutAndRun,RefRansack,GetInside}
+{rank=same;RefRansack2,steal}
+{rank=same;RefRansack3,breakAndStealSafe}
 {rank=same;BreakAndStealHouse,StartN_}
 
-RefRansack->Escape[arrowtail=dot,dir=both,label="after"];
-breakAndSteal->RefRansack[arrowtail=dot,dir=both,label="after"];
-OpRobSafes->breakAndSteal[arrowhead="open"];
-stealOther->RefRansack[arrowtail=dot,dir=both,label="after"];
-stealLaptop->RefRansack[arrowtail=dot,dir=both,label="after"];
-OpStealValuables->stealOther[arrowhead="open"];
-OpStealValuables->stealLaptop[arrowhead="open"];
-OpRansack->doneStealing[arrowhead="open"];
-OpRansack->StealValuables[arrowhead="open"];
-OpGetInside->stolenKey[arrowhead="open"];
-OpGetInside->breakDoor[arrowhead="open"];
-GetInside->OpGetInside[arrowhead="onormal",penwidth=2,label="="];
-RobSafes->OpRobSafes[arrowhead="onormal",penwidth=2,label="="];
-Escape->getOut[arrowhead="onormal",penwidth=2,label="="];
-StealValuables->OpStealValuables[arrowhead="onormal",penwidth=2,label="="];
-Ransack->OpRansack[arrowhead="onormal",penwidth=2,label="="];
+RefRansack->getOutAndRun[arrowtail=dot,dir=both,label="after"];
+RefRansack3->Ransack[arrowhead="normalnormal",fillcolor=white,label=" (s)"];
+RefRansack2->Ransack[arrowhead="normalnormal",fillcolor=white,label=" (s ∪ {x})"];
+OpRansack->breakAndStealSafe[arrowhead="open"];
+RefSteal->Steal[arrowhead="normalnormal",fillcolor=white,label=" (s)"];
+GetInside->RefRansack[arrowtail=dot,dir=both,label="after"];
+QOpGetInside->break[arrowhead="open"];
+RefRansack->Ransack[arrowhead="normalnormal",fillcolor=white,label=" ({})"];
+QStealO->steal[arrowhead="open"];
+OpRansack->RefSteal[arrowhead="open"];
+OpRansack->SKIP[arrowhead="open"];
+steal->RefRansack2[arrowtail=dot,dir=both,label="after"];
+breakAndStealSafe->RefRansack3[arrowtail=dot,dir=both,label="after"];
 BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
+Ransack->OpRansack[arrowhead="onormal",penwidth=2,label="="];
+Steal->QStealO[arrowhead="onormal",penwidth=2,label="="];
+GetInside->QOpGetInside[arrowhead="onormal",penwidth=2,label="="];
 StartN_->BreakAndStealHouse[label="starts"];
-OpGetInside->breakWindow[arrowhead="open"];
-GetInside->Ransack[arrowtail=dot,dir=both,label="after"];
-OpRansack->RobSafes[arrowhead="open"];
-OpStealValuables->stealTV[arrowhead="open"];
-OpStealValuables->stealMoney[arrowhead="open"];
-stealTV->RefRansack[arrowtail=dot,dir=both,label="after"];
-stealMoney->RefRansack[arrowtail=dot,dir=both,label="after"];
-RefRansack->Ransack[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpRobSafes->abortSafe[arrowhead="open"];
-abortSafe->RefRansack[arrowtail=dot,dir=both,label="after"];
-getOut->runAway[arrowtail=dot,dir=both,label="after"];
 }

@@ -1,20 +1,20 @@
 PC PC_BiscuitJar@BiscuitJar
-atom openJar
-compound BiscuitJar.n,m@openJar
-compound JarOpened.n,m@OpJarOpenedIf
+atom :'openJar'
+process BiscuitJar.n,m@openJar
+process JarOpened.n,m@OpJarOpenedIf
 stop STOP
 operator OpJarOpenedIf.If
-op_connector_g OpJarOpenedIf->OpJarOpened{(n≥0) ⋀ (n≤m)}
+op_connector_g OpJarOpenedIf->OpJarOpened{n≥0 ⋀ n≤m}
 op_else_connector OpJarOpenedIf->STOP
 operator OpJarOpened.Choice
-atom takeBiscuit{n>0}
-atom dropBiscuit{n<m}
-atom closeJar
+atom :'takeBiscuit'{n>0}
+atom :'dropBiscuit'{n<m}
+atom :'closeJar'
 op_connector OpJarOpened->takeBiscuit
 op_connector OpJarOpened->dropBiscuit
 op_connector OpJarOpened->closeJar
 reference RefJarOpened
-atom openJar
+atom :'openJar'
 ref_connector RefJarOpened->JarOpened.'n','m'
 after openJar->RefJarOpened
 reference RefJarOpenedTake

@@ -1,16 +1,18 @@
 BreakAndStealHouse = 
    let 
-      RunAway = getOutandRun -> SKIP
       DoBurglary = 
          let 
-            GetInside = breakWindow -> SKIP
-                  [] breakDoor -> SKIP
-                  [] stolenKey -> SKIP
-            Steal = doneStealing -> SKIP
-                  [] stealValuable -> Steal
+            DoBurglary0 = GetInside
+                   |~| alarmSounds -> SKIP
+            GetInside = 
+               let 
+                  GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
+               within
+                  GetInside0; Steal({})
          within
-            GetInside; (Steal; RunAway)
-      Alarm = noAlarm -> SKIP
-             |~| alarmSounds -> SKIP
+            DoBurglary0; getOutandRun -> SKIP
    within
-      (DoBurglary ||| Alarm)[|{alarmSounds}|>RunAway
+      DoBurglary
+
+Steal(s) = SKIP
+       |~| (|~| x : Stealable @ x == Other or not member (x, s) & steal.x -> Steal(union (s, {x})))

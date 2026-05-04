@@ -1,0 +1,14 @@
+PC PC_Ligand@Ligand
+atom bindingLigandTCR
+atom bindsLigandTCR
+atom abortLigandTCRBinding
+atom dissociatesLigandTCR
+after bindingLigandTCR->Binding
+process Ligand@bindingLigandTCR
+process Binding@OpBinding
+operator OpBinding.Choice
+op_connector OpBinding->abortLigandTCRBinding
+op_connector OpBinding->bindsLigandTCR
+after abortLigandTCRBinding->Ligand
+after bindsLigandTCR->dissociatesLigandTCR
+after dissociatesLigandTCR->Ligand

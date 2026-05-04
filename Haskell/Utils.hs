@@ -1,4 +1,10 @@
-module Utils(transToStr, reportWF, evalExpectation, print_g_wf_msg, option_main_save) where
+module Utils(
+   transToStr
+   , reportWF 
+   , evalExpectation
+   , print_g_wf_msg 
+   , option_main_save
+   , other_option) where
 
 import ErrorAnalysis ( nile, consET, ErrorTree )
 import System.Environment ( getArgs )
@@ -24,7 +30,9 @@ option_main_save :: IO a -> IO () -> IO ()
 option_main_save mainp sdsp = do
    args <- getArgs
    mainp
-   when (not $ null args) $ do
-      if args == ["-g"]
-         then sdsp
-         else putStrLn "Invalid option"
+   when ("-g" `elem` args ) $ sdsp
+
+other_option :: IO () -> String-> IO ()
+other_option other opt = do
+   args <- getArgs
+   when (opt `elem` args ) $ other

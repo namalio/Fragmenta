@@ -1,8 +1,13 @@
 BreakAndStealHouse = 
    let 
-      GetInside = |~| x : MeansBreakIn @ break.x -> SKIP
-      Steal = (|~| x : Stealable @ steal.x -> Steal)
-             |~| doneStealing -> SKIP
-      RunAway = getOut -> run -> SKIP
+      GetInside = 
+         let 
+            GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
+            Steal = DoSteal({}); getOutAndRun -> SKIP
+         within
+            GetInside0; Steal
    within
-      GetInside; (Steal; RunAway)
+      GetInside
+
+DoSteal(s) = (|~| x : Stealable @ x == Other or not member (x, s) & steal.x -> DoSteal(union ({x}, s)))
+       |~| SKIP

@@ -1,4 +1,4 @@
 include "PC_AuthenticationP.csp"
 include "PC_CashMachineOpsP.csp"
 
-channel cardIn, deny, grant, fail
+channel grant, cashDispense, withdraw, deny, cardSwallow, cardCollect, cancel, timeout, tock, stopIt, cardIn, cardEject, showBalance, cashDeny, optWithdraw, fail

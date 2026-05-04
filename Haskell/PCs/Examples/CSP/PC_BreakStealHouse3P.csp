@@ -1,21 +1,17 @@
 BreakAndStealHouse = 
    let 
-      GetInside = breakWindow -> SKIP
-            [] breakDoor -> SKIP
-            [] stolenKey -> SKIP
-      Ransack = 
+      GetInside = 
          let 
-            RobSafes = 
-               let 
-                  Escape = getOut -> runAway -> SKIP
-               within
-                  abortSafe -> (Ransack; Escape)
-                     [] breakAndSteal -> (Ransack; Escape)
-            StealValuables = stealMoney -> (Ransack; Escape)
-                  [] stealTV -> (Ransack; Escape)
-                  [] stealLaptop -> (Ransack; Escape)
-                  [] stealOther -> (Ransack; Escape)
+            GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
          within
-            RobSafes ||| (StealValuables ||| doneStealing -> SKIP)
+            GetInside0; (Ransack({}); getOutAndRun -> SKIP)
    within
-      GetInside; Ransack
+      GetInside
+
+Ransack(s) = 
+   let 
+      Steal(s) = |~| x : Stealable @ x == Other or not member (x, s) & steal.x -> Ransack(union (s, {x}))
+   within
+      SKIP
+          |~| (Steal(s)
+          |~| breakAndStealSafe -> Ransack(s))

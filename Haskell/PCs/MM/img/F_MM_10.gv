@@ -1,21 +1,30 @@
 digraph {graph[label=F_MM_10,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_10{style=dashed;label=F_MM_10;
-"PConnector2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector2<br/>(P)>];
-"AfterC"[shape=record,fillcolor=lightskyblue1,style = filled,label="AfterC"];
-"DefinesC"[shape=record,fillcolor=lightskyblue1,style = filled,label="DefinesC"];
+"PNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node2<br/>(P)>];
+"PBindable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable<br/>(P)>];
 "PAction4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action4<br/>(P)>];
-"PCompound2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound2<br/>(P)>];
-"PYesNo2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo2<br/>(P)>];
+"PName3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name3<br/>(P)>];
+"PYesNo"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo<br/>(P)>];
+"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
+"PStartOfPC"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartOfPC<br/>(P)>];
+"Reference"[shape=record,fillcolor=lightskyblue1,style = filled,label="Reference"];
+"Renaming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Renaming"];
 
-"AfterC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
-"DefinesC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
-"AfterC"->"PAction4"[label="AfterCSrc",arrowhead=vee,headlabel="",arrowsize=.5];
-"AfterC"->"PAction4"[label="AfterCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
-"DefinesC"->"PAction4"[label="DefinesCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
-"DefinesC"->"PCompound2"[label="DefinesCSrc",arrowhead=vee,headlabel="",arrowsize=.5];
-"AfterC"->"PYesNo2"[label="AfterC_copen",arrowhead=vee,headlabel="",arrowsize=.5];
+"Reference"->"PNode2"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PBindable"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PAction4"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PStartOfPC"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PName3"[label="Reference_name",arrowhead=vee,headlabel="?",arrowsize=.5];
+"Reference"->"PYesNo"[label="Reference_inner",arrowhead=vee,headlabel="",arrowsize=.5];
+"Reference"->"Renaming"[label="Renamings▼",dir=none,taillabel="",headlabel="*"];
+"Renaming"->"PName3"[label="Renaming_new",arrowhead=vee,headlabel="",arrowsize=.5];
+"Renaming"->"PName3"[label="Renaming_old",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
+
+
+
 
 
 

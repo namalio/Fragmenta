@@ -1,13 +1,28 @@
-fragment F_MM_2 {
-  SG SG_MM_2 {
-  	proxy PDefinition
+fragment F_MM_1 {
+  SG SG_MM_1 {
+    nodea Node
+    nodea NamedNode
+    node PCDef
+    nodea Connector
+    node StartN
+    nodea Definition
     proxy PNamed
-    node EnumType
-    node EnumVal
-    inh EnumType->PDefinition
-    inh EnumVal->PNamed
-    rel EnumType->EnumVal[enumVals]:1;*
+    proxy PNamed2
+    proxy PTyped
+    inh StartN->NamedNode
+    inh NamedNode->Node
+    inh NamedNode->PNamed
+    inh Definition->PNamed
+    inh Definition->PTyped
+    inh PCDef->PNamed2
+    compu PCDef->Node[ContainsNs]:*
+    compu PCDef->Connector[ContainsCs]:*
+    compu PCDef->Definition[ContainsDs]:*
+    relu Connector->Node[src]
+    relu Connector->Node[tgt]
+    rel PCDef->StartN[Starts]:1;1
   }
   ref PNamed->Named
-  ref PDefinition->Definition
+  ref PNamed2->Named
+  ref PTyped->Typed
 }

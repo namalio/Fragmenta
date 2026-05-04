@@ -5,10 +5,12 @@
 -- Description: Module that represents CSP's abstract syntax tree (AST)
 -- Author: Nuno Amálio
 -----------------
-module CSP.CSP_AST(Id
+module CSP.CSP_AST
+   (Id
+   , DTyTerm (..)
    , Decl(..)
    , Exp(..)
-   , CSPSpec(..)
+   , Spec(..)
    , BOp(..)
    , UOp(..)
    , Token(..)
@@ -23,11 +25,13 @@ import Data.Bits (And)
 type Id = String
 type TyS = String
 
-data Decl = Channel (Set Id) (Maybe TyS) | EqDecl Exp Exp | Include (Set Id) | DataTy Id (Set Id)
+data DTyTerm = DTyTerm Id [String]
+   deriving(Show) 
+data Decl = Channel (Set Id) (Maybe TyS) | EqDecl Exp Exp | Include (Set Id) | DataTy Id [DTyTerm]
    deriving(Show) 
 
-data BOp = Plus | Minus | Product | Div | Remainder | Or | And | GEQ | LEQ | GT | LT | EQ | NEQ
-   deriving(Show) 
+data BOp = Plus | Minus | Product | Div | Remainder | Or | And | GEQ | LEQ | GT | LT | EQ | NEQ | Member | Union | Intersection
+   deriving(Show, Eq) 
 
 data UOp = UMinus | UNot
    deriving(Show) 
@@ -44,7 +48,7 @@ data Exp = ExpId String -- a name
    | ExpToken Token     -- An expression with a recognised token
    | ExpSetE [Exp]      -- A set extension expression
    | GExp Exp Exp       -- A guarded expression
-   | ExpChannel Id Exp  -- A channel expression: c.e
+   | ExpChannel Exp Exp  -- A channel expression: c.e
    | IfExp Exp Exp Exp  -- An if expression
    | Prfx Exp Exp       -- Prefix
    | ExtChoice Exp Exp
@@ -62,7 +66,7 @@ data Exp = ExpId String -- a name
    | ExpRen Exp [(Id, Id)] -- Renaming
    deriving(Show) 
 
-data CSPSpec = CSP [Decl] deriving(Show) 
+data Spec = CSP [Decl] deriving(Show) 
 
 isAtomicExp :: Exp -> Bool
 isAtomicExp (ExpId _)    = True

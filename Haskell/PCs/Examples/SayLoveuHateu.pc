@@ -1,0 +1,10 @@
+PC PC_SayLoveuHateu@SayLoveuHateu
+process SayLoveuHateu@OpLoveuHateu
+operator OpLoveuHateu.Interleave
+import SayAtLeastOnce as SayLonceI for PC_SayAtLeastOnce
+reference RefLoveu:SayAtLeastOnce[something/loveu]
+ref_connector RefLoveu->SayLonceI
+op_connector OpLoveuHateu->RefLoveu
+reference RefHateu:SayAtLeastOnce[something/hateu]
+ref_connector RefHateu->SayLonceI
+op_connector OpLoveuHateu->RefHateu

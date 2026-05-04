@@ -1,3 +1,0 @@
-PC PC_ShowBalance@ShowBalance
-compound ShowBalance@showBalance
-atom showBalance

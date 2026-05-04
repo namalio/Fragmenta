@@ -1,9 +1,9 @@
-include "PC_StopTimerP.csp"
-include "PC_CardControlP.csp"
-include "PC_ShowBalanceP.csp"
-include "PC_WithdrawP.csp"
-include "PC_CashMachineOpsP.csp"
 include "PC_AuthenticationP.csp"
+include "PC_CashMachineOpsP.csp"
+include "PC_WithdrawP.csp"
+include "PC_ShowBalanceP.csp"
+include "PC_CardControlP.csp"
+include "PC_StopTimerP.csp"
 include "PC_CashMachineP.csp"
 
-channel deny, cancel, cardSwallow, cardEject, cardCollect, timeout, tock, stopIt, showBalance, cashDispense, cashDeny, withdraw, optWithdraw, cardIn, grant, fail
+channel grant, cashDispense, withdraw, deny, cardSwallow, cardCollect, cancel, timeout, tock, stopIt, cardIn, cardEject, showBalance, cashDeny, optWithdraw, fail

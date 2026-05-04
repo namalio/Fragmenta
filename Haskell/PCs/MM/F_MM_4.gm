@@ -3,15 +3,15 @@ Morphism F_MM_4 {
 		YesNo->Attribute
 		VYes->Attribute
 		VNo->Attribute
-		PCType->Attribute
+		PPCType->Attribute
 		Boolean->Attribute
 		Integer->Attribute
 		Event->Attribute
+		Custom->Attribute
 		Set->Attribute
-		PParameter->Attribute
+		PNamed3->Trait
 	}
 	edges {
-		setOf->Has
-		type->Has
+		setOf->has
 	}
 }

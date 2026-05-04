@@ -8,17 +8,17 @@ subgraph cluster_PCs_AMM_rf{style=dashed;label=PCs_AMM_rf;
 "Element"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Element</I><br/>(A)}>];
 "Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
 
-"PCDef"->"Element"[label="Contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"PCDef"->"Element"[label="contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Element"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "PCDef"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "Attribute"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "Connector"->"Element"[arrowhead=onormal,arrowsize=2.0];
 "Definition"->"Element"[arrowhead=onormal,arrowsize=2.0];
 "Node"->"Element"[arrowhead=onormal,arrowsize=2.0];
-"Trait"->"Trait"[label="Has▼",dir=none,taillabel="*",headlabel="*"];
-"PCDef"->"Node"[label="Starts▼",dir=none,taillabel="0..1",headlabel=""];
-"Connector"->"Node"[label="Connector_src",arrowhead=vee,headlabel="",arrowsize=.5];
-"Connector"->"Node"[label="Connector_tgt",arrowhead=vee,headlabel="",arrowsize=.5];
+"Trait"->"Trait"[label="has▼",dir=none,taillabel="*",headlabel="*"];
+"PCDef"->"Node"[label="starts▼",dir=none,taillabel="?",headlabel=""];
+"Connector"->"Node"[label="csrc",arrowhead=vee,headlabel="",arrowsize=.5];
+"Connector"->"Node"[label="ctgt",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
 }

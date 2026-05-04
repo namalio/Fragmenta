@@ -1,4 +1,4 @@
-LiveSimply = rest -> (Timer(3)[[timeout <- wake_up]]; LiveSimply)
-       |~| (eat -> LiveSimply
+LiveSimply = die -> STOP
        |~| (move -> LiveSimply
-       |~| die -> STOP))
+       |~| (eat -> LiveSimply
+       |~| rest -> (Timer(3)[[timeout <- wake_up]]; LiveSimply)))

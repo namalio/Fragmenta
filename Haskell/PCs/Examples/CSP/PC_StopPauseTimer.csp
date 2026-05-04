@@ -1,3 +1,3 @@
 include "PC_StopPauseTimerP.csp"
 
-channel timeout, pause, resume, tock, stopIt
+channel resume, stopIt, tock, pause, timeout

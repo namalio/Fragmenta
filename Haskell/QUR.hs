@@ -12,11 +12,15 @@ module QUR(
     , singleQURFrFst
     , singleQURFrSndTrpl
     , fstQUR
-    , quad) where
+    , quad
+    ) where
 
 import Relations
 import Sets
-import SimpleFuns ( combineQwUnion, makeQFrTFst )
+import SimpleFuns 
+    ( unionQ
+    , makeQFrTFst 
+    )
 
 type Pair a = (a, a)
 type Trpl a = (a, a, a)
@@ -58,7 +62,7 @@ singleQURFrSndTrpl::Trpl (Pair a)->QuadURel a
 singleQURFrSndTrpl (y, z, w) = qur (EmptyS, singles y, singles z, singles w)
 
 join::Eq a=>QuadURel a->QuadURel a->QuadURel a
-(QuadURel q1) `join` (QuadURel q2) = QuadURel $ q1 `combineQwUnion` q2
+(QuadURel q1) `join` (QuadURel q2) = QuadURel $ q1 `unionQ` q2
 
 gJoin::Eq a=>[QuadURel a]->QuadURel a
 gJoin = foldl join nilQUR

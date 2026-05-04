@@ -1,8 +1,0 @@
-PC PC_FaultyClock@FaultyClock
-atom tick
-compound FaultyClock@OpFaultyClock
-operator OpFaultyClock.IntChoice
-stop STOP
-op_connector OpFaultyClock->tick
-op_connector OpFaultyClock->STOP
-after tick->FaultyClock

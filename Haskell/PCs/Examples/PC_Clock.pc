@@ -1,4 +1,0 @@
-PC PC_Clock@Clock
-compound Clock@tick
-atom tick
-after tick->Clock

@@ -1,21 +1,13 @@
 fragment F_MM_1 {
   SG SG_MM_1 {
-    nodea Node
-    nodea NamedNode
-    node PCDef
-    virtual Named
-    nodea Connector
+  	virtual Named
     node Name
-    node StartN
-    nodea Definition
-    inh StartN->NamedNode
-    inh NamedNode->Node
-    inh NamedNode->Named
-    inh Definition->Named
+    nodea PCType
+    virtual Typed
     relu Named->Name[name]
-    compu PCDef->Node[ContainsNs]:*
-    compu PCDef->Connector[ContainsCs]:*
-    compu PCDef->Definition[ContainsDs]:*
-    rel PCDef->StartN[Starts]:1;1
+    relu Typed->PCType[type]:?
+    node Parameter
+    inh Parameter->Named
+    inh Parameter->Typed
   }
 }

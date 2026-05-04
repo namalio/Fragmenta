@@ -1,7 +1,7 @@
-StopTimer(t) = if t>=0
+StopTimer(t) = if t >= 0
    then
-      t>0 & stopIt -> SKIP
-      [] t==0 & timeout -> SKIP
-      [] t>0 & tock -> StopTimer(t-1)
+      t > 0 & tock -> StopTimer(t - 1)
+      [] t == 0 & timeout -> SKIP
+      [] t > 0 & stopIt -> SKIP
    else
       STOP

@@ -1,27 +1,14 @@
 fragment F_MM_7 {
   SG SG_MM_7 {
-    proxy PNode
-    proxy PAction2
-    proxy POperator
-    proxy PBindable2
-    proxy PCombinable
-    node Stop
-    node Skip
-    node Combination
-    inh Stop->PNode
-    inh Skip->PNode
-    inh Combination->PNode
-    inh Combination->PBindable2
-    inh Stop->PAction2
-    inh Skip->PAction2
-    inh Combination->PCombinable
-    inh Combination->PAction2
-    relu Combination->POperator[Combination_op]
-    
+     proxy PWExp2
+     proxy PNamedNode4
+     proxy PAction2
+     node AnyOf
+     inh AnyOf->PNamedNode4
+     inh AnyOf->PAction2
+     inh AnyOf->PWExp2
   }
-  ref PNode->Node
+  ref PWExp2->WExp
+  ref PNamedNode4->NamedNode
   ref PAction2->Action
-  ref POperator->Operator
-  ref PBindable2->Bindable
-  ref PCombinable->Combinable
 }

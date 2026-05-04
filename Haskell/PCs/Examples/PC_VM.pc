@@ -1,6 +1,0 @@
-PC PC_VM@VM
-compound VM@coin
-atom coin
-atom choc
-after_connector coin->choc
-after_connector choc->VM

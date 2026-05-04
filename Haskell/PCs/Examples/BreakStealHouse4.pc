@@ -1,0 +1,29 @@
+PC PC_BreakStealHouse4@BreakAndStealHouse
+enum MeansBreakIn : 'window','stolenKey','door'
+enum Stealable : 'Laptop','TV','Other','Jewels','Money'
+process BreakAndStealHouse@DoBurglary
+operator OpDoBurglary.IntChoice
+process DoBurglary@OpDoBurglary
+atom :'alarmSounds'
+op_connector OpDoBurglary->alarmSounds
+op_connector OpDoBurglary->GetInside
+process GetInside@QOpGetInside
+quantifiedOp QOpGetInside.IntChoice x : 'MeansBreakIn'
+atom :'break.x'
+op_connector QOpGetInside->break
+reference RefSteal
+ref_connector RefSteal->Steal.'{}'
+process Steal.s@OpSteal
+operator OpSteal.IntChoice
+skip SKIP 
+op_connector OpSteal->QStealO
+op_connector OpSteal->SKIP
+after GetInside->RefSteal
+quantifiedOp QStealO.IntChoice x : 'Stealable'
+atom :'steal.x'{x = Other ⋁ ¬x ∊ s }
+op_connector QStealO->steal
+reference RefSteal2
+ref_connector RefSteal2->Steal.'s ∪ {x}'
+after steal->RefSteal2
+atom :'getOutandRun'
+after DoBurglary->getOutandRun

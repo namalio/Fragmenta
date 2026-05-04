@@ -1,29 +1,30 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TicketMachine];
-TicketMachine [shape=box,fillcolor=deepskyblue,style = filled,label="TicketMachine "];
-red [shape=ellipse,fillcolor=greenyellow,style = filled,label="red"];
-ejectCoins [shape=ellipse,fillcolor=greenyellow,style = filled,label="ejectCoins"];
-OpAfterGreen [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-issueTicket [shape=ellipse,fillcolor=greenyellow,style = filled,label="issueTicket"];
-ReturnCoins [shape=box,fillcolor=deepskyblue,style = filled,label="ReturnCoins "];
-green [shape=ellipse,fillcolor=greenyellow,style = filled,label="green"];
-OpAfterCoin [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-coin [shape=ellipse,fillcolor=greenyellow,style = filled,label="coin"];
 
-{rank=same;ReturnCoins,red}
-{rank=same;OpAfterCoin,coin}
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TicketMachine];
+coin [shape=ellipse,fillcolor=greenyellow,style=filled,label="coin"];
+OpAfterCoin [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+green [shape=ellipse,fillcolor=greenyellow,style=filled,label="green"];
+ReturnCoins [shape=box,fillcolor=deepskyblue,style = filled,label="ReturnCoins "];
+issueTicket [shape=ellipse,fillcolor=greenyellow,style=filled,label="issueTicket"];
+OpAfterGreen [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+ejectCoins [shape=ellipse,fillcolor=greenyellow,style=filled,label="ejectCoins"];
+red [shape=ellipse,fillcolor=greenyellow,style=filled,label="red"];
+TicketMachine [shape=box,fillcolor=deepskyblue,style = filled,label="TicketMachine "];
+
 {rank=same;OpAfterGreen,green}
+{rank=same;OpAfterCoin,coin}
+{rank=same;ReturnCoins,red}
 {rank=same;TicketMachine,StartN_}
 
-OpAfterGreen->ReturnCoins[arrowhead="open"];
-red->ReturnCoins[arrowtail=dot,dir=both,label="after"];
-OpAfterCoin->red[arrowhead="open"];
-coin->OpAfterCoin[arrowtail=dot,dir=both,label="after"];
-TicketMachine->coin[arrowhead="onormal",penwidth=2,label="="];
-ReturnCoins->ejectCoins[arrowhead="onormal",penwidth=2,label="="];
-StartN_->TicketMachine[label="starts"];
-OpAfterCoin->TicketMachine[arrowhead="open"];
-OpAfterCoin->green[arrowhead="open"];
-green->OpAfterGreen[arrowtail=dot,dir=both,label="after"];
 OpAfterGreen->issueTicket[arrowhead="open"];
+green->OpAfterGreen[arrowtail=dot,dir=both,label="after"];
+OpAfterCoin->green[arrowhead="open"];
+OpAfterCoin->TicketMachine[arrowhead="open"];
+coin->OpAfterCoin[arrowtail=dot,dir=both,label="after"];
+OpAfterCoin->red[arrowhead="open"];
+red->ReturnCoins[arrowtail=dot,dir=both,label="after"];
+OpAfterGreen->ReturnCoins[arrowhead="open"];
+ReturnCoins->ejectCoins[arrowhead="onormal",penwidth=2,label="="];
+TicketMachine->coin[arrowhead="onormal",penwidth=2,label="="];
+StartN_->TicketMachine[label="starts"];
 }

@@ -1,0 +1,21 @@
+PC PC_Tennis@Tennis
+enum Scores : 'Deuce', 'AdvantageA', 'AdvantageB', 'Num.Int.Int'
+process Tennis@RefGameZ
+reference RefGameZ
+ref_connector RefGameZ->Game.'Num.0.0'
+process Game.s:Scores@OpTennis
+operator OpTennis.Choice
+atom :'pointA'
+atom :'pointB'
+op_connector OpTennis->pointA
+op_connector OpTennis->pointB
+after pointA->RefIncA
+operator OpIncA.Choice
+process IncAdvA->IncA.AdvantageA@OpIncA
+reference RefIncA
+ref_connector hidden RefIncA->IncA.'s'
+atom :'gameA'{s = AdvantageA ⋁ s = Num.40.0 ⋁ s = Num.40.15 ⋁ s = Num.40.30}
+op_connector OpIncA->gameA
+reference RefGameA
+ref_connector RefGameA->Game.'Num.0.0'
+after gameA->RefGameA

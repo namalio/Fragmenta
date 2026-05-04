@@ -1,29 +1,32 @@
 fragment F_MM_3 {
   SG SG_MM_3 {
-    proxy PNamedNode
-    proxy PNamed2
+    proxy PNamedNode2
+    proxy PName
     node Import
-    node Compound
+    node Process
     node Atom
-    node Guard
+    proxy PParameter
     virtual Action
-    virtual TargetOfRef
+    virtual RefTarget
+    virtual StartOfPC
     virtual Guarded
-    virtual Bindable
-    node Parameter
-    inh Import->PNamedNode
-    inh Compound->PNamedNode
-    inh Atom->PNamedNode
-    inh Import->TargetOfRef
-    inh Compound->TargetOfRef
+    virtual WExp
+    inh Import->PNamedNode2
+    inh Process->PNamedNode2
+    inh Atom->PNamedNode2
+    inh Import->RefTarget
+    inh Process->RefTarget
+    inh Process->StartOfPC
     inh Atom->Action
     inh Atom->Guarded
-    inh Compound->Action
-    inh Atom->Bindable
-    relu Compound->Parameter[params]:*
-    relu Guarded->Guard[guard]:0..1
-    inh Parameter->PNamed2
+    inh Process->Action
+    inh Atom->WExp
+    compu Process->PParameter[params]:*
+    relu Import->PName[pc_name]:?
+    relu Import->PName[fname]:?
+    relu Process->PName[rname]:?
   }
-  ref PNamedNode->NamedNode
-  ref PNamed2->Named
+  ref PNamedNode2->NamedNode
+  ref PName->Name
+  ref PParameter->Parameter
 }

@@ -1,26 +1,21 @@
 digraph {graph[label=F_MM_12,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_12{style=dashed;label=F_MM_12;
-"PConnector4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector4<br/>(P)>];
-"PCombinable2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Combinable2<br/>(P)>];
+"PConnector2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector2<br/>(P)>];
+"AfterC"[shape=record,fillcolor=lightskyblue1,style = filled,label="AfterC"];
+"DefinesC"[shape=record,fillcolor=lightskyblue1,style = filled,label="DefinesC"];
 "PAction5"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action5<br/>(P)>];
-"PGuarded3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded3<br/>(P)>];
-"PGuard"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guard<br/>(P)>];
-"BMainIfC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BMainIfC"];
-"BElseC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BElseC"];
-"BJumpC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BJumpC"];
-"BranchC"[shape=record,fillcolor=lightskyblue1,style = filled,label="BranchC"];
+"PProcess2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Process2<br/>(P)>];
+"PYesNo2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo2<br/>(P)>];
 
-"BMainIfC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
-"BMainIfC"->"PGuarded3"[arrowhead=onormal,arrowsize=2.0];
-"BElseC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
-"BJumpC"->"BranchC"[arrowhead=onormal,arrowsize=2.0];
-"BranchC"->"PConnector4"[arrowhead=onormal,arrowsize=2.0];
-"BranchC"->"PCombinable2"[label="BranchCSrc▼",dir=none,taillabel="1..*",headlabel=""];
-"BranchC"->"PAction5"[label="BranchCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
-"BMainIfC"->"PGuard"[label="DIf: guard ▼",dir=none,taillabel="0..1",headlabel="",style=dotted];
+"AfterC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
+"DefinesC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
+"AfterC"->"PYesNo2"[label="AfterC_copen",arrowhead=vee,headlabel="",arrowsize=.5];
+"DefinesC"->"PProcess2"[label="DDCSrc: src ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"DefinesC"->"PAction5"[label="DDCTgt: tgt ▼",dir=none,taillabel="?",headlabel="",style=dotted];
+"AfterC"->"PAction5"[label="DACSrc: src ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"AfterC"->"PAction5"[label="DACTgt: tgt ▼",dir=none,taillabel="*",headlabel="",style=dotted];
 
 }
-
 
 
 

@@ -24,11 +24,11 @@ Activation [shape=box,fillcolor=deepskyblue,style = filled,label="Activation "];
 
 positiveOff->OpPosSigOff[arrowtail=dot,dir=both,label="after"];
 OpPosSigOff->Activation[arrowhead="open",label="i"];
-RefStandBy3->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (i,true)"];
-RefStandBy2->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (true,p)"];
+RefStandBy3->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (i,True)"];
+RefStandBy2->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (True,p)"];
 OpStandBy->inhibitorySignal[arrowhead="open"];
 OpStandBy->inactivatesPTK[arrowhead="open"];
-RefStandBy1->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (false,false)"];
+RefStandBy1->StandBy[arrowhead="normalnormal",fillcolor=white,label=" (False,False)"];
 activatesPTK->RefStandBy1[arrowtail=dot,dir=both,label="after"];
 OpStandBy->positiveOn[arrowhead="open"];
 OpStandBy->positiveOff[arrowhead="open"];

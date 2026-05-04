@@ -21,12 +21,12 @@ activatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesP
 {rank=same;Inhibition,StartN_}
 
 inhibitDecay->Inhibition[arrowtail=dot,dir=both,label="after"];
-RefFullInhibition2->FullInhibition[arrowhead="normalnormal",fillcolor=white,label=" (true)"];
+RefFullInhibition2->FullInhibition[arrowhead="normalnormal",fillcolor=white,label=" (True)"];
 OpInhibitionDecay->activatesPTK2[arrowhead="open"];
 OpInhibiting->inactivatesPTK[arrowhead="open"];
 inactivatesPTK->InhibitionDecay[arrowtail=dot,dir=both,label="after"];
 activatesPTK->RefFullInhibition[arrowtail=dot,dir=both,label="after"];
-RefFullInhibition->FullInhibition[arrowhead="normalnormal",fillcolor=white,label=" (false)"];
+RefFullInhibition->FullInhibition[arrowhead="normalnormal",fillcolor=white,label=" (False)"];
 OpInhibiting->inhibitorySignal[arrowhead="open"];
 OpInhibitionDecay->inhibitDecay[arrowhead="open"];
 activatesPTK2->RefFullInhibition[arrowtail=dot,dir=both,label="after"];

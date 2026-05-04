@@ -32,8 +32,8 @@ import qualified ParsingGwT as GwtP (loadGwT)
 import qualified GwETParsing as GwetP (loadGwET)
 import qualified ParsingGFG as GFGP  ( loadGFG )
 import GrsDraw
-import SGsDraw
-import FrsDraw
+import DrawSGs
+import DrawFrs
 import GwTDraw ( wrGwTAsGraphviz )
 import GwETDraw
 import GFGrsDraw
@@ -49,7 +49,7 @@ import MyMaybe
 import qualified ParsingFr as FP (loadSG, loadFragment)
 import Control.Monad(forM, forM_, when)
 import ParsingGM
-import MdlDraw
+import DrawMdl
 import Mdls
 import Relations
 

@@ -1,5 +1,9 @@
 BreakAndStealHouse = 
    let 
-      GetInside = |~| x : MeansBreakIn @ break.x -> SKIP
+      GetInside = 
+         let 
+            GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
+         within
+            GetInside0; stealTV -> SKIP
    within
-      GetInside; stealTV -> SKIP
+      GetInside

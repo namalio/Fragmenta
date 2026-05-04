@@ -1,31 +1,34 @@
 digraph {graph[label=F_MM_3,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_3{style=dashed;label=F_MM_3;
-"PNamedNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode<br/>(P)>];
-"PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
+"PNamedNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode2<br/>(P)>];
+"PName"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name<br/>(P)>];
 "Import"[shape=record,fillcolor=lightskyblue1,style = filled,label="Import"];
-"Compound"[shape=record,fillcolor=lightskyblue1,style = filled,label="Compound"];
+"Process"[shape=record,fillcolor=lightskyblue1,style = filled,label="Process"];
 "Atom"[shape=record,fillcolor=lightskyblue1,style = filled,label="Atom"];
-"Guard"[shape=record,fillcolor=lightskyblue1,style = filled,label="Guard"];
+"PParameter"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Parameter<br/>(P)>];
 "Action"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Action</I><br/>(V)}>];
-"TargetOfRef"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>TargetOfRef</I><br/>(V)}>];
+"RefTarget"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>RefTarget</I><br/>(V)}>];
+"StartOfPC"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>StartOfPC</I><br/>(V)}>];
 "Guarded"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Guarded</I><br/>(V)}>];
-"Bindable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Bindable</I><br/>(V)}>];
-"Parameter"[shape=record,fillcolor=lightskyblue1,style = filled,label="Parameter"];
+"WExp"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>WExp</I><br/>(V)}>];
 
-"Import"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
-"Atom"->"PNamedNode"[arrowhead=onormal,arrowsize=2.0];
-"Import"->"TargetOfRef"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"TargetOfRef"[arrowhead=onormal,arrowsize=2.0];
+"Import"->"PNamedNode2"[arrowhead=onormal,arrowsize=2.0];
+"Process"->"PNamedNode2"[arrowhead=onormal,arrowsize=2.0];
+"Atom"->"PNamedNode2"[arrowhead=onormal,arrowsize=2.0];
+"Import"->"RefTarget"[arrowhead=onormal,arrowsize=2.0];
+"Process"->"RefTarget"[arrowhead=onormal,arrowsize=2.0];
+"Process"->"StartOfPC"[arrowhead=onormal,arrowsize=2.0];
 "Atom"->"Action"[arrowhead=onormal,arrowsize=2.0];
 "Atom"->"Guarded"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"Action"[arrowhead=onormal,arrowsize=2.0];
-"Atom"->"Bindable"[arrowhead=onormal,arrowsize=2.0];
-"Compound"->"Parameter"[label="params",arrowhead=vee,headlabel="*",arrowsize=.5];
-"Guarded"->"Guard"[label="guard",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Parameter"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
+"Process"->"Action"[arrowhead=onormal,arrowsize=2.0];
+"Atom"->"WExp"[arrowhead=onormal,arrowsize=2.0];
+"Process"->"PParameter"[label="params",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"Import"->"PName"[label="pc_name",arrowhead=vee,headlabel="?",arrowsize=.5];
+"Import"->"PName"[label="fname",arrowhead=vee,headlabel="?",arrowsize=.5];
+"Process"->"PName"[label="rname",arrowhead=vee,headlabel="?",arrowsize=.5];
 
 }
+
 
 
 }

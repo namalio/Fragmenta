@@ -1,0 +1,7 @@
+PC PC_Panda1@PandaAtABar
+atom :'eats'
+process PandaAtABar@eats
+atom :'shoots'
+after eats->shoots
+atom :'leaves'
+after shoots->leaves

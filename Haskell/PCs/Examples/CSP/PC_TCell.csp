@@ -1,3 +1,6 @@
+include "PC_TCellInhibitionP.csp"
+include "PC_TCellPositiveSignallingP.csp"
+include "PC_TCellActivationP.csp"
 include "PC_TCellP.csp"
 
-channel inactivatePTK2, inhibitorySignal2, PTKIActivates2, activatesPTK, inhibitorySignal, positiveSignal, offPositiveSignal, inactivatesPTK
+channel inactivatesPTK, bindLigandTCR, freeLigandTCR, activatesPTK, positiveOff, positiveOn, inhibitorySignal, inhibitDecay

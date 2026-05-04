@@ -1,0 +1,25 @@
+PC PC_MetabolicLife@MetabolicLife
+import Timer as TmI for PC_Timer
+process MetabolicLife@OpLive
+operator OpLive.IntChoice
+atom :'eat'
+atom :'move'
+atom :'rest'
+atom :'die'
+atom :'excrete'
+op_connector OpLive->eat
+op_connector OpLive->move
+op_connector OpLive->rest
+op_connector OpLive->die
+op_connector OpLive->excrete
+reference RefLive
+after eat->RefLive
+after move->RefLive
+after excrete->RefLive
+ref_connector RefLive->MetabolicLife
+stop stopLife
+after die->stopLife
+reference RefTimer:Timer.'3'[timeout/wake_up]
+after rest->RefTimer
+ref_connector RefTimer->TmI
+after RefTimer->RefLive

@@ -1,5 +1,5 @@
-module Sets (
-   Set(..)
+module Sets 
+   ( Set(..)
    , singles
    , set1
    , filterS
@@ -19,7 +19,8 @@ module Sets (
    , disjoint
    , power
    , first
-   , dups) where
+   , dups
+   ) where
 
 import TheNil
 import GHC.Base(Alternative(..), MonadPlus(..))

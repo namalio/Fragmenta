@@ -1,15 +1,29 @@
 digraph {graph[label=F_MM_9,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_9{style=dashed;label=F_MM_9;
-"PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
-"StartC"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartC"];
-"PStartN"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartN<br/>(P)>];
-"PCompound"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Compound<br/>(P)>];
+"PNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node<br/>(P)>];
+"PAction3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action3<br/>(P)>];
+"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
+"PCombinable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Combinable<br/>(P)>];
+"Bindable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Bindable</I><br/>(V)}>];
+"PTxtExp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<TxtExp<br/>(P)>];
+"Stop"[shape=record,fillcolor=lightskyblue1,style = filled,label="Stop"];
+"Skip"[shape=record,fillcolor=lightskyblue1,style = filled,label="Skip"];
+"Combination"[shape=record,fillcolor=lightskyblue1,style = filled,label="Combination"];
 
-"StartC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
-"StartC"->"PStartN"[label="StartSrc▼",dir=none,taillabel="",headlabel=""];
-"StartC"->"PCompound"[label="StartTgt▼",dir=none,taillabel="0..1",headlabel=""];
+"Stop"->"PNode"[arrowhead=onormal,arrowsize=2.0];
+"Skip"->"PNode"[arrowhead=onormal,arrowsize=2.0];
+"Combination"->"PNode"[arrowhead=onormal,arrowsize=2.0];
+"Stop"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
+"Skip"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
+"Combination"->"PCombinable"[arrowhead=onormal,arrowsize=2.0];
+"Combination"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
+"Combination"->"Bindable"[arrowhead=onormal,arrowsize=2.0];
+"Combination"->"POperator"[label="Combination_op",arrowhead=vee,headlabel="",arrowsize=.5];
+"Bindable"->"PTxtExp"[label="exps",arrowhead=vee,headlabel="*",arrowsize=.5];
 
 }
+
+
 
 
 

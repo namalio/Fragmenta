@@ -1,10 +1,10 @@
 BoolSetter = BoolF
 
-BoolF = Bool
-      [] getF -> BoolF
-
-Bool = assignT -> BoolT
-      [] assignF -> BoolF
-
-BoolT = getT -> BoolT
+BoolF = getF -> BoolF
       [] Bool
+
+Bool = assignF -> BoolF
+      [] assignT -> BoolT
+
+BoolT = Bool
+      [] getT -> BoolT

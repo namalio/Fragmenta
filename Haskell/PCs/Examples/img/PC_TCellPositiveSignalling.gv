@@ -9,7 +9,8 @@ freeLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="freeLigan
 RefPositiveSignallingOn [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 OpPositiveSignallingDecay [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 positiveOff [shape=ellipse,fillcolor=greenyellow,style=filled,label="positiveOff"];
-activatesPTK2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
+RefPositiveSignallingDecay [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPositiveSignalling [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 PositiveSignallingDecay [shape=box,fillcolor=deepskyblue,style = filled,label="PositiveSignallingDecay "];
 RefPositiveSignallingOn2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitorySignal"];
@@ -17,28 +18,27 @@ inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactiva
 PositiveSignallingOn [shape=box,fillcolor=deepskyblue,style = filled,label="PositiveSignallingOn (full)"];
 PositiveSignalling [shape=box,fillcolor=deepskyblue,style = filled,label="PositiveSignalling "];
 
-{rank=same;PositiveSignallingDecay,inhibitorySignal}
-{rank=same;PositiveSignallingDecay,inactivatesPTK}
+{rank=same;RefPositiveSignalling,positiveOff}
 {rank=same;RefPositiveSignallingOn2,positiveOn}
-{rank=same;PositiveSignallingDecay,freeLigandTCR}
-{rank=same;PositiveSignalling,positiveOff}
+{rank=same;RefPositiveSignallingOn,activatesPTK}
 {rank=same;PositiveSignalling,StartN_}
 
-activatesPTK2->RefPositiveSignallingOn[arrowtail=dot,dir=both,label="after"];
-inhibitorySignal->PositiveSignallingDecay[arrowtail=dot,dir=both,label="after"];
-inactivatesPTK->PositiveSignallingDecay[arrowtail=dot,dir=both,label="after"];
-OpPositiveSignallingDecay->positiveOff[arrowhead="open"];
-RefPositiveSignallingOn2->PositiveSignallingOn[arrowhead="normalnormal",fillcolor=white,label=" (true)"];
-RefPositiveSignallingOn->PositiveSignallingOn[arrowhead="normalnormal",fillcolor=white,label=" (false)"];
-OpPositiveSignallingOn->freeLigandTCR[arrowhead="open"];
-OpPositiveSignallingOn->positiveOn[arrowhead="open"];
-OpPositiveSignallingOn->inactivatesPTK[arrowhead="open"];
-OpPositiveSignallingOn->inhibitorySignal[arrowhead="open"];
-activatesPTK->RefPositiveSignallingOn[arrowtail=dot,dir=both,label="after"];
+positiveOff->RefPositiveSignalling[arrowtail=dot,dir=both,label="after"];
+freeLigandTCR->RefPositiveSignallingDecay[arrowtail=dot,dir=both,label="after"];
+RefPositiveSignallingDecay->PositiveSignallingDecay[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpPositiveSignallingDecay->RefPositiveSignalling[arrowhead="open"];
 positiveOn->RefPositiveSignallingOn2[arrowtail=dot,dir=both,label="after"];
-OpPositiveSignallingDecay->activatesPTK2[arrowhead="open"];
-freeLigandTCR->PositiveSignallingDecay[arrowtail=dot,dir=both,label="after"];
-positiveOff->PositiveSignalling[arrowtail=dot,dir=both,label="after"];
+activatesPTK->RefPositiveSignallingOn[arrowtail=dot,dir=both,label="after"];
+OpPositiveSignallingOn->inhibitorySignal[arrowhead="open"];
+OpPositiveSignallingOn->inactivatesPTK[arrowhead="open"];
+OpPositiveSignallingOn->positiveOn[arrowhead="open"];
+OpPositiveSignallingOn->freeLigandTCR[arrowhead="open"];
+RefPositiveSignallingOn->PositiveSignallingOn[arrowhead="normalnormal",fillcolor=white,label=" (False)"];
+RefPositiveSignallingOn2->PositiveSignallingOn[arrowhead="normalnormal",fillcolor=white,label=" (True)"];
+OpPositiveSignallingDecay->positiveOff[arrowhead="open"];
+RefPositiveSignalling->PositiveSignalling[arrowhead="normalnormal",fillcolor=white,label=" "];
+inactivatesPTK->RefPositiveSignallingDecay[arrowtail=dot,dir=both,label="after"];
+inhibitorySignal->RefPositiveSignallingDecay[arrowtail=dot,dir=both,label="after"];
 PositiveSignallingDecay->OpPositiveSignallingDecay[arrowhead="onormal",penwidth=2,label="="];
 PositiveSignallingOn->OpPositiveSignallingOn[arrowhead="onormal",penwidth=2,label="="];
 PositiveSignalling->activatesPTK[arrowhead="onormal",penwidth=2,label="="];

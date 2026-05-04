@@ -1,3 +1,3 @@
 include "PC_Panda2P.csp"
 
-channel shoots, leaves
+channel leaves, shoots

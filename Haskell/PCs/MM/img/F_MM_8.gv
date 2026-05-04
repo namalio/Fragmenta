@@ -1,21 +1,24 @@
 digraph {graph[label=F_MM_8,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_8{style=dashed;label=F_MM_8;
-"PNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node2<br/>(P)>];
-"PBindable3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable3<br/>(P)>];
-"PAction3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action3<br/>(P)>];
+"Quantification"[shape=record,fillcolor=lightskyblue1,style = filled,label="Quantification"];
+"PNamedNode3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode3<br/>(P)>];
+"PAction"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action<br/>(P)>];
 "PName2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name2<br/>(P)>];
-"PYesNo"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo<br/>(P)>];
-"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
-"Reference"[shape=record,fillcolor=lightskyblue1,style = filled,label="Reference"];
-"Renaming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Renaming"];
+"POpQuantifiedOp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<OpQuantifiedOp<br/>(P)>];
+"PWExp3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<WExp3<br/>(P)>];
+"PGuarded"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded<br/>(P)>];
+"TxtExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="TxtExp"];
+"Combinable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Combinable</I><br/>(V)}>];
 
-"Reference"->"PNode2"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PBindable3"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PName2"[label="Reference_name",arrowhead=vee,headlabel="0..1",arrowsize=.5];
-"Reference"->"PYesNo"[label="Reference_inner",arrowhead=vee,headlabel="",arrowsize=.5];
-"Reference"->"Renaming"[label="Renamings▼",dir=none,taillabel="",headlabel="*"];
+"Quantification"->"PNamedNode3"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PAction"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PWExp3"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PGuarded"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"Combinable"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PName2"[label="var",arrowhead=vee,headlabel="?",arrowsize=.5];
+"Quantification"->"POpQuantifiedOp"[label="opOfQuantifiedOp",arrowhead=vee,headlabel="",arrowsize=.5];
+"PWExp3"->"TxtExp"[label="exp▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="?",headlabel=""];
+"PGuarded"->"TxtExp"[label="guard▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="?",headlabel="?"];
 
 }
 

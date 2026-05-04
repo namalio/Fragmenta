@@ -3,12 +3,13 @@ subgraph cluster_MeansBreakIn {
 style="filled,rounded";
 label =MeansBreakIn;
 fillcolor = cadetblue1;
-stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label=stolenKey];
-door[shape=box,fillcolor=darkolivegreen1,style="filled",label=door];
-window[shape=box,fillcolor=darkolivegreen1,style="filled",label=window];
+stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label="stolenKey"];
+window[shape=box,fillcolor=darkolivegreen1,style="filled",label="window"];
+door[shape=box,fillcolor=darkolivegreen1,style="filled",label="door"];
 }
 
 
+stolenKey->StartN_[style=invis]
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse1];
 BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
 BreakIn [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];

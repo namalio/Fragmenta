@@ -1,0 +1,33 @@
+PC PC_BreakStealHouse3@BreakAndStealHouse
+enum MeansBreakIn : 'window','stolenKey','door'
+enum Stealable : 'Laptop','TV','Other','Jewels','Money'
+process BreakAndStealHouse@GetInside
+process GetInside@QOpGetInside
+quantifiedOp QOpGetInside.IntChoice x : 'MeansBreakIn'
+atom :'break.x'
+op_connector QOpGetInside->break
+process Ransack.s@OpRansack
+reference RefRansack
+ref_connector RefRansack->Ransack.'{}'
+after GetInside->RefRansack
+operator OpRansack.IntChoice
+process Steal.s@QStealO
+atom :'breakAndStealSafe'
+skip SKIP 
+quantifiedOp QStealO.IntChoice x : 'Stealable'
+atom :'steal.x'{x = Other ⋁ ¬x ∊ s }
+op_connector QStealO->steal
+reference inner RefSteal
+ref_connector RefSteal->Steal.'s'
+op_connector OpRansack->RefSteal
+op_connector OpRansack->breakAndStealSafe
+op_connector OpRansack->SKIP
+reference RefRansack2
+ref_connector RefRansack2->Ransack.'s ∪ {x}'
+after steal->RefRansack2
+reference RefRansack3
+ref_connector RefRansack3->Ransack.'s'
+after breakAndStealSafe->RefRansack3
+atom :'getOutAndRun'
+after RefRansack->getOutAndRun
+

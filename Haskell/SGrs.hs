@@ -54,6 +54,7 @@ import Sets (
    , intoSet
    , toList
    , rest
+   , subseteq
    , filterS )
 import Relations
 import Gr_Cls
@@ -314,13 +315,49 @@ okaySG sg = okaySGz sg
 etherealInherited::(Eq a, Eq b)=>SGr a b->Bool
 etherealInherited sg = (nsEther sg) <= (ran_of $ inh sg)
 
+--pickUTys :: (Eq a, Eq b)=>SGr a b -> a -> Set a->Set a
+--pickUTys sg v EmptyS = singles v
+--pickUTys sg v (v' `Set` vs) 
+--   | not (v `elem` (dom_of . inh $ sg)) = v `intoSet` pickUTys sg v' vs 
+   -- | not (v `elem` (nsVi sg))           = v
+--   | v' `elem` nsVi sg                  = pickUTys sg v vs
+--   | v' `elem` (dom_of . inh $ sg)      = pickUTys sg v' (vs `union` (img (inh sg) $ singles v'))
+--   | otherwise                          = pickUTys sg v' vs
+
+--pickElem::(Eq a, Eq b)=>SGr a b -> Set a ->a
+--pickElem _  (v `Set` EmptyS) = v
+--pickElem sg (v `Set` vs)    = if v `elem` nsVi sg then pickElem sg (vs `union` (img (inv . inh $ sg) $ singles v)) else v
+
+--tyOf::(Eq a, Eq b)=>SGr a b -> a ->Set a
+--tyOf sg v 
+--   | v `elem` (nsVi sg) = let s = img (inv . inh $ sg) $ singles v in (pickUTys sg (pickElem sg s) s)
+--   | otherwise = pickUTys sg v $ (img (inh sg) $ singles v)
+
+--rUty::(Eq a, Eq b)=>SGr a b ->Maybe a->Set a ->a
+--rUty sg Nothing vs = rUty sg (Just $ pickElem sg vs) vs
+--rUty sg (Just v) vs 
+--   | all (\v'->(v', v) `elem` (inhst sg)) vs = v
+--   | otherwise = rUty sg (Just (pickElem sg $ img (inh sg) (singles v))) vs  
+
+--tyOfA::(Eq a, Eq b)=>SGr a b -> a ->a
+--tyOfA sg v 
+--   | v `elem` (nsVi sg) = rUty sg Nothing (img (inv . inh $ sg) $ singles v)
+--   | otherwise = v
+
 -- WF conditions of derived edges which apply to total SGs
-srcDerEOk :: (Eq a, Eq b) => SGr a b -> b -> Bool
-srcDerEOk sg e = (appl (src sg) e, srcPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg) 
-tgtDerEOk :: (Eq a, Eq b) => SGr a b -> b -> Bool
-tgtDerEOk sg e = (appl (tgt sg) e, tgtPE (restrict (g_sg sg) $ esA sg)  (appl (pe sg) e)) `elem` (inhst sg)
-derEOk::(Eq a, Eq b)=>SGr a b->b->Bool
-derEOk sg e = srcDerEOk sg e && tgtDerEOk sg e
+--srcDerEOk :: (Eq a, Eq b) => SGr a b -> b -> Bool
+--srcDerEOk sg e = any (\v'->(tyOfA sg $ appl (src sg) e, v') `elem` (inhst sg)) (tyOf sg (srcPE (restrict (g_sg sg) $ esA sg) (appl (pe sg) e)))
+--tgtDerEOk :: (Eq a, Eq b) => SGr a b -> b -> Bool
+--tgtDerEOk sg e = any (\v'->(tyOfA sg $ appl (tgt sg) e, v') `elem` (inhst sg)) (tyOf sg (tgtPE (restrict (g_sg sg) $ esA sg) (appl (pe sg) e)))
+--derEOk::(Eq a, Eq b)=>SGr a b->b->Bool
+--derEOk sg e = srcDerEOk sg e && tgtDerEOk sg e
+--derOk::(Eq a, Eq b)=>SGr a b->Bool
+--derOk sg = all (derEOk sg) (esD sg)
+
+derEOk::(Eq v, Eq e)=>SGr v e->e->Bool
+derEOk sg e = 
+   (relOfG (restrict (g_sg sg) $ esPE (appl (pe sg) e)) `rcomp` (inhst sg)) `subseteq` ((inhst sg) `rcomp` (relOfG (restrict (g_sg sg) $ esPE (appl (pe sg) e))))
+
 derOk::(Eq a, Eq b)=>SGr a b->Bool
 derOk sg = all (derEOk sg) (esD sg)
 
@@ -444,11 +481,9 @@ rIsInhTree sg =
 
 rDerOk::(Eq a, Eq b, Show a, Show b)=>SGr a b-> ErrorTree
 rDerOk sg = 
-   let msg_src e = "The source of edge " ++ show e ++ " is invalid." 
-       msg_tgt e = "The target of edge " ++ show e ++ " is invalid." 
-       cons_ems_src e = if (not $ srcDerEOk sg e) then [msg_src e] else [] 
-       cons_ems_tgt e = if (not $ tgtDerEOk sg e) then [msg_tgt e] else [] 
-       des_bad = foldr (\e ms->(cons_ems_src e) ++ (cons_ems_tgt e) ++ ms) [] (esD sg) in
+   let msg e = "Derived edge '" ++ slimShow e ++ "' is invalid." 
+       cons_ems e = if (not $ derEOk sg e) then [msg e] else [] 
+       des_bad = foldr (\e ms->(cons_ems e) ++ ms) [] (esD sg) in
    if derOk sg then nile else consSET $ "Errors in the following derived edges: " ++ (showElems' des_bad)
 
 rEsVCntsOk :: (Eq a, Show a,Eq b, Show b, GNumSets a)=>SGr a b -> ErrorTree
@@ -1077,14 +1112,19 @@ instance GM_CHK SGr SGr where
 --
 -- SG Type conformance
 
--- Instances of compounds are not allowed to share parts
+eCompliesPNS::(Eq a, Eq b, GRM g, GR g, GWT g)=>g a b->SGr a b->b->Bool
+eCompliesPNS gwt sg e = injective $ relOfG (igRMEs gwt $ singles e)
+
+-- Instances of compounds are not allowed to share parts (PNS = parts not shared)
 tyCompliesPNS::(Eq a, Eq b, GRM g, GR g, GWT g)=>g a b->SGr a b->Bool
-tyCompliesPNS gwt sg = injective $ relOfG (igRMEs gwt (esTys sg [Ecomp Dbi, Ecomp Duni]))
+tyCompliesPNS gwt sg = 
+   all (\e->eCompliesPNS gwt sg e) (esTys sg [Ecomp Dbi, Ecomp Duni])
+   --injective $ relOfG (igRMEs gwt (esTys sg [Ecomp Dbi, Ecomp Duni]))
 
 checkTyCompliesPNS::(Eq a, Eq b, Show a, Show b, GRM g, GR g, GWT g)=>g a b->SGr a b->ErrorTree
 checkTyCompliesPNS gwt sg = 
-   let r = relOfG $ igRMEs gwt (esTys sg [Ecomp Dbi, Ecomp Duni]) in
-   if gwt `tyCompliesPNS` sg then nile else consET "Parts are being shared by compounds:" [reportI r]
+   let es = filterS (not . (eCompliesPNS gwt sg)) (esTys sg [Ecomp Dbi, Ecomp Duni]) in
+   if gwt `tyCompliesPNS` sg then nile else consSET $ "Parts are shared by compounds for the following composition edges " ++ (showElems' es)
 
 -- Instances of ethereal nodes are not allowed
 insEther :: (GRM gm, Eq a, Eq b) => gm a b -> SGr a b ->Set a

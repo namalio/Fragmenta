@@ -1,4 +1,4 @@
 include "PC_StopTimerP.csp"
 include "PC_CardControlP.csp"
 
-channel deny, cardSwallow, cardEject, cardCollect, cancel, cardIn, timeout, tock, stopIt
+channel grant, cashDispense, withdraw, deny, cardSwallow, cardCollect, cancel, timeout, tock, stopIt, cardIn, cardEject, showBalance, cashDeny, optWithdraw, fail

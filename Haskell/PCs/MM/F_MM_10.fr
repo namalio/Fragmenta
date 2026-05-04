@@ -1,21 +1,30 @@
 fragment F_MM_10 {
   SG SG_MM_10 {
-    proxy PConnector2
-    node AfterC
-    node DefinesC
+    proxy PNode2
+    proxy PBindable
     proxy PAction4
-    proxy PCompound2
-    proxy PYesNo2
-    inh AfterC->PConnector2
-    inh DefinesC->PConnector2
-    relu AfterC->PAction4[AfterCSrc]
-    relu AfterC->PAction4[AfterCTgt]
-    relu DefinesC->PAction4[DefinesCTgt]
-    relu DefinesC->PCompound2[DefinesCSrc]
-    relu AfterC->PYesNo2[AfterC_copen]
+    proxy PName3
+    proxy PYesNo
+    proxy PGuarded2
+    proxy PStartOfPC
+    node Reference
+    node Renaming
+    inh Reference->PNode2
+    inh Reference->PBindable
+    inh Reference->PAction4
+    inh Reference->PGuarded2
+    inh Reference->PStartOfPC
+    relu Reference->PName3[Reference_name]:?
+    relu Reference->PYesNo[Reference_inner]
+    rel Reference->Renaming[Renamings]:1;*
+    relu Renaming->PName3[Renaming_new]
+    relu Renaming->PName3[Renaming_old]
   }
-  ref PConnector2->Connector
+  ref PNode2->Node
+  ref PBindable->Bindable
   ref PAction4->Action
-  ref PCompound2->Compound
-  ref PYesNo2->YesNo
+  ref PName3->Name
+  ref PYesNo->YesNo
+  ref PGuarded2->Guarded
+  ref PStartOfPC->StartOfPC
 }

@@ -1,12 +1,17 @@
 Morphism F_MM_9 {
 	nodes {
-		StartC->Connector
-		PConnector->Connector
-		PStartN->Node
-		PCompound->Node
+		PNode->Node
+		Stop->Node
+		Skip->Node
+		Combination->Node
+		PAction3->Node
+		POperator->Attribute
+		PCombinable->Node
+		Bindable->Trait
+		PTxtExp->Attribute
 	}
 	edges {
-		StartSrc->Connector_src
-		StartTgt->Connector_tgt
+	   Combination_op->has
+	   exps->has
 	}
 }

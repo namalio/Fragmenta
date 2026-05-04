@@ -1,13 +1,11 @@
 Morphism F_MM_6 {
 	nodes {
-		Operator->Attribute
-		VOpChoice->Attribute
-		VOpIntChoice->Attribute
-		VOpParallel->Attribute
-		VOpIf->Attribute
-		VOpInterleave->Attribute
-		VOpThrow->Attribute
-		OpQuantifiedOp->Trait
+	  PDefinition->Definition
+	  PWExp->Trait
+	  EnumType->Definition
+	  EnumTerm->Attribute
 	}
-	edges {}
+	edges {
+	  terms->has
+	}
 }

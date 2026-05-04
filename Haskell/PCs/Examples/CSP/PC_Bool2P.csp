@@ -1,9 +1,9 @@
 Bool = 
    let 
-      BoolT = getT -> BoolT
-            [] Bool
-      BoolF = getF -> BoolF
-            [] Bool
+      BoolF = Bool
+            [] getF -> BoolF
+      BoolT = Bool
+            [] getT -> BoolT
    within
-      assignT -> BoolT
-         [] assignF -> BoolF
+      assignF -> BoolF
+         [] assignT -> BoolT

@@ -25,6 +25,8 @@ mainDoor [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
 LiveInside [shape=box,fillcolor=deepskyblue,style = filled,label="LiveInside "];
 
 {rank=same;LiveOutside,LiveInside}
+{rank=same;EnterRoom,roomWindow}
+{rank=same;EnterHall,mainDoor}
 {rank=same;OpEnterHall,intoHall}
 {rank=same;OpInsideRoom,intoRoom}
 {rank=same;HouseLiving,StartN_}

@@ -1,15 +1,19 @@
 digraph {
+_StartH_[style=invis];
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Panda1];
-Panda [shape=box,fillcolor=deepskyblue,style = filled,label="Panda "];
-leaves [shape=ellipse,fillcolor=greenyellow,style = filled,label="leaves"];
-shoots [shape=ellipse,fillcolor=greenyellow,style = filled,label="shoots"];
-eats [shape=ellipse,fillcolor=greenyellow,style = filled,label="eats"];
+eats [shape=ellipse,fillcolor=greenyellow,style=filled,label="eats"];
+shoots [shape=ellipse,fillcolor=greenyellow,style=filled,label="shoots"];
+leaves [shape=ellipse,fillcolor=greenyellow,style=filled,label="leaves"];
+PandaAtABar [shape=box,fillcolor=deepskyblue,style = filled,label="PandaAtABar "];
 
-{rank=same;leaves,shoots,eats}
-{rank=same;Panda,StartN_}
+{rank=same;leaves,shoots}
+{rank=same;PandaAtABar,StartN_,eats,_StartH_}
 
-eats->shoots[arrowtail=dot,dir=both,label="after"];
-Panda->eats[arrowhead="onormal",penwidth=2,label="="];
-StartN_->Panda[label="starts"];
+
+_StartH_->StartN_[style=invis];
+shoots->_StartH_[style=invis];
 shoots->leaves[arrowtail=dot,dir=both,label="after"];
+eats->shoots[arrowtail=dot,dir=both,label="after"];
+PandaAtABar->eats[arrowhead="onormal",penwidth=2,label="="];
+StartN_->PandaAtABar[label="starts"];
 }

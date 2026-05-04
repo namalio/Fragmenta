@@ -1,0 +1,13 @@
+PC PC_POS@POS
+process POS@OpPos
+operator OpPos.Choice
+atom down
+atom up
+op_connector OpPos->down
+op_connector OpPos->up
+reference RefPOS
+reference RefPOS2
+ref_connector RefPOS->POS
+ref_connector RefPOS2->POS
+after up->RefPOS
+after RefPOS->RefPOS2

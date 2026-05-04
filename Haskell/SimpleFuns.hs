@@ -1,4 +1,5 @@
-module SimpleFuns(swap
+module SimpleFuns
+    ( swap
     , pairUp
     , equalLs
     , quicksortp
@@ -19,14 +20,17 @@ module SimpleFuns(swap
     , combineQwInsert
     , combineQwIntoS
     , combineQwAppend
-    , combineQwUnion
+    , unionQ
     , combineQWUnionLs
     , makeQFrTFst
     , nilQl
     , nilQS
     , replace
+    , replaceAll
     , unique
-    , dupsL) where
+    , dupsL
+    , startsWith
+    ) where
 
 import Sets (union, intoSet, Set )
 import Data.List(insert)
@@ -76,13 +80,15 @@ makeQFrTFst x (y, z, w) = (x, y, z, w)
 -- Combines quadruples with an operator
 combineQwOp op (x, y, z, w) (x', y' , z', w') = (op x x', op y y', op z z', op w w')
 combineQwAppend = combineQwOp (++) 
-combineQwUnion :: (Eq a1, Eq a2, Eq a3, Eq a4) =>(Set a1, Set a2, Set a3, Set a4)->(Set a1, Set a2, Set a3, Set a4)-> (Set a1, Set a2, Set a3, Set a4)
-combineQwUnion (x, y, z, w) (x', y' , z', w') = (x `union` x', y `union` y', z `union` z', w `union` w')
+
+unionQ :: (Eq a1, Eq a2, Eq a3, Eq a4) =>(Set a1, Set a2, Set a3, Set a4)->(Set a1, Set a2, Set a3, Set a4)-> (Set a1, Set a2, Set a3, Set a4)
+unionQ (x, y, z, w) (x', y' , z', w') = (x `union` x', y `union` y', z `union` z', w `union` w')
+
 combineQwInsert :: (Ord a1, Ord a2, Ord a3, Ord a4) => (a1, a2, a3, a4) -> ([a1], [a2], [a3], [a4]) -> ([a1], [a2], [a3], [a4])
 combineQwInsert (x, y, z, w) (x', y' , z', w') = (insert x x', insert y y', insert z z', insert w w')
 combineQwIntoS (x, y, z, w) (x', y' , z', w') = (x `intoSet` x', y `intoSet` y', z `intoSet` z', w `intoSet` w')
 combineQWUnionLs :: (Eq a1, Eq a2, Eq a3, Eq a4) =>[(Set a1, Set a2, Set a3, Set a4)] -> (Set a1, Set a2, Set a3, Set a4)
-combineQWUnionLs = foldr combineQwUnion nilQS
+combineQWUnionLs = foldr unionQ nilQS
 
 -- Maps a function onto a triple
 mapP :: (a -> b) -> (a, a) -> (b, b)
@@ -145,6 +151,9 @@ replace x y (z:zs)
    | x == z    = y:(replace x y zs)
    | otherwise = z:(replace x y zs)
 
+replaceAll :: Eq t => [(t, t)] -> [t] -> [t]
+replaceAll rs l = foldr (\(x, y) l'->replace x y l') l rs
+
 -- Checks whether a list has unique values
 --unique :: (Foldable t, Eq a) => t a -> Bool
 --unique xs = foldr (\x br->if x `elem` xs then False else br) True xs
@@ -162,3 +171,7 @@ dupsL [] = []
 dupsL (x:xs) 
    | x `elem` xs  = x:dupsL xs
    | otherwise    = dupsL xs
+
+startsWith::Eq a=>[a]->[a]->Bool
+startsWith [] _ = True
+startsWith (x:xs) (y:ys) = if x == y then startsWith xs ys else False

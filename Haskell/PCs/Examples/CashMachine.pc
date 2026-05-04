@@ -1,0 +1,38 @@
+PC PC_CashMachine@CashMachine
+process CashMachine@OpCashMachine
+reference RefCashMachine
+ref_connector RefCashMachine->CashMachine
+after CashMachine->RefCashMachine
+operator OpCashMachine.Parallel:'cancel','cardIn','deny'
+op_connector OpCashMachine->RefCardControl
+op_connector OpCashMachine->OpCashMachine2
+operator OpCashMachine2.Throw:'cancel','deny'
+operator OpCashMachine3.Interleave
+op_connector OpCashMachine2->OpCashMachine3
+skip SKIP
+op_jump_connector OpCashMachine2->SKIP
+atom cancel
+op_connector OpCashMachine3->cancel
+op_connector OpCashMachine3->RefCashMachineOps
+reference RefCardControl:CardControl
+import CardControl as CCI for PC_CardControl
+reference RefCardControl
+ref_connector RefCardControl->CCI
+reference RefCashMachineOps:CashMachineOps
+import CashMachineOps as CMOI for PC_CashMachineOps
+ref_connector RefCashMachineOps->CMOI
+after RefCashMachineOps->DoOptions
+process DoOptions@OpDoOptions
+operator OpDoOptions.Choice
+reference RefWithdraw:Withdraw
+reference RefShowBalance:ShowBalance
+op_connector OpDoOptions->RefWithdraw
+op_connector OpDoOptions->RefShowBalance
+import ShowBalance as SBI for PC_ShowBalance
+import Withdraw as WI for PC_Withdraw
+ref_connector RefShowBalance->SBI
+ref_connector RefWithdraw->WI
+reference RefDoOptions
+after RefWithdraw->RefDoOptions
+after RefShowBalance->RefDoOptions
+ref_connector RefDoOptions->DoOptions

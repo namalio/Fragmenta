@@ -1,21 +1,22 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_MadTicker];
 MadTicker [shape=box,fillcolor=deepskyblue,style = filled,label="MadTicker "];
-taque [shape=ellipse,fillcolor=greenyellow,style = filled,label="taque"];
-toque [shape=ellipse,fillcolor=greenyellow,style = filled,label="toque"];
-OpCT2 [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+taque [shape=ellipse,fillcolor=greenyellow,style=filled,label="taque"];
+toque [shape=ellipse,fillcolor=greenyellow,style=filled,label="toque"];
+OpCT2 [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-tique [shape=ellipse,fillcolor=greenyellow,style = filled,label="tique"];
-OpCT [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
+tique [shape=ellipse,fillcolor=greenyellow,style=filled,label="tique"];
+OpCT [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 
 {rank=same;STOP,taque}
 {rank=same;MadTicker,StartN_}
 
-OpCT2->tique[arrowhead="open"];
-OpCT->taque[arrowhead="open"];
-StartN_->MadTicker[label="starts"];
-MadTicker->OpCT[arrowhead="onormal",penwidth=2,label="="];
-OpCT->OpCT2[arrowhead="open"];
-taque->STOP[arrowtail=dot,dir=both,label="after"];
 OpCT2->toque[arrowhead="open"];
+taque->STOP[arrowtail=dot,dir=both,label="after"];
+OpCT->OpCT2[arrowhead="open"];
+OpCT->taque[arrowhead="open"];
+OpCT2->tique[arrowhead="open"];
+MadTicker->OpCT[arrowhead="onormal",penwidth=2,label="="];
+StartN_->MadTicker[label="starts"];
 }

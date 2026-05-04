@@ -1,11 +1,21 @@
 Morphism F_MM_2 {
 	nodes {
-	    PDefinition->Definition
-	    PNamed->Trait
-		EnumType->Definition
-		EnumVal->Attribute
+	   PCDef->PCDef
+       Node->Node
+	   Connector->Connector
+	   Definition->Definition
+	   PNamed->Trait
+	   PNamed2->Trait
+	   PTyped->Trait
+	   StartN->Node
+	   NamedNode->Node
 	}
 	edges {
-	   enumVals->Has
+	   ContainsNs->contains
+	   ContainsCs->contains
+	   ContainsDs->contains
+       Starts->starts
+       src->csrc
+       tgt->ctgt
 	}
 }

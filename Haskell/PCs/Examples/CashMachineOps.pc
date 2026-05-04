@@ -1,0 +1,7 @@
+PC PC_CashMachineOps@CashMachineOps
+import Authentication as AI for PC_Authentication
+process CashMachineOps@cardIn
+atom cardIn
+after cardIn->RefAuthenticate
+reference RefAuthenticate:Authenticate.'3'
+ref_connector RefAuthenticate->AI

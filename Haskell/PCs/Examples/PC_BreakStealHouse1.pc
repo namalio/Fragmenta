@@ -1,9 +1,0 @@
-PC PC_BreakStealHouse1@BreakAndStealHouse
-enum MeansBreakIn : window,stolenKey,door
-compound BreakAndStealHouse@GetInside
-compound GetInside@BreakIn
-quantifiedOp BreakIn.IntChoice x : 'MeansBreakIn'
-atom break.'x'
-op_connector BreakIn->break
-atom stealTV
-after GetInside->stealTV

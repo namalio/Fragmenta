@@ -1,3 +1,5 @@
 include "PC_TennisP.csp"
 
-channel gameB, gameA, pointA
+datatype Scores = AdvantageA | AdvantageB | Deuce | Num.Int.Int
+
+channel gameA, pointB, pointA

@@ -7,10 +7,10 @@ OpJarOpenedIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
 takeBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n>0}
 takeBiscuit"];
 closeJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="closeJar"];
-RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑JarOpened "];
-RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑BiscuitJar "];
-RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑JarOpened "];
-RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑JarOpened "];
+RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n+1,m)"];
+RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n,m)"];
+RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n-1,m)"];
+RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n,m)"];
 dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
 dropBiscuit"];
 OpJarOpened [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
@@ -29,7 +29,7 @@ RefJarOpenedDrop->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n+
 openJar->RefJarOpened[arrowtail=dot,dir=both,label="after"];
 OpJarOpened->closeJar[arrowhead="open"];
 OpJarOpened->takeBiscuit[arrowhead="open"];
-OpJarOpenedIf->OpJarOpened[arrowhead="open",label="(n≥0) ⋀ (n≤m)"];
+OpJarOpenedIf->OpJarOpened[arrowhead="open",label="n≥0 ⋀ n≤m"];
 OpJarOpenedIf->STOP[arrowhead="open",label="Else"];
 OpJarOpened->dropBiscuit[arrowhead="open"];
 RefJarOpened->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];

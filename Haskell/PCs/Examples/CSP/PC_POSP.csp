@@ -1,2 +1,2 @@
-POS = up -> (POS; POS)
-      [] down -> SKIP
+POS = down -> SKIP
+      [] up -> (POS; POS)

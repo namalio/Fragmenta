@@ -1,21 +1,23 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_POS];
-OpPos [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-up [shape=ellipse,fillcolor=greenyellow,style = filled,label="up"];
-RefPOS2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-RefPOS [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-down [shape=ellipse,fillcolor=greenyellow,style = filled,label="down"];
-POS [shape=box,fillcolor=deepskyblue,style = filled,label="POS "];
 
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_POS];
+POS [shape=box,fillcolor=deepskyblue,style = filled,label="POS "];
+down [shape=ellipse,fillcolor=greenyellow,style=filled,label="down"];
+RefPOS [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPOS2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+up [shape=ellipse,fillcolor=greenyellow,style=filled,label="up"];
+OpPos [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+
+{rank=same;RefPOS2,RefPOS}
 {rank=same;RefPOS2,RefPOS,up}
 {rank=same;POS,StartN_}
 
-up->RefPOS[arrowtail=dot,dir=both,label="after"];
-RefPOS->POS[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefPOS->RefPOS2[arrowtail=dot,dir=both,label="after"];
+RefPOS2->POS[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpPos->up[arrowhead="open"];
 OpPos->down[arrowhead="open"];
+RefPOS->POS[arrowhead="normalnormal",fillcolor=white,label=" "];
+up->RefPOS[arrowtail=dot,dir=both,label="after"];
 POS->OpPos[arrowhead="onormal",penwidth=2,label="="];
 StartN_->POS[label="starts"];
-OpPos->up[arrowhead="open"];
-RefPOS2->POS[arrowhead="normalnormal",fillcolor=white,label=" "];
-RefPOS->RefPOS2[arrowtail=dot,dir=both,label="after"];
 }

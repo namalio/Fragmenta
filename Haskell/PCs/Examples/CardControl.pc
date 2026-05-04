@@ -1,0 +1,17 @@
+PC PC_CardControl@CardControl
+atom cardIn
+process CardControl@cardIn
+atom cancel
+after cardIn->OpDoCardIn
+operator OpDoCardIn.Choice
+atom deny
+op_connector OpDoCardIn->cancel
+op_connector OpDoCardIn->deny
+atom cardEject
+after cancel->cardEject
+atom cardSwallow
+import StopTimer as StopTimerI for PC_StopTimer
+reference RefStopTimer:StopTimer.'5'[timeout/cardSwallow,stopIt/cardCollect]
+ref_connector RefStopTimer->StopTimerI
+after cardEject->RefStopTimer
+after deny->cardSwallow

@@ -1,0 +1,13 @@
+PC PC_VM2@VM2
+process VM2@coin
+atom :'coin'
+operator OpChoose.Choice
+atom :'choc'
+atom :'water'
+reference RefVM2
+after coin->OpChoose
+op_connector OpChoose->choc
+op_connector OpChoose->water
+after choc->RefVM2
+after water->RefVM2
+ref_connector RefVM2->VM2

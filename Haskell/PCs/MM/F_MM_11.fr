@@ -1,20 +1,14 @@
 fragment F_MM_11 {
   SG SG_MM_11 {
-    node ReferenceC
-    proxy PConnector3
-    proxy PBindable4
-    proxy PReference
-    proxy PTargetOfRef
-    proxy PYesNo3
-    inh ReferenceC->PConnector3
-    inh ReferenceC->PBindable4
-    rel ReferenceC->PReference[ReferenceCSrc]:1;1
-    relu ReferenceC->PTargetOfRef[ReferenceCTgt]:1
-    relu ReferenceC->PYesNo3[ReferenceC_hidden]
+    proxy PConnector
+    node StartC
+    proxy PStartN
+    proxy PStartOfPC2
+    inh StartC->PConnector
+    derived StartC->PStartN[DSCSrc <-> src]:1;1
+    derived StartC->PStartOfPC2[DSCTgt <-> tgt]:?;1
   }
-  ref PConnector3->Connector
-  ref PBindable4->Bindable
-  ref PTargetOfRef->TargetOfRef
-  ref PReference->Reference
-  ref PYesNo3->YesNo
+  ref PConnector->Connector
+  ref PStartN->StartN
+  ref PStartOfPC2->StartOfPC
 }

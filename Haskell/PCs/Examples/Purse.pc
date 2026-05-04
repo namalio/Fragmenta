@@ -1,0 +1,44 @@
+PC PC_Purse@Purse
+enum Error : 'InsufficientFunds','InvalidPutAmount','InvalidTakeAmount'
+operator OpPurseIf.If
+process Purse.n@OpPurseIf
+stop STOP
+operator OpPurseOpts.Choice
+op_connector_g OpPurseIf->OpPurseOpts{n≥0}
+op_else_connector OpPurseIf->STOP
+quantifiedOp takeMoneyQ.Choice a : 'Int'
+quantifiedOp putMoneyQ.Choice a : 'Int'
+atom :'takeMoney.a'{a≤n ⋀ a>0 }
+atom :'putMoney.a'
+atom :'showBalance.n'
+atom errInsufficientFunds:'err.InsufficientFunds.a'{a>n}
+atom errInvalidAmount:'err.InvalidPutAmount.a'
+atom errInvalidAmount2:'err.InvalidTakeAmount.a'{a≤0}
+process TakeMoney@takeMoneyQ
+process PutMoney@putMoneyQ
+operator OpTakeMoney.Choice
+operator OpPutMoneyIf.If
+op_connector OpPurseOpts->TakeMoney
+op_connector OpPurseOpts->PutMoney
+op_connector takeMoneyQ->OpTakeMoney
+op_connector putMoneyQ->OpPutMoneyIf
+op_connector OpPurseOpts->showBalance
+op_connector OpTakeMoney->takeMoney
+op_connector OpTakeMoney->errInsufficientFunds
+op_connector OpTakeMoney->errInvalidAmount2
+reference RefTakeMoneyOk
+reference RefMoneyNotOk
+after takeMoney->RefTakeMoneyOk
+after errInsufficientFunds->RefMoneyNotOk
+after errInvalidAmount2->RefMoneyNotOk
+ref_connector RefTakeMoneyOk->Purse.'n-a'
+ref_connector RefMoneyNotOk->Purse.'n'
+op_connector_g OpPutMoneyIf->putMoney{a>0}
+op_else_connector OpPutMoneyIf->errInvalidAmount
+reference RefPutMoneyOk
+ref_connector RefPutMoneyOk->Purse.'n+a'
+after putMoney->RefPutMoneyOk
+after errInvalidAmount->RefMoneyNotOk
+reference RefMoneySame
+ref_connector RefMoneySame->Purse.'n'
+after showBalance->RefMoneySame

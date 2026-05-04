@@ -1,0 +1,8 @@
+PC PC_SayAtLeastOnce@SayAtLeastOnce
+atom something
+process SayAtLeastOnce@something
+after something->OpNext
+operator OpNext.Choice
+op_connector OpNext->SayAtLeastOnce
+skip skipHi
+op_connector OpNext->skipHi

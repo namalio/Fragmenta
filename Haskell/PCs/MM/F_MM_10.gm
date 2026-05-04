@@ -1,17 +1,20 @@
 Morphism F_MM_10 {
 	nodes {
-		AfterC->Connector
-		DefinesC->Connector
-		PConnector2->Connector
+		PNode2->Node
+		PBindable->Trait
+		PStartOfPC->Trait
+		Reference->Node
 		PAction4->Node
-		PCompound2->Node
-		PYesNo2->Attribute
+		PGuarded2->Trait
+		PName3->Attribute
+		Renaming->Attribute
+		PYesNo->Attribute
 	}
 	edges {
-		AfterCSrc->Connector_src
-		AfterCTgt->Connector_tgt
-		DefinesCSrc->Connector_src
-		DefinesCTgt->Connector_tgt
-		AfterC_copen->Has
+		Reference_name->has
+		Reference_inner->has
+		Renamings->has
+		Renaming_new->has
+		Renaming_old->has
 	}
 }

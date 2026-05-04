@@ -7,16 +7,16 @@ fragment F_AMM {
     node Node
     node Connector
     node Definition
-    compu PCDef->Element[Contains]:*
+    compu PCDef->Element[contains]:*
     inh Element->Trait
     inh PCDef->Trait
     inh Attribute->Trait
     inh Connector->Element
     inh Definition->Element
     inh Node->Element
-    rel Trait->Trait[Has]:*;*
-    rel PCDef->Node[Starts]:0..1;1
-    relu Connector->Node[Connector_src]
-    relu Connector->Node[Connector_tgt]
+    rel Trait->Trait[has]:*;*
+    rel PCDef->Node[starts]:0..1;1
+    relu Connector->Node[csrc]
+    relu Connector->Node[ctgt]
   }
 }

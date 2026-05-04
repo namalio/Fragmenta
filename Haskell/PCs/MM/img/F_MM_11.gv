@@ -1,21 +1,15 @@
 digraph {graph[label=F_MM_11,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_11{style=dashed;label=F_MM_11;
-"ReferenceC"[shape=record,fillcolor=lightskyblue1,style = filled,label="ReferenceC"];
-"PConnector3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector3<br/>(P)>];
-"PBindable4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable4<br/>(P)>];
-"PReference"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reference<br/>(P)>];
-"PTargetOfRef"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<TargetOfRef<br/>(P)>];
-"PYesNo3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo3<br/>(P)>];
+"PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
+"StartC"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartC"];
+"PStartN"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartN<br/>(P)>];
+"PStartOfPC2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartOfPC2<br/>(P)>];
 
-"ReferenceC"->"PConnector3"[arrowhead=onormal,arrowsize=2.0];
-"ReferenceC"->"PBindable4"[arrowhead=onormal,arrowsize=2.0];
-"ReferenceC"->"PReference"[label="ReferenceCSrc▼",dir=none,taillabel="",headlabel=""];
-"ReferenceC"->"PTargetOfRef"[label="ReferenceCTgt",arrowhead=vee,headlabel="",arrowsize=.5];
-"ReferenceC"->"PYesNo3"[label="ReferenceC_hidden",arrowhead=vee,headlabel="",arrowsize=.5];
+"StartC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"StartC"->"PStartN"[label="DSCSrc: src ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"StartC"->"PStartOfPC2"[label="DSCTgt: tgt ▼",dir=none,taillabel="?",headlabel="",style=dotted];
 
 }
-
-
 
 
 

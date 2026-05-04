@@ -1,0 +1,15 @@
+PC PC_TCellOverall@TCellOverall
+operator OpTCellParallel.Parallel:'activatesPTK','inhibitorySignal', 'inactivatesPTK', 'positiveOn', 'freeLigandTCR', 'bindLigandTCR', 'positiveOff'
+process TCellOverall@OpTCellParallel
+op_connector OpTCellParallel->RefTCR
+op_connector OpTCellParallel->RefPTK
+op_connector OpTCellParallel->RefTCell
+import TCR as TCRI for PC_TCR
+import PTK as PTKI for PC_PTK
+import TCell as TCellI for PC_TCell
+reference RefTCR:TCR
+ref_connector RefTCR->TCRI
+reference RefPTK:PTK
+ref_connector RefPTK->PTKI
+reference RefTCell:TCell
+ref_connector RefTCell->TCellI

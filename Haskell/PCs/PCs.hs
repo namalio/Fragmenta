@@ -6,50 +6,58 @@
 -- Author: Nuno Amálio
 ------------------------
 
-module PCs.PCs(PC
-    , isNodeOfTys
-    , getAtoms
-    , getPCStart
-    , load_mm_info
-    , startCompound
-    , getPCDef
-    , srcOf
-    , tgtOf
-    , afterCRel
-    , paramsOf
-    , expsOf
-    , expOfAtom
-    , enumValsOf
-    , nmOfNamed
-    , guardOf
-    , ntyNsPC
-    , nmOfRef
-    , nmOfRefF
-    , expsOfRef
-    , renamingsOf
-    , opValOfOp
-    , opQuantifiedOp
-    , varBQuantifiedOp
-    , quantifiedOpStart
-    , nextNode
-    , nextNodes
-    , successorsOf
-    , compoundStart
-    , withinRel
-    , importsOf
-    , nextAfterC
-    , nextNodesAfter
-    , nextNodeAfter
-    , branchesOfOp
-    , innerKs
-    , relKs
-    , innerRefKs
-    , refKs
-    , commonInnerKs
-    , hidden_RC
-    , inner_Ref
-    , openAC
-    , guardOfOp) 
+module PCs.PCs
+  ( PC
+  , isNodeOfTys
+  , getAtoms
+  , getPCStart
+  , load_mm_info
+  , startNode
+  , getPCDefN
+  , getPCName
+  , srcOf
+  , tgtOf
+  , afterCRel
+  , paramsOf
+  , expOf
+  , expsOf
+  , expOfAtom
+  , enumTermsOf
+  , nmOfNamed
+  , guardOf
+  , ntyNsPC
+  , nmOfRef
+  , nmOfRefP
+  , isConnectedToInnerPr
+  , expsOfRef
+  , renamingsOf
+  , opValOfOp
+  , opQuantifiedOp
+  , varBQuantifiedOp
+  , quantifiedOpStart
+  , nextNode
+  , nextNodes
+  , successorsOf
+  , processStart
+  , withinRel
+  , importsOf
+  , fNameOfImport
+  , namePCOfImport
+  , nextAfterC
+  , nextNodesAfter
+  , nextAfterN
+  , branchesOfOp
+  , innerKs
+  , relKs
+  , innerRefKs
+  , refKs
+  , commonInnerKs
+  , hiddenRefC
+  , isHiddenRef
+  , innerRef 
+  , openAC
+  , guardOfOp
+  , importedKs) 
 where
 
 import Gr_Cls
@@ -64,8 +72,16 @@ import Frs
 import TheNil
 import MyMaybe
 import ParseUtils
-import SimpleFuns
-import PCs.PCs_MM_Names
+  ( splitAtStr
+  )
+import SimpleFuns 
+  (swap
+  , butLast
+  , pairUp
+  , thdT
+  , quicksortp
+  )
+import PCs.MM_Names
 import Control.Monad(when)
 import MMI
 
@@ -116,16 +132,16 @@ getAtoms sg_mm pc =
 getPCStart :: SGr String String ->PC String String -> String
 getPCStart sg_mm pc = the $ ntyNsPC sg_mm pc CMM_StartN
 
--- Get's PCs starting compound
-startCompound :: MMI String String -> PC String String -> String
-startCompound mmi pc = the $ (nextNodes mmi pc $ getPCStart (gCRSG mmi) pc) `intersec`  (ntyNsPC (gCRSG mmi) pc CMM_Compound)
+-- Get's a PCs starting node
+startNode :: MMI String String -> PC String String -> String
+startNode mmi pc = the $ (nextNodes mmi pc $ getPCStart (gCRSG mmi) pc)
 
 
---Gets start node of a compound, the target of a defined connector
-compoundStart :: MMI String String -> PC String String ->String-> String
-compoundStart mmi pc n = 
+--Gets start node of a process compound (target of a process definition connector)
+processStart :: MMI String String -> PC String String ->String->Maybe String
+processStart mmi pc n = 
    let defC = successorsOf mmi pc n `intersec` img (inv $ fV pc) [show_cmm_n CMM_DefinesC] in
-   the $ successorsOf mmi pc (the defC)
+    maybeFrSet $ successorsOf mmi pc (the defC)
 
 -- Obtains the two level morphism from PCs to the abstract layer 
 twolm :: (Eq a, Eq b, GRM gm2) => MMI a b -> gm2 a b -> GrM a b
@@ -134,19 +150,19 @@ twolm mmi pc =  (gRM mmi) `ogm` pc
 -- Successors of a connector node
 successorsOfC::Eq a=>MMI a String ->PC a String->a ->Set a
 successorsOfC mmi pc nc = 
-    img (tgt pc) $ img (inv . fE $ twolm mmi pc) [show_amm_e AMM_EConnector_tgt] `intersec` dom_of (rres (src pc) [nc])
+    img (tgt pc) $ img (inv . fE $ twolm mmi pc) [show_amm_e AMM_Ectgt] `intersec` dom_of (rres (src pc) [nc])
 
 -- Successors of any node
 successorsOf :: MMI String String -> PC String String ->String-> Set String
 successorsOf mmi pc n =
-   let succsOfN = img (src pc) $ img (inv . fE $ twolm mmi pc) [show_amm_e AMM_EConnector_src]  `intersec` dom_of (rres (tgt pc) [n]) in
+   let succsOfN = img (src pc) $ img (inv . fE $ twolm mmi pc) [show_amm_e AMM_Ecsrc]  `intersec` dom_of (rres (tgt pc) [n]) in
    if (isNodeOfTys n [CMM_Node] (gCRSG mmi) pc) then succsOfN else if (isNodeOfTys n [CMM_Connector] (gCRSG mmi) pc) then successorsOfC mmi pc n else nil
 
 
 -- Gets the predecessors of a connector
 predecessorsOfC :: (Eq b, GR g, GRM g) => MMI b String -> g b String -> b -> Set b
 predecessorsOfC mmi pc nc = 
-    img (tgt pc) $ img (inv . fE $ twolm mmi pc) [show_amm_e AMM_EConnector_src] `intersec` dom_of (rres (src pc) [nc])
+    img (tgt pc) $ img (inv . fE $ twolm mmi pc) [show_amm_e AMM_Ecsrc] `intersec` dom_of (rres (src pc) [nc])
 
 nextNode :: MMI String String -> PC String String -> String -> Maybe String
 nextNode mmi pc n = 
@@ -182,12 +198,16 @@ guardOfOp mmi pc n =
     let n_if_b = filterS (\n->the (tyOfNM n pc) == show_cmm_n CMM_BMainIfC) ns in
     if isNil n_if_b then Nothing else guardOf pc (the n_if_b)
 
-nextNodeAfter :: MMI String String -> PC String String -> String -> Maybe String
-nextNodeAfter mmi pc n = maybeFrSet $ nextNodesAfter mmi pc n
+nextAfterN :: MMI String String -> PC String String -> String -> Maybe String
+nextAfterN mmi pc n = maybeFrSet $ nextNodesAfter mmi pc n
 
--- Gets PC's definitional node 
-getPCDef :: Eq b => PC String b -> String
-getPCDef pc = appl (inv . fV $ pc) (show_cmm_n CMM_PCDef)
+-- Gets PC's definitional (or root) node 
+getPCDefN ::PC String String -> String
+getPCDefN pc = appl (inv . fV $ pc) (show_cmm_n CMM_PCDef)
+
+-- Gets name of PC, which is name associated with PC's definitional (or root) node
+getPCName :: PC String String -> String
+getPCName pc = nmOfNamed pc (getPCDefN pc)
 
 srcOf :: Eq a => MMI a String -> PC a String-> a -> a
 srcOf mmi pc c = the $ predecessorsOfC mmi pc c
@@ -208,22 +228,22 @@ expVals pc bvs =
    map snd obvs
    where
       toIntSnd (b, ks) = let k = snd $ splitAtStr "_" ks in (read k::Int, b)
-      getPair b = toIntSnd (splitAtStr "_" (snd $ splitAtStr "EV_" b))
+      getPair b = toIntSnd (splitAtStr "_" (snd $ splitAtStr "_" (snd $ splitAtStr "EV_" b)))
 
-expValsOf ::PC String String-> String -> Either String [String]
-expValsOf pc n = 
-   let vss = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EvExps) 
-       vs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EvExp) in
-    if null vss then Left .the $ expVals pc vs else Right $ expVals pc vss 
+--expValsOf ::PC String String-> String -> Either String [String]
+--expValsOf pc n = 
+--   let vss = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EvExps) 
+--       vs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EvExp) in
+--    if null vss then Left .the $ expVals pc vs else Right $ expVals pc vss 
     
-pexps :: Foldable t => PC String String->t String ->[Either String [String]]
-pexps pc bs = 
-  let ips = foldl (\ps' p->if mkPair p `elem` ps' then ps' else mkPair p:ps') nil bs
-      obs = quicksortp (\(k1, _) (k2, _)->k1 < k2) ips in
-  foldr(\b bvs->(expValsOf pc b):bvs) nil (fmap snd obs)
-  where
-     toIntFst (k, s) = (read k::Int, s)
-     mkPair p = toIntFst (snd (splitAtStr "_txtExp_" p), p)
+--pexps :: Foldable t => PC String String->t String ->[Either String [String]]
+--pexps pc bs = 
+--  let ips = foldl (\ps' p->if mkPair p `elem` ps' then ps' else mkPair p:ps') nil bs
+--      obs = quicksortp (\(k1, _) (k2, _)->k1 < k2) ips in
+--  foldr(\b bvs->(expValsOf pc b):bvs) nil (fmap snd obs)
+--  where
+--     toIntFst (k, s) = (read k::Int, s)
+--     mkPair p = toIntFst (snd (splitAtStr "_txtExp_" p), p)
 
 pair_of_rename :: String -> (String, String)
 pair_of_rename ren = 
@@ -252,21 +272,47 @@ paramsOf pc n =
    let ps = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eparams) in
    pparams pc ps
 
-expsOf ::PC String String-> String -> [Either String [String]]
+gExps :: Foldable t => PC String String->String->t String ->[String]
+gExps pc n bs = 
+  let ips = foldl (\ps' b->let p = mkPair b in if p `elem` ps' then ps' else p:ps') nil bs in
+  fmap snd $ quicksortp (\(k1, _) (k2, _)->k1 < k2) ips
+  where
+     toIntFst (k, s) = (read k::Int, s)
+     mkPair p = toIntFst . swap $ splitAtStr "_" (snd (splitAtStr ("ETxtExp_" ++ n ++ "_") p))
+
+expOf ::PC String String->SGr String String -> String -> String
+expOf pc sg n = 
+   let bs = (set1 n) `intersec` ns_of_ntys pc sg [show_cmm_n CMM_TxtExp] in
+   strip . first $ bs
+   where strip es = snd (splitAtStr "_txtExp_" es)
+
+expsOf ::PC String String-> String -> [String]
 expsOf pc n = 
    let bs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps) in
-   pexps pc bs
+   fmap snd (quicksortp (\p1 p2->fst p1 <= fst p2) $ foldr (\b es->(strip b):es) [] bs)
+   where strip es = let (n, s) = splitAtStr "_" (snd (splitAtStr "_txtExp_" es)) in (read n::Int, s)
 
-expOfAtom ::PC String String-> String -> Maybe String
+expOfAtom ::PC String String-> String -> String
 expOfAtom pc n = 
-  let es = expsOf pc n in 
-  if null es then Nothing else takeFrE . head $ es
-  where takeFrE (Left e) = Just e
-        takeFrE (Right _) = Nothing
+  let n' = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eexp) in 
+  strip (the n')
+  where strip n' = snd (splitAtStr "_txtExp_" n')
+--  if null es then Nothing else takeFrE . head $ es
+--where takeFrE (Set e EmptyS) = strip e
+--        strip es = fst $ splitAtStr "_" (snd (splitAtStr "ETxtExp_" es))
 
-enumValsOf ::PC String String-> String -> Set String
-enumValsOf pc n = 
-   img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EenumVals)
+enumTermsOf ::PC String String-> String -> Set String
+enumTermsOf pc n = 
+   let ts = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eterms)
+       es = es_of_ety pc (show_cmm_e CMM_Eexp)
+       ets = foldr (\t ets'->(img (tgt pc) (img (inv $ src pc) [t] `intersec` es)) `union` ets') nil ts in 
+   fmap strip ets
+   where strip es = snd (splitAtStr "_txtExp_" es)
+
+--nmOfType::String ->String
+--nmOfType "Int" = "Int"
+--nmOfType "Bool" = "Bool"
+--nmOfType ty = snd (splitAtStr "_txtExp_" ty)
 
 --anyExpOfAt ::PC String String->String->Maybe (String, Either String [String])
 --anyExpOfAt pc n = 
@@ -279,15 +325,10 @@ renamingsOf pc n =
    let rs = img (tgt pc) $ img (inv $ src pc) [n] `intersec`  (es_of_ety pc $ show_cmm_e CMM_ERenamings) in
    prenamings rs   
 
-inner_Ref ::PC String String->String ->Bool
-inner_Ref pc n = 
+innerRef ::PC String String->String ->Bool
+innerRef pc n = 
    let is = img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_EReference_inner) in
    if isSomething is then (the is) == "YesV" else False
-
-hidden_RC :: PC String String-> String -> Bool
-hidden_RC pc c = 
-   let hs = img (tgt pc) $ (img (inv $ src pc) [c]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_EReferenceC_hidden) in
-   if isSomething hs then (the hs) == "YesV" else False
 
 openAC ::PC String String->String->Bool
 openAC pc c = 
@@ -309,14 +350,31 @@ nmOfRef pc n =
   let rn = img (tgt pc) $ img (inv . src $ pc) [n] `intersec`  es_of_ety pc (show_cmm_e CMM_EReference_name) in
   if null rn then "" else butLast . the $ rn
 
-nmOfRefF :: MMI String String -> PC String String -> String -> String
-nmOfRefF mmi pc n = 
-  let rn = nmOfRef pc n in
-  let rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
+nmOfRefP :: MMI String String -> PC String String -> String -> String
+nmOfRefP mmi pc n = 
+  let rn = nmOfRef pc n 
+      rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
   if null rn then the $ successorsOf mmi pc rc else rn 
 
-expsOfRef :: MMI String String->PC String String->String->[Either String [String]]
-expsOfRef mmi pc n =
+hiddenRefC :: PC String String-> String -> Bool
+hiddenRefC pc c = 
+   let hs = img (tgt pc) $ (img (inv $ src pc) [c]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_EReferenceC_hidden) in
+   if isSomething hs then (the hs) == "YesV" else False
+
+isHiddenRef:: MMI String String ->PC String String-> String -> Bool
+isHiddenRef mmi pc r = 
+    let rc = the $ (successorsOf mmi pc r) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
+    hiddenRefC pc rc
+
+isConnectedToInnerPr :: MMI String String -> PC String String -> String -> Bool
+isConnectedToInnerPr mmi pc n = 
+   let rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) 
+       imp = (successorsOf mmi pc rc) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_Import) in
+   (not $ hiddenRefC pc rc) && (null imp)
+
+
+expsOfRef :: MMI String String->PC String String->String->[String]
+expsOfRef mmi pc n = 
   let rn = nmOfRef pc n in
   let rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
   if null rn then expsOf pc rc else expsOf pc n
@@ -335,11 +393,11 @@ opQuantifiedOp sg_mm pc n =
    let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EopOfQuantifiedOp)) in   
    opValId sg_mm pc nOpVal
 
-varBQuantifiedOp ::PC String String->String->(String, Either String [String])
+varBQuantifiedOp ::PC String String->String->(String, String)
 varBQuantifiedOp pc n = 
    let ps = img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Evar) 
-       ps'= img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Eexps) in
-   (if null ps then "" else the ps, the $ pexps pc ps')
+       ps'= img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Eexp) in
+   (if null ps then "" else the ps, the ps')
 
 quantifiedOpStart::MMI String String->PC String String->String->String
 quantifiedOpStart mmi pc n = 
@@ -356,21 +414,21 @@ combinePAsU (x, y) (x', y') = (x `union` x', y `union` y')
 
 withinRelWiths::Eq a=>MMI String String -> PC String String -> String -> Set String -> Set String -> (Rel String String, Set a)
 withinRelWiths mmi pc n ns pcs = 
-  let combine (x, y, z) (x', y', z') = (x `union` x', y `union` y', z `union` z') in
-  let to_pair (x, y, _) = (x, y) in
-  let as_triple (x, y) z = (x, y, z) in
-  let upd_ks k = if isNodeOfTys k [CMM_Compound] (gCRSG mmi) pc then singles k else nil in
+  let combine (x, y, z) (x', y', z') = (x `union` x', y `union` y', z `union` z') 
+      to_pair (x, y, _) = (x, y)
+      as_triple (x, y) z = (x, y, z) 
+      upd_ks k = if isNodeOfTys k [CMM_Process] (gCRSG mmi) pc then singles k else nil in
   to_pair $ foldl (\ks k->if k `elem` thdT ks then ks else as_triple (withinRelWithAux mmi pc n k $ thdT ks) (upd_ks k) `combine` ks) (nil, nil, pcs) ns
 
 withinRelWithAux::Eq a=>MMI String String ->PC String String->String->String->Set String->(Rel String String, Set a)
 withinRelWithAux mmi pc n n' pcs
    | isNodeOfTys n' [CMM_Atom] (gCRSG mmi) pc = (singles (n, n'), nil) `combinePAsU` withinRelWithOpt (nextNode mmi pc n')
    -- Here it depends on whether it is definitional or not
-   | isNodeOfTys n' [CMM_Compound] (gCRSG mmi) pc = if n' `elem` (n `intoSet` pcs) then (nil, nil) else ((n, n') `intoSet` withinRelWith mmi pc n' (n `intoSet` pcs), nil) 
+   | isNodeOfTys n' [CMM_Process] (gCRSG mmi) pc = if n' `elem` (n `intoSet` pcs) then (nil, nil) else ((n, n') `intoSet` withinRelWith mmi pc n' (n `intoSet` pcs), nil) 
    | isNodeOfTys n' [CMM_Reference] (gCRSG mmi) pc = (nil, nil) 
    | isNodeOfTys n' [CMM_Combination] (gCRSG mmi) pc = let ns = nextNodes mmi pc n' in withinRelWiths mmi pc n ns pcs
    | isNodeOfTys n' [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = (nil, nil) 
-   | isNodeOfTys n' [CMM_QuantifiedOp] (gCRSG mmi) pc = (singles (n, n'), nil) `combinePAsU` withinRelWithOpt (nextNode mmi pc n')
+   | isNodeOfTys n' [CMM_Quantification] (gCRSG mmi) pc = (singles (n, n'), nil) `combinePAsU` withinRelWithOpt (nextNode mmi pc n')
    where withinRelWithOpt Nothing = (nil, nil) 
          withinRelWithOpt (Just k) = if k `elem` pcs then (nil, nil)  else withinRelWithAux mmi pc n k pcs
          --nilR = (nil, nil)
@@ -393,80 +451,90 @@ withinRelWith mmi pc n pcs =
    r `union` r'
 
 withinRel :: MMI String String -> PC String String -> Rel String String
-withinRel mmi pc = withinRelWith mmi pc (startCompound mmi pc) nil
+withinRel mmi pc = withinRelWith mmi pc (startNode mmi pc) nil
 
 innerKsOf :: MMI String String -> PC String String ->Set String->Set String-> Set String
 innerKsOf mmi pc EmptyS _ = EmptyS
 innerKsOf mmi pc (n `Set` ns) vns
     | isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc = innerKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns
-    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (not $ inner_Ref pc n) = innerKsOf mmi pc (nextNodesAfter mmi pc n `union` ns) vns
-    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (inner_Ref pc n) = 
-        innerKsOf mmi pc (singles (nmOfRefF mmi pc n) `union` (nextNodesAfter mmi pc n) `union` ns) vns
-    | isNodeOfTys n [CMM_Compound] (gCRSG mmi) pc = let nas = nextNodesAfter mmi pc n in
-        if n `elem` vns then innerKsOf mmi pc ns vns else n `intoSet` (innerKsOf mmi pc ((compoundStart mmi pc n) `intoSet` (nas `union` ns)) $ n `intoSet` vns)
+    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (not $ innerRef pc n) = innerKsOf mmi pc (nextNodesAfter mmi pc n `union` ns) vns
+    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (innerRef pc n) = 
+        innerKsOf mmi pc (singles (nmOfRefP mmi pc n) `union` (nextNodesAfter mmi pc n) `union` ns) vns
+    | isNodeOfTys n [CMM_Process] (gCRSG mmi) pc = let nas = nextNodesAfter mmi pc n in
+        if n `elem` vns then innerKsOf mmi pc ns vns else n `intoSet` (innerKsOf mmi pc ((maybeToSet $ processStart mmi pc n) `union` (nas `union` ns)) $ n `intoSet` vns)
     | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = innerKsOf mmi pc ((nextNodes mmi pc n) `union` ns) vns
     | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = innerKsOf mmi pc ns vns 
     -- | otherwise = (the (tyOfNM n pc)):innerKsOf mmi pc ns
 
 innerKs::MMI String String -> PC String String -> String -> Set String
-innerKs mmi pc n = innerKsOf mmi pc (singles $ compoundStart mmi pc n) (singles n)
+innerKs mmi pc n = 
+  let stp = processStart mmi pc n in
+  if isNil stp then nil else innerKsOf mmi pc (singles . the $ stp) (singles n)
 
 innerRefKsOf :: MMI String String -> PC String String ->Set String-> Set String -> Set String
 innerRefKsOf _ _ EmptyS _ = nil
 innerRefKsOf mmi pc (Set n ns) vns
-  | isNodeOfTys n [CMM_Atom,CMM_Compound, CMM_QuantifiedOp] (gCRSG mmi) pc = 
+  | isNodeOfTys n [CMM_Atom,CMM_Process, CMM_Quantification] (gCRSG mmi) pc = 
       if n `elem` vns then innerRefKsOf mmi pc ns vns else  innerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns
   | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = 
       innerRefKsOf mmi pc ((nextNodes mmi pc n) `union` ns) vns
   | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = innerRefKsOf mmi pc ns vns 
-  | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (not $ inner_Ref pc n) = innerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns 
-  | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (inner_Ref pc n) = let rn = nmOfRefF mmi pc n in 
+  | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (not $ innerRef pc n) = innerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns 
+  | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (innerRef pc n) = let rn = nmOfRefP mmi pc n in 
       if rn `elem` vns then innerRefKsOf mmi pc ns vns else rn `intoSet` (innerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns)) (rn `intoSet` vns)
 
 innerRefKs::MMI String String -> PC String String -> String -> Set String
-innerRefKs mmi pc n = innerRefKsOf mmi pc (singles $ compoundStart mmi pc n) (singles n)
+innerRefKs mmi pc n = 
+  innerRefKsOf mmi pc (maybeToSet $ processStart mmi pc n) (singles n)
 
 refKsOf::MMI String String -> PC String String -> Set String -> Set String-> Set String
 refKsOf _ _ EmptyS _ = nil
 refKsOf mmi pc (Set n ns) vns
-   | isNodeOfTys n [CMM_Atom,CMM_Compound, CMM_QuantifiedOp] (gCRSG mmi) pc = 
+   | isNodeOfTys n [CMM_Atom,CMM_Process, CMM_Quantification] (gCRSG mmi) pc = 
       if n `elem` vns then refKsOf mmi pc ns vns else refKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns
    | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = 
       refKsOf mmi pc ((nextNodes mmi pc n) `union` ns) vns
    | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = refKsOf mmi pc ns vns 
-   | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc  = let rn = nmOfRefF mmi pc n in 
+   | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc  = let rn = nmOfRefP mmi pc n in 
       if set [n, rn] `subseteq` vns then refKsOf mmi pc ns vns else rn `intoSet` (refKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns)) (set [n, rn] `union` vns)
    -- | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc && (inner_Ref pc n) = outerRefKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns) vns 
 
 refKs::MMI String String -> PC String String -> String -> Set String
-refKs mmi pc n = refKsOf mmi pc (singles $ compoundStart mmi pc n) (singles n)
---commonInnerKsOf mmi pc [] _ = []
---commonInnerKsOf mmi pc (n:ns) vns 
---    | isNodeOfTys n [CMM_Atom, CMM_Reference] (gCRSG mmi) pc = commonInnerKs mmi pc ((nextNodesAfter mmi pc n)++ns) vns 
---    | isNodeOfTys n [CMM_Compound] (gCRSG mmi) pc = let nas = nextNodesAfter mmi pc n in
---        if n `elem` vns then commonInnerKsOf mmi pc ns vns else commonInnerKsOf mmi pc ((compoundStart mmi pc n):(nas++ns)) (n:vns)
---    | isNodeOfTys n [CMM_Operator] (gCRSG mmi) pc = let nns = nextNodes mmi pc n in
---      (gintersec (foldr (\n cns->(innerKsOf mmi pc [n] vns):cns) [] nns)) `intersec` (commonInnerKsOf mmi pc ns (nns++vns))
---    | isNodeOfTys n [CMM_Stop] (gCRSG mmi) pc = commonInnerKsOf mmi pc ns vns 
+refKs mmi pc n = refKsOf mmi pc (maybeToSet $ processStart mmi pc n) (singles n)
+
+importedKsOf::MMI String String -> PC String String -> Set String -> Set String-> Set String
+importedKsOf _ _ EmptyS _ = nil
+importedKsOf mmi pc (Set n ns) vns 
+  | isNodeOfTys n [CMM_Atom, CMM_Process, CMM_Quantification] (gCRSG mmi) pc = 
+    if n `elem` vns then importedKsOf mmi pc ns vns else importedKsOf mmi pc ((nextNodes mmi pc n) `union` ns) (vns `union` singles n)
+  | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = 
+    importedKsOf mmi pc ((nextNodes mmi pc n) `union` ns) (vns `union` singles n)
+  | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = importedKsOf mmi pc ns vns 
+  | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc  = let rn = nmOfRefP mmi pc n in 
+    if set [n, rn] `subseteq` vns || not isImported then importedKsOf mmi pc ns vns else rn `intoSet` (importedKsOf mmi pc ((nextNodesAfter mmi pc n) `union` ns)) (set [n, rn] `union` vns)
+  where isImported = any (\n'->isNodeOfTys n' [CMM_Import] (gCRSG mmi) pc) (nextNodes mmi pc n) 
+
+importedKs::MMI String String -> PC String String ->Set String
+importedKs mmi pc = importedKsOf mmi pc (singles $ startNode mmi pc) nil
 
 divergentInnerKs0 :: MMI String String -> PC String String -> Set String -> Set String -> Set (Set String)
 divergentInnerKs0 mmi pc EmptyS _ = nil
 divergentInnerKs0 mmi pc (Set n ns) vns
     | isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc = let nns = nextNodesAfter mmi pc n in
         divergentInnerKs0 mmi pc (nns `union` ns) vns 
-    | (isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc) && (not $ inner_Ref pc n) = 
+    | (isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc) && (not $ innerRef pc n) = 
         let nns = nextNodesAfter mmi pc n in divergentInnerKs0 mmi pc (nns `union` ns) vns 
-    | (isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc) && (inner_Ref pc n) =  
-        let nns = nextNodesAfter mmi pc n in let rn = nmOfRefF mmi pc n in
+    | (isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc) && (innerRef pc n) =  
+        let nns = nextNodesAfter mmi pc n in let rn = nmOfRefP mmi pc n in
         divergentInnerKs0 mmi pc (rn `intoSet` (nns `union` ns)) vns
-    | isNodeOfTys n [CMM_Compound] (gCRSG mmi) pc = let nns = nextNodesAfter mmi pc n in
-        if n `elem` vns then divergentInnerKs0 mmi pc ns vns else divergentInnerKs0 mmi pc (compoundStart mmi pc n `intoSet` (nns `union` ns)) (n `intoSet` vns)
+    | isNodeOfTys n [CMM_Process] (gCRSG mmi) pc = let nns = nextNodesAfter mmi pc n in
+        if n `elem` vns then divergentInnerKs0 mmi pc ns vns else divergentInnerKs0 mmi pc ((maybeToSet $ processStart mmi pc n) `union` (nns `union` ns)) (n `intoSet` vns)
     | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = let nns = nextNodes mmi pc n in
         (foldr (\n' dss->(innerKsOf mmi pc (singles n') vns) `intoSet` dss) nil nns) `union` (divergentInnerKs0 mmi pc ns vns)
     | isNodeOfTys n [CMM_Stop,CMM_Skip] (gCRSG mmi) pc = divergentInnerKs0 mmi pc ns vns 
 
 divergentInnerKs :: MMI String String -> PC String String -> String -> Set (Set String)
-divergentInnerKs mmi pc n = divergentInnerKs0 mmi pc (singles $ compoundStart mmi pc n) (singles n)
+divergentInnerKs mmi pc n = divergentInnerKs0 mmi pc (maybeToSet $ processStart mmi pc n) (singles n)
 
 commonInnerKs :: MMI String String -> PC String String -> String -> Set String
 commonInnerKs mmi pc n = gunion (divergentInnerKs mmi pc n)
@@ -479,9 +547,9 @@ commonInnerKs mmi pc n = gunion (divergentInnerKs mmi pc n)
 nextKsOf::MMI String String->PC String String->String->Set String
 nextKsOf mmi pc n =
   let nns = if isNxtNAtfer then nextNodesAfter mmi pc n else nextNodes mmi pc n in
-  foldr (\n' ns->if isCompound n' then n' `intoSet` ns else (nextKsOf mmi pc n') `union` ns) EmptyS nns
+  foldr (\n' ns->if isProcess n' then n' `intoSet` ns else (nextKsOf mmi pc n') `union` ns) EmptyS nns
   where isNxtNAtfer = isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc
-        isCompound sn = isNodeOfTys sn [CMM_Compound] (gCRSG mmi) pc
+        isProcess sn = isNodeOfTys sn [CMM_Process] (gCRSG mmi) pc
   
 relKsOf::MMI String String->PC String String->Set String->Rel String String->Rel String String
 relKsOf mmi pc EmptyS r = r
@@ -491,8 +559,21 @@ relKsOf mmi pc (n `Set` ns) r =
   relKsOf mmi pc (ns `union` nks `sminus` (dom_of r)) r'
 
 relKs::MMI String String->PC String String->Rel String String
-relKs mmi pc = relKsOf mmi pc (singles $ startCompound mmi pc) nil
+relKs mmi pc = relKsOf mmi pc (singles $ startNode mmi pc) nil
 
---getImports :: GrM a -> [String]
+-- Gets import nodes of a PC
 importsOf :: SGr String String -> PC String String -> Set String
 importsOf sg_mm pc = ntyNsPC sg_mm pc CMM_Import
+
+-- Gets file name associated with an import node
+fNameOfImport :: PC String String ->String->String
+fNameOfImport pc ni = 
+  let es = img (inv $ src pc) [ni] `intersec` (es_of_ety pc . show_cmm_e $ CMM_Efname) in
+  if null es then ni else butLast $ appl (tgt pc) (first es)
+
+-- Gets PC name associated with an import node
+namePCOfImport :: PC String String ->String->String
+namePCOfImport pc ni = 
+  let es = img (inv $ src pc) [ni] `intersec` (es_of_ety pc . show_cmm_e $ CMM_Epc_name) in
+  if null es then ni else butLast $ appl (tgt pc) (first es)
+  --butLast $ appl (tgt pc) (first $ img (inv $ src pc) [ni] `intersec` (es_of_ety pc . show_cmm_e $ CMM_Epc_name)) 

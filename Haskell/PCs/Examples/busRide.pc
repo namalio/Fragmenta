@@ -1,0 +1,11 @@
+PC PC_ABusRide@ABusRide
+atom :'board'
+process ABusRide@board
+atom :'move'
+after board->move
+atom :'seat'
+after move->seat
+atom move2:'move'
+after seat->move2
+atom :'alight'
+after move2->alight

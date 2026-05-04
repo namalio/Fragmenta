@@ -2,7 +2,7 @@ TicketMachine =
    let 
       ReturnCoins = ejectCoins -> SKIP
    within
-      coin -> (green -> (issueTicket -> SKIP
-          |~| ReturnCoins)
+      coin -> (red -> ReturnCoins
          [] TicketMachine
-         [] red -> ReturnCoins)
+         [] green -> (ReturnCoins
+          |~| issueTicket -> SKIP))

@@ -24,12 +24,18 @@ import Prelude hiding (GT, LT, EQ)
 wrChannelDecl0::Int->Set Id->String
 wrChannelDecl0 ind ids = "channel " ++ (wrSepElems ids "," True False ind)
 
+
+wrDTyTerm::DTyTerm->String
+wrDTyTerm (DTyTerm id ts) = id ++ wr_ts ts
+   where wr_ts [] = ""
+         wr_ts (t:ts) = "." ++ t ++  wr_ts ts
+
 wrDecl :: Int -> Decl -> String
 wrDecl ind (Channel ids Nothing) = wrChannelDecl0 ind ids
 wrDecl ind (Channel ids (Just ty)) = wrChannelDecl0 ind ids ++ " : " ++ ty
 wrDecl ind (EqDecl e1 e2) = (do_indent ind) ++ (wrExp ind e1) ++ " = " ++ wrExp (ind +1) e2
 wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (toList ms)) "\n" False False ind
-wrDecl ind (DataTy id ids) = "datatype " ++ id ++ " = " ++ (wrSepElems ids " |" True False ind)  
+wrDecl ind (DataTy id vts) = "datatype " ++ id ++ " = " ++ (wrSepElems (fmap wrDTyTerm vts) " |" True False ind)  
 
 
 wrBOp::BOp->String
@@ -44,7 +50,10 @@ wrBOp GEQ = ">="
 wrBOp LEQ = "<="
 wrBOp LT = "<"
 wrBOp GT = ">"
-wrBOp EQ = ">"
+wrBOp EQ = "=="
+wrBOp Member = "member"
+wrBOp Union = "union"
+wrBOp Intersection = "inter"
 
 wrUOp::UOp->String
 wrUOp UMinus = "-"
@@ -59,11 +68,13 @@ wrExp :: Int -> Exp -> String
 wrExp _ (ExpId id) = id 
 wrExp ind (ExpPar e) = "(" ++ (wrExp ind e) ++ ")" 
 wrExp ind (ExpApp id bs) = id ++ "(" ++ (wrSepElems (map (wrExp ind) bs) ", " False False 0) ++ ")" 
-wrExp ind (ExpBOp e1 op e2) = (wrExp ind e1) ++ wrBOp op ++ (wrExp ind e2)
+wrExp ind (ExpBOp e1 op e2) 
+   | op `elem` [Member, Union, Intersection] = wrBOp op ++ " (" ++ (wrExp ind e1) ++ ", " ++ (wrExp ind e2) ++ ")"
+   | otherwise = (wrExp ind e1) ++ " " ++ wrBOp op ++ " " ++ (wrExp ind e2)
 wrExp ind (ExpUOp op e) = wrUOp op ++ (wrExp ind e)
 wrExp ind (ExpToken t) = wrToken t
 wrExp ind (GExp e1 e2) = (wrExp ind e1) ++ " & " ++ (wrExp ind e2)
-wrExp ind (ExpChannel id e) = id ++ "." ++ (wrExp ind e)
+wrExp ind (ExpChannel e1 e2) = (wrExp ind e1) ++ "." ++ (wrExp ind e2)
 wrExp ind (IfExp e1 e2 e3) = 
    "if " ++ (wrExp 0 e1) ++ "\n" ++ (do_indent ind) ++ "then\n" ++ (do_indent $ ind +1) ++ (wrExp ind e2) 
    ++ "\n" ++ (do_indent ind) ++ "else\n" ++ (do_indent $ ind +1) ++ (wrExp ind e3)
@@ -83,6 +94,7 @@ wrExp ind SKIP = "SKIP"
 wrExp ind (LetW ds e) = "\n" ++ (do_indent ind) ++ "let \n" ++ (wrSepElems (map (wrDecl $ ind + 1) ds) "\n" False False (ind +2)) 
    ++ "\n" ++ (do_indent ind) ++ "within\n" ++ (do_indent (ind+1)) ++ (wrExp (ind + 1) e)
 wrExp ind (ExpRen e rs) = wrExp ind e ++ wrRenamings rs
+wrExp ind (ExpSetE es) = "{" ++ foldr (\e es->wrExp ind e ++ if null es then es else "," ++ es) [] es ++ "}"
 
 wrRenamings :: Foldable t => t (String, String) ->String
 wrRenamings rs = "[[" ++ (foldr (\(fr, to) rstr->fr ++ " <- " ++ to ++ (if null rstr then "" else ",") ++ rstr) "" rs) ++ "]]"
@@ -100,7 +112,7 @@ hasWaitD (EqDecl _ e) = hasWait e
 hasWaitDs :: Foldable t => t Decl -> Bool
 hasWaitDs ds = foldr (\d d'->(hasWaitD d) || d') False ds
 
-wrCSP :: CSPSpec -> String
+wrCSP :: Spec -> String
 wrCSP (CSP ds) = 
    let cspTxt = wrSepElems (map (wrDecl 0) ds) "\n\n" False False 0 in
    cspTxt

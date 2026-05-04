@@ -1,19 +1,21 @@
 Morphism F_MM_3 {
 	nodes {
-		PNamedNode->Node
+		PNamedNode2->Node
 	    Import->Node
-		Compound->Node
+		Process->Node
         Atom->Node
-		TargetOfRef->Node
+		RefTarget->Trait
+		StartOfPC->Trait
 		Action->Node
 		Guarded->Trait
-		Bindable->Trait
-	    Parameter->Attribute
-		Guard->Attribute
-		PNamed2->Trait
+		PName->Attribute
+		PParameter->Attribute
+		WExp->Trait
 	}
 	edges {
-	   params->Has
-	   guard->Has
+	   pc_name->has
+	   fname->has
+	   rname->has
+	   params->has
 	}
 }

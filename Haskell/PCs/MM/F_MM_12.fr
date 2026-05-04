@@ -1,26 +1,21 @@
 fragment F_MM_12 {
   SG SG_MM_12 {
-    proxy PConnector4
-    proxy PCombinable2
+    proxy PConnector2
+    node AfterC
+    node DefinesC
     proxy PAction5
-    proxy PGuarded3
-    proxy PGuard
-    node BMainIfC
-    node BElseC
-    node BJumpC
-    node BranchC
-    inh BMainIfC->BranchC
-    inh BMainIfC->PGuarded3
-    inh BElseC->BranchC
-    inh BJumpC->BranchC
-    inh BranchC->PConnector4
-    rel BranchC->PCombinable2[BranchCSrc]:1..*;1
-    relu BranchC->PAction5[BranchCTgt]
-    derived BMainIfC->PGuard[DIf <-> guard]:0..1;1
+    proxy PProcess2
+    proxy PYesNo2
+    inh AfterC->PConnector2
+    inh DefinesC->PConnector2
+    relu AfterC->PYesNo2[AfterC_copen]
+    derived DefinesC->PProcess2[DDCSrc <-> src]:1;1
+    derived DefinesC->PAction5[DDCTgt <-> tgt]:?;1
+    derived AfterC->PAction5[DACSrc <-> src]:*;1
+    derived AfterC->PAction5[DACTgt <-> tgt]:*;1
   }
-  ref PConnector4->Connector
-  ref PCombinable2->Combinable
+  ref PConnector2->Connector
   ref PAction5->Action
-  ref PGuarded3->Guarded
-  ref PGuard->Guard
+  ref PProcess2->Process
+  ref PYesNo2->YesNo
 }

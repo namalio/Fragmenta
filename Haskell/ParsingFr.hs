@@ -213,8 +213,13 @@ parse_mult_val = do
 
 parse_smult::ReadP MultVal
 parse_smult = do
-   m<-parse_mult_many <|> parse_mult_val
+   m<-parse_mult_many <|> parse_mult_val 
    return m
+
+parse_mult_opt::ReadP MultC
+parse_mult_opt = do
+   char '?'
+   return (Rm 0 (Val 1))
 
 parse_range_mult::ReadP MultC
 parse_range_mult = do
@@ -234,7 +239,7 @@ parse_single_mult = do
 
 parse_multc::ReadP MultC
 parse_multc = do
-   m<-parse_range_mult <|> parse_single_mult
+   m<-parse_range_mult <|> parse_single_mult <|> parse_mult_opt
    return m
 
 parse_mult::ReadP Mult

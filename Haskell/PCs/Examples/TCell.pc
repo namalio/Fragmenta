@@ -1,0 +1,15 @@
+PC PC_TCell@TCell
+operator OpTCell.Parallel:'activatesPTK','inhibitorySignal','inactivatesPTK','positiveOn'
+process TCell@OpTCell
+op_connector OpTCell->RefActivation
+op_connector OpTCell->RefInhibition
+op_connector OpTCell->RefPositiveSignalling
+import TCellActivation as ActI for PC_TCellActivation
+import TCellInhibition as InhibI for PC_TCellInhibition
+import TCellPositiveSignalling as PosSignI for PC_TCellPositiveSignalling
+reference RefActivation:Activation
+ref_connector RefActivation->ActI
+reference RefInhibition:Inhibition
+ref_connector RefInhibition->InhibI
+reference RefPositiveSignalling:PositiveSignalling
+ref_connector RefPositiveSignalling->PosSignI

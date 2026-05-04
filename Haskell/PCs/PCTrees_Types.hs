@@ -2,6 +2,7 @@ module PCs.PCTrees_Types (
     Type(..)
     , Subst
     , isEventTy
+    , isDotTy
     , apply
     , freeVars
     , applySS
@@ -12,8 +13,8 @@ module PCs.PCTrees_Types (
     , removeFrEnv)
     where
 
-import PCs.PCsCommon(Id)
-import PCs.PCTrees_AST 
+import PCs.Common(Id)
+import PCs.PCTreesAST 
 import Relations
 import Sets
 import TheNil
@@ -40,6 +41,14 @@ isEventTy TEvent = True
 isEventTy (TDot _ t) = isEventTy t
 isEventTy _ = False
 
+isDotTy::Type->Bool
+isDotTy (TDot _ _) = True
+isDotTy _ = False
+
+--fstTy::Type->Type
+--fstTy (TDot t1 _) = t1
+--fstTy (TSet t) = t
+--fstTy (TFun t _) = t
 
 freeVars::Type->Set Id
 freeVars TBool = nil

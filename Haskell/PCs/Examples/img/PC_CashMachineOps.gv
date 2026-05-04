@@ -1,15 +1,16 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CashMachineOps];
-CashMachineOps [shape=box,fillcolor=deepskyblue,style = filled,label="CashMachineOps "];
+AI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_Authentication];
+cardIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardIn"];
 RefAuthenticate [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Authenticate (3)"];
-cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
-PC_Authentication [shape=hexagon,fillcolor=orangered,style=filled,label =PC_Authentication];
+CashMachineOps [shape=box,fillcolor=deepskyblue,style = filled,label="CashMachineOps "];
 
 {rank=same;RefAuthenticate,cardIn}
 {rank=same;CashMachineOps,StartN_}
 
+RefAuthenticate->AI[arrowhead="normalnormal",fillcolor=white,label=" "];
 cardIn->RefAuthenticate[arrowtail=dot,dir=both,label="after"];
 CashMachineOps->cardIn[arrowhead="onormal",penwidth=2,label="="];
 StartN_->CashMachineOps[label="starts"];
-RefAuthenticate->PC_Authentication[arrowhead="normalnormal",fillcolor=white,label=" "];
 }

@@ -1,0 +1,4 @@
+PC PC_Clock@Clock
+process Clock@tick
+atom :'tick'
+after tick->Clock

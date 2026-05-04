@@ -1,3 +1,3 @@
-MadTicker = (toque -> SKIP
-      [] tique -> SKIP)
-      [] taque -> STOP
+MadTicker = taque -> STOP
+       |~| (tique -> SKIP
+       |~| toque -> SKIP)

@@ -1,6 +1,6 @@
 include "PC_BreakStealHouse1P.csp"
 
-datatype MeansBreakIn = stolenKey | door | window
+datatype MeansBreakIn = stolenKey | window | door
 
 channel break : MeansBreakIn
 

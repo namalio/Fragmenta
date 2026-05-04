@@ -2,8 +2,12 @@ Buzzer =
    let 
       Muted = 
          let 
-            Buzzing = Timer(3)[[timeout <- mute]]
+            Buzzing = 
+               let 
+                  Buzzing0 = Timer(3)[[timeout <- mute]]
+               within
+                  Buzzing0; Muted
          within
-            buzz -> (Buzzing; Muted)
+            buzz -> Buzzing
    within
       Muted

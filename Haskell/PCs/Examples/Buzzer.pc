@@ -1,0 +1,10 @@
+PC PC_Buzzer@Buzzer
+import Timer as TmI for PC_Timer
+process Buzzer@Muted
+atom :'buzz'
+process Muted@buzz
+process Buzzing@RefTimer
+reference RefTimer:Timer.'3'[timeout/mute]
+ref_connector RefTimer->TmI
+after buzz->Buzzing
+after Buzzing->Muted

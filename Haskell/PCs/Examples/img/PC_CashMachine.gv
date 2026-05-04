@@ -1,53 +1,54 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CashMachine];
-RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-OpCashMachine2 [shape=diamond,fillcolor=yellow,style = filled,label="Θ"];
-OpCashMachine2_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="cancel,deny"];
-OpCashMachine2->OpCashMachine2_bs [dir=none,color="black:invis:black"];
-{rank=same;OpCashMachine2,OpCashMachine2_bs}
-SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-RefCardControl [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑CardControl "];
-PC_CashMachineOps [shape=hexagon,fillcolor=orangered,style=filled,label =PC_CashMachineOps];
-OpDoOptions [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-RefShowBalance [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ShowBalance "];
-PC_Withdraw [shape=hexagon,fillcolor=orangered,style=filled,label =PC_Withdraw];
-RefDoOptions [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-PC_ShowBalance [shape=hexagon,fillcolor=orangered,style=filled,label =PC_ShowBalance];
-RefWithdraw [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Withdraw "];
-DoOptions [shape=box,fillcolor=deepskyblue,style = filled,label="DoOptions "];
-RefCashMachineOps [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑CashMachineOps "];
-PC_CardControl [shape=hexagon,fillcolor=orangered,style=filled,label =PC_CardControl];
-cancel [shape=ellipse,fillcolor=greenyellow,style = filled,label="cancel"];
-OpCashMachine3 [shape=diamond,fillcolor=yellow,style = filled,label="|||"];
-OpCashMachine [shape=diamond,fillcolor=yellow,style = filled,label="||"];
+CashMachine [shape=box,fillcolor=deepskyblue,style = filled,label="CashMachine "];
+OpCashMachine [shape=diamond,fillcolor=yellow,style=filled,label="||"];
 OpCashMachine_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="cancel,cardIn,deny"];
 OpCashMachine->OpCashMachine_bs [dir=none,color="black:invis:black"];
 {rank=same;OpCashMachine,OpCashMachine_bs}
-CashMachine [shape=box,fillcolor=deepskyblue,style = filled,label="CashMachine "];
+OpCashMachine3 [shape=diamond,fillcolor=yellow,style=filled,label="|||"];
+cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
+CCI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CardControl];
+RefCashMachineOps [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑CashMachineOps "];
+DoOptions [shape=box,fillcolor=deepskyblue,style = filled,label="DoOptions "];
+RefWithdraw [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Withdraw "];
+SBI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_ShowBalance];
+RefDoOptions [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+WI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_Withdraw];
+RefShowBalance [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ShowBalance "];
+OpDoOptions [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+CMOI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachineOps];
+RefCardControl [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑CardControl "];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+OpCashMachine2 [shape=diamond,fillcolor=yellow,style=filled,label="Θ"];
+OpCashMachine2_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="cancel,deny"];
+OpCashMachine2->OpCashMachine2_bs [dir=none,color="black:invis:black"];
+{rank=same;OpCashMachine2,OpCashMachine2_bs}
+RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
 
-{rank=same;DoOptions,RefCashMachineOps}
 {rank=same;RefCashMachine,CashMachine}
+{rank=same;DoOptions,RefCashMachineOps}
 {rank=same;CashMachine,StartN_}
 
-RefShowBalance->RefDoOptions[arrowtail=dot,dir=both,label="after"];
-RefWithdraw->PC_Withdraw[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpDoOptions->RefShowBalance[arrowhead="open"];
-RefCashMachineOps->DoOptions[arrowtail=dot,dir=both,label="after"];
-RefCardControl->PC_CardControl[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpCashMachine3->cancel[arrowhead="open"];
-OpCashMachine2->OpCashMachine3[arrowhead="open"];
-OpCashMachine->RefCardControl[arrowhead="open"];
-RefCashMachine->CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
-DoOptions->OpDoOptions[arrowhead="onormal",penwidth=2,label="="];
-CashMachine->OpCashMachine[arrowhead="onormal",penwidth=2,label="="];
-StartN_->CashMachine[label="starts"];
-CashMachine->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-OpCashMachine->OpCashMachine2[arrowhead="open"];
-OpCashMachine2->SKIP[arrowhead="open",label="Jump"];
-OpCashMachine3->RefCashMachineOps[arrowhead="open"];
-RefCashMachineOps->PC_CashMachineOps[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpDoOptions->RefWithdraw[arrowhead="open"];
-RefShowBalance->PC_ShowBalance[arrowhead="normalnormal",fillcolor=white,label=" "];
-RefWithdraw->RefDoOptions[arrowtail=dot,dir=both,label="after"];
 RefDoOptions->DoOptions[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefWithdraw->RefDoOptions[arrowtail=dot,dir=both,label="after"];
+RefShowBalance->SBI[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpDoOptions->RefWithdraw[arrowhead="open"];
+RefCashMachineOps->CMOI[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpCashMachine3->RefCashMachineOps[arrowhead="open"];
+OpCashMachine2->SKIP[arrowhead="open",label="Jump"];
+OpCashMachine->OpCashMachine2[arrowhead="open"];
+CashMachine->RefCashMachine[arrowtail=dot,dir=both,label="after"];
+RefCashMachine->CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpCashMachine->RefCardControl[arrowhead="open"];
+OpCashMachine2->OpCashMachine3[arrowhead="open"];
+OpCashMachine3->cancel[arrowhead="open"];
+RefCardControl->CCI[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefCashMachineOps->DoOptions[arrowtail=dot,dir=both,label="after"];
+OpDoOptions->RefShowBalance[arrowhead="open"];
+RefWithdraw->WI[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefShowBalance->RefDoOptions[arrowtail=dot,dir=both,label="after"];
+CashMachine->OpCashMachine[arrowhead="onormal",penwidth=2,label="="];
+DoOptions->OpDoOptions[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CashMachine[label="starts"];
 }

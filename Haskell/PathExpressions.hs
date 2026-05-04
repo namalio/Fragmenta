@@ -17,7 +17,8 @@ module PathExpressions (PEA(..), PE(..), PEC(..)
    , startEAC
    , endEA
    , endEAC
-   , fmap2PE) where
+   , fmap2PE
+   , esPE) where
 
 import Sets
 import Gr_Cls
@@ -89,18 +90,27 @@ startEA (Ec pe) = startEAC pe
 startEA (SCmp pe _) = startEAC pe
 
 -- The end or target edge (rightmost) of a path expression
-endEAC :: PEC a b -> PEA b
+endEAC :: PEC v e -> PEA e
 endEAC (At pea) = pea 
 endEAC (Dres _ pea) = pea 
 endEAC (Rres pea _) = pea
-endEA :: PE a b -> PEA b
+endEA :: PE v e -> PEA e
 endEA (Ec pe) = endEAC pe
 endEA (SCmp _ pe) = endEA pe
 
 -- reduces to the source edge (leftmost) of a path expression
-rsrcPE :: (Eq a, Eq b) => PE a b -> b
+rsrcPE :: (Eq v, Eq e) => PE v e -> e
 rsrcPE = ePEA . startEA
 
 -- reduces to the target edge (rightmost) of a path expression
-rtgtPE :: (Eq a, Eq b) => PE a b -> b
+rtgtPE :: (Eq v, Eq e) => PE v e -> e
 rtgtPE = ePEA . endEA
+
+esPEC::(Eq v, Eq e) =>PEC v e ->Set e
+esPEC (At pea) = singles $ ePEA pea 
+esPEC (Dres _ pea) = singles $ ePEA pea 
+esPEC (Rres pea _) = singles $ ePEA pea
+
+esPE::(Eq v, Eq e) =>PE v e ->Set e
+esPE (Ec pec) = esPEC pec
+esPE (SCmp pec pe) = esPEC pec `union` esPE pe

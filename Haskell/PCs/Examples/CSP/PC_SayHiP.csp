@@ -1,1 +1,1 @@
-SayHi = hi -> SKIP
+SayHi = SayAtLeastOnce[[something <- hi]]

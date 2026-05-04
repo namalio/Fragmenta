@@ -1,6 +1,0 @@
-PC PC_Clock_ref@Clock
-compound Clock@tick
-atom tick
-reference RefClock
-after_connector tick->RefClock
-ref_connector RefClock->Clock

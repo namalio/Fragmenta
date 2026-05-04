@@ -1,0 +1,5 @@
+PC PC_SayHi@SayHi
+process SayHi@RefSayAtLeastOnce
+import SayAtLeastOnce as SayLonceI for PC_SayAtLeastOnce
+reference RefSayAtLeastOnce:SayAtLeastOnce[something/hi]
+ref_connector RefSayAtLeastOnce->SayLonceI

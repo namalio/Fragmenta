@@ -44,15 +44,20 @@ parseParExp = do
 parseDotExp::ReadP PCEAtom
 parseDotExp = do
     skipSpaces
-    id <- parseId
+    e1 <- parsePCExpA
     char '.' 
-    e<-parsePCExpA
+    e2<-parsePCExpA
     skipSpaces
-    return $ DotExp id e
+    return $ DotExp e1 e2
 
 parsePCExpA::ReadP PCEAtom
-parsePCExpA = parseTrue <|> parseFalse <|> parseIdExp <|> parseNumExp 
-    <|> parseParExp <|> parseDotExp
+parsePCExpA 
+    = parseTrue 
+    <|> parseFalse 
+    <|> parseIdExp 
+    <|> parseNumExp 
+    <|> parseParExp 
+    <|> parseDotExp
 
 parseBinOpGT::ReadP PCERelOp
 parseBinOpGT = char '>' >> return OGT
