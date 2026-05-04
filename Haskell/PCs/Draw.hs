@@ -143,7 +143,7 @@ toPCDrawing mmi pc =
        r_after = afterCRel mmi pc
        freeFromSameRefs = filterS (\n->length (img (inv r_after) [n])>1) (ntyNsPC (gCRSG mmi) pc CMM_Reference)
        ss_r = (rsub r_after freeFromSameRefs) `sminus` (inv $ trancl $ withinRel mmi pc)
-       ss' = set [getPCStart (gCRSG mmi) pc, startNode mmi pc] `intoSet` (sames ss_r) in
+       ss' = set [getPCStart (gCRSG mmi) pc, startingPoint mmi pc] `intoSet` (sames ss_r) in
    PCDrawing (getPCName pc) nodes cs ds ss'
 
 wrParams :: (Foldable t, Functor t) => String -> t Param -> String

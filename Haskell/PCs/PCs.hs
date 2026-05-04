@@ -12,7 +12,7 @@ module PCs.PCs
   , getAtoms
   , getPCStart
   , load_mm_info
-  , startNode
+  , startingPoint
   , getPCDefN
   , getPCName
   , srcOf
@@ -132,12 +132,15 @@ getAtoms sg_mm pc =
 getPCStart :: SGr String String ->PC String String -> String
 getPCStart sg_mm pc = the $ ntyNsPC sg_mm pc CMM_StartN
 
--- Get's a PCs starting node
-startNode :: MMI String String -> PC String String -> String
-startNode mmi pc = the $ (nextNodes mmi pc $ getPCStart (gCRSG mmi) pc)
+-- Get's a PCs starting node, a reference or a process
+startingPoint :: MMI String String -> PC String String -> String
+startingPoint mmi pc = 
+  let n = getPCStart (gCRSG mmi) pc
+      startC =  successorsOf mmi pc n `intersec` img (inv $ fV pc) [show_cmm_n CMM_StartC] in
+  the $ successorsOf mmi pc (the startC)
 
 
---Gets start node of a process compound (target of a process definition connector)
+--Gets starting node of a process compound (target of a process definition connector)
 processStart :: MMI String String -> PC String String ->String->Maybe String
 processStart mmi pc n = 
    let defC = successorsOf mmi pc n `intersec` img (inv $ fV pc) [show_cmm_n CMM_DefinesC] in
@@ -451,7 +454,7 @@ withinRelWith mmi pc n pcs =
    r `union` r'
 
 withinRel :: MMI String String -> PC String String -> Rel String String
-withinRel mmi pc = withinRelWith mmi pc (startNode mmi pc) nil
+withinRel mmi pc = withinRelWith mmi pc (startingPoint mmi pc) nil
 
 innerKsOf :: MMI String String -> PC String String ->Set String->Set String-> Set String
 innerKsOf mmi pc EmptyS _ = EmptyS
@@ -515,7 +518,7 @@ importedKsOf mmi pc (Set n ns) vns
   where isImported = any (\n'->isNodeOfTys n' [CMM_Import] (gCRSG mmi) pc) (nextNodes mmi pc n) 
 
 importedKs::MMI String String -> PC String String ->Set String
-importedKs mmi pc = importedKsOf mmi pc (singles $ startNode mmi pc) nil
+importedKs mmi pc = importedKsOf mmi pc (singles $ startingPoint mmi pc) nil
 
 divergentInnerKs0 :: MMI String String -> PC String String -> Set String -> Set String -> Set (Set String)
 divergentInnerKs0 mmi pc EmptyS _ = nil
@@ -559,7 +562,7 @@ relKsOf mmi pc (n `Set` ns) r =
   relKsOf mmi pc (ns `union` nks `sminus` (dom_of r)) r'
 
 relKs::MMI String String->PC String String->Rel String String
-relKs mmi pc = relKsOf mmi pc (singles $ startNode mmi pc) nil
+relKs mmi pc = relKsOf mmi pc (singles $ startingPoint mmi pc) nil
 
 -- Gets import nodes of a PC
 importsOf :: SGr String String -> PC String String -> Set String

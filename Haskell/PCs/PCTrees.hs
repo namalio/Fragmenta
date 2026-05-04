@@ -310,7 +310,7 @@ toPCTD::MMI String String->PC String String->PCTD
 toPCTD mmi pc = 
   let r = relKs mmi pc
       ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
-      (pts, _) = seqPTs mmi pc r (set1 $ startNode mmi pc) nil in 
+      (pts, _) = seqPTs mmi pc r (set1 $ startingPoint mmi pc) nil in 
   PCTD (getPCName pc) ds pts
 
 -- Constructs a PCTD from a PCs model

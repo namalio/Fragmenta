@@ -514,8 +514,9 @@ test :: IO ()
 test = do 
    mmi<-load_mm_info mm_path
    opc<-loadPC (gCRSG mmi) (pcs_path ++ "BiscuitJar.pc")
-   print$ relKs mmi (the opc)
-   print $ innerKs mmi (the opc) "BiscuitJar"
+   print $ startingPoint mmi (the opc)
+   --print$ relKs mmi (the opc)
+   --print $ innerKs mmi (the opc) "BiscuitJar"
    --print $ expsOfRef mmi (the opc) "RefJarOpenedDrop"
    --print $ img (tgt pc) $ img (inv $ src pc) ["CRefJarOpenedDrop"] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps)
    --print $ img (inv $ src pc) ["takeBiscuit"] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps)
