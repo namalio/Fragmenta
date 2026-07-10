@@ -1,0 +1,48 @@
+PC PC_HouseUnderAttack_Ransack {grabLaptop, grabJewels} @ Ransack
+operator OpInHouse.Choice
+process Ransack@OpInHouse
+atom :'mainDoor'
+atom :'roomWindow'
+atom :'intoHall'
+op_connector OpInHouse->mainDoor
+op_connector OpInHouse->roomWindow
+process IntoHall@intoHall
+process IntoRoom@intoRoom
+after mainDoor->IntoHall
+after roomWindow->IntoRoom
+operator OpInHall.Choice
+after intoHall->OpInHall
+atom :'intoLivingRoom'
+atom :'intoKitchen'
+op_connector OpInHall->intoLivingRoom
+op_connector OpInHall->intoKitchen
+reference RefIntoRoom:IntoRoom
+ref_connector hidden RefIntoRoom->IntoRoom
+op_connector OpInHall->RefIntoRoom
+atom mainDoor2:'mainDoor'
+op_connector OpInHall->mainDoor2
+after intoKitchen->IntoHall
+after intoLivingRoom->InLivingRoom
+operator OpInLivingRoom.Choice
+process InLivingRoom@OpInLivingRoom
+reference RefIntoHall:IntoHall
+ref_connector hidden RefIntoHall->IntoHall
+op_connector OpInLivingRoom->RefIntoHall
+atom :'grabTV'
+op_connector OpInLivingRoom->grabTV
+after grabTV->InLivingRoom
+atom :'intoRoom'
+process IntoRoom@intoRoom
+process InRoom@OpInRoom
+operator OpInRoom.Choice
+after intoRoom->InRoom
+quantifiedOp seizeQ.Choice e : '{grabLaptop,grabJewels}'
+atom seize:'e'
+op_connector OpInRoom->seizeQ
+op_connector seizeQ->seize
+atom roomWindow2:'roomWindow'
+op_connector OpInRoom->roomWindow2
+after seize->InRoom
+reference RefIntoHall2:IntoHall
+ref_connector hidden RefIntoHall2->IntoHall
+op_connector OpInRoom->RefIntoHall2

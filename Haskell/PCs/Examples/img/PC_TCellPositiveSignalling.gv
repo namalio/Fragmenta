@@ -1,18 +1,19 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCellPositiveSignalling];
+
 activatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
 OpPositiveSignallingOn [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 positiveOn [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {¬full}
 positiveOn"];
 freeLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="freeLigandTCR"];
-RefPositiveSignallingOn [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPositiveSignallingOn [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 OpPositiveSignallingDecay [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 positiveOff [shape=ellipse,fillcolor=greenyellow,style=filled,label="positiveOff"];
-RefPositiveSignallingDecay [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-RefPositiveSignalling [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPositiveSignallingDecay [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefPositiveSignalling [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 PositiveSignallingDecay [shape=box,fillcolor=deepskyblue,style = filled,label="PositiveSignallingDecay "];
-RefPositiveSignallingOn2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPositiveSignallingOn2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitorySignal"];
 inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactivatesPTK"];
 PositiveSignallingOn [shape=box,fillcolor=deepskyblue,style = filled,label="PositiveSignallingOn (full)"];

@@ -2,20 +2,19 @@ fragment F_AMM {
   SG SG_AMM {
     node Attribute
     nodea Element
-    node PCDef
+    node DiagDef
     virtual Trait
     node Node
     node Connector
     node Definition
-    compu PCDef->Element[contains]:*
+    compu DiagDef->Element[contains]:*
     inh Element->Trait
-    inh PCDef->Trait
+    inh DiagDef->Trait
     inh Attribute->Trait
     inh Connector->Element
     inh Definition->Element
     inh Node->Element
     rel Trait->Trait[has]:*;*
-    rel PCDef->Node[starts]:0..1;1
     relu Connector->Node[csrc]
     relu Connector->Node[ctgt]
   }

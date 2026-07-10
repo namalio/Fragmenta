@@ -1,10 +1,11 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Authentication];
+
 Authenticate [shape=box,fillcolor=deepskyblue,style = filled,label="Authenticate (n)"];
 OpAuthenticateChoice [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 grant [shape=ellipse,fillcolor=greenyellow,style=filled,label="grant"];
-RefAuthenticate [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefAuthenticate [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 fail [shape=ellipse,fillcolor=greenyellow,style=filled,label="fail"];
 deny [shape=ellipse,fillcolor=greenyellow,style=filled,label="deny"];
 OpAuthenticate [shape=diamond,fillcolor=yellow,style=filled,label="If"];

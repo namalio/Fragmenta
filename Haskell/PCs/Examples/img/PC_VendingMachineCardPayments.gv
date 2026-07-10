@@ -1,0 +1,48 @@
+digraph {
+subgraph cluster_CPCmds {
+style="filled,rounded";
+label =CPCmds;
+fillcolor = cadetblue1;
+refund[shape=box,fillcolor=darkolivegreen1,style="filled",label="refund"];
+chargeAmount[shape=box,fillcolor=darkolivegreen1,style="filled",label="chargeAmount"];
+}
+
+subgraph cluster_OkFail {
+style="filled,rounded";
+label =OkFail;
+fillcolor = cadetblue1;
+fail[shape=box,fillcolor=darkolivegreen1,style="filled",label="fail"];
+ok[shape=box,fillcolor=darkolivegreen1,style="filled",label="ok"];
+}
+
+subgraph cluster_CPMsgs {
+style="filled,rounded";
+label =CPMsgs;
+fillcolor = cadetblue1;
+payment[shape=box,fillcolor=darkolivegreen1,style="filled",label="payment.OkFail"];
+}
+
+
+refund->StartN_[style=invis]
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineCardPayments];
+
+CardPayments [shape=box,fillcolor=deepskyblue,style = filled,label="CardPayments"];
+CPI [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ cpms:CPMsgs>];
+cpi [shape=ellipse,fillcolor=greenyellow,style=filled,label="frPay.cpms"];
+RefCardPayments [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+cpo [shape=ellipse,fillcolor=greenyellow,style=filled,label="toPay.cpcs"];
+CPO [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ cpcs:CPCmds>];
+OpCardPayments [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+
+{rank=same;RefCardPayments,CardPayments}
+{rank=same;CardPayments,StartN_}
+
+CardPayments->RefCardPayments[arrowtail=dot,dir=both,label="after"];
+CPO->cpo[arrowhead="open"];
+OpCardPayments->CPO[arrowhead="open"];
+OpCardPayments->CPI[arrowhead="open"];
+CPI->cpi[arrowhead="open"];
+RefCardPayments->CardPayments[arrowhead="normalnormal",fillcolor=white,label=" "];
+CardPayments->OpCardPayments[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CardPayments[label="starts"];
+}

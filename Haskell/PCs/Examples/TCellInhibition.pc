@@ -1,9 +1,9 @@
-PC PC_TCellInhibition@Inhibition
+PC PC_TCellInhibition {} @Inhibition
 process Inhibition@activatesPTK
-atom activatesPTK
+atom :'activatesPTK'
 after activatesPTK->RefFullInhibition
-atom inhibitorySignal{¬full}
-atom inactivatesPTK
+atom :'inhibitorySignal'{¬full}
+atom :'inactivatesPTK'
 process FullInhibition.full@OpInhibiting
 reference RefFullInhibition
 ref_connector RefFullInhibition->FullInhibition.'False'
@@ -13,8 +13,8 @@ op_connector OpInhibiting->inhibitorySignal
 op_connector OpInhibiting->inactivatesPTK
 process InhibitionDecay@OpInhibitionDecay
 operator OpInhibitionDecay.Choice
-atom inhibitDecay
-atom activatesPTK2->activatesPTK
+atom :'inhibitDecay'
+atom activatesPTK2:'activatesPTK'
 op_connector OpInhibitionDecay->inhibitDecay
 op_connector OpInhibitionDecay->activatesPTK2
 after activatesPTK2->RefFullInhibition

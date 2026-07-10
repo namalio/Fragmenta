@@ -1,21 +1,20 @@
 digraph {graph[label=F_MM_12,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_12{style=dashed;label=F_MM_12;
-"PConnector2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector2<br/>(P)>];
-"AfterC"[shape=record,fillcolor=lightskyblue1,style = filled,label="AfterC"];
-"DefinesC"[shape=record,fillcolor=lightskyblue1,style = filled,label="DefinesC"];
-"PAction5"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action5<br/>(P)>];
-"PProcess2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Process2<br/>(P)>];
-"PYesNo2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo2<br/>(P)>];
+"ReferenceC"[shape=record,fillcolor=lightskyblue1,style = filled,label="ReferenceC"];
+"PConnector3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector3<br/>(P)>];
+"PBindable2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable2<br/>(P)>];
+"PReference"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reference<br/>(P)>];
+"PRefTarget"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<RefTarget<br/>(P)>];
+"PYesNo3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo3<br/>(P)>];
 
-"AfterC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
-"DefinesC"->"PConnector2"[arrowhead=onormal,arrowsize=2.0];
-"AfterC"->"PYesNo2"[label="AfterC_copen",arrowhead=vee,headlabel="",arrowsize=.5];
-"DefinesC"->"PProcess2"[label="DDCSrc: src ▼",dir=none,taillabel="",headlabel="",style=dotted];
-"DefinesC"->"PAction5"[label="DDCTgt: tgt ▼",dir=none,taillabel="?",headlabel="",style=dotted];
-"AfterC"->"PAction5"[label="DACSrc: src ▼",dir=none,taillabel="*",headlabel="",style=dotted];
-"AfterC"->"PAction5"[label="DACTgt: tgt ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"ReferenceC"->"PConnector3"[arrowhead=onormal,arrowsize=2.0];
+"ReferenceC"->"PBindable2"[arrowhead=onormal,arrowsize=2.0];
+"ReferenceC"->"PYesNo3"[label="ReferenceC_hidden",arrowhead=vee,headlabel="",arrowsize=.5];
+"ReferenceC"->"PReference"[label="DRCSrc: src ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"ReferenceC"->"PRefTarget"[label="DRCTgt: tgt ▼",dir=none,taillabel="*",headlabel="?",style=dotted];
 
 }
+
 
 
 

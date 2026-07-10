@@ -146,7 +146,7 @@ instance GM_CHK Mdl Mdl where
    faultsGM id Nothing         = reportMGM id
    faultsGM id (Just WeakM)    = reportMGM id
    faultsGM id (Just PartialM) = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
-   faultsGM id (Just TotalM) = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
+   faultsGM id (Just TotalM)   = \(mc, m, ma)-> report_mrefines id (mc, [m], ma)
 
 ty_compliesm::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)
     =>GrwT a b->Mdl a b->Bool

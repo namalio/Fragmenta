@@ -1,0 +1,18 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_SayLoveuHateu];
+SayLoveuHateu [shape=box,fillcolor=deepskyblue,style = filled,label="SayLoveuHateu "];
+SayLonceI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_SayAtLeastOnce];
+RefHateu [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑SayAtLeastOnce ⟦something/hateu⟧"];
+RefLoveu [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑SayAtLeastOnce ⟦something/loveu⟧"];
+OpLoveuHateu [shape=diamond,fillcolor=yellow,style=filled,label="|||"];
+
+{rank=same;SayLoveuHateu,StartN_}
+
+OpLoveuHateu->RefHateu[arrowhead="open"];
+OpLoveuHateu->RefLoveu[arrowhead="open"];
+RefLoveu->SayLonceI[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefHateu->SayLonceI[arrowhead="normalnormal",fillcolor=white,label=" "];
+SayLoveuHateu->OpLoveuHateu[arrowhead="onormal",penwidth=2,label="="];
+StartN_->SayLoveuHateu[label="starts"];
+}

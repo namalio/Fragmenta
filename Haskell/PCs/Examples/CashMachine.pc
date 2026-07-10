@@ -1,4 +1,4 @@
-PC PC_CashMachine@CashMachine
+PC PC_CashMachine {} @CashMachine
 process CashMachine@OpCashMachine
 reference RefCashMachine
 ref_connector RefCashMachine->CashMachine
@@ -11,7 +11,7 @@ operator OpCashMachine3.Interleave
 op_connector OpCashMachine2->OpCashMachine3
 skip SKIP
 op_jump_connector OpCashMachine2->SKIP
-atom cancel
+atom :'cancel'
 op_connector OpCashMachine3->cancel
 op_connector OpCashMachine3->RefCashMachineOps
 reference RefCardControl:CardControl

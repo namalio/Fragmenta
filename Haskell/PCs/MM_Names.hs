@@ -17,7 +17,7 @@ data PCs_AMM_Ns
     | AMM_Connector
     | AMM_Node
     | AMM_Trait
-    | AMM_PCDef
+    | AMM_DiagDef
     | AMM_Element
     deriving (Read, Show, Eq)
 
@@ -25,7 +25,6 @@ data PCs_AMM_Es
     = AMM_Ectgt 
     | AMM_Econtains
     | AMM_Ehas
-    | AMM_Estarts
     | AMM_Ecsrc
     deriving (Read, Show, Eq)
 
@@ -40,6 +39,7 @@ data PCs_CMM_Ns
     | CMM_PNamed
     | CMM_PNamed2
     | CMM_PTyped
+    | CMM_PWParameters
     | CMM_PNamed3
     | CMM_PPCType
     | CMM_YesNo
@@ -54,69 +54,65 @@ data PCs_CMM_Ns
     | CMM_PWExp
     | CMM_EnumType
     | CMM_EnumTerm
-    | CMM_Quantification
-    | CMM_PNamedNode3
-    | CMM_PAction
-    | CMM_PName2
-    | CMM_POpQuantifiedOp
-    | CMM_PWExp3
-    | CMM_PGuarded
     | CMM_TxtExp
-    | CMM_Combinable
-    | CMM_PNode2
-    | CMM_PBindable
-    | CMM_PAction4
-    | CMM_PName3
-    | CMM_PYesNo
-    | CMM_PGuarded2
-    | CMM_PStartOfPC
-    | CMM_Reference
-    | CMM_Renaming
-    | CMM_PConnector2
-    | CMM_AfterC
-    | CMM_DefinesC
-    | CMM_PAction5
-    | CMM_PProcess2
-    | CMM_PYesNo2
-    | CMM_PConnector4
-    | CMM_PCombinable2
-    | CMM_PAction6
-    | CMM_PGuarded4
-    | CMM_PTxtExp2
-    | CMM_PQuantification
-    | CMM_BMainIfC
-    | CMM_BElseC
-    | CMM_BJumpC
-    | CMM_BranchC
-    | CMM_PDefinition2
-    | CMM_PCustom
-    | CMM_PName4
-    | CMM_PReference2
-    | CMM_PConnector5
-    | CMM_PAtom2
-    | CMM_PYesNo3
-    | CMM_PRefTarget
-    | CMM_PReference
-    | CMM_PBindable2
-    | CMM_PConnector3
-    | CMM_ReferenceC
-    | CMM_PStartOfPC2
-    | CMM_PStartN
-    | CMM_StartC
-    | CMM_PConnector
-    | CMM_Combination
-    | CMM_Skip
-    | CMM_Stop
-    | CMM_PTxtExp
-    | CMM_Bindable
-    | CMM_PCombinable
-    | CMM_POperator
-    | CMM_PAction3
     | CMM_PNode
-    | CMM_AnyOf
     | CMM_PAction2
-    | CMM_PNamedNode4
-    | CMM_PWExp2
+    | CMM_PCombinable
+    | CMM_PTxtExp2
+    | CMM_Stop
+    | CMM_Skip
+    | CMM_Combination
+    | CMM_Bindable
+    | CMM_PConnector
+    | CMM_StartC
+    | CMM_PStartN
+    | CMM_PStartOfPC2
+    | CMM_ReferenceC
+    | CMM_PConnector3
+    | CMM_PBindable2
+    | CMM_PReference
+    | CMM_PRefTarget
+    | CMM_PYesNo3
+    | CMM_PAtom2
+    | CMM_PConnector5
+    | CMM_PReference2
+    | CMM_PName4
+    | CMM_PCustom
+    | CMM_PDefinition2
+    | CMM_BranchC
+    | CMM_BJumpC
+    | CMM_BElseC
+    | CMM_BMainIfC
+    | CMM_PQuantification
+    | CMM_PTxtExp3
+    | CMM_PGuarded3
+    | CMM_PAction5
+    | CMM_PCombinable2
+    | CMM_PConnector4
+    | CMM_PProcess2
+    | CMM_PAction4
+    | CMM_DefinesC
+    | CMM_AfterC
+    | CMM_PConnector2
+    | CMM_Renaming
+    | CMM_Reference
+    | CMM_PStartOfPC
+    | CMM_PGuarded2
+    | CMM_PYesNo
+    | CMM_PName3
+    | CMM_PAction3
+    | CMM_PBindable
+    | CMM_PNode2
+    | CMM_Combinable
+    | CMM_TyTxtExp
+    | CMM_PTxtExp
+    | CMM_PGuarded
+    | CMM_POperator
+    | CMM_POpQuantifiedOp
+    | CMM_PName2
+    | CMM_PAction
+    | CMM_PNamedNode3
+    | CMM_Quantification
     | CMM_OpQuantifiedOp
     | CMM_VOpThrow
     | CMM_VOpInterleave
@@ -130,13 +126,14 @@ data PCs_CMM_Ns
     | CMM_StartOfPC
     | CMM_RefTarget
     | CMM_Action
-    | CMM_PParameter
+    | CMM_PWParameters2
+    | CMM_Import
     | CMM_Atom
     | CMM_Process
-    | CMM_Import
     | CMM_PName
     | CMM_PNamedNode2
     | CMM_Parameter
+    | CMM_WParameters
     | CMM_Typed
     | CMM_PCType
     | CMM_Name
@@ -150,34 +147,34 @@ data PCs_CMM_Es
     | CMM_Epc_name
     | CMM_Efname
     | CMM_Ername
-    | CMM_ECombination_op
-    | CMM_Eexps
-    | CMM_EDSCSrc
-    | CMM_EDSCTgt
-    | CMM_EReferenceC_hidden
-    | CMM_EDRCSrc
-    | CMM_EDRCTgt
-    | CMM_EDAt
-    | CMM_EDRt
-    | CMM_EDDTy
-    | CMM_EDBCSrc2
-    | CMM_EDBCTgt
-    | CMM_EDBCSrc
-    | CMM_EDIf
-    | CMM_EDACTgt
-    | CMM_EDACSrc
-    | CMM_EDDCTgt
-    | CMM_EDDCSrc
-    | CMM_EAfterC_copen
-    | CMM_ERenaming_old
-    | CMM_ERenaming_new
-    | CMM_ERenamings
-    | CMM_EReference_inner
-    | CMM_EReference_name
-    | CMM_Eguard
-    | CMM_Eexp
-    | CMM_EopOfQuantifiedOp
     | CMM_Evar
+    | CMM_Eop
+    | CMM_EDQOp
+    | CMM_Eguard
+    | CMM_Eqtexp
+    | CMM_EReference_name
+    | CMM_EReference_inner
+    | CMM_ERenamings
+    | CMM_ERenaming_new
+    | CMM_ERenaming_old
+    | CMM_EDDCSrc
+    | CMM_EDDCTgt
+    | CMM_EDACSrc
+    | CMM_EDACTgt
+    | CMM_EDIf
+    | CMM_EDBCSrc
+    | CMM_EDBCTgt
+    | CMM_EDBCSrc2
+    | CMM_EDDTy
+    | CMM_EDRt
+    | CMM_EDAt
+    | CMM_EDRCTgt
+    | CMM_EDRCSrc
+    | CMM_EReferenceC_hidden
+    | CMM_EDSCTgt
+    | CMM_EDSCSrc
+    | CMM_Earguments
+    | CMM_Eexp
     | CMM_Eterms
     | CMM_EsetOf
     | CMM_EStarts

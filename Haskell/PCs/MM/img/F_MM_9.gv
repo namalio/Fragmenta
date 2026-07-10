@@ -1,27 +1,29 @@
 digraph {graph[label=F_MM_9,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_9{style=dashed;label=F_MM_9;
-"PNode"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node<br/>(P)>];
+"PNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node2<br/>(P)>];
+"PBindable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable<br/>(P)>];
 "PAction3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action3<br/>(P)>];
-"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
-"PCombinable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Combinable<br/>(P)>];
-"Bindable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Bindable</I><br/>(V)}>];
-"PTxtExp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<TxtExp<br/>(P)>];
-"Stop"[shape=record,fillcolor=lightskyblue1,style = filled,label="Stop"];
-"Skip"[shape=record,fillcolor=lightskyblue1,style = filled,label="Skip"];
-"Combination"[shape=record,fillcolor=lightskyblue1,style = filled,label="Combination"];
+"PName3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name3<br/>(P)>];
+"PYesNo"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo<br/>(P)>];
+"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
+"PStartOfPC"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartOfPC<br/>(P)>];
+"Reference"[shape=record,fillcolor=lightskyblue1,style = filled,label="Reference"];
+"Renaming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Renaming"];
 
-"Stop"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Skip"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PNode"[arrowhead=onormal,arrowsize=2.0];
-"Stop"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
-"Skip"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PCombinable"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"Bindable"[arrowhead=onormal,arrowsize=2.0];
-"Combination"->"POperator"[label="Combination_op",arrowhead=vee,headlabel="",arrowsize=.5];
-"Bindable"->"PTxtExp"[label="exps",arrowhead=vee,headlabel="*",arrowsize=.5];
+"Reference"->"PNode2"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PBindable"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PAction3"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PStartOfPC"[arrowhead=onormal,arrowsize=2.0];
+"Reference"->"PName3"[label="Reference_name",arrowhead=vee,headlabel="?",arrowsize=.5];
+"Reference"->"PYesNo"[label="Reference_inner",arrowhead=vee,headlabel="",arrowsize=.5];
+"Reference"->"Renaming"[label="Renamings▼",dir=none,taillabel="",headlabel="*"];
+"Renaming"->"PName3"[label="Renaming_new",arrowhead=vee,headlabel="",arrowsize=.5];
+"Renaming"->"PName3"[label="Renaming_old",arrowhead=vee,headlabel="",arrowsize=.5];
 
 }
+
+
 
 
 

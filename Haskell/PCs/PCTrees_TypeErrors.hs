@@ -19,7 +19,8 @@ data TyError
     | NotBooleanExp Exp
     | ExpNotOfExpectedType Exp Ty Ty 
     | InvalidAtomExpression Exp 
-    | ParamIdNotUnique Id Id
+    | InvalidParamId Id
+    | ParamIdsNotUnique Id [Id]
     | CouldNotMatchExpectedType Ty Ty
     | IncompatibleTypesInExp OpS Ty Ty
     | IncompatibleTypesInUExp OpS Ty
@@ -32,11 +33,12 @@ data TyError
     | NotOfDotType Id Ty
     | ExpNotOfIdType Exp 
     | ProcessDeclNotCompound Id
+    | UnexpectedError String
     deriving (Show)
 
 errorMsg::TyError->String
 errorMsg (IdExists id) = "Name '" ++ id ++ "' has already been used."
-errorMsg (TyUnknown id) = "Type of identifier '" ++ id ++ "' is unknown."
+errorMsg (TyUnknown id) = "Type of '" ++ id ++ "' is unknown."
 errorMsg (IncompatibleTypesInArithmeticExp e op) = 
     "The types of the two individual expressions combined through arithmentic operator '" ++ op ++ "'"
     ++ " are invalid in expression " ++ show e
@@ -51,12 +53,17 @@ errorMsg (ExpNotOfExpectedType e ta te) =
     ++ " nor of a compatible type."
 errorMsg (InvalidAtomExpression e) = "Expression '" ++ show e ++ "' is invalid. The expression of an atom "
     ++ "must consist of an identifier or a dottable expression."
-errorMsg (ParamIdNotUnique idk idp) = 
-    "Parameter identifier '" ++ idp ++ "' of compound '" ++ idk ++ "' is not unique."
+errorMsg (InvalidParamId idk) =
+    "Parameter identifier '" ++ idk ++ "' is invalid as it has the same name of the process."
+errorMsg (ParamIdsNotUnique idk idps) = 
+    "Parameter identifiers '" ++ foldr (\id s->wrId id s) [] idps ++ "' of process '" ++ idk ++ "' are not unique."
+    where wrId id [] =  "'" ++ id ++ "'"
+          wrId id [_] = "'" ++ id ++ "' and" 
+          wrId id _ = "'" ++ id ++ "'," 
 errorMsg (CouldNotMatchExpectedType ety aty) = 
     "Wrong expected type: expecting " ++ ety ++ " but got " ++ aty
 errorMsg (IncompatibleTypesInExp opS ty1 ty2) =
-    "Incompatible types in expression involving operator" ++ opS ++ ", where the types are: " ++ ty1 ++ ", " ++ ty2
+    "Incompatible types in expression involving operator " ++ opS ++ ", where the types are: " ++ ty1 ++ ", " ++ ty2
 errorMsg (IncompatibleTypesInUExp opS ty) =
     "Incompatible types in unary expression involving operator" ++ opS ++ ", where the type is: " ++ ty
 errorMsg (NoMatchingEvents ids) =
@@ -77,5 +84,7 @@ errorMsg (ExpNotOfIdType e) =
     "Expression '" ++ show e ++ "' is not of an id type (no name within)."
 errorMsg (ProcessDeclNotCompound id) = 
     "Process declarations must be process compounds:" ++ id
+errorMsg (UnexpectedError msg) =
+    "Unexpected error: " ++ msg
     
 --errorMsg e =  show e

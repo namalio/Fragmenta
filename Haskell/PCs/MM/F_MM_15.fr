@@ -1,0 +1,11 @@
+fragment F_MM_15 {
+  SG SG_MM_15 {
+    proxy PDefinition2
+    proxy PCustom
+    proxy PName4
+    derived PDefinition2->PCustom[DDTy <-> type]:1;1
+  }
+  ref PDefinition2->Definition
+  ref PName4->Name
+  ref PCustom->Custom
+}

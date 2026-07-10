@@ -1,0 +1,6 @@
+CardPayments = 
+   let 
+      CardPayments0 = ([] cpms : CPMsgs @ frPay.cpms -> SKIP)
+            |~| (|~| cpcs : CPCmds @ toPay.cpcs -> SKIP)
+   within
+      CardPayments0; CardPayments

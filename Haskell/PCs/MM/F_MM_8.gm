@@ -1,19 +1,15 @@
 Morphism F_MM_8 {
 	nodes {
-      Quantification->Node
-      PNamedNode3->Node
-      PAction->Node
-	  TxtExp->Attribute
-	  PName2->Attribute
-	  POpQuantifiedOp->Trait
-	  PWExp3->Trait
-	  PGuarded->Trait
-	  Combinable->Node
+		PNode->Node
+		Stop->Node
+		Skip->Node
+		Combination->Node
+		PAction2->Node
+		PCombinable->Trait
+		Bindable->Trait
+		PTxtExp2->Attribute
 	}
 	edges {
-	   var->has
-	   guard->has
-	   opOfQuantifiedOp->has
-	   exp->has
+	   arguments->has
 	}
 }

@@ -1,0 +1,23 @@
+PC PC_CM_OkBalanceForget {} @ CMOkBalanceForget
+process CMOkBalanceForget@cardIn
+atom :'cardIn'
+atom :'grant'
+atom :'showBalance'
+atom :'cancel'
+atom :'cardEject'
+atom :'cardSwallow'
+atom :'tock'
+atom tock2:'tock'
+atom tock3:'tock'
+after cardIn->grant
+after grant->showBalance
+after showBalance->cancel
+after cancel->cardEject
+after cardEject->tock
+after tock->tock2
+after tock2->tock3
+after tock3->cardSwallow
+reference RefCashMachine:CashMachine
+import CashMachine as CMI for PC_CashMachine
+ref_connector RefCashMachine->CMI
+after cardSwallow->RefCashMachine

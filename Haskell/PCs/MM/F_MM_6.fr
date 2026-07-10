@@ -4,9 +4,11 @@ fragment F_MM_6 {
      proxy PWExp
      node EnumType
      node EnumTerm
+     node TxtExp
      inh EnumType->PDefinition
      inh EnumTerm->PWExp
      comp EnumType->EnumTerm[terms]:1;1..*
+     comp PWExp->TxtExp[exp]:?;1
   }
   ref PDefinition->Definition
   ref PWExp->WExp

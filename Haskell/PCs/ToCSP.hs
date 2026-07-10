@@ -27,11 +27,17 @@ import SimpleFuns
 import MMI
 import qualified PCs.TxtExpAST as PCTsExp
 import PCs.PCTreesAST
-   (ROp(..)
-   , gParamId
+   ( ROp(..)
+   , ROpT(..)
    , DTDef(..)
    , VTerm(..)
+   , gPTs
+   , gDTDs
    )
+import PCs.Common 
+   ( gParamId
+   , PCTypeD(..)
+   , PCTypeE(..))
 import PCs.TxtExpToCSP(toCSPExp)
 --import PCs.PCTrees_Exp
 import PCs.PCTrees_Types
@@ -57,7 +63,7 @@ genChoices :: MMI String String -> PC String String -> Set String -> CSP.Exp
 genChoices mmi pc EmptyS = CSP.SKIP
 genChoices mmi pc (Set ch chs) 
    | null chs = genAfterC mmi pc (the $ successorsOf mmi pc ch)
-   | otherwise = CSP.ExtChoice (genAfterC mmi pc (the $ successorsOf mmi pc ch)) (genChoices mmi pc chs)
+   | otherwise = CSP.Choice CSP.Int (genAfterC mmi pc (the $ successorsOf mmi pc ch)) (genChoices mmi pc chs)
 
 --genDeclsForCompounds pc m cns = (map (\cn->genCompound pc m cn) cns)
 --genRelevantForAtomic pc m n cns = if (not $ null cns) 
@@ -77,31 +83,40 @@ genProcessDef mmi pc n
    | tyOfN n pc == show_cmm_n CMM_Process = if (show_cmm_n CMM_AfterC) `elem` (img (fV pc) (successorsOf mmi pc n)) 
       then (genCompoundSeqComp mmi pc n) else CSP.ExpId n 
    -- something combined with an operator
-   | tyOfN n pc == show_cmm_n CMM_Operator && (opValOfOp (gCRSG mmi) pc n) == show_cmm_n CMM_VOpExtChoice = genChoices mmi pc (successorsOf mmi pc n)  
+   | tyOfN n pc == show_cmm_n CMM_Operator && (opCombinable (gCRSG mmi) pc n) == show_cmm_n CMM_VOpExtChoice = genChoices mmi pc (successorsOf mmi pc n)  
    | otherwise = CSP.SKIP -- INCOMPLETE
    
 
 findAfterAtom :: (Foldable t, GR g, GRM gm, Eq a, Eq b) => g String a -> gm String b -> t String -> Set String
 findAfterAtom pc m n = (predecessors pc n) `intersec` (ran_of $ rres (src pc) $ img (inv $ fV m) [show_cmm_n CMM_AfterC])
 
-cspAtoms :: Env->[CSP.Decl]
-cspAtoms env = 
+cspChannels :: Env->[CSP.Decl]
+cspChannels env = 
    --let as = (atomsOfPD pdt) `union` ias in
-   let r = filterS (\(_, t)->isEventTy t) (rel env) in
-      foldl (\ds t->(CSP.Channel  (img (inv r) $ singles t) (cspOfTy t)):ds) [] (reduce . ran_of $ r)
+   --let r = filterS (isEvTy . snd) env in
+   canali (reduce . ran_of $ env)
+   --foldl (\ds t->if isEvTy t then (CSP.Channel  (img (inv env) $ singles t) (cspOfTy t)):ds else ds) [] (reduce . ran_of $ env)
    where -- Dot types associate to the left unlike Dot expressions (which associate to the right)
-      cspOfTy (TDot t1 TEvent) = Just (doTy1 t1)
-      cspOfTy (TDot t1 t2) = Just $ (doTy1 t1) ++ "."  ++ (cspTy t2)
-      cspOfTy TEvent = Nothing
-      --cspOfTy t = error $ "Unexpected type " ++ (show t)
-      doTy1 t = if isAtomic t then cspTy t else the . cspOfTy $ t
-      cspTy (TInt) = "Int"
-      cspTy (TBool) = "Bool"
-      cspTy (TId id) = id
-      isAtomic (TInt) = True
-      isAtomic (TBool) = True
-      isAtomic (TId _) = True
-      isAtomic _ = False
+      canali EmptyS = []
+      canali (t `Set` ts) = 
+         (if isEvTy t then [CSP.Channel (img (inv env) $ singles t) (cspOfTy t)] else []) ++ canali ts
+      cspOfTy TEvent = Nothing 
+      cspOfTy t = Just . cspTy $ t 
+      cspTy (TDot t1 TEvent) = cspTy t1
+      cspTy (TDot t1 t2) = CSP.TyDot (cspTy t1) (cspTy t2)
+      cspTy (TSet t) = CSP.TySet $ cspTy t
+      cspTy TInt = CSP.TyInt
+      cspTy TBool = CSP.TyBool
+      cspTy (TId id) = CSP.TyId id
+      --cspTy t = error $ "Unexpected type " ++ (show t) ++ " " ++ (show env)
+      --doTy1 t = if isAtomic t then cspTy t else the . cspOfTy $ t
+      --cspTy TInt = "Int"
+      --cspTy TBool = "Bool"
+      --cspTy (TId id) = id
+      --isAtomic TInt = True
+      --isAtomic TBool = True
+      --isAtomic (TId _) = True
+      --isAtomic _ = False
 
 --Channel $ foldl(\ns n-> let n' = nmOfNamed pc m n in if n' `elem` ias then ns else insert n' ns) [] (getAtoms m)
 
@@ -110,19 +125,18 @@ cspAtoms env =
 cspImports :: Set String -> CSP.Decl
 cspImports is = CSP.Include $ is
 
-cspDataType::DTDef->CSP.Decl
-cspDataType (DTDef id vts) = CSP.DataTy id (transform vts)
-   where transform [vt] = [transform_t vt]
-         transform (vt:vts) = (transform_t vt):(transform vts)
-         transform_t (VTerm id ts) = CSP.DTyTerm id (fmap cspTD ts)
+cspDTD::DTDef->CSP.Decl
+cspDTD (DTDef id vts) = CSP.DataTy id (fmap cspVT vts)
+   where cspVT (VTerm id ts) = CSP.DTyTerm id (fmap cspTD ts)
 
 --cspDecl (ts@(TSeq _ _)) = snd $ cspExp ts
 --cspDecl (c@(Compound n ps t)) = 
 --   let (e, cds) = cspExp c in
 --   [LetW cds e] 
 --cspDecl (OpB _ t1 t2) = cspDecl t1 ++ cspDecl t2
-cspDecl :: Foldable t => t PT -> [CSP.Decl]
-cspDecl pds = foldr (\pd scts->(snd $ cspExp pd) ++ scts) [] pds
+cspDecl :: [PT] -> [CSP.Decl]
+cspDecl [] = []
+cspDecl (pt:pts) = (snd . cspExp $ pt) ++ (cspDecl pts)
 
 --cspDecls ts = foldr (\t ts'-> (cspDecl t)++ts') [] ts
 
@@ -132,18 +146,12 @@ data BothOpt
    | Fst (CSP.Exp->Bool) | Snd (CSP.Exp->Bool) 
    | None
 
-cspExpsFor0 :: PT -> PT -> (CSP.Exp, CSP.Exp, [CSP.Decl])
-cspExpsFor0 t1 t2 = 
-    let (e1, cds1) = cspExp t1 
-        (e2, cds2) = cspExp t2 in
-    (e1, e2, cds1++cds2)
-
 oparExp :: CSP.Exp -> (CSP.Exp -> Bool) -> CSP.Exp
 oparExp e f = if f e then CSP.ExpPar e else e
 calcExp1 :: CSP.Exp -> BothOpt -> CSP.Exp
 calcExp1 e (Both f _) = oparExp e f
 calcExp1 e (Fst f) = oparExp e f
-calcExp1 e (Snd f) = e
+calcExp1 e (Snd _) = e
 calcExp1 e None = e
 calcExp2 :: CSP.Exp -> BothOpt -> CSP.Exp
 calcExp2 e (Both _ f) = oparExp e f
@@ -168,10 +176,17 @@ calcExp2 e None = e
 
 -- cspExpsFor t1 t2 None = cspExpsFor0 t1 t2
 
+--cspExpsFor0 :: PT -> PT -> (CSP.Exp, CSP.Exp, [CSP.Decl])
+--cspExpsFor0 t1 t2 = 
+--    let (e1, ds1) = cspExp t1 
+--        (e2, ds2) = cspExp t2 in
+--    (e1, e2, ds1++ds2)
+
 cspExpsFor :: PT -> PT -> BothOpt -> (CSP.Exp, CSP.Exp, [CSP.Decl])
 cspExpsFor t1 t2 pfs = 
-    let (e1, e2, cds) = cspExpsFor0 t1 t2 in
+    let (e1, e2, cds) = combine (cspExp t1) (cspExp t2) in
     (calcExp1 e1 pfs, calcExp2 e2 pfs, cds)
+    where combine (e1, ds1) (e2, ds2) =  (e1, e2, ds1++ds2)
 
 cspPRef ::CSP.Id->Maybe PCTsExp.Exp->[PCTsExp.Exp]->Rel CSP.Id CSP.Id->CSP.Exp
 cspPRef n g bs rs = 
@@ -211,10 +226,17 @@ consLetW ds e = CSP.LetW ds e
 --  --let e2 = ExpPar $ RExtChoice atv ats $ Prfx (ExpId atv) e1 in
 --  if isNil og then (e2, ds) else (GExp (ExpId $ the og) e2, ds) 
 
-cspTD::PCTTypeD->String
-cspTD Int = "Int" 
-cspTD Bool = "Bool"
-cspTD (DT id) = id
+cspTD::PCTypeD->CSP.Ty
+cspTD Int = CSP.TyInt 
+cspTD Bool = CSP.TyBool
+cspTD Event = CSP.TyEvent
+cspTD (Dt id) = CSP.TyId id
+cspTD (SetT td) = CSP.TySet (cspTD td)
+
+cspTE::PCTypeE->CSP.TyE
+cspTE (TyD td) = CSP.Ty $ cspTD td
+cspTE (TIdE id) = CSP.Ty $ CSP.TyId id
+cspTE (SetE ids) = CSP.Sete ids 
 
 cspExp :: PT -> (CSP.Exp, [CSP.Decl])
 cspExp NilT = (CSP.SKIP, [])
@@ -222,32 +244,29 @@ cspExp StopT = (CSP.STOP, [])
 cspExp SkipT = (CSP.SKIP, [])
 cspExp (Atom e og) = 
     --let e = if isNil oe then ExpId a else ExpChannel a (ExpId $ the oe) in
-    pairUp (if isNil og then toCSPExp e else CSP.GExp (toCSPExp $ the og) (toCSPExp e)) [] 
-cspExp (OpKappa n op t)  =
-   let e1 = cspPDef t in
-   (rOpOf op e1, [])
-   where rOpOf (OpRExtChoice v td) e1 = CSP.RExtChoice v (cspTD td) e1
-         rOpOf (OpRIntChoice v td) e1 = CSP.RIntChoice v (cspTD td)  e1
-cspExp (Kappa n ps cpds t)  = 
+    (if isNil og then toCSPExp e else CSP.GExp (toCSPExp $ the og) (toCSPExp e), []) 
+cspExp (OpKappa (ROp op v te) t)  = 
+   let e = cspPDef t in
+   (CSP.RChoice (toCSPOp op) v (cspTE te) e, [])
+   where toCSPOp OpRExtChoice = CSP.Ext
+         toCSPOp OpRIntChoice = CSP.Int
+cspExp (Kappa n ps cts t)  = 
    let e1 = cspPRef n Nothing (map (PCTsExp.ExpId . gParamId) ps) nil
        e2 = cspPDef t
-       e2' = if isSomething cpds then consLetW (cspDecl cpds) e2 else e2 in
+       e2' = if isSomething cts then consLetW (cspDecl cts) e2 else e2 in
    (e1, [CSP.EqDecl e1 e2'])
 cspExp (Rho n g bs rs) = (cspPRef n g bs rs, [])
 cspExp (OpB (OpIf g) t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 None in
    (CSP.IfExp (toCSPExp g) e1 e2, cds) 
-cspExp (OpB (OpSeq o) t1 t2) = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
-   -- | isAtomAny t1 && (o || t2 == NilT) = cspExpREC t1 t2 
-   -- | isAtomAny t1 && not o = let (e1, ds1) = cspExpREC t1 NilT in let (e2, ds2) = cspExp t2 in (SeqComp e1 e2, ds1++ds2)
-   -- | otherwise    = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
+cspExp (OpB OpSeq t1 t2) = if isAtom t1 then cspExpPrfx t1 t2 else cspExpSeq t1 t2 
 cspExp (OpB OpExtChoice t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both CSP.isComposite (not . f)) in
-   (CSP.ExtChoice e1 e2, cds)
+   (CSP.Choice CSP.Ext e1 e2, cds)
    where f e = CSP.isAtomicExp e || CSP.isExtChoice e
 cspExp (OpB OpIntChoice t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both CSP.isComposite CSP.isComposite) in
-   (CSP.IntChoice e1 e2, cds)
+   (CSP.Choice CSP.Int e1 e2, cds)
 cspExp (OpB (OpParallel evs) t1 t2) = 
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both CSP.isComposite CSP.isComposite) in
    (CSP.Parallel (map toCSPExp evs) e1 e2, cds)
@@ -265,9 +284,9 @@ cspExp (OpB OpInterleave t1 t2) =
 
 toCSP::MMI String String->PC String String->Set String->Env->(CSP.Spec, CSP.Spec)
 toCSP mmi pc is env = 
-   let PCTD _ dts cpds = consPCTD mmi pc [] 
-       ads = cspAtoms env
-       dts' = foldl (\dts' dt->(cspDataType dt):dts') [] dts
+   let pctd = consPCTD mmi pc [] 
+       cs = cspChannels env
+       dts = fmap cspDTD (gDTDs pctd)
        is0 = fmap (namePCOfImport pc) is
        is' = cspImports (fmap (++"P") ((getPCDefN pc) `intoSet` is0 )) in
-   (CSP.CSP ([is'] ++ dts' ++ ads ), CSP.CSP $ cspDecl cpds)
+   (CSP.CSP ([is'] ++ dts ++ cs ), CSP.CSP $ cspDecl (gPTs pctd))

@@ -1,30 +1,30 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CM_AuthenticationFail];
-PC_CashMachine [shape=hexagon,fillcolor=orangered,style=filled,label =PC_CashMachine];
-RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
-deny [shape=ellipse,fillcolor=greenyellow,style = filled,label="deny"];
-cardSwallow [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardSwallow"];
-fail3 [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
-fail2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
-fail [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
-cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
-CMAF [shape=box,fillcolor=deepskyblue,style = filled,label="CMAF "];
 
-{rank=min;StartN_,CMAF}
-{rank=same;cardIn,fail,fail2,fail3,deny,cardSwallow,RefCashMachine}
-{rank=same;fail,fail2,fail3,deny,cardSwallow,RefCashMachine}
-{rank=same;fail2,fail3,deny,cardSwallow,RefCashMachine}
-{rank=same;fail3,deny,cardSwallow,RefCashMachine}
-{rank=same;deny,cardSwallow,RefCashMachine}
-{rank=same;cardSwallow,RefCashMachine}
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CM_AuthenticationFail];
+
+CMAF [shape=box,fillcolor=deepskyblue,style = filled,label="CMAF"];
+fail [shape=ellipse,fillcolor=greenyellow,style=filled,label="fail"];
+fail3 [shape=ellipse,fillcolor=greenyellow,style=filled,label="fail"];
+deny [shape=ellipse,fillcolor=greenyellow,style=filled,label="deny"];
+CMI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachine];
+RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
+cardSwallow [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardSwallow"];
+fail2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="fail"];
+cardIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardIn"];
+
+{rank=same;RefCashMachine,cardSwallow}
+{rank=same;RefCashMachine,cardSwallow,deny}
+{rank=same;cardSwallow,RefCashMachine,deny,fail3,fail2}
+{rank=same;RefCashMachine,cardSwallow,deny,fail3,fail2,fail,cardIn}
+{rank=same;CMAF,StartN_}
 
 cardSwallow->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
 deny->cardSwallow[arrowtail=dot,dir=both,label="after"];
-fail3->deny[arrowtail=dot,dir=both,label="after"];
 fail2->fail3[arrowtail=dot,dir=both,label="after"];
-fail->fail2[arrowtail=dot,dir=both,label="after"];
 cardIn->fail[arrowtail=dot,dir=both,label="after"];
-StartN_->CMAF[arrowtail=diamond,dir=both,label="starts"];
+fail->fail2[arrowtail=dot,dir=both,label="after"];
+fail3->deny[arrowtail=dot,dir=both,label="after"];
+RefCashMachine->CMI[arrowhead="normalnormal",fillcolor=white,label=" "];
 CMAF->cardIn[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CMAF[label="starts"];
 }

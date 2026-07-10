@@ -161,11 +161,17 @@ replaceAll rs l = foldr (\(x, y) l'->replace x y l') l rs
 unique :: Eq a => [a] -> Bool
 unique [] = True
 unique (x:xs) = if x `elem` xs then False else unique xs
+--    unique0 xs nil
+--    where unique0 [] _ = True
+--          unique0 (x:xs) s 
+--             | x `elem` s = False
+--             | otherwise  = unique0 xs (x `intoSet` s)
+--if x `elem` xs then False else unique xs
 
 test1 = combineTwInsert (1, 2, 3) ([2, 3], [4, 5], [6, 7])
 test2 = combineQwInsert (1, 2, 3, 4) ([2, 3], [4, 5], [6, 7], [8, 9])
 
--- Gives elements of a set which are duplicated
+-- Gives elements of a list which are duplicated
 dupsL :: Eq a => [a] -> [a]
 dupsL [] = []
 dupsL (x:xs) 

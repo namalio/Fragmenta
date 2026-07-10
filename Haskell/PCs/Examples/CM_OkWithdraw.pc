@@ -1,0 +1,21 @@
+PC PC_CM_OkWithdraw {} @CMOkWithdraw
+process CMOkWithdraw@cardIn
+atom :'cardIn'
+atom :'grant'
+atom :'optWithdraw'
+atom :'withdraw'
+atom :'cashDispense'
+atom :'cancel'
+atom :'cardEject'
+atom :'cardCollect'
+after cardIn->grant
+after grant->optWithdraw
+after optWithdraw->withdraw
+after withdraw->cashDispense
+after cashDispense->cancel
+after cancel->cardEject
+after cardEject->cardCollect
+reference RefCashMachine:CashMachine
+import CashMachine as CMI for PC_CashMachine
+ref_connector RefCashMachine->CMI
+after cardCollect->RefCashMachine

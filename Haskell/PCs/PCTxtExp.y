@@ -41,16 +41,17 @@ import PCs.Common(Id)
       '∪'             { TokenCup }
       '∩'             { TokenCap }
       '∊'             { TokenIn }
+      '∖'             { TokenSetMinus }
 
 %left '⋀' '⋁'
 %left '¬'
 %nonassoc '>' '<' '≤' '≥' '=' '≠' '∊'
-%left '+' '-' '∪'
+%left '+' '-' '∪' '∖'
 %left '*' '/' '%' '∩'
 %right '.'
 %left NEG
 
-%%
+%% 
 Exp   : Exp '⋀' Exp            { ExpBin And $1 $3 }
       | Exp '⋁' Exp            { ExpBin Or $1 $3 }
       | Exp '=' Exp            { ExpRel OEQ $1 $3 }
@@ -76,6 +77,7 @@ Exp   : Exp '⋀' Exp            { ExpBin And $1 $3 }
       | '{' Exps '}'           { ExpSet $2 }
       | Exp '∪' Exp            { ExpBin Cup $1 $3 }
       | Exp '∩' Exp            { ExpBin Cap $1 $3 }
+      | Exp '∖' Exp            { ExpBin SMinus $1 $3 }
 
 Exps  :: {[ Exp ] }
 Exps  : Exp ',' Exps           { $1:$3 }
@@ -114,6 +116,7 @@ data Token
       | TokenCup
       | TokenCap
       | TokenIn
+      | TokenSetMinus
      deriving Show
 
 --instance Show Token where
@@ -145,7 +148,7 @@ data Token
 
 tokenChars::[Char]
 tokenChars = ['(', ')', '.', '<', '>', '≤', '≥', '=', '≠', '+', '-', '*', '/',
-      '%', '⋀', '⋁', '¬', '{', '}', ',', '∪', '∩', '∊']
+      '%', '⋀', '⋁', '¬', '{', '}', ',', '∪', '∩', '∊', '∖']
 
 isToken::Char->Bool
 isToken c = c `elem` tokenChars
@@ -174,7 +177,8 @@ toToken ',' = TokenComma
 toToken '∪' = TokenCup
 toToken '∩' = TokenCap
 toToken '∊' = TokenIn
-
+toToken '∖' = TokenSetMinus
+ 
 lexer :: String -> [Token]
 lexer [] = []
 lexer (c:cs)
@@ -304,6 +308,9 @@ test12b = show_test_exp "{a, b} ∩ {b, c}"
 
 test12c::IO()
 test12c = show_test_exp "{a+1, b-2} ∩ {b*4, c/4}"
+
+test12d::IO()
+test12d = show_test_exp "{1, 2, 3} ∖ {3, 4, 5, 6}"
 
 test13a::IO()
 test13a = show_test_exp "1 ∊ {1, 2, 3}"

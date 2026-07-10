@@ -1,11 +1,11 @@
 
----------------------
+-------------------------------------------------
 -- Project: PCs
--- Module: 'PCs.Utils'
--- Description: Utilities module of PCs
+-- Module: 'PCs.Main'
+-- Description: A utilities runner module for PCs
 -- Author: Nuno Amálio
---------------------
-module PCs.Utils
+--------------------------------------------------
+module PCs.Main
    ( writeCSPToFile
    , checkWFAndGeneratePCTree
    , checkWF
@@ -30,6 +30,7 @@ import Control.Monad
    )
 import PCs.Draw
 import PCs.ParsingPCs
+   ( loadPC)
 import Relations
 import Sets
 import SimpleFuns
@@ -47,7 +48,6 @@ import PCs.PCTrees_TypeErrors
 import PCs.PCTrees_Types
 import Control.Monad.Except
 import Control.Monad.State
-import PCs.ParsingTxtExp -- remove later
 
 mm_path :: String
 mm_path = "PCs/MM/"
@@ -115,11 +115,13 @@ check_MM mmi = do
 
 checkWF::MMI String String->PC String String->IO Bool
 checkWF mmi pc = do
-    let pc_nm = getPCDefN pc
-    let errs = faultsGM' pc_nm (Just TotalM) (pc, gCRSG mmi) 
-    unless (is_nil errs) $ do
-        show_wf_msg ("PC " ++ pc_nm) errs
-    return (is_nil errs)
+   let pc_nm = getPCDefN pc
+   putStrLn $ "Checking"
+   let errs = faultsGM' pc_nm (Just TotalM) (pc, gCRSG mmi) 
+   putStrLn $ "Checked:" ++ (show $ is_nil errs)
+   unless (is_nil errs) $ show_wf_msg ("PC " ++ pc_nm) errs
+   putStrLn $ "Returning"
+   return (is_nil errs)
 
 
 --wrCSPToFile :: FilePath -> String -> MMI String String -> PC String String -> IO ()
@@ -239,10 +241,15 @@ loadAndCheck pcs_path fnm mmi = do
   opc <- loadPC (gCRSG mmi) (pcs_path ++ fnm)
   (if (isSomething opc) then do 
      b <- checkWF mmi (the opc)
+     print b
+     if b then
+         putStrLn ("PC '" ++ fnm ++ "' is well-formed.")
+     else
+         putStrLn ("PC '" ++ fnm ++ "' is not well-formed.") 
      let is = fmap (fNameOfImport (the opc)) $ importsOf (gCRSG mmi) (the opc)
      chs <- forM is (\fn-> do 
-       opc <- loadAndCheck pcs_path (fn ++".pc") mmi
-       return $ isSomething opc)
+        opc <- loadAndCheck pcs_path (fn ++".pc") mmi
+        return $ isSomething opc)
      return (boolMaybe (all (== True) (b `intoSet` chs)) (the opc))
    else do
       return opc) >>= return
@@ -513,8 +520,11 @@ main = do
 test :: IO ()
 test = do 
    mmi<-load_mm_info mm_path
-   opc<-loadPC (gCRSG mmi) (pcs_path ++ "BiscuitJar.pc")
-   print $ startingPoint mmi (the opc)
+   opc<-loadPC (gCRSG mmi) (pcs_path ++ "VMCommon.pc")
+   --print $ varBQuantifiedOp (the opc) "leftQ"
+   --print $ paramsOf (the opc) "StopTimer"
+   --putStrLn $ show $ expOfAtom (the opc) "right"
+   print $ first . rest . rest . rest . esM $ (gCRSG mmi)
    --print$ relKs mmi (the opc)
    --print $ innerKs mmi (the opc) "BiscuitJar"
    --print $ expsOfRef mmi (the opc) "RefJarOpenedDrop"

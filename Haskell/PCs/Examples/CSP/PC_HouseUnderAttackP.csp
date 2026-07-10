@@ -1,1 +1,1 @@
-HouseUnderAttack = Seize[|{grabTV,grabLaptop,grabJewels,mainDoor,roomWindow}|]Ransack
+HouseUnderAttack = Ransack[|{grabTV,grabLaptop,grabJewels,mainDoor,roomWindow}|]Seize

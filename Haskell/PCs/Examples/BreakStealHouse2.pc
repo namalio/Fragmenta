@@ -1,4 +1,4 @@
-PC PC_BreakStealHouse2@BreakAndStealHouse
+PC PC_BreakStealHouse2 {} @BreakAndStealHouse
 enum Stealable : 'Laptop','TV','Other','Jewels'
 enum MeansBreakIn : 'window','stolenKey','door'
 process BreakAndStealHouse@GetInside

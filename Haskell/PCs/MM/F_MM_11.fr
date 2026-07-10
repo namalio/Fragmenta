@@ -1,14 +1,18 @@
 fragment F_MM_11 {
   SG SG_MM_11 {
-    proxy PConnector
-    node StartC
-    proxy PStartN
-    proxy PStartOfPC2
-    inh StartC->PConnector
-    derived StartC->PStartN[DSCSrc <-> src]:1;1
-    derived StartC->PStartOfPC2[DSCTgt <-> tgt]:?;1
+    proxy PConnector2
+    node AfterC
+    node DefinesC
+    proxy PAction4
+    proxy PProcess2
+    inh AfterC->PConnector2
+    inh DefinesC->PConnector2
+    derived DefinesC->PProcess2[DDCSrc <-> src]:1;1
+    derived DefinesC->PAction4[DDCTgt <-> tgt]:?;1
+    derived AfterC->PAction4[DACSrc <-> src]:*;1
+    derived AfterC->PAction4[DACTgt <-> tgt]:*;1
   }
-  ref PConnector->Connector
-  ref PStartN->StartN
-  ref PStartOfPC2->StartOfPC
+  ref PConnector2->Connector
+  ref PAction4->Action
+  ref PProcess2->Process
 }

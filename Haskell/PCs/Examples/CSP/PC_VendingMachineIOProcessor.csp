@@ -1,0 +1,11 @@
+include "PC_VendingMachineIOProcessorP.csp"
+
+datatype IOCmds = getSelecteditem | payment.OkFail | startMsg | wrongItemMsg | paymentBeingProcessedMsg
+
+datatype IOMsgs = itemSelected
+
+datatype OkFail = ok | fail
+
+channel frIO : IOMsgs
+
+channel toIO : IOCmds

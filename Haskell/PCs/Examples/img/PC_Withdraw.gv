@@ -1,8 +1,9 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Withdraw];
-Withdraw [shape=box,fillcolor=deepskyblue,style = filled,label="Withdraw "];
-DoWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="DoWithdraw "];
+
+Withdraw [shape=box,fillcolor=deepskyblue,style = filled,label="Withdraw"];
+DoWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="DoWithdraw"];
 OpDoWithdraw [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 cashDispense [shape=ellipse,fillcolor=greenyellow,style=filled,label="cashDispense"];
 cashDeny [shape=ellipse,fillcolor=greenyellow,style=filled,label="cashDeny"];

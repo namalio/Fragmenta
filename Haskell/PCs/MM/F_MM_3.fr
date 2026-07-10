@@ -2,10 +2,10 @@ fragment F_MM_3 {
   SG SG_MM_3 {
     proxy PNamedNode2
     proxy PName
-    node Import
     node Process
     node Atom
-    proxy PParameter
+    node Import
+    proxy PWParameters2
     virtual Action
     virtual RefTarget
     virtual StartOfPC
@@ -21,12 +21,12 @@ fragment F_MM_3 {
     inh Atom->Guarded
     inh Process->Action
     inh Atom->WExp
-    compu Process->PParameter[params]:*
+    inh Process->PWParameters2
     relu Import->PName[pc_name]:?
     relu Import->PName[fname]:?
     relu Process->PName[rname]:?
   }
   ref PNamedNode2->NamedNode
   ref PName->Name
-  ref PParameter->Parameter
+  ref PWParameters2->WParameters
 }

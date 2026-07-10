@@ -4,12 +4,14 @@ subgraph cluster_F_MM_1{style=dashed;label=F_MM_1;
 "Name"[shape=record,fillcolor=lightskyblue1,style = filled,label="Name"];
 "PCType"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>PCType</I><br/>(A)}>];
 "Typed"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Typed</I><br/>(V)}>];
+"WParameters"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>WParameters</I><br/>(V)}>];
 "Parameter"[shape=record,fillcolor=lightskyblue1,style = filled,label="Parameter"];
 
 "Named"->"Name"[label="name",arrowhead=vee,headlabel="",arrowsize=.5];
 "Typed"->"PCType"[label="type",arrowhead=vee,headlabel="?",arrowsize=.5];
 "Parameter"->"Named"[arrowhead=onormal,arrowsize=2.0];
 "Parameter"->"Typed"[arrowhead=onormal,arrowsize=2.0];
+"WParameters"->"Parameter"[label="params",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 
 }
 }

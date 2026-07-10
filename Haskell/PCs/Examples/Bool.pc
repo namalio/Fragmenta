@@ -1,4 +1,4 @@
-PC PC_Bool@Bool
+PC PC_Bool {} @ Bool
 process Bool@OpBool
 operator OpBool.Choice
 atom :'assignT'

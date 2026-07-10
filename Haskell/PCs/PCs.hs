@@ -12,7 +12,7 @@ module PCs.PCs
   , getAtoms
   , getPCStart
   , load_mm_info
-  , startingPoint
+  , startPoint
   , getPCDefN
   , getPCName
   , srcOf
@@ -20,7 +20,7 @@ module PCs.PCs
   , afterCRel
   , paramsOf
   , expOf
-  , expsOf
+  , argsOf
   , expOfAtom
   , enumTermsOf
   , nmOfNamed
@@ -29,10 +29,9 @@ module PCs.PCs
   , nmOfRef
   , nmOfRefP
   , isConnectedToInnerPr
-  , expsOfRef
+  , argsOfRef
   , renamingsOf
-  , opValOfOp
-  , opQuantifiedOp
+  , opCombinable
   , varBQuantifiedOp
   , quantifiedOpStart
   , nextNode
@@ -55,7 +54,7 @@ module PCs.PCs
   , hiddenRefC
   , isHiddenRef
   , innerRef 
-  , openAC
+--  , openAC
   , guardOfOp
   , importedKs) 
 where
@@ -133,8 +132,8 @@ getPCStart :: SGr String String ->PC String String -> String
 getPCStart sg_mm pc = the $ ntyNsPC sg_mm pc CMM_StartN
 
 -- Get's a PCs starting node, a reference or a process
-startingPoint :: MMI String String -> PC String String -> String
-startingPoint mmi pc = 
+startPoint :: MMI String String -> PC String String -> String
+startPoint mmi pc = 
   let n = getPCStart (gCRSG mmi) pc
       startC =  successorsOf mmi pc n `intersec` img (inv $ fV pc) [show_cmm_n CMM_StartC] in
   the $ successorsOf mmi pc (the startC)
@@ -289,9 +288,9 @@ expOf pc sg n =
    strip . first $ bs
    where strip es = snd (splitAtStr "_txtExp_" es)
 
-expsOf ::PC String String-> String -> [String]
-expsOf pc n = 
-   let bs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eexps) in
+argsOf ::PC String String-> String -> [String]
+argsOf pc n = 
+   let bs = img (tgt pc) $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Earguments) in
    fmap snd (quicksortp (\p1 p2->fst p1 <= fst p2) $ foldr (\b es->(strip b):es) [] bs)
    where strip es = let (n, s) = splitAtStr "_" (snd (splitAtStr "_txtExp_" es)) in (read n::Int, s)
 
@@ -333,10 +332,10 @@ innerRef pc n =
    let is = img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_EReference_inner) in
    if isSomething is then (the is) == "YesV" else False
 
-openAC ::PC String String->String->Bool
-openAC pc c = 
-   let os = img (tgt pc) $ (img (inv $ src pc) [c]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_EAfterC_copen) in
-   if isSomething os then (the os) == "YesV" else False
+--openAC ::PC String String->String->Bool
+--openAC pc c = 
+--   let os = img (tgt pc) $ (img (inv $ src pc) [c]) `intersec`  (es_of_ety pc $ show_cmm_e CMM_EAfterC_copen) in
+--   if isSomething os then (the os) == "YesV" else False
 
 --nmOfNamed :: gm a String -> a -> b
 nmOfNamed :: PC String String -> String -> String
@@ -376,31 +375,31 @@ isConnectedToInnerPr mmi pc n =
    (not $ hiddenRefC pc rc) && (null imp)
 
 
-expsOfRef :: MMI String String->PC String String->String->[String]
-expsOfRef mmi pc n = 
-  let rn = nmOfRef pc n in
-  let rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
-  if null rn then expsOf pc rc else expsOf pc n
+argsOfRef :: MMI String String->PC String String->String->[String]
+argsOfRef mmi pc n = 
+  let rn = nmOfRef pc n
+      rc = the $ (successorsOf mmi pc n) `intersec` (ntyNsPC (gCRSG mmi) pc CMM_ReferenceC) in
+  if null rn then argsOf pc rc else argsOf pc n
 
 opValId :: SGr String String -> PC String String -> String -> String
 opValId sg_mm pc n = 
    if isNodeOfTys n [CMM_Operator] sg_mm pc then appl (fV pc) n else ""
 
-opValOfOp :: SGr String String -> PC String String -> String -> String
-opValOfOp sg_mm pc n =
-   let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_ECombination_op)) in
+opCombinable :: SGr String String -> PC String String -> String -> String
+opCombinable sg_mm pc n =
+   let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_Eop)) in
    opValId sg_mm pc nOpVal
 
-opQuantifiedOp :: SGr String String -> PC String String -> String -> String
-opQuantifiedOp sg_mm pc n =
-   let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EopOfQuantifiedOp)) in   
-   opValId sg_mm pc nOpVal
+--opQuantifiedOp :: SGr String String -> PC String String -> String -> String
+--opQuantifiedOp sg_mm pc n =
+--   let nOpVal = appl (tgt pc) (first $ img (inv $ src pc) [n] `intersec` es_of_ety pc (show_cmm_e CMM_EopOfQuantifiedOp)) in   
+--   opValId sg_mm pc nOpVal
 
 varBQuantifiedOp ::PC String String->String->(String, String)
 varBQuantifiedOp pc n = 
    let ps = img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Evar) 
-       ps'= img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Eexp) in
-   (if null ps then "" else the ps, the ps')
+       ps' = img (tgt pc) $ (img (inv $ src pc) [n]) `intersec`  (es_of_ety pc . show_cmm_e $ CMM_Eqtexp) in
+   (if null ps then "" else (butLast . the) $ ps, snd $ splitAtStr "_tyTxtExp_" (the ps'))
 
 quantifiedOpStart::MMI String String->PC String String->String->String
 quantifiedOpStart mmi pc n = 
@@ -454,7 +453,7 @@ withinRelWith mmi pc n pcs =
    r `union` r'
 
 withinRel :: MMI String String -> PC String String -> Rel String String
-withinRel mmi pc = withinRelWith mmi pc (startingPoint mmi pc) nil
+withinRel mmi pc = withinRelWith mmi pc (startPoint mmi pc) nil
 
 innerKsOf :: MMI String String -> PC String String ->Set String->Set String-> Set String
 innerKsOf mmi pc EmptyS _ = EmptyS
@@ -518,7 +517,7 @@ importedKsOf mmi pc (Set n ns) vns
   where isImported = any (\n'->isNodeOfTys n' [CMM_Import] (gCRSG mmi) pc) (nextNodes mmi pc n) 
 
 importedKs::MMI String String -> PC String String ->Set String
-importedKs mmi pc = importedKsOf mmi pc (singles $ startingPoint mmi pc) nil
+importedKs mmi pc = importedKsOf mmi pc (singles $ startPoint mmi pc) nil
 
 divergentInnerKs0 :: MMI String String -> PC String String -> Set String -> Set String -> Set (Set String)
 divergentInnerKs0 mmi pc EmptyS _ = nil
@@ -562,7 +561,7 @@ relKsOf mmi pc (n `Set` ns) r =
   relKsOf mmi pc (ns `union` nks `sminus` (dom_of r)) r'
 
 relKs::MMI String String->PC String String->Rel String String
-relKs mmi pc = relKsOf mmi pc (singles $ startingPoint mmi pc) nil
+relKs mmi pc = relKsOf mmi pc (singles $ startPoint mmi pc) nil
 
 -- Gets import nodes of a PC
 importsOf :: SGr String String -> PC String String -> Set String

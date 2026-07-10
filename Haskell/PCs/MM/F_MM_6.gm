@@ -4,8 +4,10 @@ Morphism F_MM_6 {
 	  PWExp->Trait
 	  EnumType->Definition
 	  EnumTerm->Attribute
+	  TxtExp->Attribute
 	}
 	edges {
 	  terms->has
+	  exp->has
 	}
 }

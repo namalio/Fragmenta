@@ -1,4 +1,4 @@
-PC PC_Clock_ref@Clock
+PC PC_Clock_ref {} @Clock
 process Clock@tick
 atom :'tick'
 reference RefClock

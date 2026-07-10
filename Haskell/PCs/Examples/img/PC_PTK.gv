@@ -1,16 +1,17 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_PTK];
+
 bindLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="bindLigandTCR"];
 PTK [shape=box,fillcolor=deepskyblue,style = filled,label="PTK "];
 PTKActivating [shape=box,fillcolor=deepskyblue,style = filled,label="PTKActivating "];
 freeLigandTCR2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="freeLigandTCR"];
-RefPTKActive1 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPTKActive1 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactivatesPTK"];
 OpPTKActive [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-RefPTKActive2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPTKActive2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 OpfreeLigandTCR [shape=diamond,fillcolor=yellow,style=filled,label="If"];
-RefPTKActive3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefPTKActive3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitorySignal"];
 positiveOff [shape=ellipse,fillcolor=greenyellow,style=filled,label="positiveOff"];
 OpPTKInactivating [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];

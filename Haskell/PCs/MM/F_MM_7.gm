@@ -1,10 +1,20 @@
 Morphism F_MM_7 {
 	nodes {
-	  PWExp2->Trait
-	  PNamedNode4->Node
-	  PAction2->Node
-	  AnyOf->Node
+      Quantification->Node
+      PNamedNode3->Node
+      PAction->Node
+      TyTxtExp->Attribute
+	  PTxtExp->Attribute
+	  PName2->Attribute
+	  POpQuantifiedOp->Trait
+	  POperator->Attribute
+	  PGuarded->Trait
+	  Combinable->Trait
 	}
 	edges {
+	   var->has
+	   guard->has
+	   op->has
+	   qtexp->has
 	}
 }

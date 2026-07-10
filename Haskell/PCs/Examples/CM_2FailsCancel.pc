@@ -1,0 +1,17 @@
+PC PC_CM_2FailsCancel {} @ CM2FsC
+process CM2FsC@cardIn
+atom :'cardIn'
+atom :'fail'
+atom fail2:'fail'
+atom :'cancel'
+atom :'cardEject'
+atom :'cardCollect'
+after cardIn->fail
+after fail->fail2
+after fail2->cancel
+after cancel->cardEject
+after cardEject->cardCollect
+reference RefCashMachine:CashMachine
+import CashMachine as CMI for PC_CashMachine
+ref_connector RefCashMachine->CMI
+after cardCollect->RefCashMachine

@@ -1,0 +1,70 @@
+digraph {
+subgraph cluster_Error {
+style="filled,rounded";
+label =Error;
+fillcolor = cadetblue1;
+InvalidPutAmount[shape=box,fillcolor=darkolivegreen1,style="filled",label="InvalidPutAmount"];
+InsufficientFunds[shape=box,fillcolor=darkolivegreen1,style="filled",label="InsufficientFunds"];
+InvalidTakeAmount[shape=box,fillcolor=darkolivegreen1,style="filled",label="InvalidTakeAmount"];
+}
+
+
+InvalidPutAmount->StartN_[style=invis]
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Purse];
+
+OpPurseIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
+takeMoneyQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ a:Int>];
+takeMoney [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {a≤n ⋀ a>0 }
+takeMoney.a"];
+showBalance [shape=ellipse,fillcolor=greenyellow,style=filled,label="showBalance.n"];
+errInvalidAmount [shape=ellipse,fillcolor=greenyellow,style=filled,label="err.InvalidPutAmount.a"];
+TakeMoney [shape=box,fillcolor=deepskyblue,style = filled,label="TakeMoney "];
+OpTakeMoney [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+RefTakeMoneyOk [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefPutMoneyOk [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefMoneySame [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefMoneyNotOk [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+OpPutMoneyIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+PutMoney [shape=box,fillcolor=deepskyblue,style = filled,label="PutMoney "];
+errInvalidAmount2 [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {a≤0}
+err.InvalidTakeAmount.a"];
+errInsufficientFunds [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {a>n}
+err.InsufficientFunds.a"];
+putMoney [shape=ellipse,fillcolor=greenyellow,style=filled,label="putMoney.a"];
+putMoneyQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ a:Int>];
+OpPurseOpts [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+Purse [shape=box,fillcolor=deepskyblue,style = filled,label="Purse (n)"];
+
+{rank=same;RefMoneySame,showBalance}
+{rank=same;RefTakeMoneyOk,takeMoney}
+{rank=same;RefPutMoneyOk,putMoney}
+{rank=same;Purse,StartN_}
+
+showBalance->RefMoneySame[arrowtail=dot,dir=both,label="after"];
+errInvalidAmount->RefMoneyNotOk[arrowtail=dot,dir=both,label="after"];
+RefPutMoneyOk->Purse[arrowhead="normalnormal",fillcolor=white,label=" (n+a)"];
+OpPutMoneyIf->putMoney[arrowhead="open",label="a>0"];
+RefTakeMoneyOk->Purse[arrowhead="normalnormal",fillcolor=white,label=" (n-a)"];
+errInsufficientFunds->RefMoneyNotOk[arrowtail=dot,dir=both,label="after"];
+OpTakeMoney->errInvalidAmount2[arrowhead="open"];
+OpTakeMoney->takeMoney[arrowhead="open"];
+putMoneyQ->OpPutMoneyIf[arrowhead="open"];
+OpPurseOpts->PutMoney[arrowhead="open"];
+OpPurseIf->STOP[arrowhead="open",label="Else"];
+OpPurseIf->OpPurseOpts[arrowhead="open",label="n≥0"];
+OpPurseOpts->TakeMoney[arrowhead="open"];
+takeMoneyQ->OpTakeMoney[arrowhead="open"];
+OpPurseOpts->showBalance[arrowhead="open"];
+OpTakeMoney->errInsufficientFunds[arrowhead="open"];
+takeMoney->RefTakeMoneyOk[arrowtail=dot,dir=both,label="after"];
+errInvalidAmount2->RefMoneyNotOk[arrowtail=dot,dir=both,label="after"];
+RefMoneyNotOk->Purse[arrowhead="normalnormal",fillcolor=white,label=" (n)"];
+OpPutMoneyIf->errInvalidAmount[arrowhead="open",label="Else"];
+putMoney->RefPutMoneyOk[arrowtail=dot,dir=both,label="after"];
+RefMoneySame->Purse[arrowhead="normalnormal",fillcolor=white,label=" (n)"];
+TakeMoney->takeMoneyQ[arrowhead="onormal",penwidth=2,label="="];
+PutMoney->putMoneyQ[arrowhead="onormal",penwidth=2,label="="];
+Purse->OpPurseIf[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Purse[label="starts"];
+}

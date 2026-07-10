@@ -1,9 +1,10 @@
 Morphism F_MM_11 {
 	nodes {
-		StartC->Connector
-		PConnector->Connector
-		PStartN->Node
-		PStartOfPC2->Trait
+		AfterC->Connector
+		DefinesC->Connector
+		PConnector2->Connector
+		PAction4->Node
+		PProcess2->Node
 	}
 	edges {
 	}

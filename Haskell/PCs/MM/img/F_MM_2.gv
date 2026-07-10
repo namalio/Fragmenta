@@ -9,6 +9,7 @@ subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
 "PNamed"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named<br/>(P)>];
 "PNamed2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Named2<br/>(P)>];
 "PTyped"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Typed<br/>(P)>];
+"PWParameters"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<WParameters<br/>(P)>];
 
 "StartN"->"NamedNode"[arrowhead=onormal,arrowsize=2.0];
 "NamedNode"->"Node"[arrowhead=onormal,arrowsize=2.0];
@@ -16,6 +17,7 @@ subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
 "Definition"->"PNamed"[arrowhead=onormal,arrowsize=2.0];
 "Definition"->"PTyped"[arrowhead=onormal,arrowsize=2.0];
 "PCDef"->"PNamed2"[arrowhead=onormal,arrowsize=2.0];
+"StartN"->"PWParameters"[arrowhead=onormal,arrowsize=2.0];
 "PCDef"->"Node"[label="ContainsNs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PCDef"->"Connector"[label="ContainsCs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "PCDef"->"Definition"[label="ContainsDs",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
@@ -24,6 +26,7 @@ subgraph cluster_F_MM_2{style=dashed;label=F_MM_2;
 "PCDef"->"StartN"[label="Starts▼",dir=none,taillabel="",headlabel=""];
 
 }
+
 
 
 

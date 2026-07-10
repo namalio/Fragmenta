@@ -1,0 +1,17 @@
+PC PC_CM_AuthenticationFail {} @ CMAF
+process CMAF@cardIn
+atom :'cardIn'
+atom :'fail'
+atom fail2 :'fail'
+atom fail3 :'fail'
+atom :'cardSwallow'
+atom :'deny'
+after cardIn->fail
+after fail->fail2
+after fail2->fail3
+after fail3->deny
+after deny->cardSwallow
+reference RefCashMachine:CashMachine
+import CashMachine as CMI for PC_CashMachine
+ref_connector RefCashMachine->CMI
+after cardSwallow->RefCashMachine

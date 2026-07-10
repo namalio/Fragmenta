@@ -1,4 +1,4 @@
-PC PC_CCVM@CCVM
+PC PC_CCVM {} @CCVM
 process CCVM@RefGetandGive
 reference RefGetandGive
 ref_connector RefGetandGive->GetandGive.'0'

@@ -1,15 +1,31 @@
 digraph {graph[label=F_MM_7,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_7{style=dashed;label=F_MM_7;
-"PWExp2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<WExp2<br/>(P)>];
-"PNamedNode4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode4<br/>(P)>];
-"PAction2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action2<br/>(P)>];
-"AnyOf"[shape=record,fillcolor=lightskyblue1,style = filled,label="AnyOf"];
+"Quantification"[shape=record,fillcolor=lightskyblue1,style = filled,label="Quantification"];
+"PNamedNode3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<NamedNode3<br/>(P)>];
+"PAction"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action<br/>(P)>];
+"PName2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name2<br/>(P)>];
+"POpQuantifiedOp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<OpQuantifiedOp<br/>(P)>];
+"POperator"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Operator<br/>(P)>];
+"PGuarded"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded<br/>(P)>];
+"PTxtExp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<TxtExp<br/>(P)>];
+"TyTxtExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="TyTxtExp"];
+"Combinable"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Combinable</I><br/>(V)}>];
 
-"AnyOf"->"PNamedNode4"[arrowhead=onormal,arrowsize=2.0];
-"AnyOf"->"PAction2"[arrowhead=onormal,arrowsize=2.0];
-"AnyOf"->"PWExp2"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PNamedNode3"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PGuarded"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"Combinable"[arrowhead=onormal,arrowsize=2.0];
+"Combinable"->"PAction"[arrowhead=onormal,arrowsize=2.0];
+"Quantification"->"PName2"[label="var",arrowhead=vee,headlabel="",arrowsize=.5];
+"Combinable"->"POperator"[label="op",arrowhead=vee,headlabel="",arrowsize=.5];
+"Quantification"->"POpQuantifiedOp"[label="DQOp: op ▼",dir=none,taillabel="*",headlabel="",style=dotted];
+"PGuarded"->"PTxtExp"[label="guard▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="?",headlabel="?"];
+"Quantification"->"TyTxtExp"[label="qtexp▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="?",headlabel="?"];
 
 }
+
+
+
+
 
 
 

@@ -1,8 +1,9 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Clock_ref];
+
 Clock [shape=box,fillcolor=deepskyblue,style = filled,label="Clock "];
-RefClock [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefClock [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 tick [shape=ellipse,fillcolor=greenyellow,style=filled,label="tick"];
 
 {rank=same;RefClock,tick}

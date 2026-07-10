@@ -4,10 +4,12 @@ Morphism F_MM_1 {
 	   PCType->Attribute
 	   Named->Trait
 	   Typed->Trait
+	   WParameters->Trait
 	   Parameter->Attribute
 	}
 	edges {
 	   name->has
 	   type->has
+	   params->has
 	}
 }

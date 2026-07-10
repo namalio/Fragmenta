@@ -8,7 +8,6 @@ module PCs.PCTrees
   ( PT(..)
   , TOp(..)
   , PCTD(..)
-  , PCTTypeD(..)
   , withinRel
   , consPCTD
   , atomsOfCPTs
@@ -30,18 +29,15 @@ import MyMaybe
 import PCs.MM_Names
 import ShowUtils
 import ParseUtils
+  ( splitAtStr )
 import PCs.TxtExpAST
 import PCs.PCTreesAST 
-  ( read_pctty
-  , read_opctty
-  , cParam
-  , PT(..)
+  ( PT(..)
   , TOp(..)
   , PCTD(..)
   , DTDef(..)
+  , ROpT(..)
   , ROp(..)
-  , PCTTypeD(..)
-  , Param(..)
   , VTerm(..)
   , gPTs
   )
@@ -52,16 +48,22 @@ import SimpleFuns
   )
 import PCs.Common
    (Id
+   , PCTypeD(..)
+   , Param(..)
+   , PCTypeE(..)
+   , read_opctyd
+   , gParamId
+   , startN
    )
 --import PCs.PCTrees_Exp
 --import PCs.ParsingPCTxtExp2
 import PCs.ParsingTxtExp
 import SimpleFuns
 
-opseqC :: TOp
-opseqC = OpSeq False
-opseqO :: TOp
-opseqO = OpSeq True
+--opseqC :: TOp
+--opseqC = OpSeq False
+--opseqO :: TOp
+--opseqO = OpSeq True
 
 --rearrangeT :: PT -> PD
 --rearrangeT (OpB opseqC (Kappa (PD k ps cts t1)) t2) = PD k ps nil (OpB opseqC (Kappa (PD (k++"0") nil cts t1)) t2)
@@ -70,7 +72,7 @@ opseqO = OpSeq True
 show_top :: TOp -> String
 show_top OpExtChoice = "◻︎"
 show_top OpIntChoice = "⊓"
-show_top (OpSeq o) = (if o then "O" else "") ++  "⇥"
+show_top OpSeq = "⇥"
 show_top (OpParallel ps) = "∥" ++ (show ps)
 show_top (OpInterleave) = "⦀"
 show_top (OpThrow ps) = "𝛩" ++ (show ps)
@@ -105,17 +107,21 @@ show_renamings rs = if null rs then "" else "⟦" ++ (showStrs (foldr (\(fr, to)
 show_guard :: Maybe Exp -> String
 show_guard oe = if isNil oe then "" else " {" ++ (showExp $ the oe) ++ "}"
 
-show_bop0::String->PCTTypeD->String
-show_bop0 id td = id ++ ":" ++ (show td)
+--show_rop0::ROpT->String->PCTypeExp->String
+--show_rop0 id te = id ++ ":"  ++ (show te)
+--  where show_op = if op == OpRExtChoice then "◻︎" else "⊓"
 
-show_bop::ROp->String
-show_bop (OpRExtChoice v td) = "◻︎" ++ (show_bop0 v td)
-show_bop (OpRIntChoice v td) = "⊓" ++ (show_bop0 v td)
+show_op::ROpT->String
+show_op op = if op == OpRExtChoice then "◻︎" else "⊓"
+
+show_rop::ROp->String
+show_rop (ROp op v te) = (show_op op) ++ v ++ ":"  ++ (show te)
+-- show_rop (ROp OpRIntChoice v te) =  ++ (show_rop0 v te)
 
 show_pt :: PT -> String
 show_pt (Atom e og) = "𝛼 " ++ showExp e ++ (show_guard og)
 show_pt (Kappa id ps cpts pt) =  "𝜅 " ++ id ++ (show_params ps) ++ "{" ++ (show_pts cpts) ++ "} @ " ++ (show_pt pt)
-show_pt (OpKappa id bop pt) = "𝛾𝜅 " ++ id ++ (show_bop bop) ++ " @ " ++ (show_pt pt)
+show_pt (OpKappa bop pt) = "𝛾𝜅 " ++ (show_rop bop) ++ " @ " ++ (show_pt pt)
 show_pt (OpB op pt1 pt2) = "(𝛾 " ++ show_top op ++ ")" ++ (show_pt pt1) ++ " [" ++ (show_pt pt2) ++ "]"
 show_pt (Rho id og es rs) = "𝜌 " ++ id ++ (showPCExps es) ++ (show_renamings rs) ++ (show_guard og)
 show_pt NilT = "𝜑"
@@ -141,19 +147,20 @@ show_dts::[DTDef]->String
 show_dts = foldr (\d s->show_dt d ++ "\n" ++ s) "" 
 
 show_pctd :: PCTD -> String
-show_pctd (PCTD id ds pts) = "PC " ++ id ++ "\n" ++ show_dts ds ++ (show_pts pts)
+show_pctd (PCTD id ds ps pts) = "PC " ++ id ++ "\n" ++ show_dts ds ++ show_evs ++ (show_pts pts)
+  where show_evs = "〖" ++ (foldr (\p s-> (show p) ++ if null s then "" else ", " ++ s) "" ps) ++ "〗"
 
-andThenO :: Eq a => (PT, Set a, Set a) -> (PT,[PT], Set a, Set a) -> (PT, [PT], Set a, Set a)
-andThenO (t, urs, gks) (t', pts, urs', gks') = (OpB opseqO t t', pts, urs `union` urs', gks `union` gks')
+--andThenO :: Eq a => (PT, Set a, Set a) -> (PT,[PT], Set a, Set a) -> (PT, [PT], Set a, Set a)
+--andThenO (t, urs, gks) (t', pts, urs', gks') = (OpB opseqO t t', pts, urs `union` urs', gks `union` gks')
 
-andThenC :: Eq a => (PT, Set a, Set a) -> (PT, [PT], Set a, Set a) -> (PT, [PT], Set a, Set a)
-andThenC (t, urs, gks) (t', pts, urs', gks') = (OpB opseqC t t', pts, urs `union` urs', gks `union` gks')
+andThen :: Eq a => (PT, Set a, Set a) -> (PT, [PT], Set a, Set a) -> (PT, [PT], Set a, Set a)
+andThen (t, urs, gks) (t', pts, urs', gks') = (OpB OpSeq t t', pts, urs `union` urs', gks `union` gks')
 
 andAfter :: Eq a => (PT, Set a, Set a) -> (PT, [PT], Set a, Set a) -> (PT, Set a, Set a)
 andAfter (Kappa k ps cts pt0, urs, gks) (pt', pts, urs', gks') = 
   let nid = k++"0" 
       pt1 = Rho nid Nothing nil nil in 
-  (Kappa k ps (((Kappa nid nil nil pt0):cts)++pts) (OpB opseqC pt1 pt'), urs `union` urs', gks `union` gks')
+  (Kappa k ps (((Kappa nid nil nil pt0):cts)++pts) (OpB OpSeq pt1 pt'), urs `union` urs', gks `union` gks')
   --(OpB opseqC t t', rs `union` rs', gcs `union` gcs')
 
 --rearrangeT :: PT -> PD
@@ -181,38 +188,37 @@ leafA pc n =
        og = if isNil gs then Nothing else Just . parse $ gs in
    (Atom e og, nil, nil)
 
-openACOf :: MMI String String -> GrwT String String -> String -> Bool
-openACOf mmi pc n = 
-  let ac = nextAfterC mmi pc n in
-  isSomething ac && openAC pc (the ac)
+--openACOf :: MMI String String -> GrwT String String -> String -> Bool
+--openACOf mmi pc n = 
+--  let ac = nextAfterC mmi pc n in
+--  isSomething ac && openAC pc (the ac)
 
-atomPT::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, [PT], Set Id, Set Id)
-atomPT mmi pc r n gks = 
+atomPT::MMI String String->PC String String->Id->Set Id->(PT, [PT], Set Id, Set Id)
+atomPT mmi pc n gks = 
     let t1 = leafA pc n 
-        t2 = optPT mmi pc r (nextAfterN mmi pc n) gks in
-    if openACOf mmi pc n then t1 `andThenO` t2 else t1 `andThenC` t2
+        t2 = optPT mmi pc (nextAfterN mmi pc n) gks in
+    t1 `andThen` t2
 
-bOpOf::String->String->PCTTypeD->ROp
-bOpOf op v td = opOf op v td
-  where opOf "VOpChoice" = OpRExtChoice
+bOpOf::String->String->PCTypeE->ROp
+bOpOf op v te = ROp (opOf op) v te
+  where opOf "VOpExtChoice" = OpRExtChoice
         opOf "VOpIntChoice" = OpRIntChoice
 
 -- Handles processes combined with replicated operators
-combinedPr::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, [PT], Set Id, Set Id)
-combinedPr mmi pc r n gps =
-  let (t, pts, urs, gps2) = consPT mmi pc r (quantifiedOpStart mmi pc n) (gunion [singles n, gps]) 
-      (v, etd) = varBQuantifiedOp pc n 
-      td = read_ty (expOf pc (gCRSG mmi) etd) in  
-  (OpKappa  n (bOpOf (opQuantifiedOp (gCRSG mmi)  pc n) (butLast v) td) t, pts, urs, gunion [singles n, gps, gps2])
-  where read_ty "Int" = Int
-        read_ty "Bool" = Bool
-        read_ty s = DT s
+combinedPr::MMI String String->PC String String->Id->Set Id->(PT, [PT], Set Id, Set Id)
+combinedPr mmi pc n gps =
+  let (t, pts, urs, gps2) = consPT mmi pc (quantifiedOpStart mmi pc n) (gunion [singles n, gps]) 
+      (v, te) = varBQuantifiedOp pc n in  
+  (OpKappa (bOpOf (opCombinable (gCRSG mmi)  pc n) v (read te)) t, pts, urs, gunion [singles n, gps, gps2])
 
-process::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, Set Id, Set Id)
-process mmi pc r n gks = 
+gParams::PC String String->Id->[Param]
+gParams pc n = fmap (\(id, ot)->Param id (read_opctyd ot)) $ paramsOf pc n
+
+process::MMI String String->PC String String->Id->Set Id->(PT, Set Id, Set Id)
+process mmi pc n gks = 
   let gks1 = n `intoSet` gks
-      (t, pds, urs, gks2) = consPT mmi pc r (the $ processStart mmi pc n) gks1 
-      ps = fmap (\(id, t)->cParam id (read_opctty t)) $ paramsOf pc n in
+      (t, pds, urs, gks2) = consPT mmi pc (the $ processStart mmi pc n) gks1 
+      ps = gParams pc n in
   (Kappa n ps pds t, urs, gunion [gks1, gks2])
 
 -- atque is latin for and then
@@ -220,80 +226,80 @@ atque :: Eq a => (PT, Set a, Set a) -> (PT, [PT], Set a, Set a) -> (PT, Set a, S
 atque (pt, urs, gks) (pt', pts, urs', gks') = 
   if pt' == NilT then (pt, urs, gks) else (pt, urs, gks) `andAfter` (pt', pts, urs', gks')
 
-prPT::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, Set Id, Set Id)
-prPT mmi pc r n gks =
-  (process mmi pc r n gks) `atque` (optPT mmi pc r (nextAfterN mmi pc n) (n `intoSet` gks))
+prPT::MMI String String->PC String String->Id->Set Id->(PT, Set Id, Set Id)
+prPT mmi pc n gks =
+  (process mmi pc n gks) `atque` (optPT mmi pc (nextAfterN mmi pc n) (n `intoSet` gks))
 
 --cWUnionAt4::Eq d=>(Set d)->(a, b, c, Set d)->(a, b, c, Set d)
 --cWUnionAt4 w (x, y, z, w')  = (x, y, z, w `union` w')
 
-refOrPr::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, [PT], Set Id, Set Id)
-refOrPr mmi pc r n gps 
+refOrPr::MMI String String->PC String String->Id->Set Id->(PT, [PT], Set Id, Set Id)
+refOrPr mmi pc n gps 
     | n `elem` gps = (Rho n Nothing nil nil, [], nil, nil)
     | isNodeOfTys n [CMM_Quantification] (gCRSG mmi) pc = 
-      let (pt, pts, urs, gps') = combinedPr mmi pc r n gps in (pt, pts, urs, gps `union` gps')   
-    | otherwise = let (pt, urs, gps') = prPT mmi pc r n gps in (Rho n Nothing nil nil, [pt], urs, gps `union` gps')
+      let (pt, pts, urs, gps') = combinedPr mmi pc n gps in (pt, pts, urs, gps `union` gps')   
+    | otherwise = let (pt, urs, gps') = prPT mmi pc n gps in (Rho n Nothing nil nil, [pt], urs, gps `union` gps')
 
 refLeaf :: MMI String String -> PC String String -> Id ->Set Id -> (PT, Set Id, Set Id)
 refLeaf mmi pc n gks = 
   let rn = nmOfRefP mmi pc n 
       urs = if rn `elem` gks || not (isNodeOfTys rn [CMM_Process] (gCRSG mmi) pc) then nil else singles rn 
       gs = guardOfOp mmi pc n in
-  (Rho rn (if isNil gs then Nothing else Just . parse . the $ gs) (fmap parse (expsOfRef mmi pc n)) (renamingsOf pc n), urs, nil)
+  (Rho rn (if isNil gs then Nothing else Just . parse . the $ gs) (fmap parse (argsOfRef mmi pc n)) (renamingsOf pc n), urs, nil)
 
-andThen:: Eq a => (PT, Set a, Set a) -> (PT, [PT], Set a, Set a) -> (PT, [PT], Set a, Set a)
-andThen (t, urs, gks) (t', pts, urs', gks') = 
-  if t' == NilT then (t, [], urs, gks) else (OpB opseqC t t', pts, urs `union` urs', gks `union` gks')
+andThenP:: Eq a => (PT, Set a, Set a) -> (PT, [PT], Set a, Set a) -> (PT, [PT], Set a, Set a)
+andThenP (t, urs, gks) (t', pts, urs', gks') = 
+  if t' == NilT then (t, [], urs, gks) else (OpB OpSeq t t', pts, urs `union` urs', gks `union` gks')
 
-refPT :: MMI String String -> PC String String -> Rel Id Id->Id -> Set Id -> (PT, [PT], Set Id, Set Id)
-refPT mmi pc r n gps = 
-   if innerRef pc n then doInnerRef else (refLeaf mmi pc n gps) `andThen` optPT mmi pc r (nextAfterN mmi pc n) gps
+refPT :: MMI String String -> PC String String ->Id -> Set Id -> (PT, [PT], Set Id, Set Id)
+refPT mmi pc n gps = 
+   if innerRef pc n then doInnerRef else (refLeaf mmi pc n gps) `andThenP` optPT mmi pc (nextAfterN mmi pc n) gps
    where doInnerRef = 
             let n' = nmOfRefP mmi pc n 
                 (pt, urs, gps') = refLeaf mmi pc n gps in 
             if n' `elem` gps then (pt, [], nil, gps `union` gps') 
-            else let (pt', urs', gps'') = prPT mmi pc r n' gps in (pt, [pt'], urs', gunion [gps, gps', gps'', set1 n'])
+            else let (pt', urs', gps'') = prPT mmi pc n' gps in (pt, [pt'], urs', gunion [gps, gps', gps'', set1 n'])
 
 -- PT constructor for operators
-opPT::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, [PT], Set Id, Set Id)
-opPT mmi pc r n gks = 
+opPT::MMI String String->PC String String->Id->Set Id->(PT, [PT], Set Id, Set Id)
+opPT mmi pc n gks = 
    let gs = guardOfOp mmi pc n 
        og = if isNil gs then Nothing else Just . parse . the $ gs
-       es = fmap (parse) (expsOf pc n) in
-   opPTs mmi pc r (toTOp (read_cmm $ opValOfOp (gCRSG mmi) pc n) og es) (branchesOfOp mmi pc n) gks
+       es = fmap parse (argsOf pc n) in
+   opPTs mmi pc (toTOp (read_cmm $ opCombinable (gCRSG mmi) pc n) og es) (branchesOfOp mmi pc n) gks
 
 -- PT constructor for optionals
-optPT::MMI String String->PC String String->Rel Id Id->Maybe Id->Set Id->(PT, [PT], Set Id, Set Id)
-optPT mmi pc r on gks
+optPT::MMI String String->PC String String->Maybe Id->Set Id->(PT, [PT], Set Id, Set Id)
+optPT mmi pc on gks
    | isNil on = (NilT, nil, nil, nil) 
-   | otherwise = consPT mmi pc r (the on) gks
+   | otherwise = consPT mmi pc (the on) gks
 
 -- General PT constructor
-consPT::MMI String String->PC String String->Rel Id Id->Id->Set Id->(PT, [PT], Set Id, Set Id)
-consPT mmi pc r n gks 
-    | isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc = atomPT mmi pc r n gks
-    | isNodeOfTys n [CMM_Process] (gCRSG mmi) pc = refOrPr mmi pc r n gks
-    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc = refPT mmi pc r n gks
-    | isNodeOfTys n [CMM_Quantification] (gCRSG mmi) pc = refOrPr mmi pc r n gks
-    | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = opPT mmi pc r n gks 
+consPT::MMI String String->PC String String->Id->Set Id->(PT, [PT], Set Id, Set Id)
+consPT mmi pc n gks 
+    | isNodeOfTys n [CMM_Atom] (gCRSG mmi) pc = atomPT mmi pc n gks
+    | isNodeOfTys n [CMM_Process] (gCRSG mmi) pc = refOrPr mmi pc n gks
+    | isNodeOfTys n [CMM_Reference] (gCRSG mmi) pc = refPT mmi pc n gks
+    | isNodeOfTys n [CMM_Quantification] (gCRSG mmi) pc = refOrPr mmi pc n gks
+    | isNodeOfTys n [CMM_Combination] (gCRSG mmi) pc = opPT mmi pc n gks 
     | isNodeOfTys n [CMM_Stop] (gCRSG mmi) pc = (StopT, [], nil, nil)
     | isNodeOfTys n [CMM_Skip] (gCRSG mmi) pc = (SkipT, [], nil, nil)
 
 
-opPTs::MMI String String->PC String String->Rel Id Id->TOp->Set Id->Set Id->(PT, [PT], Set Id, Set Id)
-opPTs _ _ _ _ EmptyS _ = (NilT, nil, nil, nil)
-opPTs mmi pc r op (Set b bs) gps = 
+opPTs::MMI String String->PC String String->TOp->Set Id->Set Id->(PT, [PT], Set Id, Set Id)
+opPTs _ _ _ EmptyS _ = (NilT, nil, nil, nil)
+opPTs mmi pc op (Set b bs) gps = 
    let n = the $ nextNode mmi pc b
-       (pt, pts, urs, gps') = consPT mmi pc r n gps in
-   (pt, pts, urs, gps') `withOp`  (op, opPTs mmi pc r op bs $ gps' `union` gps)
+       (pt, pts, urs, gps') = consPT mmi pc n gps in
+   (pt, pts, urs, gps') `withOp`  (op, opPTs mmi pc op bs $ gps' `union` gps)
 
-seqPTs::MMI String String->PC String String->Rel Id Id->Set Id->Set Id->([PT], Set Id)
-seqPTs _ _ _ EmptyS gps = (nil, gps)
-seqPTs mmi pc r (Set n ns) gps  
-    | n `elem` gps = seqPTs mmi pc r ns gps
+seqPTs::MMI String String->PC String String->Set Id->Set Id->([PT], Set Id)
+seqPTs _ _ EmptyS gps = (nil, gps)
+seqPTs mmi pc (Set n ns) gps  
+    | n `elem` gps = seqPTs mmi pc ns gps
     | otherwise = 
-        let (pt, urs, gps1) = prPT mmi pc r n gps 
-            (pts, gps2) = seqPTs mmi pc r (ns `union` urs `sminus` gps1) (gps `union` gps1) in 
+        let (pt, urs, gps1) = prPT mmi pc n gps 
+            (pts, gps2) = seqPTs mmi pc (ns `union` urs `sminus` gps1) (gps `union` gps1) in 
         (pt:pts, gunion [gps, gps1, gps2])
     
 consDef::PC String String->String->DTDef
@@ -303,22 +309,21 @@ consDef pc n =
         split_ts (Set t ts) = (split_t t:split_ts ts)
         split_t t = let (s1, s2) = splitAtStr "." t in VTerm s1 (split' s2) 
         split' [] = []
-        split' s = let (s1, s2) = splitAtStr "." s in (read_pctty s1):split' s2
+        split' s = let (s1, s2) = splitAtStr "." s in (read  s1):split' s2
 
 -- Constructs a PCTD from a single PC
 toPCTD::MMI String String->PC String String->PCTD
 toPCTD mmi pc = 
-  let r = relKs mmi pc
-      ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
-      (pts, _) = seqPTs mmi pc r (set1 $ startingPoint mmi pc) nil in 
-  PCTD (getPCName pc) ds pts
+  let ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
+      (pts, _) = seqPTs mmi pc (set1 $ startPoint mmi pc) nil in 
+  PCTD (getPCName pc) ds (gParams pc startN) pts
 
 -- Constructs a PCTD from a PCs model
 consPCTD::MMI String String->PC String String->[PC String String]->PCTD
 consPCTD mmi pc ipcs = 
    let pts' = toPTs ipcs 
-       PCTD id ds pts = toPCTD mmi pc in
-   PCTD id ds (pts'++pts)
+       PCTD id ds ids pts = toPCTD mmi pc in
+   PCTD id ds ids (pts'++pts)
    where toPTs [] = []
          toPTs (pc:pcs) = (toPTs pcs) ++ (gPTs $ toPCTD mmi pc)
 
@@ -361,7 +366,7 @@ relWithin :: PT -> Rel Id Id
 relWithin (Kappa nm _ cpds pt) = (relWithinRel_pds cpds) `union` relWithinRel nm pt
 
 atomsPCTD :: PCTD ->Set Id
-atomsPCTD (PCTD _ _ pts) = atomsOfCPTs pts
+atomsPCTD (PCTD _ _ _ pts) = atomsOfCPTs pts
 
 atomsOfCPTs :: Foldable t=>t PT ->Set Id
 atomsOfCPTs = foldr (\pt s ->atomsOfPT pt `union` s) nil
@@ -378,7 +383,7 @@ atomsOfPT :: PT ->Set Id
 atomsOfPT (Atom e _)               = atomsOfExp e
 atomsOfPT (OpB (OpThrow as) t1 t2) = gunion (fmap atomsOfExp as) `union` atomsOfPTs t1 t2
 atomsOfPT (OpB _ t1 t2)            = atomsOfPTs t1 t2
-atomsOfPT (OpKappa _ _ t)          = atomsOfPT t
+atomsOfPT (OpKappa _ t)            = atomsOfPT t
 atomsOfPT (Kappa _ _ cts t)        = foldr (\ct ps->(atomsOfPT ct) `union` ps) nil cts `union` (atomsOfPT t)
 atomsOfPT (Rho _ _ _ rs)           = foldr (\(_, to) ps->(singles to) `union` ps) nil rs
 atomsOfPT NilT                     = nil
@@ -396,7 +401,7 @@ isAtomic NilT = True
 isAtomic StopT = True
 isAtomic SkipT = True
 isAtomic (Rho _ _ _ _) = True
-isAtomic (OpB (OpSeq _) t NilT) = isAtom t
+isAtomic (OpB OpSeq t NilT) = isAtom t
 isAtomic _ = False
 
 --isSole :: PT -> Bool

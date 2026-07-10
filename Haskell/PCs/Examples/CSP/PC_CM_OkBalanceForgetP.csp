@@ -1,1 +1,1 @@
-CMOkBalanceForget = cardIn -> grant -> showBalance -> cancel -> cardEject -> cCollectTimeout -> cardSwallow -> CashMachine
+CMOkBalanceForget = cardIn -> grant -> showBalance -> cancel -> cardEject -> tock -> tock -> tock -> cardSwallow -> CashMachine

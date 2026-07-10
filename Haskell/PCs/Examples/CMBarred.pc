@@ -1,0 +1,54 @@
+PC PC_CMBarred {cardIn, cancel, grant, optWithdraw, showBalance, withdraw, cashDeny, cashDispense, fail, cardSwallow, tock, cardCollect, cardEject, deny} @ CMBarred
+reference RefBarredAsset
+ref_connector RefBarredAsset->BarredAsset.'{cardIn}','{cancel}','{grant}','{optWithdraw, showBalance}','{withdraw, cashDeny, cashDispense, fail, cardSwallow, tock, cardCollect, cardEject, deny, cancel}'
+process CMBarred@RefBarredAsset
+process BarredAsset.ses,rses,bes,pes,oes@OpBarredAsset
+operator OpBarredAsset.Choice
+op_connector OpBarredAsset->Start
+quantifiedOp Start.Choice s : 'ses'
+atom start:'s'
+op_connector Start->start
+op_connector OpBarredAsset->Restart
+quantifiedOp Restart.Choice rs : 'rses'
+atom restart:'rs'
+op_connector Restart->restart
+after BarredAsset->RefBarredAsset2
+after start->CarryOut
+operator OpCarryOut.IntChoice
+process CarryOut@OpCarryOut
+operator OpCarryOut2.Choice
+skip SKIP
+op_connector OpCarryOut->OpCarryOut2
+op_connector OpCarryOut->SKIP
+quantifiedOp Other.Choice o : 'oes'
+atom doOther:'o'
+op_connector Other->doOther
+op_connector OpCarryOut2->Other
+quantifiedOp Erect.Choice e : 'bes'
+atom erect:'e'
+op_connector OpCarryOut2->Erect
+op_connector Erect->erect
+reference RefCarryOut
+ref_connector RefCarryOut->CarryOut
+after doOther->RefCarryOut
+after erect->DoBarred
+process DoBarred@OpDoBarred
+operator OpDoBarred.IntChoice
+operator OpDoBarred2.Choice
+skip SKIP2
+op_connector OpDoBarred->OpDoBarred2
+op_connector OpDoBarred->SKIP2
+quantifiedOp Other2.Choice o : 'oes'
+quantifiedOp Protected.Choice p : 'pes'
+atom doOther2:'o'
+atom protected:'p'
+op_connector OpDoBarred2->Other2
+op_connector OpDoBarred2->Protected
+op_connector Other2->doOther2
+op_connector Protected->protected
+reference RefDoBarred
+ref_connector RefDoBarred->DoBarred
+after doOther2->RefDoBarred
+after protected->RefDoBarred
+reference RefBarredAsset2
+ref_connector RefBarredAsset2->BarredAsset.'ses','rses','bes','pes','oes'

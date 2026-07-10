@@ -1,0 +1,12 @@
+fragment F_MM_14 {
+  SG SG_MM_14 {
+    proxy PAtom2
+    proxy PConnector5
+    proxy PReference2
+    derived PConnector5->PAtom2[DAt <-> tgt]:1;?
+    derived PConnector5->PReference2[DRt <-> tgt]:1..*;?
+  }
+  ref PAtom2->Atom
+  ref PConnector5->Connector
+  ref PReference2->Reference
+}

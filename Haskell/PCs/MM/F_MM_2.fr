@@ -1,5 +1,5 @@
-fragment F_MM_1 {
-  SG SG_MM_1 {
+fragment F_MM_2 {
+  SG SG_MM_2 {
     nodea Node
     nodea NamedNode
     node PCDef
@@ -9,12 +9,14 @@ fragment F_MM_1 {
     proxy PNamed
     proxy PNamed2
     proxy PTyped
+    proxy PWParameters
     inh StartN->NamedNode
     inh NamedNode->Node
     inh NamedNode->PNamed
     inh Definition->PNamed
     inh Definition->PTyped
     inh PCDef->PNamed2
+    inh StartN->PWParameters
     compu PCDef->Node[ContainsNs]:*
     compu PCDef->Connector[ContainsCs]:*
     compu PCDef->Definition[ContainsDs]:*
@@ -25,4 +27,5 @@ fragment F_MM_1 {
   ref PNamed->Named
   ref PNamed2->Named
   ref PTyped->Typed
+  ref PWParameters->WParameters
 }

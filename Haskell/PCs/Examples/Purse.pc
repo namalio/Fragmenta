@@ -1,4 +1,4 @@
-PC PC_Purse@Purse
+PC PC_Purse {} @Purse
 enum Error : 'InsufficientFunds','InvalidPutAmount','InvalidTakeAmount'
 operator OpPurseIf.If
 process Purse.n@OpPurseIf
@@ -6,8 +6,8 @@ stop STOP
 operator OpPurseOpts.Choice
 op_connector_g OpPurseIf->OpPurseOpts{n≥0}
 op_else_connector OpPurseIf->STOP
-quantifiedOp takeMoneyQ.Choice a : 'Int'
-quantifiedOp putMoneyQ.Choice a : 'Int'
+quantifiedOp takeMoneyQ.Choice a : Int
+quantifiedOp putMoneyQ.Choice a : Int
 atom :'takeMoney.a'{a≤n ⋀ a>0 }
 atom :'putMoney.a'
 atom :'showBalance.n'

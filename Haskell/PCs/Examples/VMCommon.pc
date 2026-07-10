@@ -1,0 +1,8 @@
+PC PC_VendingMachineCommon {}
+enum DispenserMsgs : 'itemCollected', 'itemCollectTimeout'
+enum OkFail : 'ok','fail' 
+enum DispenserCmds : 'dispense.OkFail'
+enum DoneDoingErr : 'done','doing','error' 
+enum OCmds : 'start', 'wrongItem', 'payment.DoneDoingErr'
+enum CPCmds : 'chargeAmount', 'refund'
+enum CPMsgs : 'pay.OkFail'

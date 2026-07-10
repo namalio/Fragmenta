@@ -1,0 +1,18 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Double];
+
+leftQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ x:Int>];
+left [shape=ellipse,fillcolor=greenyellow,style=filled,label="left.x"];
+right [shape=ellipse,fillcolor=greenyellow,style=filled,label="right.(x+x)"];
+Double [shape=box,fillcolor=deepskyblue,style = filled,label="Double"];
+
+{rank=same;right,left}
+{rank=same;Double,StartN_}
+
+right->Double[arrowtail=dot,dir=both,label="after"];
+leftQ->left[arrowhead="open"];
+left->right[arrowtail=dot,dir=both,label="after"];
+Double->leftQ[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Double[label="starts"];
+}

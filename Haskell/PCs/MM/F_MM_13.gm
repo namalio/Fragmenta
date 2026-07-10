@@ -1,0 +1,16 @@
+Morphism F_MM_13 {
+	nodes {
+		BMainIfC->Connector
+		BElseC->Connector
+		BJumpC->Connector
+		BranchC->Connector
+		PConnector4->Connector
+		PAction5->Node
+		PGuarded3->Trait
+		PTxtExp3->Attribute
+		PQuantification->Node
+		PCombinable2->Trait
+	}
+	edges {
+	}
+}

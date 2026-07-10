@@ -2,21 +2,20 @@ digraph {graph[label=F_AMM,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_AMM{style=dashed;label=F_AMM;
 "Attribute"[shape=record,fillcolor=lightskyblue1,style = filled,label="Attribute"];
 "Element"[shape=record,fillcolor=lightskyblue1,style = filled,label=<{<I>Element</I><br/>(A)}>];
-"PCDef"[shape=record,fillcolor=lightskyblue1,style = filled,label="PCDef"];
+"DiagDef"[shape=record,fillcolor=lightskyblue1,style = filled,label="DiagDef"];
 "Trait"[shape=record,fillcolor=lightskyblue1,style ="filled,dotted",label=<{<I>Trait</I><br/>(V)}>];
 "Node"[shape=record,fillcolor=lightskyblue1,style = filled,label="Node"];
 "Connector"[shape=record,fillcolor=lightskyblue1,style = filled,label="Connector"];
 "Definition"[shape=record,fillcolor=lightskyblue1,style = filled,label="Definition"];
 
-"PCDef"->"Element"[label="contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
+"DiagDef"->"Element"[label="contains",arrowhead=vee,arrowtail=diamond,dir=both,headlabel="*"];
 "Element"->"Trait"[arrowhead=onormal,arrowsize=2.0];
-"PCDef"->"Trait"[arrowhead=onormal,arrowsize=2.0];
+"DiagDef"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "Attribute"->"Trait"[arrowhead=onormal,arrowsize=2.0];
 "Connector"->"Element"[arrowhead=onormal,arrowsize=2.0];
 "Definition"->"Element"[arrowhead=onormal,arrowsize=2.0];
 "Node"->"Element"[arrowhead=onormal,arrowsize=2.0];
 "Trait"->"Trait"[label="has▼",dir=none,taillabel="*",headlabel="*"];
-"PCDef"->"Node"[label="starts▼",dir=none,taillabel="?",headlabel=""];
 "Connector"->"Node"[label="csrc",arrowhead=vee,headlabel="",arrowsize=.5];
 "Connector"->"Node"[label="ctgt",arrowhead=vee,headlabel="",arrowsize=.5];
 

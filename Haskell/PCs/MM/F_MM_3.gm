@@ -9,13 +9,12 @@ Morphism F_MM_3 {
 		Action->Node
 		Guarded->Trait
 		PName->Attribute
-		PParameter->Attribute
+		PWParameters2->Trait
 		WExp->Trait
 	}
 	edges {
 	   pc_name->has
 	   fname->has
 	   rname->has
-	   params->has
 	}
 }

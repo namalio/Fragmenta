@@ -65,7 +65,7 @@ id_on a = zipS a a
 --domain restriction
 dres :: (Foldable t, Eq a, Eq b) =>Rel a b -> t a -> Rel a b
 dres r a = filterS ((`elem` a) . fst) r
-    --foldr (\p r'->if fst p `elem` a then p `intoSet` r' else r') nilSet r
+    --foldr (\p r'->if fst p `elem` a then p `intoSet` r' else r') EmptyS r
 
 --range restriction
 rres :: (Foldable t, Eq a, Eq b) =>Rel a b -> t b -> Rel a b

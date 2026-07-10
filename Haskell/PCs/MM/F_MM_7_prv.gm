@@ -1,0 +1,10 @@
+Morphism F_MM_7 {
+	nodes {
+	  PWExp2->Trait
+	  PNamedNode3->Node
+	  PAction->Node
+	  AnyOf->Node
+	}
+	edges {
+	}
+}

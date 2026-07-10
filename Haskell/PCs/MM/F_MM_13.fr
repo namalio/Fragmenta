@@ -1,0 +1,29 @@
+fragment F_MM_13 {
+  SG SG_MM_13 {
+    proxy PConnector4
+    proxy PCombinable2
+    proxy PAction5
+    proxy PGuarded3
+    proxy PTxtExp3
+    proxy PQuantification
+    node BMainIfC
+    node BElseC
+    node BJumpC
+    node BranchC
+    inh BMainIfC->BranchC
+    inh BMainIfC->PGuarded3
+    inh BElseC->BranchC
+    inh BJumpC->BranchC
+    inh BranchC->PConnector4
+    derived BMainIfC->PTxtExp3[DIf <-> guard]:?;1
+    derived BranchC->PCombinable2[DBCSrc <-> src]:1..*;1
+    derived BranchC->PAction5[DBCTgt <-> tgt]:*;1
+    derived BranchC->PQuantification[DBCSrc2 <-> src]:1;?
+  }
+  ref PConnector4->Connector
+  ref PCombinable2->Combinable
+  ref PAction5->Action
+  ref PGuarded3->Guarded
+  ref PTxtExp3->TxtExp
+  ref PQuantification->Quantification
+}

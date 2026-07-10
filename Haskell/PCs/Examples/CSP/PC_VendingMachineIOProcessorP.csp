@@ -1,0 +1,6 @@
+IOProcessor = 
+   let 
+      IOProcessor0 = ([] ioms : IOMsgs @ frIO.ioms -> SKIP)
+            |~| (|~| iocs : IOCmds @ toIO.iocs -> SKIP)
+   within
+      IOProcessor0; IOProcessor

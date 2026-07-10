@@ -1,4 +1,4 @@
-PC PC_TCellOverall@TCellOverall
+PC PC_TCellOverall {} @TCellOverall
 operator OpTCellParallel.Parallel:'activatesPTK','inhibitorySignal', 'inactivatesPTK', 'positiveOn', 'freeLigandTCR', 'bindLigandTCR', 'positiveOff'
 process TCellOverall@OpTCellParallel
 op_connector OpTCellParallel->RefTCR

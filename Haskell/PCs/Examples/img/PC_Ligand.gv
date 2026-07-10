@@ -1,0 +1,25 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Ligand];
+bindingLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="bindingLigandTCR"];
+abortLigandTCRBinding [shape=ellipse,fillcolor=greenyellow,style=filled,label="abortLigandTCRBinding"];
+Ligand [shape=box,fillcolor=deepskyblue,style = filled,label="Ligand "];
+OpBinding [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+Binding [shape=box,fillcolor=deepskyblue,style = filled,label="Binding "];
+dissociatesLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="dissociatesLigandTCR"];
+bindsLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="bindsLigandTCR"];
+
+{rank=same;Binding,bindingLigandTCR}
+{rank=same;dissociatesLigandTCR,bindsLigandTCR}
+{rank=same;Ligand,StartN_}
+
+dissociatesLigandTCR->Ligand[arrowtail=dot,dir=both,label="after"];
+abortLigandTCRBinding->Ligand[arrowtail=dot,dir=both,label="after"];
+OpBinding->abortLigandTCRBinding[arrowhead="open"];
+bindingLigandTCR->Binding[arrowtail=dot,dir=both,label="after"];
+OpBinding->bindsLigandTCR[arrowhead="open"];
+bindsLigandTCR->dissociatesLigandTCR[arrowtail=dot,dir=both,label="after"];
+Ligand->bindingLigandTCR[arrowhead="onormal",penwidth=2,label="="];
+Binding->OpBinding[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Ligand[label="starts"];
+}

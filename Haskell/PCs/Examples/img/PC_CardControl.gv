@@ -1,16 +1,17 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CardControl];
+
 cardIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardIn"];
 cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
 deny [shape=ellipse,fillcolor=greenyellow,style=filled,label="deny"];
 cardSwallow [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardSwallow"];
-RefStopTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑StopTimer (5)
+RefStopTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="StopTimer (3)
 ⟦timeout/cardSwallow,stopIt/cardCollect⟧"];
 StopTimerI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_StopTimer];
 cardEject [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardEject"];
 OpDoCardIn [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-CardControl [shape=box,fillcolor=deepskyblue,style = filled,label="CardControl "];
+CardControl [shape=box,fillcolor=deepskyblue,style = filled,label="CardControl"];
 
 {rank=same;cardSwallow,deny}
 {rank=same;OpDoCardIn,cardIn}

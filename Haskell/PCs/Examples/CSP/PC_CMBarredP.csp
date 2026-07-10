@@ -1,24 +1,17 @@
-CMBarred = BarredAsset({cardIn},{cancel},{grant},{optWithdraw, showBalance},{withdraw, cashDeny, cashDispense, fail, cardSwallow, cCollectTimeout, cCollect, cardEject, deny, cancel})
+CMBarred = BarredAsset({cardIn}, {cancel}, {grant}, {optWithdraw,showBalance}, {withdraw,cashDeny,cashDispense,fail,cardSwallow,tock,cardCollect,cardEject,deny,cancel})
 
-BarredAsset(ses,rses,bes,pes,oes) = 
+BarredAsset(ses, rses, bes, pes, oes) = 
    let 
-      BarredAsset0 = 
+      BarredAsset0 = (|~| s : ses @ s -> CarryOut)
+            |~| (|~| rs : rses @ rs -> SKIP)
+      CarryOut = 
          let 
-            DoIt = 
-               let 
-                  CarryOut = 
-                     let 
-                        DoBarred = SKIP
-                               |~| ((([] e : pes @ e -> SKIP); DoBarred)
-                              [] (([] e : oes @ e -> SKIP); DoBarred))
-                     within
-                        SKIP
-                            |~| ((([] e : bes @ e -> SKIP); DoBarred)
-                           [] (([] e : oes @ e -> SKIP); CarryOut))
-               within
-                  CarryOut
+            DoBarred = ((|~| o : oes @ o -> DoBarred)
+                  |~| (|~| p : pes @ p -> DoBarred))
+                  [] SKIP
          within
-            ([] e : rses @ e -> SKIP)
-               [] (([] e : ses @ e -> SKIP); DoIt)
+            SKIP
+               [] ((|~| o : oes @ o -> CarryOut)
+               |~| (|~| e : bes @ e -> DoBarred))
    within
-      BarredAsset0; BarredAsset(ses,rses,bes,pes,oes)
+      BarredAsset0; BarredAsset(ses, rses, bes, pes, oes)

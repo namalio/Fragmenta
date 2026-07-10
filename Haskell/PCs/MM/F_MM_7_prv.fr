@@ -1,0 +1,14 @@
+fragment F_MM_7 {
+  SG SG_MM_7 {
+     proxy PWExp2
+     proxy PNamedNode3
+     proxy PAction
+     node AnyOf
+     inh AnyOf->PNamedNode3
+     inh AnyOf->PAction
+     inh AnyOf->PWExp2
+  }
+  ref PWExp2->WExp
+  ref PNamedNode3->NamedNode
+  ref PAction->Action
+}

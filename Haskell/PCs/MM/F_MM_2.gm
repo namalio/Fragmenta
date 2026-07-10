@@ -1,12 +1,13 @@
 Morphism F_MM_2 {
 	nodes {
-	   PCDef->PCDef
+	   PCDef->DiagDef
        Node->Node
 	   Connector->Connector
 	   Definition->Definition
 	   PNamed->Trait
 	   PNamed2->Trait
 	   PTyped->Trait
+	   PWParameters->Trait
 	   StartN->Node
 	   NamedNode->Node
 	}
@@ -14,7 +15,7 @@ Morphism F_MM_2 {
 	   ContainsNs->contains
 	   ContainsCs->contains
 	   ContainsDs->contains
-       Starts->starts
+       Starts->has
        src->csrc
        tgt->ctgt
 	}

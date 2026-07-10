@@ -1,0 +1,9 @@
+Morphism F_MM_14 {
+	nodes {
+		PAtom2->Node
+		PConnector5->Connector
+		PReference2->Node
+	}
+	edges {
+	}
+}

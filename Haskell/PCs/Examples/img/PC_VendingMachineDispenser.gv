@@ -1,0 +1,48 @@
+digraph {
+subgraph cluster_DispenserCmds {
+style="filled,rounded";
+label =DispenserCmds;
+fillcolor = cadetblue1;
+dispense[shape=box,fillcolor=darkolivegreen1,style="filled",label="dispense.OkFail"];
+}
+
+subgraph cluster_DispenserMsgs {
+style="filled,rounded";
+label =DispenserMsgs;
+fillcolor = cadetblue1;
+itemCollectTimeout[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemCollectTimeout"];
+itemCollected[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemCollected"];
+}
+
+subgraph cluster_OkFail {
+style="filled,rounded";
+label =OkFail;
+fillcolor = cadetblue1;
+ok[shape=box,fillcolor=darkolivegreen1,style="filled",label="ok"];
+fail[shape=box,fillcolor=darkolivegreen1,style="filled",label="fail"];
+}
+
+
+dispense->StartN_[style=invis]
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineDispenser];
+
+Dispenser [shape=box,fillcolor=deepskyblue,style = filled,label="Dispenser"];
+DispI [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ dms:DispenserMsgs>];
+adi [shape=ellipse,fillcolor=greenyellow,style=filled,label="frDisp.dms"];
+RefDispenser [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+ado [shape=ellipse,fillcolor=greenyellow,style=filled,label="toDisp.dcs"];
+DispO [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ dcs:DispenserCmds>];
+OpDispenser [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+
+{rank=same;RefDispenser,Dispenser}
+{rank=same;Dispenser,StartN_}
+
+Dispenser->RefDispenser[arrowtail=dot,dir=both,label="after"];
+DispO->ado[arrowhead="open"];
+OpDispenser->DispO[arrowhead="open"];
+OpDispenser->DispI[arrowhead="open"];
+DispI->adi[arrowhead="open"];
+RefDispenser->Dispenser[arrowhead="normalnormal",fillcolor=white,label=" "];
+Dispenser->OpDispenser[arrowhead="onormal",penwidth=2,label="="];
+StartN_->Dispenser[label="starts"];
+}

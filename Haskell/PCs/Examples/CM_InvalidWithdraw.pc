@@ -1,0 +1,23 @@
+PC PC_CM_InvalidWithdraw {} @ CMInvalidWithdraw
+process CMInvalidWithdraw@cardIn
+atom :'cardIn'
+atom :'fail'
+atom fail2:'fail'
+atom :'optWithdraw'
+atom :'withdraw'
+atom :'cashDispense'
+atom :'cancel'
+atom :'cardEject'
+atom :'cardCollect'
+after cardIn->fail
+after fail->fail2
+after fail2->optWithdraw
+after optWithdraw->withdraw
+after withdraw->cashDispense
+after cashDispense->cancel
+after cancel->cardEject
+after cardEject->cardCollect
+reference RefCashMachine:CashMachine
+import CashMachine as CMI for PC_CashMachine
+ref_connector RefCashMachine->CMI
+after cardCollect->RefCashMachine

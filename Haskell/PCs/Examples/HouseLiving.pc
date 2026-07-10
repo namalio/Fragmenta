@@ -1,9 +1,9 @@
 PC PC_HouseLiving@HouseLiving
 operator OpHouseLiving.Choice
 process HouseLiving@OpHouseLiving
-atom mainDoor
-atom roomWindow
-atom intoHall
+atom :'mainDoor'
+atom :'roomWindow'
+atom :'intoHall'
 op_connector OpHouseLiving->mainDoor
 op_connector OpHouseLiving->roomWindow
 process EnterHall@intoHall
@@ -13,10 +13,10 @@ after roomWindow->EnterRoom
 after intoHall->OpEnterHall
 operator OpEnterHall.Choice
 operator OpInsideRoom.Choice
-atom intoRoom
-atom intoLivingRoom
-atom intoKitchen
-atom mainDoor2->mainDoor
+atom :'intoRoom'
+atom :'intoLivingRoom'
+atom :'intoKitchen'
+atom mainDoor2:'mainDoor'
 op_connector OpEnterHall->intoLivingRoom
 op_connector OpEnterHall->intoKitchen
 op_connector OpEnterHall->mainDoor2
@@ -32,7 +32,7 @@ after mainDoor2->HouseLiving
 op_connector OpEnterHall->RefEnterRoom
 after intoRoom->OpInsideRoom
 op_connector OpInsideRoom->RefEnterHall2
-atom roomWindow2->roomWindow
+atom roomWindow2:'roomWindow'
 op_connector OpInsideRoom->roomWindow2
 reference RefHouseLiving
 ref_connector hidden RefHouseLiving->HouseLiving

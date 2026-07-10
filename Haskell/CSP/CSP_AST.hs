@@ -7,6 +7,8 @@
 -----------------
 module CSP.CSP_AST
    (Id
+   , Ty(..)
+   , TyE(..)
    , DTyTerm (..)
    , Decl(..)
    , Exp(..)
@@ -14,23 +16,29 @@ module CSP.CSP_AST
    , BOp(..)
    , UOp(..)
    , Token(..)
+   , ChL(..)
    , isAtomicExp
    , isComposite
    , isExtChoice) 
 where
 
 import Sets
-import Data.Bits (And)
 
 type Id = String
-type TyS = String
 
-data DTyTerm = DTyTerm Id [String]
+data Ty = TyInt | TyBool | TyEvent | TyDot Ty Ty | TySet Ty | TyId Id
+   deriving (Show)
+
+data TyE = Ty Ty | Sete [Id]
+   deriving (Show)
+   
+data DTyTerm = DTyTerm Id [Ty]
    deriving(Show) 
-data Decl = Channel (Set Id) (Maybe TyS) | EqDecl Exp Exp | Include (Set Id) | DataTy Id [DTyTerm]
+data Decl = Channel (Set Id) (Maybe Ty) | EqDecl Exp Exp | Include (Set Id) | DataTy Id [DTyTerm]
    deriving(Show) 
 
-data BOp = Plus | Minus | Product | Div | Remainder | Or | And | GEQ | LEQ | GT | LT | EQ | NEQ | Member | Union | Intersection
+data BOp = Plus | Minus | Product | Div | Remainder | Or | And | GEQ | LEQ | GT | LT | EQ | NEQ 
+         | Member | Union | Intersection | SMinus
    deriving(Show, Eq) 
 
 data UOp = UMinus | UNot
@@ -39,8 +47,13 @@ data UOp = UMinus | UNot
 data Token = TokenInt Int | TokenT | TokenF
    deriving(Show) 
 
+-- Choice literal: internal or external
+data ChL = Int | Ext
+   deriving (Show)
+
 --data Stmt = Stmt Id Exp deriving(Show) 
-data Exp = ExpId String -- a name 
+data Exp = 
+   ExpId String -- a name 
    | ExpApp Id [Exp]    -- function application
    | ExpPar Exp         -- a parenthesised expression
    | ExpBOp Exp BOp Exp -- A binary expression
@@ -48,13 +61,12 @@ data Exp = ExpId String -- a name
    | ExpToken Token     -- An expression with a recognised token
    | ExpSetE [Exp]      -- A set extension expression
    | GExp Exp Exp       -- A guarded expression
-   | ExpChannel Exp Exp  -- A channel expression: c.e
+   | ExpDotted Exp Exp  -- A dotted expression: c.e
    | IfExp Exp Exp Exp  -- An if expression
    | Prfx Exp Exp       -- Prefix
-   | ExtChoice Exp Exp
-   | IntChoice Exp Exp
-   | RExtChoice Id Id Exp -- name of variable, identifier of set and expression '[] x : s @ Exp' 
-   | RIntChoice Id Id Exp -- name of variable, identifier of set and expression '|~| x : s @ Exp' 
+   | Choice ChL Exp Exp
+   | RChoice ChL Id TyE Exp -- name of variable, identifier of set and expression '[] x : s @ Exp' 
+   -- | RIntChoice Id Id Exp -- name of variable, identifier of set and expression '|~| x : s @ Exp' 
    | SeqComp Exp Exp
    | Parallel [Exp] Exp Exp
 --   | SyncInterrupt [String] Exp Exp
@@ -72,6 +84,7 @@ isAtomicExp :: Exp -> Bool
 isAtomicExp (ExpId _)    = True
 isAtomicExp (ExpApp _ _) = True
 isAtomicExp (ExpPar _)   = True
+isAtomicExp (ExpToken _)    = True
 isAtomicExp (GExp _ _)   = True
 isAtomicExp (IfExp _ _ _) = True
 isAtomicExp (Prfx _ _) = True
@@ -85,5 +98,5 @@ isComposite :: Exp -> Bool
 isComposite = not . isAtomicExp
 
 isExtChoice :: Exp -> Bool
-isExtChoice (ExtChoice _ _) = True
+isExtChoice (Choice Ext _ _) = True
 isExtChoice _ = False

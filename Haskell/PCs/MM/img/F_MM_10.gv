@@ -1,31 +1,15 @@
 digraph {graph[label=F_MM_10,labelloc=tl,labelfontsize=12];
 subgraph cluster_F_MM_10{style=dashed;label=F_MM_10;
-"PNode2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Node2<br/>(P)>];
-"PBindable"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Bindable<br/>(P)>];
-"PAction4"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Action4<br/>(P)>];
-"PName3"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Name3<br/>(P)>];
-"PYesNo"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<YesNo<br/>(P)>];
-"PGuarded2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Guarded2<br/>(P)>];
-"PStartOfPC"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartOfPC<br/>(P)>];
-"Reference"[shape=record,fillcolor=lightskyblue1,style = filled,label="Reference"];
-"Renaming"[shape=record,fillcolor=lightskyblue1,style = filled,label="Renaming"];
+"PConnector"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector<br/>(P)>];
+"StartC"[shape=record,fillcolor=lightskyblue1,style = filled,label="StartC"];
+"PStartN"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartN<br/>(P)>];
+"PStartOfPC2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<StartOfPC2<br/>(P)>];
 
-"Reference"->"PNode2"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PBindable"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PAction4"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PGuarded2"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PStartOfPC"[arrowhead=onormal,arrowsize=2.0];
-"Reference"->"PName3"[label="Reference_name",arrowhead=vee,headlabel="?",arrowsize=.5];
-"Reference"->"PYesNo"[label="Reference_inner",arrowhead=vee,headlabel="",arrowsize=.5];
-"Reference"->"Renaming"[label="Renamings▼",dir=none,taillabel="",headlabel="*"];
-"Renaming"->"PName3"[label="Renaming_new",arrowhead=vee,headlabel="",arrowsize=.5];
-"Renaming"->"PName3"[label="Renaming_old",arrowhead=vee,headlabel="",arrowsize=.5];
+"StartC"->"PConnector"[arrowhead=onormal,arrowsize=2.0];
+"StartC"->"PStartN"[label="DSCSrc: src ▼",dir=none,taillabel="?",headlabel="",style=dotted];
+"StartC"->"PStartOfPC2"[label="DSCTgt: tgt ▼",dir=none,taillabel="?",headlabel="",style=dotted];
 
 }
-
-
-
-
 
 
 

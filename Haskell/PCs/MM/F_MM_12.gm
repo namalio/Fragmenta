@@ -1,13 +1,13 @@
 Morphism F_MM_12 {
 	nodes {
-		AfterC->Connector
-		DefinesC->Connector
-		PConnector2->Connector
-		PAction5->Node
-		PProcess2->Node
-		PYesNo2->Attribute
+		PConnector3->Connector
+		PBindable2->Trait
+		ReferenceC->Connector
+		PReference->Node
+		PRefTarget->Trait
+		PYesNo3->Attribute
 	}
 	edges {
-		AfterC_copen->has
+		ReferenceC_hidden->has
 	}
 }

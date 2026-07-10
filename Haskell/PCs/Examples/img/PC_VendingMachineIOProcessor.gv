@@ -1,0 +1,51 @@
+digraph {
+subgraph cluster_IOCmds {
+style="filled,rounded";
+label =IOCmds;
+fillcolor = cadetblue1;
+getSelecteditem[shape=box,fillcolor=darkolivegreen1,style="filled",label="getSelecteditem"];
+payment[shape=box,fillcolor=darkolivegreen1,style="filled",label="payment.OkFail"];
+startMsg[shape=box,fillcolor=darkolivegreen1,style="filled",label="startMsg"];
+wrongItemMsg[shape=box,fillcolor=darkolivegreen1,style="filled",label="wrongItemMsg"];
+paymentBeingProcessedMsg[shape=box,fillcolor=darkolivegreen1,style="filled",label="paymentBeingProcessedMsg"];
+}
+
+subgraph cluster_IOMsgs {
+style="filled,rounded";
+label =IOMsgs;
+fillcolor = cadetblue1;
+itemSelected[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemSelected"];
+}
+
+subgraph cluster_OkFail {
+style="filled,rounded";
+label =OkFail;
+fillcolor = cadetblue1;
+ok[shape=box,fillcolor=darkolivegreen1,style="filled",label="ok"];
+fail[shape=box,fillcolor=darkolivegreen1,style="filled",label="fail"];
+}
+
+
+getSelecteditem->StartN_[style=invis]
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineIOProcessor];
+
+IOProcessor [shape=box,fillcolor=deepskyblue,style = filled,label="IOProcessor"];
+I [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ ioms:IOMsgs>];
+ai [shape=ellipse,fillcolor=greenyellow,style=filled,label="frIO.ioms"];
+RefIOProcessor [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+ao [shape=ellipse,fillcolor=greenyellow,style=filled,label="toIO.iocs"];
+O [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ iocs:IOCmds>];
+OpIOProcessor [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+
+{rank=same;RefIOProcessor,IOProcessor}
+{rank=same;IOProcessor,StartN_}
+
+IOProcessor->RefIOProcessor[arrowtail=dot,dir=both,label="after"];
+O->ao[arrowhead="open"];
+OpIOProcessor->O[arrowhead="open"];
+OpIOProcessor->I[arrowhead="open"];
+I->ai[arrowhead="open"];
+RefIOProcessor->IOProcessor[arrowhead="normalnormal",fillcolor=white,label=" "];
+IOProcessor->OpIOProcessor[arrowhead="onormal",penwidth=2,label="="];
+StartN_->IOProcessor[label="starts"];
+}

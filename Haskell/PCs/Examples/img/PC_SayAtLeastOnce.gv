@@ -1,0 +1,17 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_SayAtLeastOnce];
+something [shape=ellipse,fillcolor=greenyellow,style=filled,label="something"];
+OpNext [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+skipHi [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+SayAtLeastOnce [shape=box,fillcolor=deepskyblue,style = filled,label="SayAtLeastOnce "];
+
+{rank=same;OpNext,something}
+{rank=same;SayAtLeastOnce,StartN_}
+
+OpNext->skipHi[arrowhead="open"];
+something->OpNext[arrowtail=dot,dir=both,label="after"];
+OpNext->SayAtLeastOnce[arrowhead="open"];
+SayAtLeastOnce->something[arrowhead="onormal",penwidth=2,label="="];
+StartN_->SayAtLeastOnce[label="starts"];
+}

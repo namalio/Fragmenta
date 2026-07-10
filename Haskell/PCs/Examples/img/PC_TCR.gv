@@ -1,0 +1,16 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCR];
+
+bindLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="bindLigandTCR"];
+freeLigandTCR [shape=ellipse,fillcolor=greenyellow,style=filled,label="freeLigandTCR"];
+TCR [shape=box,fillcolor=deepskyblue,style = filled,label="TCR "];
+
+{rank=same;freeLigandTCR,bindLigandTCR}
+{rank=same;TCR,StartN_}
+
+freeLigandTCR->TCR[arrowtail=dot,dir=both,label="after"];
+bindLigandTCR->freeLigandTCR[arrowtail=dot,dir=both,label="after"];
+TCR->bindLigandTCR[arrowhead="onormal",penwidth=2,label="="];
+StartN_->TCR[label="starts"];
+}

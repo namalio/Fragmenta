@@ -1,28 +1,30 @@
 fragment F_MM_9 {
   SG SG_MM_9 {
-    proxy PNode
+    proxy PNode2
+    proxy PBindable
     proxy PAction3
-    proxy POperator
-    proxy PCombinable
-    virtual Bindable 
-    proxy PTxtExp
-    node Stop
-    node Skip
-    node Combination
-    inh Stop->PNode
-    inh Skip->PNode
-    inh Combination->PNode
-    inh Stop->PAction3
-    inh Skip->PAction3
-    inh Combination->PCombinable
-    inh Combination->PAction3
-    inh Combination->Bindable
-    relu Combination->POperator[Combination_op]
-    relu Bindable->PTxtExp[exps]:*
+    proxy PName3
+    proxy PYesNo
+    proxy PGuarded2
+    proxy PStartOfPC
+    node Reference
+    node Renaming
+    inh Reference->PNode2
+    inh Reference->PBindable
+    inh Reference->PAction3
+    inh Reference->PGuarded2
+    inh Reference->PStartOfPC
+    relu Reference->PName3[Reference_name]:?
+    relu Reference->PYesNo[Reference_inner]
+    rel Reference->Renaming[Renamings]:1;*
+    relu Renaming->PName3[Renaming_new]
+    relu Renaming->PName3[Renaming_old]
   }
-  ref PNode->Node
+  ref PNode2->Node
+  ref PBindable->Bindable
   ref PAction3->Action
-  ref POperator->Operator 
-  ref PCombinable->Combinable
-  ref PTxtExp->TxtExp
+  ref PName3->Name
+  ref PYesNo->YesNo
+  ref PGuarded2->Guarded
+  ref PStartOfPC->StartOfPC
 }

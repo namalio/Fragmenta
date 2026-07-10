@@ -1,0 +1,17 @@
+PC PC_VendingMachineIOProcessor {} @IOProcessor
+enum IOMsgs : 'itemSelected'
+enum OkFail : 'ok','fail' 
+enum IOCmds : 'startMsg', 'getSelecteditem', 'wrongItemMsg', 'paymentBeingProcessedMsg', 'payment.OkFail'
+process IOProcessor@OpIOProcessor
+operator OpIOProcessor.Choice
+quantifiedOp I.IntChoice ioms : 'IOMsgs'
+quantifiedOp O.Choice iocs : 'IOCmds'
+op_connector OpIOProcessor->I
+op_connector OpIOProcessor->O
+op_connector I->ai
+op_connector O->ao
+atom ai :'frIO.ioms'
+atom ao :'toIO.iocs'
+reference RefIOProcessor
+ref_connector RefIOProcessor->IOProcessor
+after IOProcessor->RefIOProcessor

@@ -2,6 +2,6 @@ CashMachine =
    let 
       CashMachine0 = CardControl[|{cancel,cardIn,deny}|]((cancel -> SKIP ||| (CashMachineOps; DoOptions))[|{cancel,deny}|>SKIP)
       DoOptions = (ShowBalance; DoOptions)
-            [] (Withdraw; DoOptions)
+            |~| (Withdraw; DoOptions)
    within
       CashMachine0; CashMachine

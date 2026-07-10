@@ -4,10 +4,12 @@ fragment F_MM_1 {
     node Name
     nodea PCType
     virtual Typed
+    virtual WParameters
     relu Named->Name[name]
     relu Typed->PCType[type]:?
     node Parameter
     inh Parameter->Named
     inh Parameter->Typed
+    compu WParameters->Parameter[params]:*
   }
 }

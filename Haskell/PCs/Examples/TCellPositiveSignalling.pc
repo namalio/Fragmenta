@@ -1,12 +1,12 @@
-PC PC_TCellPositiveSignalling@PositiveSignalling
-atom activatesPTK
+PC PC_TCellPositiveSignalling {} @PositiveSignalling
+atom :'activatesPTK'
 process PositiveSignalling@activatesPTK
 operator OpPositiveSignallingOn.Choice
 process PositiveSignallingOn.full@OpPositiveSignallingOn
-atom positiveOn{¬full}
-atom inactivatesPTK
-atom freeLigandTCR
-atom inhibitorySignal
+atom :'positiveOn'{¬full}
+atom :'inactivatesPTK'
+atom :'freeLigandTCR'
+atom :'inhibitorySignal'
 op_connector OpPositiveSignallingOn->positiveOn
 op_connector OpPositiveSignallingOn->inactivatesPTK
 op_connector OpPositiveSignallingOn->freeLigandTCR
@@ -19,7 +19,7 @@ ref_connector RefPositiveSignallingOn2->PositiveSignallingOn.'True'
 after positiveOn->RefPositiveSignallingOn2
 operator OpPositiveSignallingDecay.Choice
 process PositiveSignallingDecay@OpPositiveSignallingDecay
-atom positiveOff
+atom :'positiveOff'
 op_connector OpPositiveSignallingDecay->positiveOff
 op_connector OpPositiveSignallingDecay->RefPositiveSignalling
 reference RefPositiveSignalling

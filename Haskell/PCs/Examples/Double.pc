@@ -1,0 +1,8 @@
+PC PC_Double {} @Double
+quantifiedOp leftQ.Choice x : Int
+process Double@leftQ
+atom :'left.x'
+op_connector leftQ->left
+atom :'right.(x+x)'
+after left->right
+after right->Double

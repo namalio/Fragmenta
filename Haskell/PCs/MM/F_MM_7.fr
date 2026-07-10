@@ -1,14 +1,30 @@
 fragment F_MM_7 {
   SG SG_MM_7 {
-     proxy PWExp2
-     proxy PNamedNode4
-     proxy PAction2
-     node AnyOf
-     inh AnyOf->PNamedNode4
-     inh AnyOf->PAction2
-     inh AnyOf->PWExp2
+     node Quantification
+     proxy PNamedNode3
+     proxy PAction
+     proxy PName2
+     proxy POpQuantifiedOp
+     proxy POperator
+     proxy PGuarded
+     proxy PTxtExp
+     node TyTxtExp
+     virtual Combinable
+     inh Quantification->PNamedNode3
+     inh Quantification->PGuarded
+     inh Quantification->Combinable
+     inh Combinable->PAction
+     relu Quantification->PName2[var]
+     relu Combinable->POperator[op] 
+     derived Quantification->POpQuantifiedOp[DQOp <-> op]:*;1
+     comp PGuarded->PTxtExp[guard]:?;?
+     comp Quantification->TyTxtExp[qtexp]:?;?
   }
-  ref PWExp2->WExp
-  ref PNamedNode4->NamedNode
-  ref PAction2->Action
+  ref PNamedNode3->NamedNode
+  ref PAction->Action
+  ref PName2->Name
+  ref POpQuantifiedOp->OpQuantifiedOp
+  ref PGuarded->Guarded
+  ref POperator->Operator
+  ref PTxtExp->TxtExp
 }

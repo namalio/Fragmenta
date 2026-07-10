@@ -1,0 +1,16 @@
+Controller = 
+   let 
+      Controller0 = toO.start -> frI.itemSelected -> ([] r : OkFail @ if r == ok
+         then
+            ProcessPayment
+         else
+            toO.wrongItem -> SKIP)
+      ProcessPayment = toPay.chargeAmount -> toO.payment.doing -> (frPay.pay.fail -> toO.payment.error -> SKIP
+            |~| frPay.pay.ok -> toO.payment.done -> (|~| r : OkFail @ toDisp.dispense.r -> if r == ok
+         then
+            frDisp.itemCollected -> SKIP
+            |~| frDisp.itemCollectTimeout -> SKIP
+         else
+            toPay.refund -> SKIP))
+   within
+      Controller0; Controller

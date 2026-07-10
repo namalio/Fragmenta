@@ -1,39 +1,38 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CM_InvalidWithdraw];
-PC_CashMachine [shape=hexagon,fillcolor=orangered,style=filled,label =PC_CashMachine];
+
+CMInvalidWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="CMInvalidWithdraw"];
+fail [shape=ellipse,fillcolor=greenyellow,style=filled,label="fail"];
+optWithdraw [shape=ellipse,fillcolor=greenyellow,style=filled,label="optWithdraw"];
+cashDispense [shape=ellipse,fillcolor=greenyellow,style=filled,label="cashDispense"];
+cardEject [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardEject"];
 RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
-cCollect [shape=ellipse,fillcolor=greenyellow,style = filled,label="cCollect"];
-cardEject [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardEject"];
-cancel [shape=ellipse,fillcolor=greenyellow,style = filled,label="cancel"];
-cashDispense [shape=ellipse,fillcolor=greenyellow,style = filled,label="cashDispense"];
-withdraw [shape=ellipse,fillcolor=greenyellow,style = filled,label="withdraw"];
-optWithdraw [shape=ellipse,fillcolor=greenyellow,style = filled,label="optWithdraw"];
-fail2 [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
-fail [shape=ellipse,fillcolor=greenyellow,style = filled,label="fail"];
-cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
-CMInvalidWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="CMInvalidWithdraw "];
+CMI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachine];
+cardCollect [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardCollect"];
+cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
+withdraw [shape=ellipse,fillcolor=greenyellow,style=filled,label="withdraw"];
+fail2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="fail"];
+cardIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardIn"];
 
-{rank=min;StartN_,CMInvalidWithdraw}
-{rank=same;cardIn,fail,fail2,optWithdraw,withdraw,cashDispense,cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;fail,fail2,optWithdraw,withdraw,cashDispense,cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;fail2,optWithdraw,withdraw,cashDispense,cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;optWithdraw,withdraw,cashDispense,cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;withdraw,cashDispense,cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;cashDispense,cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;cancel,cardEject,cCollect,RefCashMachine}
-{rank=same;cardEject,cCollect,RefCashMachine}
-{rank=same;cCollect,RefCashMachine}
+{rank=same;RefCashMachine,cardCollect}
+{rank=same;RefCashMachine,cardCollect,cardEject}
+{rank=same;cardCollect,RefCashMachine,cardEject,cancel,cashDispense}
+{rank=same;RefCashMachine,cardCollect,cardEject,cancel,cashDispense,withdraw,optWithdraw}
+{rank=same;cancel,RefCashMachine,cardCollect,cardEject,withdraw,cashDispense,optWithdraw,fail2,fail}
+{rank=same;RefCashMachine,cardEject,cardCollect,cancel,cashDispense,withdraw,optWithdraw,fail2,fail,cardIn}
+{rank=same;CMInvalidWithdraw,StartN_}
 
-cCollect->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
-cardEject->cCollect[arrowtail=dot,dir=both,label="after"];
-cancel->cardEject[arrowtail=dot,dir=both,label="after"];
+cardCollect->RefCashMachine[arrowtail=dot,dir=both,label="after"];
+cardEject->cardCollect[arrowtail=dot,dir=both,label="after"];
 cashDispense->cancel[arrowtail=dot,dir=both,label="after"];
-withdraw->cashDispense[arrowtail=dot,dir=both,label="after"];
 optWithdraw->withdraw[arrowtail=dot,dir=both,label="after"];
-fail2->optWithdraw[arrowtail=dot,dir=both,label="after"];
 fail->fail2[arrowtail=dot,dir=both,label="after"];
 cardIn->fail[arrowtail=dot,dir=both,label="after"];
-StartN_->CMInvalidWithdraw[arrowtail=diamond,dir=both,label="starts"];
+fail2->optWithdraw[arrowtail=dot,dir=both,label="after"];
+withdraw->cashDispense[arrowtail=dot,dir=both,label="after"];
+cancel->cardEject[arrowtail=dot,dir=both,label="after"];
+RefCashMachine->CMI[arrowhead="normalnormal",fillcolor=white,label=" "];
 CMInvalidWithdraw->cardIn[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CMInvalidWithdraw[label="starts"];
 }

@@ -4,10 +4,12 @@ subgraph cluster_F_MM_6{style=dashed;label=F_MM_6;
 "PWExp"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<WExp<br/>(P)>];
 "EnumType"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnumType"];
 "EnumTerm"[shape=record,fillcolor=lightskyblue1,style = filled,label="EnumTerm"];
+"TxtExp"[shape=record,fillcolor=lightskyblue1,style = filled,label="TxtExp"];
 
 "EnumType"->"PDefinition"[arrowhead=onormal,arrowsize=2.0];
 "EnumTerm"->"PWExp"[arrowhead=onormal,arrowsize=2.0];
 "EnumType"->"EnumTerm"[label="terms▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="",headlabel="1..*"];
+"PWExp"->"TxtExp"[label="exp▼",arrowtail=diamond,arrowhead=none,dir=both,taillabel="?",headlabel=""];
 
 }
 

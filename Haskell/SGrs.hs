@@ -24,6 +24,7 @@ module SGrs(SGr
    , esTys
    , esA
    , esI
+   , esM -- remove later
    , srcst
    , tgtst
    , inh
@@ -55,7 +56,8 @@ import Sets (
    , toList
    , rest
    , subseteq
-   , filterS )
+   , filterS
+   , first )
 import Relations
 import Gr_Cls
 import Grs
@@ -73,7 +75,10 @@ import GrswT (
    consGWT
    , GrwT )
 import PathExpressions
-import TheNil ( Nil(isSomething, isNil, nil), The(the) )
+import TheNil 
+   ( Nil(isSomething, isNil, nil)
+   , The(the) 
+   )
 import SimpleFuns (pairUp)
 import Logic ( implies )
 import Utils ( reportWF )
@@ -493,11 +498,11 @@ rEsVCntsOk sg =
 
 errsTSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>SGr a b-> [ErrorTree]
 errsTSG sg = 
-   let err1 = faultsG "SG" (Just Partial) sg in
-   let err2 = rIsInhTree sg in
-   let err3 = rEtherealInherited sg in
-   let err4 = rDerOk sg in
-   let err5 = rEsVCntsOk sg in 
+   let err1 = faultsG "SG" (Just Partial) sg
+       err2 = rIsInhTree sg
+       err3 = rEtherealInherited sg 
+       err4 = rDerOk sg 
+       err5 = rEsVCntsOk sg in 
    [err1, err2, err3, err4, err5]
 
 rOkayTSG::(Eq a, Eq b, Show a, Show b, GNumSets a)=>String->SGr a b-> ErrorTree
@@ -528,14 +533,14 @@ disjSGs sgs = disjGs (map g_sg sgs)
 -- Union of SGs
 unionSG :: (Eq a, Eq b) => SGr a b -> SGr a b -> SGr a b
 unionSG sg1 sg2 = 
-   let ug = (g_sg sg1) `unionG` (g_sg sg2) in
-   let u_nty = (nty sg1) `union` (nty sg2) in
-   let u_ety = (ety sg1) `union` (ety sg2) in
-   let u_srcm = (srcm sg1) `union` (srcm sg2) in
-   let u_tgtm = (tgtm sg1) `union` (tgtm sg2) in
-   let u_pe = (pe sg1) `union` (pe sg2) in
-   let u_ds = (ds sg1) `union` (ds sg2) in
-   let u_vceis = (vcei sg1) `union` (vcei sg2) in
+   let ug = (g_sg sg1) `unionG` (g_sg sg2) 
+       u_nty = (nty sg1) `union` (nty sg2)
+       u_ety = (ety sg1) `union` (ety sg2)
+       u_srcm = (srcm sg1) `union` (srcm sg2)
+       u_tgtm = (tgtm sg1) `union` (tgtm sg2)
+       u_pe = (pe sg1) `union` (pe sg2)
+       u_ds = (ds sg1) `union` (ds sg2)
+       u_vceis = (vcei sg1) `union` (vcei sg2) in
    consSG ug u_nty u_ety u_srcm u_tgtm u_pe u_ds u_vceis
 
 unionSGs :: (Eq b, Eq a) => [SGr a b] -> SGr a b
@@ -579,8 +584,8 @@ subsume_sg sg sub
 
 commute_sgm_src::(GRM gm, Eq a, Eq b) => (SGr a b, gm a b, SGr a b) -> (Rel b a, Rel b a)
 commute_sgm_src (sgs, m, sgt) = 
-   let lhs = (fV m) `bcomp` (srcstm sgs) in  
-   let rhs = (srcstm sgt) `bcomp` (fE m) in
+   let lhs = (fV m) `bcomp` (srcstm sgs)  
+       rhs = (srcstm sgt) `bcomp` (fE m) in
    (lhs, rhs)
 
 -- Checks whether the source function commutes for morphisms between SGs
@@ -590,8 +595,8 @@ morphism_sgm_commutes_src (sgs, m, sgt) =
    lhs  <= rhs
 
 commute_sgm_tgt (sgs, m, sgt) = 
-   let lhs = (fV m) `bcomp` (tgtstm sgs) in  
-   let rhs = (tgtstm sgt) `bcomp` (fE m) in
+   let lhs = (fV m) `bcomp` (tgtstm sgs)  
+       rhs = (tgtstm sgt) `bcomp` (fE m) in
    (lhs, rhs)
 
 -- Checks whether the target function commutes for morphisms between SGs
@@ -612,7 +617,8 @@ okay_gm_common (gs, m, gt) =
 
 okSGMCommon::(Eq a, Eq b) =>(SGr a b, GrM a b, SGr a b)->Bool
 okSGMCommon (sgs, m, sgt) =
-   okay_gm_common (sgs, m, sgt) && tfun (fE m) (esA sgs) (esA sgt)
+   okay_gm_common (sgs, m, sgt) 
+   && tfun (fE m) (esA sgs) (esA sgt)
    && morphism_sgm_commutes_src (sgs, m, sgt)
    && morphism_sgm_commutes_tgt (sgs, m, sgt)
 
@@ -654,8 +660,8 @@ rOkSGM nm sgs gm sgt = reportWF (sgs, gm, sgt) nm okSGM errOkSGM
 
 commute_gm_src::(Eq a, Eq b, GR g, GRM g) => (g a b, SGr a b) ->(Rel b a, Rel b a)
 commute_gm_src (g, sg) = 
-   let lhs = (fV g) `bcomp` (src g) in  
-   let rhs = (srcstm sg) `bcomp` (fE  g) in
+   let lhs = (fV g) `bcomp` (src g)
+       rhs = (srcstm sg) `bcomp` (fE  g) in
    (lhs, rhs)
 
 -- Checks whether the source function commutes for morphisms from Gs to SGs
@@ -1249,8 +1255,8 @@ tPE sg (SCmp pec pe) = tPE sg pe
 -- Builds relation to be subject to the multiplicity check
 rMultOk :: (Eq a, Eq b, GR g, GRM g) => SGr a b -> b -> g a b ->Rel a a
 rMultOk sg me gwt = 
-   let s = ins gwt sg $ img (srcst sg) [me] in
-   let t = ins gwt sg $ img (tgtst sg) [me] in
+   let s = ins gwt sg $ img (srcst sg) [me] 
+       t = ins gwt sg $ img (tgtst sg) [me] in
    rres (dres (rPE gwt sg $ ape sg me) s) t
 
 -- Builds 'srcst' relation to be used in the multiplicity check
@@ -1264,21 +1270,30 @@ tgtstMultOk sg me = rres (tgtstPE sg (ape sg me)) (img (tgtst sg) [me])
 -- Checks whether appropriate instances of a SG comply to the meta-edges's multiplicity constraints
 meMultOk::(Eq a, Eq b)=>SGr a b->b->GrwT a b->Bool
 meMultOk sg me gwt = 
-   let r = rMultOk sg me gwt in
-   let s = ins gwt sg $ img (srcstMultOk sg me) [rsrcPE $ ape sg me] in
-   let t = ins gwt sg $ img (tgtstMultOk sg me) [rtgtPE $ ape sg me] in
-   multOk r s t (appl (srcma sg) me) (appl (tgtm sg) me)
+   let r = rMultOk sg me gwt 
+       s = ins gwt sg $ img (srcstMultOk sg me) [rsrcPE $ ape sg me]
+       t = ins gwt sg $ img (tgtstMultOk sg me) [rtgtPE $ ape sg me] in
+   multOk r s t (appl (srcma sg) me) (appl (tgtm sg) me) -- Here
 
 checkMEMultOk::(Eq a, Eq b, Show a, Show b)=>SGr a b->b->GrwT a b->ErrorTree
 checkMEMultOk sg me gwt = 
-   let r = rMultOk sg me gwt in
-   let s = ins gwt sg $ img (srcstMultOk sg me) [rsrcPE $ ape sg me] in
-   let t = ins gwt sg $ img (tgtstMultOk sg me) [rtgtPE $ ape sg me] in
+   let r = rMultOk sg me gwt
+       s = ins gwt sg $ img (srcstMultOk sg me) [rsrcPE $ ape sg me]
+       t = ins gwt sg $ img (tgtstMultOk sg me) [rtgtPE $ ape sg me] in
    check_multOk me r s t (appl (srcma sg) me) (appl (tgtm sg) me)
 
 -- Multiplicity compliance of all multiplicity edges (association plus derived edges)
 tyCompliesMult::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
 tyCompliesMult gwt sg = all (\me->meMultOk sg me gwt) $ esM sg
+   --let me = first . rest . rest . rest . rest . esM $ sg
+   --    s = ins gwt sg $ img (srcst sg) [me] 
+   --    t = ins gwt sg $ img (tgtst sg) [me] 
+   --    w = dres (rPE gwt sg $ ape sg me) s in
+   --(not . null) $ w
+   --where dres' r EmptyS = r
+   --      dres' (Set x r) s = if fst x `elem` s then x `Set` (dres' r s) else dres' r s
+   --(not . null) $ rMultOk sg (first . rest . rest . rest . esM $ sg) gwt 
+   -- all (\me->meMultOk sg me gwt) $ esM sg
 
 checkTyCompliesMult :: (Eq a, Eq b, Show a, Show b) => GrwT a b -> SGr a b -> ErrorTree
 checkTyCompliesMult gwt sg = 
@@ -1539,9 +1554,10 @@ checkTyCompliesCnts gwt sg  =
 
 tyComplies::(Eq a, Eq b, Read a, GNodesNumConv a, GNumSets a)=>GrwT a b->SGr a b->Bool
 tyComplies gwt sg = 
-   is_wf_gwt_sg (gwt, sg) && gwt `tyCompliesMult` sg 
-   && gwt `tyCompliesFI` sg && gwt `tyCompliesPNS` sg 
-   && gwt `tyCompliesCnts` sg
+   is_wf_gwt_sg (gwt, sg) 
+   && gwt `tyCompliesMult` sg 
+   -- && gwt `tyCompliesFI` sg && gwt `tyCompliesPNS` sg 
+   -- && gwt `tyCompliesCnts` sg
 
 checkTyComplies::(Eq a, Eq b, Read a, Show a, Show b, GNodesNumConv a, GNumSets a)
    =>String->GrwT a b->SGr a b->ErrorTree

@@ -1,14 +1,16 @@
------------------------------
+---------------------------------------------------
 -- Project: PCs/Fragmenta
--- Module: 'PCsParsing'
--- Description: Parses PC textual descriptions
+-- Module: 'ParsingPCs'
+-- Description: Parses textual descriptions of PCs
 -- Author: Nuno Amálio
------------------------------
+----------------------------------------------------
 module PCs.ParsingPCs(loadPC) where
 
 import Text.ParserCombinators.ReadP
 import Control.Applicative ( Alternative((<|>)) )
-import Control.Monad(when, unless)
+import Control.Monad
+   (when
+   , unless)
 import Grs
 import SGrs
 import Sets
@@ -20,39 +22,47 @@ import ParseUtils
 import PCs.MM_Names
 import SimpleFuns ( nilQl )
 import ParsingCommon
-   ( parseId
+   (parseId
    , parseIds
    , parseMaybe
    , parse_until_chs
    , parseTokens
    , parseWord
    , parseAnyStr
-   , satisfyWLook)
+   , satisfyWLook
+   )
 import Gr_Cls
 import SimpleFuns
    ( replace
    , replaceAll
    )
 import QUR
-import PCs.Common ( OpKind(..), toMMOp )
+import PCs.Common 
+   (Id
+   , PCTypeD(..)
+   , PCTypeE(..)
+   , OpKind(..)
+   , toMMOp 
+   , Param(..)
+   , show_pctye
+   , startN
+   )
 import PCs.TxtExpAST (leadingId)
-import PCs.ParsingTxtExp
+import PCs.ParsingTxtExp hiding (main)
+import Test.HUnit hiding (Node)
 
 -- A node has a name a type and possibly an associated operator
 -- A reference may be inner
 type TxtExp = String
 type Guard = Maybe TxtExp 
 type Name = String
---data TxtExp = BSet [ExpVal] | BVal ExpVal
---   deriving(Eq, Show, Read)
-data PCType = Event | Integer | Boolean | Dt Name | SetT PCType
-   deriving(Eq, Show, Read) 
+
 data NodeDetails = 
    Atom (Maybe Name) TxtExp Guard 
-   | Process String [(Name, Maybe PCType)] 
+   | Process String [Param] 
    | Operator OpKind [TxtExp] 
    | Reference Bool String Guard [TxtExp] [(String,String)]
-   | QuantifiedOp OpKind Name TxtExp Guard
+   | QuantifiedOp OpKind Name PCTypeE Guard
    | Stop
    | Skip 
    | Import (Maybe Name) (Maybe Name)
@@ -62,7 +72,7 @@ data Node = Node String NodeDetails
    deriving(Eq, Show)
 -- A ref connector may have parameters and be hidden or not; an op connector may have a guard 
 data ConnectorInfo = 
-   After Bool 
+   After 
    | Ref [TxtExp] Bool 
    | Op 
    | OpIfB Guard 
@@ -77,8 +87,9 @@ data Definition = DefEnum Name [Name]
    deriving(Eq, Show) 
 data Elem = ElemN Node | ElemC Connector | ElemD Definition
    deriving(Eq, Show) 
- -- A PC definition has a name, a start node, and list of elements
-data PCDef = PCDef String String [Elem] 
+ -- A PC definition has a name, a start definition, a list of parameters (declarations of global names), 
+ -- and a list of elements
+data PCDef = PCDef Name (Maybe Name) [Param] [Elem] 
    deriving(Eq, Show)
 
 isNode :: Elem -> Bool
@@ -117,14 +128,14 @@ getTy Stop = CMM_Stop
 getTy Skip = CMM_Skip
 getTy (Import {}) = CMM_Import
 
-frPCTypeToMM::PCType->PCs_CMM_Ns
-frPCTypeToMM Event = CMM_Event 
-frPCTypeToMM Integer = CMM_Integer
-frPCTypeToMM Boolean = CMM_Boolean
+frPCTypeToMM::PCTypeD->PCs_CMM_Ns
+frPCTypeToMM Event    = CMM_Event 
+frPCTypeToMM Int      = CMM_Integer
+frPCTypeToMM Bool     = CMM_Boolean
 frPCTypeToMM (Dt _)   = CMM_Custom
 frPCTypeToMM (SetT _) = CMM_Set
 
-show_t::PCType->String
+show_t::PCTypeD->Name
 show_t (Dt id)  = "Dt_" ++ id
 show_t (SetT t) = "Set_" ++ show_t t
 show_t t        = show t
@@ -151,60 +162,111 @@ getEDefs es = map getD $ getElemsOfKind isDefinition es
 --getTheCs :: Foldable t => t Elem -> [Connector]
 --getTheCs = foldl (\es e-> if not . isNode $ e then (getC e):es else es) [] 
 
-pcStart :: ReadP(String, String)
+parseSetIds::ReadP [Id]
+parseSetIds = do
+   skipSpaces
+   char '{'
+   skipSpaces
+   ids<-parseIds ","
+   skipSpaces
+   char '}'
+   return ids
+
+pcStartDef::ReadP(Maybe Name)
+pcStartDef = do
+   char '@'
+   skipSpaces
+   fmap Just parseId
+
+pcStart :: ReadP(Name, Maybe Name, [Param])
 pcStart = do
    string "PC"
    skipSpaces
-   pcnm<-parse_until_chs "@" -- (many1 . satisfy) (/= '@')
-   char '@'
-   st<- str_until_end_of_stm
+   nm<-parseId  -- PC's name
    skipSpaces
-   return (pcnm, st)
-
-str_until_end_of_stm::ReadP String
-str_until_end_of_stm = do
-   s<-parse_until_chs "\n "
-   return s
+   char '{' -- Starts the global declarations
+   skipSpaces
+   ps<-pcParams Nothing 
+   skipSpaces
+   char '}'
+   skipSpaces
+   st<-pcStartDef <++ return Nothing
+   --ch<-option '\n' (char '@')
+   --st<-if ch == '@' then do 
+   --   fmap Just parseId
+   --else 
+   --   return Nothing
+   skipSpaces
+   --st<- (parseId >>= return . Just) <++ return Nothing -- the starting defintion
+   --skipSpaces
+   return (nm, st, ps)
 
 --parseParam::ReadP String
 --parseParam = do
 --   s<-(parseSet <|> (parseAnyStr ",["))
 --   return s
 
-parseIdTy::ReadP PCType
+parseIdTy::ReadP PCTypeD
 parseIdTy = parseId >>= (\id->skipSpaces >> return (Dt id))
 
-parseInt::ReadP PCType
-parseInt = string "Int" >> skipSpaces >> return Integer
+parseInt::ReadP PCTypeD
+parseInt = 
+   string "Int" >> skipSpaces >> return Int
 
-parseBool::ReadP PCType
-parseBool = string "Bool" >> skipSpaces >> return Boolean
+parseBool::ReadP PCTypeD
+parseBool = 
+   string "Bool" >> skipSpaces >> return Bool
 
-parseEvent::ReadP PCType
+parseEvent::ReadP PCTypeD
 parseEvent = string "Event" >> skipSpaces >> return Event
 
-parseSet::ReadP PCType
+parseSet::ReadP PCTypeD
 parseSet = 
    string "set" >> skipSpaces >> parsePCType0 >>= return . SetT
 
-parsePCType0::ReadP PCType
-parsePCType0 = parseInt <|> parseBool <|> parseEvent <|> parseIdTy <|> parseSet
+parsePCType0::ReadP PCTypeD
+parsePCType0 = parseInt <|> parseBool <|> parseEvent <|> parseSet
 
-parsePCType::ReadP (Maybe PCType)
+parsePCType::ReadP (Maybe PCTypeD)
 parsePCType = 
    (char ':' >> parsePCType0 >>= return . Just) <++ return Nothing
 
-parseParam::ReadP (Name, Maybe PCType)
+parsePCTypeETyD::ReadP PCTypeE
+parsePCTypeETyD =
+   parsePCType0 >>= return . TyD
+
+parsePCTypeETId::ReadP PCTypeE
+parsePCTypeETId =
+   parseId >>= (\id->skipSpaces >> return (TIdE id))
+
+parsePCTypeESetE::ReadP PCTypeE
+parsePCTypeESetE = parseSetIds >>= return . SetE 
+   
+parsePCTypeE0::ReadP PCTypeE
+parsePCTypeE0 = between (char '\'') (char '\'') (parsePCTypeETId <|> parsePCTypeESetE)
+
+parsePCTypeE::ReadP PCTypeE
+parsePCTypeE = parsePCTypeETyD <|> parsePCTypeE0
+
+--parsePCTypeExp::ReadP (Maybe PCTypeExp)
+--parsePCTypeExp = do
+--   char '\''
+--   oty <- parsePCTypeExp0 <++ return Nothing
+--   char '\''
+--   return oty
+
+parseParam::ReadP Param
 parseParam = do
-   nm <- parseWord
+   nm <- parseId
    skipSpaces
    oty <- parsePCType
-   return (nm, oty)
+   skipSpaces
+   return $ Param nm oty
 
 
-pcParams::Char->ReadP [(Name, Maybe PCType)]
-pcParams ch = do
-   char ch
+pcParams::Maybe Char->ReadP [Param]
+pcParams och = do
+   when (isSomething och) $ char (the och) >> return ()
    parseTokens "," parseParam
 
 --parseSingleExp::ReadP TxtExp
@@ -239,7 +301,7 @@ pcProcess = do
    string "process"
    skipSpaces
    cnm<-parse_until_chs "@."
-   ps<- pcParams '.' <++ return []
+   ps<-pcParams (Just '.') <++return []
    char '@'
    start<-parseWord 
    skipSpaces
@@ -247,7 +309,7 @@ pcProcess = do
 
 pcQuantifiedOp :: ReadP Node
 pcQuantifiedOp = do
-   string "quantifiedOp "
+   string "quantifiedOp"
    skipSpaces
    nm<-parseId
    char '.'
@@ -257,11 +319,11 @@ pcQuantifiedOp = do
    skipSpaces
    char ':' 
    skipSpaces
-   e<-parseTxtExp '\'' '\''
+   te <- parsePCTypeE
    skipSpaces
-   g<-pc_guard
+   g<-pcGuard
    skipSpaces
-   return (Node nm $ QuantifiedOp op v e g)
+   return (Node nm $ QuantifiedOp op v te g)
 
 pc_atom_atSet:: ReadP TxtExp
 pc_atom_atSet = 
@@ -273,15 +335,13 @@ pc_atom_rnm = do
    skipSpaces 
    Just <$> parseId
 
-pc_guard0 :: ReadP (Maybe String)
-pc_guard0 = do
+pcGuard0 :: ReadP (Maybe String)
+pcGuard0 = do
    g<-parseTxtExp '{' '}'
    return (Just g)
 
-pc_guard :: ReadP (Maybe String)
-pc_guard = do
-   g<-pc_guard0 <++ return Nothing
-   return g
+pcGuard :: ReadP (Maybe String)
+pcGuard = pcGuard0 <++ return Nothing
 
 pcAtom :: ReadP Node
 pcAtom = do
@@ -299,7 +359,7 @@ pcAtom = do
    skipSpaces
    rnm<-pc_atom_rnm <++ return Nothing
    skipSpaces 
-   g<-pc_guard
+   g<-pcGuard
    skipSpaces 
    return (Node anm $ Atom rnm e g)
 
@@ -374,21 +434,17 @@ pcReference = do
    skipSpaces
    rnm<-parseId
    skipSpaces
-   g<-pc_guard
+   g<-pcGuard
    skipSpaces
    (pnm, bs, rs)<-pcRefToP<++ return ("", [], []) 
    skipSpaces
-   --ps<-pcParams '.' <++ return []
-   --skipSpaces
-   --let hp = if null ps then "" else head ps
-   --let ps' = if null ps then [] else tail ps
    return (Node rnm $ Reference inner pnm g bs rs)
 
 pcStop :: ReadP Node
 pcStop = do
    string "stop"
    skipSpaces
-   nm<-str_until_end_of_stm 
+   nm<-parse_until_chs "\n "
    skipSpaces
    return (Node nm Stop)
 
@@ -396,7 +452,7 @@ pcSkip :: ReadP Node
 pcSkip = do
    string "skip"
    skipSpaces
-   nm<-str_until_end_of_stm 
+   nm<-parse_until_chs "\n "
    skipSpaces
    return (Node nm Skip)
 
@@ -427,16 +483,13 @@ pcAfterC :: ReadP Connector
 pcAfterC  = do
    string "after"
    skipSpaces
-   sopen <- string "open " <++ return ""
-   let open = sopen == "open "
-   skipSpaces
-   from<-parse_until_chs " -" 
+   from<-parseId
    skipSpaces
    string "->"
    skipSpaces
-   to<-parseWord 
+   to<-parseId 
    skipSpaces
-   return (Connector (After open) from to)
+   return (Connector After from to)
 
 pc_C_fr_to :: ReadP (String, String)
 pc_C_fr_to = do
@@ -462,7 +515,7 @@ pc_opBG  = do
    skipSpaces
    (fr, to)<-pc_C_fr_to
    skipSpaces
-   g <- pc_guard 
+   g <- pcGuard 
    skipSpaces
    return (Connector (OpIfB g) fr to)
 
@@ -519,17 +572,15 @@ pcEnumT = do
 pcElem :: ReadP Elem
 pcElem  = pcElemN <|> pcElemC <|> pcEnumT
 
-
 pcDef :: ReadP PCDef
 pcDef = do
-   (pcnm, start)<-pcStart
+   (pcnm, start, evs)<-pcStart
    es<-manyTill pcElem eof
-   return (PCDef pcnm start es)
+   return (PCDef pcnm start evs es)
 
 loadPCFrFile :: FilePath -> IO (Maybe PCDef)
 loadPCFrFile fn = do   
     contents <- readFile fn
-    --makes sure it is read
     let pc = parseMaybe pcDef contents
     return pc
 
@@ -556,8 +607,11 @@ mkTxtExpNm_k nm e k = nm ++ "_txtExp_" ++ (show k) ++ "_" ++ e
 mkEPNm :: String -> String ->String
 mkEPNm nm p = "EParam" ++ nm ++ "_" ++ p 
 
+mkNameWNum::String->String -> Int->String
+mkNameWNum ty nm k = ty ++ "_" ++ nm ++ "_" ++ (show k)
+
 mkETxtExpNm :: String -> Int->String
-mkETxtExpNm nm k = "ETxtExp_" ++ nm ++ "_" ++ (show k)
+mkETxtExpNm nm k = mkNameWNum "ETxtExp" nm k
 
 mkEExpVal :: String -> String ->Int->Int->String
 mkEExpVal nm b k j= "EExpVal_" ++ nm ++ "_" ++ b++ "_" ++ (show k) ++ "_" ++ (show j) 
@@ -654,18 +708,28 @@ qurProcessConnection nm st =
 --qurTxtExps::String->[TxtExp]->PCs_CMM_Es->QuadURel String
 --qurTxtExps nm es e_ty = foldr(\(e, k) qs->qurTextExp nm e k CMM_Eexps `join` qs) nilQUR (zip es [1..length es])
 
+
+qurQTyTxtExp::String->PCTypeE->QuadURel String
+qurQTyTxtExp nm te = 
+   singleQUR ((mkTyTxtExp, show_cmm_n CMM_TyTxtExp),
+      (mkEQTyExpNm, show_cmm_e CMM_Eqtexp),
+      (mkEQTyExpNm, nm), (mkEQTyExpNm, mkTyTxtExp))
+   where 
+      mkTyTxtExp = nm ++ "_tyTxtExp_" ++ (show_pctye te)
+      mkEQTyExpNm = "EQTyTxtExp_" ++ nm 
+
 qurTxtExp::String->String->QuadURel String
 qurTxtExp nm e = singleQUR ((mkTxtExpNm nm e, show_cmm_n CMM_TxtExp),
       (mkETxtExpNm nm 1, show_cmm_e CMM_Eexp),
       (mkETxtExpNm nm 1, nm), (mkETxtExpNm nm 1, mkTxtExpNm nm e))
 
-qurTxtExp_k::String->String->Int->QuadURel String
-qurTxtExp_k nm e k = singleQUR ((mkTxtExpNm_k nm e k, show_cmm_n CMM_TxtExp),
-      (mkETxtExpNm nm k, show_cmm_e CMM_Eexps),
+qurArgument_k::String->String->Int->QuadURel String
+qurArgument_k nm e k = singleQUR ((mkTxtExpNm_k nm e k, show_cmm_n CMM_TxtExp),
+      (mkETxtExpNm nm k, show_cmm_e CMM_Earguments),
       (mkETxtExpNm nm k, nm), (mkETxtExpNm nm k, mkTxtExpNm_k nm e k))
 
-qurTxtExps::String->[String]->QuadURel String
-qurTxtExps nm es = foldr(\(e, k) qs-> qs `join` qurTxtExp_k nm e k) nilQUR (zip es [1..length es])
+qurArguments::String->[String]->QuadURel String
+qurArguments nm es = foldr(\(e, k) qs-> qs `join` qurArgument_k nm e k) nilQUR (zip es [1..length es])
 
 qurRenamingNames ::String->String->String-> QuadURel String
 qurRenamingNames nm fr to = 
@@ -709,14 +773,14 @@ mkHasParamQ nm p k =
 --      , (eTyNm, nm)
 --      , (eTyNm, show t))
 
-qurParamTy0::String->PCType->QuadURel String 
+qurParamTy0::String->PCTypeD->QuadURel String 
 qurParamTy0 nm t = 
    let eTyNm = "E_" ++ nm ++ "_ty" in
    singleQUR ((show_t $ t, show_cmm_n . frPCTypeToMM $ t)
       , (eTyNm, show_cmm_e CMM_Etype)
       , (eTyNm, nm)
-      , (eTyNm, show_t t))
-qurParamTy::String->PCType->QuadURel String 
+      , (eTyNm, show t))
+qurParamTy::String->PCTypeD->QuadURel String 
 qurParamTy nm st@(SetT t) = 
    let tnm = show_t st
        eSoNm = "E_" ++ tnm ++ "_setof" in 
@@ -726,11 +790,11 @@ qurParamTy nm st@(SetT t) =
             , (eSoNm, show_t $ t)) `join` qurParamTy0 nm st
 qurParamTy nm t = qurParamTy0 nm t
 
-qurParams :: String -> [(Name, Maybe PCType)] -> QuadURel String
+qurParams :: String -> [Param] -> QuadURel String
 qurParams nm ps = 
    let enmQ pnm k = qurName (mkParamNm nm pnm k) pnm 
        tyQ pnm k t = if isNil t then nilQUR else qurParamTy (mkParamNm nm pnm k) (the t) in
-   foldr (\((pnm, pty), k) qs->enmQ pnm k `join` mkHasParamQ nm pnm k `join` tyQ pnm k pty `join` qs) nilQUR (zip ps [1..length ps])
+   foldr (\(Param pnm pty, k) qs->enmQ pnm k `join` mkHasParamQ nm pnm k `join` tyQ pnm k pty `join` qs) nilQUR (zip ps [1..length ps])
 
 --consExps :: String -> [TxtExp] -> QuadURel String
 --consExps nm bs = 
@@ -764,13 +828,13 @@ qurNode (Node nm (Process start ps)) _ =
    `join` qurProcessConnection nm start 
    `join` qurParams nm ps
 qurNode (Node nm (Operator op bs)) ns = 
-   let q1 = qurOp nm op CMM_ECombination_op
+   let q1 = qurOp nm op CMM_Eop
        q2 = if nmOfOp op `elem` ns then nilQUR else singleQURFrFst (nmOfOp op, nodeOfOp op)
-       qbs = qurTxtExps nm bs in
+       qbs = qurArguments nm bs in
    gJoin [qurNodeNTy nm CMM_Combination, q1, q2, qbs]
 qurNode (Node nm (Reference i rn g bs rs)) _ = 
    let qurRNm = gJoin [qurNodeNTy nm CMM_Reference, qurRefName nm rn]
-       consQ = (qurTxtExps nm bs) `join` qurRNm  
+       consQ = (qurArguments nm bs) `join` qurRNm  
        consRIQ = 
          let iv = if i then "YesV" else "NoV" in singleQURFrSndTrpl (("E"++nm++"_inner", show_cmm_e CMM_EReference_inner), ("E"++nm++"_inner", nm), ("E"++nm++"_inner", iv)) 
        consRs = foldr (\(fr, to) rqs->(qurRenaming nm fr to) `join` rqs) nilQUR rs in
@@ -781,11 +845,11 @@ qurNode (Node nm (Atom rnm e g)) _ =
 qurNode (Node nm1 (Import fn nm2)) _ = 
    gJoin [qurName nm1 nm1, if isNil fn then nilQUR else qurIFName nm1 (the fn), 
          if isNil nm2 then nilQUR else qurPCName nm1 (the nm2), qurNodeNTy nm1 CMM_Import]
-qurNode (Node nm (QuantifiedOp op v e g)) _ = 
-   let eNm e = "EVar_"++e
-       qv = singleQUR ((cNm v, show_cmm_n CMM_Name), (eNm v, show_cmm_e CMM_Evar), (eNm v, nm), (eNm v, cNm v)) in
+qurNode (Node nm (QuantifiedOp op v ote g)) _ = 
+   let eNm = "EVar_" ++ nm ++ "_" ++ v
+       qv = singleQUR ((cNm v, show_cmm_n CMM_Name), (eNm, show_cmm_e CMM_Evar), (eNm, nm), (eNm, cNm v)) in
    gJoin [qurNodeNTy nm CMM_Quantification, qurName nm nm, qv, 
-      qurTxtExp nm e, qurOp nm op CMM_EopOfQuantifiedOp, qurGuard nm g]
+         qurQTyTxtExp nm ote, qurOp nm op CMM_Eop, qurGuard nm g]
 qurNode (Node nm ni) _ = qurNodeNTy nm (getTy ni)
 
 qurNodes ::Foldable t=>t Node -> QuadURel String
@@ -815,7 +879,7 @@ qurNodes ns =
 --         rP nm = (nm, show_cmm_n CMM_Reference) 
 
 takeCInfo ::ConnectorInfo->String->String->(PCs_CMM_Ns, String, [TxtExp])
-takeCInfo (After o) bnm _  = (CMM_AfterC, "AfterC_" ++ bnm, [if o then "o" else "c"])
+takeCInfo After bnm _      = (CMM_AfterC, "AfterC_" ++ bnm, [])
 takeCInfo Op bnm tgt       = (CMM_BranchC, "C" ++ bnm ++ "_" ++ tgt, [])
 takeCInfo (OpIfB g) bnm _  = (CMM_BMainIfC, (show_cmm_n CMM_BMainIfC) ++ bnm, maybeToLs g)
 takeCInfo OpElse bnm _     = (CMM_BElseC, (show_cmm_n CMM_BElseC) ++ bnm, [])
@@ -835,8 +899,7 @@ qurConnectors cs  =
          let (ty, nm, bs) = takeCInfo cty src tgt in let q = consConn nm ty src tgt in q `join` (consOther nm ty bs) in
    foldr (\c qur->cons c `join` qur) nilQUR cs 
    where consOther nm CMM_BMainIfC g = qurGuard nm (toMaybeFrLs g)
-         consOther nm CMM_ReferenceC bs = consRCHQ nm (head bs) `join` qurTxtExps nm (tail bs)
-         consOther nm CMM_AfterC bs = let ov = if (head bs) == "o" then "YesV" else "NoV" in singleQURFrSndTrpl ((eac_co nm, show_cmm_e CMM_EAfterC_copen), (eac_co nm, nm), (eac_co nm, ov))
+         consOther nm CMM_ReferenceC bs = consRCHQ nm (head bs) `join` qurArguments nm (tail bs)
          consOther _ _ _ =  nilQUR
          consRCHQ nm h = let hv = if h == "h" then "YesV" else "NoV" in singleQURFrSndTrpl (("E"++nm++"_hidden", show_cmm_e CMM_EReferenceC_hidden), ("E"++nm++"_hidden", nm), ("E"++nm++"_hidden", hv))
          --consForRefC nm [] = ([], [], [], [])
@@ -876,11 +939,11 @@ qurDefs::Foldable t=>t Definition ->QuadURel String
 qurDefs = foldr (\d qur->qurDefinition d `join` qur) nilQUR
    
 --consOtherEdges :: String -> [NodeDef] -> [EdgeDef] -> [a]
-consOtherEdges::Eq b=> SGr String b -> String ->String->Rel String String ->QuadURel String
-consOtherEdges sg_mm nm start ns_t = 
+qurOtherEdges::Eq b=> SGr String b -> String ->Maybe String->Rel String String ->QuadURel String
+qurOtherEdges sg_mm nm start ns_t = 
    let ess = (set [("EPCSt", show_cmm_e CMM_EStarts), ("EStCSrc_", show_cmm_e CMM_Esrc), ("EStCTgt_", show_cmm_e CMM_Etgt)], 
-             set [("EPCSt", nm), ("EStCSrc_", "StartC_"), ("EStCTgt_",  "StartC_")], 
-             set [("EPCSt", "StartN_"), ("EStCSrc_",  "StartN_"), ("EStCTgt_", start)]) 
+             set1 ("EPCSt", nm) `union` if isNil start then nil else set [("EStCSrc_", "StartC_"), ("EStCTgt_",  "StartC_")], 
+             set1 ("EPCSt", "StartN_") `union` if isNil start then nil else set [("EStCSrc_",  "StartN_"), ("EStCTgt_", the start)]) 
        (x, y, z) `combine` (x', y', z') = (x `union` x', y `union` y', z `union` z') 
        mkEdgeNm n = "EContains" ++ n 
        combineWith n ct (es_m, src_m, tgt_m) = let e = mkEdgeNm n in ((e, ct) `intoSet` es_m, (e, nm) `intoSet` src_m, (e, n) `intoSet` tgt_m)
@@ -896,37 +959,38 @@ consOtherEdges sg_mm nm start ns_t =
              typesOf n = let nt = appl ns_t n in img (inhst sg_mm) [nt] 
 
 consPCAsGrwT :: SGr String String -> PCDef -> GrwT String String
-consPCAsGrwT sg_mm (PCDef nm start elems) = 
+consPCAsGrwT sg_mm (PCDef nm start ps elems) = 
    -- initial set of nodes with the mapping
-   let ns_m_i_q = consQUR (set [(nm, "PCDef"), ("StartN_", show_cmm_n CMM_StartN), ("StartC_", show_cmm_n CMM_StartC)]) nil nil nil
-       qur1 = ns_m_i_q `join` qurName nm nm `join` qurName "StartN_" "StartN_" `join` qurNodes (getENodes elems)
-       cs = getECs elems
-       ds = getEDefs elems
-       qur2 = qur1 `join` qurConnectors cs `join` qurDefs ds
-       (ns_m, es_m, src_m, tgt_m) = quad $ qur2 `join` consOtherEdges sg_mm nm start (fstQUR qur2)
+   let ns_m_i_q = consQUR (set [(nm, "PCDef"), (startN, show_cmm_n CMM_StartN), ("StartC_", show_cmm_n CMM_StartC)]) nil nil nil
+       qur1 = gJoin [ns_m_i_q, qurName nm nm, qurName "StartN_" "StartN_", qurNodes (getENodes elems), qurParams startN ps]
+       qur2 = qur1 `join` qurConnectors (getECs elems) `join` qurDefs (getEDefs elems)
+       (ns_m, es_m, src_m, tgt_m) = quad $ qur2 `join` qurOtherEdges sg_mm nm start (fstQUR qur2)
        pcg = consG (dom_of ns_m) (dom_of es_m) src_m tgt_m in
    consGWT pcg (consGM ns_m es_m)
 
 is_wf_pcdef :: PCDef -> Bool
-is_wf_pcdef (PCDef _ start elems) = 
-   start `elem` (map (\(Node nm _)->nm) (getENodes elems))
+is_wf_pcdef (PCDef _ start _ elems) = 
+   if isNil start then True else (the start) `elem` (map (\(Node nm _)->nm) (getENodes elems))
 
-loadPC'::SGr String String->PCDef->IO (GrwT String String)
+loadPC'::SGr String String->PCDef->IO (Maybe(GrwT String String))
 loadPC' sg_mm pc = do
    let b = is_wf_pcdef pc
-   let pc_g = if b then consPCAsGrwT sg_mm pc else Gr_Cls.empty
-   unless b $ do putStrLn "The PC is not well-formed."
-   return pc_g
+   if b then
+      return $ Just (consPCAsGrwT sg_mm pc) 
+   else
+      return Nothing
+
 
 loadPC :: SGr String String -> FilePath -> IO (Maybe(GrwT String String))
 loadPC sg_mm fn = do
    opc <- loadPCFrFile fn
-   if isNil opc
-      then do
+   if isNil opc then do
          putStrLn "The PC definition could not be parsed."
          return Nothing
-      else do
-         Just <$> loadPC' sg_mm (the opc)
+   else do
+      og_pc<-loadPC' sg_mm (the opc)
+      when (isNil og_pc) $ putStrLn ("PC '" ++ fn ++ "' is not well-formed.")
+      return og_pc
 
 process_pc_def :: FilePath -> IO ()
 process_pc_def fn = do
@@ -934,15 +998,41 @@ process_pc_def fn = do
    putStrLn $ show pc
 
 tb_pc_def :: String
-tb_pc_def = "PC PC_BreakStealHouse2@BreakAndStealHouse\n"
-   ++ "enum Stealable : Laptop,TV,Other\n"
-   ++ "compound BreakAndStealHouse@GetInside\n"
+tb_pc_def = "PC PC_BreakStealHouse2 {} @ BreakAndStealHouse\n"
+   ++ "enum Stealable : 'Laptop','TV','Other'\n"
+   ++ "import VMCommon as VMCI for PC_VendingMachineCommon\n"
+   ++ "process BreakAndStealHouse@GetInside\n"
+
+tb_pc_def2 :: String
+tb_pc_def2 = "PC PC_VendingMachineCommon {}\n"
+   ++ "enum DispenserMsgs : 'itemCollected', 'itemCollectTimeout'\n"
+   ++ "enum OkFail : 'ok','fail' \n"
+   ++ "enum DispenserCmds : 'dispense.OkFail'\n"
+   ++ "enum DoneDoingErr : 'done','doing','error'\n"
+   ++ "enum OCmds : 'start', 'wrongItem', 'payment.DoneDoingErr'\n"
+   ++ "enum CPCmds : 'chargeAmount', 'refund'\n"
+   ++ "enum CPMsgs : 'pay.OkFail'\n"
  
 def_path :: String
 def_path = "PCs/Examples/"
 
-test1 :: [(PCDef, String)]
-test1 = readP_to_S pcDef tb_pc_def
+test1a :: [((Name, Maybe Name, [Param]), String)]
+test1a = readP_to_S pcStart "PC PC_BreakStealHouse2 {} @ BreakAndStealHouse\n"
+
+test1b :: [((Name, Maybe Name, [Param]), String)]
+test1b = readP_to_S pcStart "PC PC_HouseUnderAttack_Seize {grabTV,grabLaptop,grabJewels} @ Seize\n"
+
+test1c :: [((Name, Maybe Name, [Param]), String)]
+test1c = readP_to_S pcStart "PC PC_Something {}\n"
+
+test1d :: [(PCDef, String)]
+test1d = readP_to_S pcDef tb_pc_def
+
+test1e :: [(PCDef, String)]
+test1e = readP_to_S pcDef tb_pc_def2
+
+test1f :: [(PCDef, String)]
+test1f = readP_to_S pcDef "PC PC_VendingMachineCommon {} @\n"
 
 test2a :: IO ()
 test2a = process_pc_def (def_path ++ "PC_CashMachine.pc")
@@ -950,10 +1040,10 @@ test2a = process_pc_def (def_path ++ "PC_CashMachine.pc")
 test2b :: IO ()
 test2b = process_pc_def (def_path ++ "PC_CashMachineOps.pc")
 
-test3a :: [([(Name, Maybe PCType)], String)]
-test3a = readP_to_S (pcParams '.') ".abc1,abc2@"
-test3b :: [([(Name, Maybe PCType)], String)]
-test3b = readP_to_S (pcParams '.') ".x@"
+test3a :: [([Param], String)]
+test3a = readP_to_S (pcParams $ Just '.') ".abc1,abc2@"
+test3b :: [([Param], String)]
+test3b = readP_to_S (pcParams $ Just '.') ".x@"
 test3c :: [([TxtExp], String)]
 test3c = readP_to_S (pcExps '.') ".{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}"
 
@@ -967,12 +1057,14 @@ test5a = readP_to_S pcQuantifiedOp "quantifiedOp bop.Choice e:'ges'"
 test5b :: [(Node, String)]
 test5b = readP_to_S pcQuantifiedOp "quantifiedOp someoneMoves.Choice e :'eas' {active and (not triggered)}"
 test5c :: [(Node, String)]
-test5c = readP_to_S pcQuantifiedOp "quantifiedOp grab.Choice e :{grabLaptop,grabJewels}"
+test5c = readP_to_S pcQuantifiedOp "quantifiedOp grab.Choice e :'{grabLaptop,grabJewels}'"
 
 test5d :: [(Node, String)]
 test5d = readP_to_S pcQuantifiedOp "quantifiedOp stealO.IntChoice x : 'Stealable'"
 test5e :: [(Node, String)]
 test5e = readP_to_S pcQuantifiedOp "quantifiedOp BreakIn.IntChoice x : 'MeansBreakIn'"
+test5f :: [(Node, String)]
+test5f = readP_to_S pcQuantifiedOp "quantifiedOp Num.Choice x : Int"
 
 test5d' = qurNode (fst . head $ test5d) []
    --let n = head  . (readP_to_S pcAtomPack "atomPack stealO.IntChoice x : 'Stealable' @ 'steal.x'") in
@@ -1036,6 +1128,8 @@ test12b :: [(Node, String)]
 test12b = readP_to_S pcProcess "process Clock@tick"
 test12c :: [(Node, String)]
 test12c = readP_to_S pcProcess "process JarOpened.n,m@OpJarOpenedIf"
+test12d :: [(Node, String)]
+test12d = readP_to_S pcProcess "process StopTimer.t:Int@OpStopTimer"
 
 test13a :: [(Node, String)]
 test13a = readP_to_S pcOperator "operator OpCashMachine2.Throw:'cancel','deny'"
@@ -1057,3 +1151,43 @@ test15a = readP_to_S pcImport "import PC_StopTimer"
 
 test15b :: [(Node, String)]
 test15b = readP_to_S pcImport "import StopTimer as STI for PC_StopTimer"
+
+test15c :: [(Node, String)]
+test15c = readP_to_S pcImport "import VMCommon as VMCI for PC_VendingMachineCommon"
+
+--chopForTesting :: [Param] ->[String]
+--chopForTesting ps = map (\(Param id _)->id) ps
+
+--testParams1 :: Test
+--testParams1 = 
+--    let res = chopForTesting $ readP_to_S (pcParams $ Just '.') ".abc1,abc2@" in 
+--    TestCase(
+--      assertBool "Parameters 1" 
+--        (any (\l->all (`elem`["abc1", "abc2"]) (map fst l)) res))
+
+--testParams2 :: Test
+--testParams2 = 
+--    let res = chopForTesting $ readP_to_S (pcParams $ Just '.') ".x@" in 
+--    TestCase (
+--      assertBool "Parameters 2" 
+--        (any (\l->all (`elem` ["x"]) (map fst l)) res))
+
+--testParams3 :: Test
+--testParams3 = 
+--   let l = ["{intoHall}",{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}]
+--   let res = chopForTesting $ readP_to_S (pcExps '.') ".{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}" in 
+--    TestCase (
+--      assertBool "PC Expressions" 
+--        (any (\l->all (`elem` ["x"]) (map fst l)) res))
+
+--test3c :: [([TxtExp], String)]
+--test3c = readP_to_S (pcExps '.') ".{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}"
+
+--testList = TestList 
+--   [testParams1
+--   , testParams2 ]
+
+--main :: IO()
+--main = do
+--    runTestTT testList
+--    return ()

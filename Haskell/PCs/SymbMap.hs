@@ -44,7 +44,7 @@ put sm s o =
 
 putAll::(Eq a, Eq b)=>SymMap a b->Rel a b->SymMap a b
 putAll sm r =
-     let r' = rel sm in
+    let r' = rel sm in
     smap $ override r' r
 
  

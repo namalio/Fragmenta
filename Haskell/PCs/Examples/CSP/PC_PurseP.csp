@@ -1,17 +1,17 @@
 Purse(n) = 
    let 
-      TakeMoney = [] a : Int @ a > n & errInsufficientFunds -> Purse(n)
-            [] a <= n and a > 0 & takeMoney -> Purse(n - a)
-            [] a <= 0 & errInvalidAmount2 -> Purse(n)
+      TakeMoney = [] a : Int @ a > n & err.InsufficientFunds.a -> Purse(n)
+            [] a <= n and a > 0 & takeMoney.a -> Purse(n - a)
+            [] a <= 0 & err.InvalidTakeAmount.a -> Purse(n)
       PutMoney = [] a : Int @ if a > 0
          then
-            putMoney -> Purse(n + a)
+            putMoney.a -> Purse(n + a)
          else
-            errInvalidAmount -> Purse(n)
+            err.InvalidPutAmount.a -> Purse(n)
    within
       if n >= 0
       then
-         showBalance -> Purse(n)
+         showBalance.n -> Purse(n)
          [] TakeMoney
          [] PutMoney
       else

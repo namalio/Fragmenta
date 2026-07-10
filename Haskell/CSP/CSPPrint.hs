@@ -24,15 +24,26 @@ import Prelude hiding (GT, LT, EQ)
 wrChannelDecl0::Int->Set Id->String
 wrChannelDecl0 ind ids = "channel " ++ (wrSepElems ids "," True False ind)
 
+wrTy::Ty->String
+wrTy TyInt   = "Int"
+wrTy TyBool  = "Bool"
+wrTy TyEvent = "Event"
+wrTy (TyDot t1 t2) = (wrTy t1) ++ "." ++ (wrTy t2)
+wrTy (TySet t) = "{" ++ (wrTy t) ++ "}"
+wrTy (TyId id) = id
+
+wrTyE::TyE->String
+wrTyE (Ty t) = wrTy t
+wrTyE (Sete ids) = "{" ++ (foldr (\id s->id ++ if null s then "" else "," ++ s) [] ids) ++ "}"
 
 wrDTyTerm::DTyTerm->String
 wrDTyTerm (DTyTerm id ts) = id ++ wr_ts ts
    where wr_ts [] = ""
-         wr_ts (t:ts) = "." ++ t ++  wr_ts ts
+         wr_ts (t:ts) = "." ++ (wrTy t) ++  wr_ts ts
 
 wrDecl :: Int -> Decl -> String
 wrDecl ind (Channel ids Nothing) = wrChannelDecl0 ind ids
-wrDecl ind (Channel ids (Just ty)) = wrChannelDecl0 ind ids ++ " : " ++ ty
+wrDecl ind (Channel ids (Just ty)) = wrChannelDecl0 ind ids ++ " : " ++ (wrTy ty)
 wrDecl ind (EqDecl e1 e2) = (do_indent ind) ++ (wrExp ind e1) ++ " = " ++ wrExp (ind +1) e2
 wrDecl ind (Include ms) = wrSepElems (map (\m->"include \"" ++ m ++ ".csp\"") (toList ms)) "\n" False False ind
 wrDecl ind (DataTy id vts) = "datatype " ++ id ++ " = " ++ (wrSepElems (fmap wrDTyTerm vts) " |" True False ind)  
@@ -54,6 +65,7 @@ wrBOp EQ = "=="
 wrBOp Member = "member"
 wrBOp Union = "union"
 wrBOp Intersection = "inter"
+wrBOp SMinus = "diff"
 
 wrUOp::UOp->String
 wrUOp UMinus = "-"
@@ -64,25 +76,29 @@ wrToken (TokenInt k) = show k
 wrToken TokenT = "true"
 wrToken TokenF = "false"
 
+wrChL::ChL->String
+wrChL Int = "[]"
+wrChL Ext = "|~|"
+
 wrExp :: Int -> Exp -> String
 wrExp _ (ExpId id) = id 
 wrExp ind (ExpPar e) = "(" ++ (wrExp ind e) ++ ")" 
 wrExp ind (ExpApp id bs) = id ++ "(" ++ (wrSepElems (map (wrExp ind) bs) ", " False False 0) ++ ")" 
 wrExp ind (ExpBOp e1 op e2) 
-   | op `elem` [Member, Union, Intersection] = wrBOp op ++ " (" ++ (wrExp ind e1) ++ ", " ++ (wrExp ind e2) ++ ")"
+   | op `elem` [Member, Union, Intersection, SMinus] = wrBOp op ++ " (" ++ (wrExp ind e1) ++ ", " ++ (wrExp ind e2) ++ ")"
    | otherwise = (wrExp ind e1) ++ " " ++ wrBOp op ++ " " ++ (wrExp ind e2)
 wrExp ind (ExpUOp op e) = wrUOp op ++ (wrExp ind e)
 wrExp ind (ExpToken t) = wrToken t
 wrExp ind (GExp e1 e2) = (wrExp ind e1) ++ " & " ++ (wrExp ind e2)
-wrExp ind (ExpChannel e1 e2) = (wrExp ind e1) ++ "." ++ (wrExp ind e2)
+wrExp ind (ExpDotted e1 e2) = (wrExp ind e1) ++ "." ++ (wrExp ind e2)
 wrExp ind (IfExp e1 e2 e3) = 
    "if " ++ (wrExp 0 e1) ++ "\n" ++ (do_indent ind) ++ "then\n" ++ (do_indent $ ind +1) ++ (wrExp ind e2) 
    ++ "\n" ++ (do_indent ind) ++ "else\n" ++ (do_indent $ ind +1) ++ (wrExp ind e3)
 wrExp ind (Prfx e1 e2) = (wrExp ind e1) ++ " -> " ++ (wrExp ind e2)
-wrExp ind (ExtChoice e1 e2) = (wrExp ind e1) ++ "\n" ++ (do_indent (ind +1)) ++ "[] " ++ (wrExp ind e2)
-wrExp ind (IntChoice e1 e2) = (wrExp ind e1) ++ "\n" ++ (do_indent (ind +1)) ++ " |~| " ++ (wrExp ind e2)
-wrExp ind (RExtChoice idv ids e) =  "[] " ++ idv ++ " : " ++ ids ++ " @ " ++ (wrExp ind e)
-wrExp ind (RIntChoice idv ids e) =  "|~| " ++ idv ++ " : " ++ ids ++ " @ " ++ (wrExp ind e)
+wrExp ind (Choice chk e1 e2) = (wrExp ind e1) ++ "\n" ++ (do_indent (ind +1)) ++ wrChL chk ++ " " ++ (wrExp ind e2)
+--wrExp ind (IntChoice Int e1 e2) = (wrExp ind e1) ++ "\n" ++ (do_indent (ind +1)) ++ " |~| " ++ (wrExp ind e2)
+wrExp ind (RChoice chk idv tye e) =  wrChL chk ++ " " ++ idv ++ " : " ++ (wrTyE tye) ++ " @ " ++ (wrExp ind e)
+--wrExp ind (RIntChoice idv ids e) =  "|~| " ++ idv ++ " : " ++ ids ++ " @ " ++ (wrExp ind e)
 wrExp ind (SeqComp e1 e2) = (wrExp ind e1) ++ "; " ++ (wrExp ind e2)
 wrExp ind (Parallel evs e1 e2) = (wrExp ind e1) ++ "[|{" ++ (wrSepElems (map (wrExp ind) evs) "," False False 0) ++ "}|]" ++ (wrExp ind e2)
 wrExp ind (Throw evs e1 e2) = (wrExp ind e1) ++ "[|{" ++ (wrSepElems (map (wrExp ind) evs) "," False False 0) ++ "}|>" ++ (wrExp ind e2)

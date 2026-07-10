@@ -1,16 +1,17 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BiscuitJar];
+
 openJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="openJar"];
 JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n,m)"];
 OpJarOpenedIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
 takeBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n>0}
 takeBiscuit"];
 closeJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="closeJar"];
-RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n+1,m)"];
-RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n,m)"];
-RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n-1,m)"];
-RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ (n,m)"];
+RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
 dropBiscuit"];
 OpJarOpened [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];

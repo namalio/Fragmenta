@@ -1,15 +1,16 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCellOverall];
+
 OpTCellParallel [shape=diamond,fillcolor=yellow,style=filled,label="||"];
 OpTCellParallel_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn,freeLigandTCR,bindLigandTCR,positiveOff"];
 OpTCellParallel->OpTCellParallel_bs [dir=none,color="black:invis:black"];
 {rank=same;OpTCellParallel,OpTCellParallel_bs}
 TCRI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCR];
 TCellI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCell];
-RefPTK [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑PTK "];
-RefTCell [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑TCell "];
-RefTCR [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑TCR "];
+RefPTK [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="PTK "];
+RefTCell [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="TCell "];
+RefTCR [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="TCR "];
 PTKI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_PTK];
 TCellOverall [shape=box,fillcolor=deepskyblue,style = filled,label="TCellOverall "];
 

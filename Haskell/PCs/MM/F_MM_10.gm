@@ -1,20 +1,10 @@
 Morphism F_MM_10 {
 	nodes {
-		PNode2->Node
-		PBindable->Trait
-		PStartOfPC->Trait
-		Reference->Node
-		PAction4->Node
-		PGuarded2->Trait
-		PName3->Attribute
-		Renaming->Attribute
-		PYesNo->Attribute
+		StartC->Connector
+		PConnector->Connector
+		PStartN->Node
+		PStartOfPC2->Trait
 	}
 	edges {
-		Reference_name->has
-		Reference_inner->has
-		Renamings->has
-		Renaming_new->has
-		Renaming_old->has
 	}
 }

@@ -1,15 +1,16 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCell];
+
 OpTCell [shape=diamond,fillcolor=yellow,style=filled,label="||"];
 OpTCell_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="activatesPTK,inhibitorySignal,inactivatesPTK,positiveOn"];
 OpTCell->OpTCell_bs [dir=none,color="black:invis:black"];
 {rank=same;OpTCell,OpTCell_bs}
 ActI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCellActivation];
 PosSignI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCellPositiveSignalling];
-RefInhibition [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Inhibition "];
-RefPositiveSignalling [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑PositiveSignalling "];
-RefActivation [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Activation "];
+RefInhibition [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Inhibition "];
+RefPositiveSignalling [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="PositiveSignalling "];
+RefActivation [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Activation "];
 InhibI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_TCellInhibition];
 TCell [shape=box,fillcolor=deepskyblue,style = filled,label="TCell "];
 

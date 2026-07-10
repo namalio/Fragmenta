@@ -1,0 +1,11 @@
+include "PC_VendingMachineCardPaymentsP.csp"
+
+datatype CPCmds = refund | chargeAmount
+
+datatype OkFail = fail | ok
+
+datatype CPMsgs = payment.OkFail
+
+channel frPay : CPMsgs
+
+channel toPay : CPCmds

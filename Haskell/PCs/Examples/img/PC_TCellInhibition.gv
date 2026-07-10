@@ -1,6 +1,7 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_TCellInhibition];
+
 Inhibition [shape=box,fillcolor=deepskyblue,style = filled,label="Inhibition "];
 inhibitorySignal [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {¬full}
 inhibitorySignal"];
@@ -8,10 +9,10 @@ FullInhibition [shape=box,fillcolor=deepskyblue,style = filled,label="FullInhibi
 OpInhibiting [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 OpInhibitionDecay [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 activatesPTK2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
-RefFullInhibition2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefFullInhibition2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 inhibitDecay [shape=ellipse,fillcolor=greenyellow,style=filled,label="inhibitDecay"];
 InhibitionDecay [shape=box,fillcolor=deepskyblue,style = filled,label="InhibitionDecay "];
-RefFullInhibition [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefFullInhibition [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 inactivatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="inactivatesPTK"];
 activatesPTK [shape=ellipse,fillcolor=greenyellow,style=filled,label="activatesPTK"];
 

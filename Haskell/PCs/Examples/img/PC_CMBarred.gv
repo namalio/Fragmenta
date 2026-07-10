@@ -1,58 +1,73 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CMBarred];
-RefBarredAsset2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-refDoBarred [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-protected [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> pes<br/>[protected]>];
-doOther2 [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> oes<br/>[doOther2]>];
-SKIP2 [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-OpDoBarred2 [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-OpDoBarred [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-DoBarred [shape=box,fillcolor=deepskyblue,style = filled,label="DoBarred "];
-RefCarryOut [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
-erect [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> bes<br/>[erect]>];
-doOther [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> oes<br/>[doOther]>];
-SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-OpCarryOut2 [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-CarryOut [shape=box,fillcolor=deepskyblue,style = filled,label="CarryOut "];
-DoIt [shape=box,fillcolor=deepskyblue,style = filled,label="DoIt "];
-OpCarryOut [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-restart [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> rses<br/>[restart]>];
-OpBarredAsset [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-BarredAsset [shape=box,fillcolor=deepskyblue,style = filled,label="BarredAsset (ses,rses,bes,pes,oes)"];
-start [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ses<br/>[start]>];
-CMBarred [shape=box,fillcolor=deepskyblue,style = filled,label="CMBarred "];
-RefBarredAsset [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=" "];
 
-{rank=min;StartN_,CMBarred}
-{rank=same;BarredAsset,RefBarredAsset2}
-{rank=same;start,DoIt}
-{rank=same;doOther,RefCarryOut}
-{rank=same;erect,DoBarred}
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CMBarred];
+
+StartN__ps[shape=rect,fillcolor=burlywood2,style="filled,dotted",label="cardIn,cancel,grant,optWithdraw,showBalance,withdraw,cashDeny,cashDispense,fail,cardSwallow,tock,cardCollect,cardEject,deny"];
+StartN_->StartN__ps [dir=none,color="black:invis:black"];
+{rank=same;StartN_,StartN__ps}
+RefBarredAsset [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+BarredAsset [shape=box,fillcolor=deepskyblue,style = filled,label="BarredAsset (ses,rses,bes,pes,oes)"];
+Start [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ s:ses>];
+Restart [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ rs:rses>];
+OpCarryOut [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+OpCarryOut2 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+Other [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ o:oes>];
+Erect [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:bes>];
+RefCarryOut [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+OpDoBarred [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+SKIP2 [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+Protected [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ p:pes>];
+protected [shape=ellipse,fillcolor=greenyellow,style=filled,label="p"];
+RefBarredAsset2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefDoBarred [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+doOther2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="o"];
+Other2 [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ o:oes>];
+OpDoBarred2 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+DoBarred [shape=box,fillcolor=deepskyblue,style = filled,label="DoBarred"];
+erect [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+doOther [shape=ellipse,fillcolor=greenyellow,style=filled,label="o"];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+CarryOut [shape=box,fillcolor=deepskyblue,style = filled,label="CarryOut"];
+restart [shape=ellipse,fillcolor=greenyellow,style=filled,label="rs"];
+start [shape=ellipse,fillcolor=greenyellow,style=filled,label="s"];
+OpBarredAsset [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+CMBarred [shape=box,fillcolor=deepskyblue,style = filled,label="CMBarred"];
+
+{rank=same;DoBarred,erect}
+{rank=same;RefBarredAsset2,BarredAsset}
+{rank=same;CarryOut,start}
+{rank=same;RefCarryOut,doOther}
+{rank=same;CMBarred,StartN_}
 
 RefBarredAsset2->BarredAsset[arrowhead="normalnormal",fillcolor=white,label=" (ses,rses,bes,pes,oes)"];
-protected->refDoBarred[arrowtail=dot,dir=both,label="after"];
-doOther2->refDoBarred[arrowtail=dot,dir=both,label="after"];
-refDoBarred->DoBarred[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpDoBarred2->protected[arrowhead="open"];
-OpDoBarred2->doOther2[arrowhead="open"];
+doOther2->RefDoBarred[arrowtail=dot,dir=both,label="after"];
+Protected->protected[arrowhead="open"];
+OpDoBarred2->Protected[arrowhead="open"];
 OpDoBarred->SKIP2[arrowhead="open"];
-OpDoBarred->OpDoBarred2[arrowhead="open"];
 erect->DoBarred[arrowtail=dot,dir=both,label="after"];
-doOther->RefCarryOut[arrowtail=dot,dir=both,label="after"];
 RefCarryOut->CarryOut[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpCarryOut2->erect[arrowhead="open"];
-OpCarryOut2->doOther[arrowhead="open"];
-OpCarryOut->SKIP[arrowhead="open"];
+OpCarryOut2->Erect[arrowhead="open"];
+Other->doOther[arrowhead="open"];
 OpCarryOut->OpCarryOut2[arrowhead="open"];
-start->DoIt[arrowtail=dot,dir=both,label="after"];
-OpBarredAsset->restart[arrowhead="open"];
-OpBarredAsset->start[arrowhead="open"];
 BarredAsset->RefBarredAsset2[arrowtail=dot,dir=both,label="after"];
-RefBarredAsset->BarredAsset[arrowhead="normalnormal",fillcolor=white,label=" ({cardIn},{cancel},{grant},{optWithdraw, showBalance},{withdraw, cashDeny, cashDispense, fail, cardSwallow, cCollectTimeout, cCollect, cardEject, deny, cancel})"];
-StartN_->CMBarred[arrowtail=diamond,dir=both,label="starts"];
+OpBarredAsset->Restart[arrowhead="open"];
+OpBarredAsset->Start[arrowhead="open"];
+RefBarredAsset->BarredAsset[arrowhead="normalnormal",fillcolor=white,label=" ({cardIn},{cancel},{grant},{optWithdraw, showBalance},{withdraw, cashDeny, cashDispense, fail, cardSwallow, tock, cardCollect, cardEject, deny, cancel})"];
+Start->start[arrowhead="open"];
+Restart->restart[arrowhead="open"];
+start->CarryOut[arrowtail=dot,dir=both,label="after"];
+OpCarryOut->SKIP[arrowhead="open"];
+OpCarryOut2->Other[arrowhead="open"];
+Erect->erect[arrowhead="open"];
+doOther->RefCarryOut[arrowtail=dot,dir=both,label="after"];
+OpDoBarred->OpDoBarred2[arrowhead="open"];
+OpDoBarred2->Other2[arrowhead="open"];
+Other2->doOther2[arrowhead="open"];
+RefDoBarred->DoBarred[arrowhead="normalnormal",fillcolor=white,label=" "];
+protected->RefDoBarred[arrowtail=dot,dir=both,label="after"];
+BarredAsset->OpBarredAsset[arrowhead="onormal",penwidth=2,label="="];
 DoBarred->OpDoBarred[arrowhead="onormal",penwidth=2,label="="];
 CarryOut->OpCarryOut[arrowhead="onormal",penwidth=2,label="="];
-DoIt->CarryOut[arrowhead="onormal",penwidth=2,label="="];
-BarredAsset->OpBarredAsset[arrowhead="onormal",penwidth=2,label="="];
 CMBarred->RefBarredAsset[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CMBarred[label="starts"];
 }

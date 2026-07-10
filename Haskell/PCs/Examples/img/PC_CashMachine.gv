@@ -1,7 +1,8 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CashMachine];
-CashMachine [shape=box,fillcolor=deepskyblue,style = filled,label="CashMachine "];
+
+CashMachine [shape=box,fillcolor=deepskyblue,style = filled,label="CashMachine"];
 OpCashMachine [shape=diamond,fillcolor=yellow,style=filled,label="||"];
 OpCashMachine_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="cancel,cardIn,deny"];
 OpCashMachine->OpCashMachine_bs [dir=none,color="black:invis:black"];
@@ -9,22 +10,22 @@ OpCashMachine->OpCashMachine_bs [dir=none,color="black:invis:black"];
 OpCashMachine3 [shape=diamond,fillcolor=yellow,style=filled,label="|||"];
 cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
 CCI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CardControl];
-RefCashMachineOps [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑CashMachineOps "];
-DoOptions [shape=box,fillcolor=deepskyblue,style = filled,label="DoOptions "];
-RefWithdraw [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑Withdraw "];
+RefCashMachineOps [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachineOps "];
+DoOptions [shape=box,fillcolor=deepskyblue,style = filled,label="DoOptions"];
+RefWithdraw [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Withdraw "];
 SBI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_ShowBalance];
-RefDoOptions [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefDoOptions [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 WI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_Withdraw];
-RefShowBalance [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ShowBalance "];
+RefShowBalance [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="ShowBalance "];
 OpDoOptions [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 CMOI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachineOps];
-RefCardControl [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑CardControl "];
+RefCardControl [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CardControl "];
 SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
 OpCashMachine2 [shape=diamond,fillcolor=yellow,style=filled,label="Θ"];
 OpCashMachine2_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="cancel,deny"];
 OpCashMachine2->OpCashMachine2_bs [dir=none,color="black:invis:black"];
 {rank=same;OpCashMachine2,OpCashMachine2_bs}
-RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 
 {rank=same;RefCashMachine,CashMachine}
 {rank=same;DoOptions,RefCashMachineOps}

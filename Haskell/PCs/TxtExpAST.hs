@@ -36,6 +36,7 @@ data BinOp
     | Or 
     | Cup
     | Cap
+    | SMinus
     deriving (Show, Eq)
 
 data RelOp 
@@ -49,16 +50,16 @@ data RelOp
     deriving (Show, Eq)
 
 data Exp
-      = ExpBin BinOp Exp Exp
-      | ExpRel RelOp Exp Exp
-      | ExpUn UnOp Exp
-      | ExpDot Exp Exp
-      | ExpB BoolTerm
-      | ExpId Id
-      | ExpInt Int
-      | ExpPar Exp
-      | ExpSet [Exp]
-      deriving (Show, Eq)
+    = ExpBin BinOp Exp Exp
+    | ExpRel RelOp Exp Exp
+    | ExpUn UnOp Exp
+    | ExpDot Exp Exp
+    | ExpB BoolTerm
+    | ExpId Id
+    | ExpInt Int
+    | ExpPar Exp
+    | ExpSet [Exp]
+    deriving (Show, Eq)
 
 isAtom::Exp->Bool
 isAtom (ExpB _)   = True
@@ -113,6 +114,7 @@ showBO And       = "⋀"
 showBO Or        = "⋁"
 showBO Cup       = "∪"
 showBO Cap       = "∩"
+showBO SMinus    = "∖"
     
 
 showUO::UnOp->String

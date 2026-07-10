@@ -48,7 +48,7 @@ joinS s EmptyS = s
 joinS (x `Set` xs) s  = Set x (joinS xs s)
 
 inSet::(Eq a) => a->Set a ->Bool
-inSet x EmptyS = False
+inSet _ EmptyS = False
 inSet x (y `Set` s) 
    | x == y  = True
    | otherwise = inSet x s
@@ -108,7 +108,7 @@ instance Foldable Set where
    elem = inSet
    null :: Set a -> Bool
    null EmptyS = True
-   null _ = False
+   null _      = False
    foldr :: (a -> b -> b) -> b -> Set a -> b
    foldr _ z EmptyS = z
    foldr f z (Set x s) = f x (foldr f z s)

@@ -1,0 +1,11 @@
+PC PC_HouseUnderAttack {grabTV,grabLaptop,grabJewels,mainDoor,roomWindow} @HouseUnderAttack
+operator OpHouseUnderAttack.Parallel:'grabTV','grabLaptop','grabJewels','mainDoor','roomWindow'
+process HouseUnderAttack@OpHouseUnderAttack
+import HouseUnderAttack_Ransack as RansackI for PC_HouseUnderAttack_Ransack
+reference RefRansack:Ransack
+ref_connector RefRansack->RansackI
+op_connector OpHouseUnderAttack->RefRansack
+import HouseUnderAttack_Seize as SeizeI for PC_HouseUnderAttack_Seize
+reference RefSeize:Seize
+ref_connector RefSeize->SeizeI
+op_connector OpHouseUnderAttack->RefSeize

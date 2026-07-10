@@ -1,7 +1,7 @@
-PC PC_TCR@TCR
-atom bindLigandTCR
+PC PC_TCR {} @TCR
+atom :'bindLigandTCR'
 process TCR@bindLigandTCR
-atom freeLigandTCR
+atom :'freeLigandTCR'
 after bindLigandTCR->freeLigandTCR
 after freeLigandTCR->TCR
 

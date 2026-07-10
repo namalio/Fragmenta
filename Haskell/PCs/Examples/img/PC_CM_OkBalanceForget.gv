@@ -1,33 +1,38 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CM_OkBalanceForget];
-PC_CashMachine [shape=hexagon,fillcolor=orangered,style=filled,label =PC_CashMachine];
-RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
-cCollectTimeout [shape=ellipse,fillcolor=greenyellow,style = filled,label="cCollectTimeout"];
-cardSwallow [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardSwallow"];
-cardEject [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardEject"];
-cancel [shape=ellipse,fillcolor=greenyellow,style = filled,label="cancel"];
-showBalance [shape=ellipse,fillcolor=greenyellow,style = filled,label="showBalance"];
-grant [shape=ellipse,fillcolor=greenyellow,style = filled,label="grant"];
-cardIn [shape=ellipse,fillcolor=greenyellow,style = filled,label="cardIn"];
-CMOkBalanceForget [shape=box,fillcolor=deepskyblue,style = filled,label="CMOkBalanceForget "];
 
-{rank=min;StartN_,CMOkBalanceForget}
-{rank=same;cardIn,grant,showBalance,cancel,cardEject,cCollectTimeout,cardSwallow,RefCashMachine}
-{rank=same;grant,showBalance,cancel,cardEject,cCollectTimeout,cardSwallow,RefCashMachine}
-{rank=same;showBalance,cancel,cardEject,cCollectTimeout,cardSwallow,RefCashMachine}
-{rank=same;cancel,cardEject,cCollectTimeout,cardSwallow,RefCashMachine}
-{rank=same;cardEject,cCollectTimeout,cardSwallow,RefCashMachine}
-{rank=same;cCollectTimeout,cardSwallow,RefCashMachine}
-{rank=same;cardSwallow,RefCashMachine}
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CM_OkBalanceForget];
+
+CMOkBalanceForget [shape=box,fillcolor=deepskyblue,style = filled,label="CMOkBalanceForget"];
+grant [shape=ellipse,fillcolor=greenyellow,style=filled,label="grant"];
+cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
+cardSwallow [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardSwallow"];
+tock2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="tock"];
+RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
+CMI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachine];
+tock3 [shape=ellipse,fillcolor=greenyellow,style=filled,label="tock"];
+tock [shape=ellipse,fillcolor=greenyellow,style=filled,label="tock"];
+cardEject [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardEject"];
+showBalance [shape=ellipse,fillcolor=greenyellow,style=filled,label="showBalance"];
+cardIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardIn"];
+
+{rank=same;RefCashMachine,cardSwallow}
+{rank=same;RefCashMachine,cardSwallow,tock3}
+{rank=same;cardSwallow,RefCashMachine,tock3,tock2,tock}
+{rank=same;RefCashMachine,cardSwallow,tock3,tock2,tock,cardEject,cancel}
+{rank=same;tock2,RefCashMachine,cardSwallow,tock3,cardEject,tock,cancel,showBalance,grant}
+{rank=same;RefCashMachine,tock3,cardSwallow,tock2,tock,cardEject,cancel,showBalance,grant,cardIn}
+{rank=same;CMOkBalanceForget,StartN_}
 
 cardSwallow->RefCashMachine[arrowtail=dot,dir=both,label="after"];
-RefCashMachine->PC_CashMachine[arrowhead="normalnormal",fillcolor=white,label=" "];
-cCollectTimeout->cardSwallow[arrowtail=dot,dir=both,label="after"];
-cardEject->cCollectTimeout[arrowtail=dot,dir=both,label="after"];
+tock3->cardSwallow[arrowtail=dot,dir=both,label="after"];
+tock->tock2[arrowtail=dot,dir=both,label="after"];
 cancel->cardEject[arrowtail=dot,dir=both,label="after"];
-showBalance->cancel[arrowtail=dot,dir=both,label="after"];
 grant->showBalance[arrowtail=dot,dir=both,label="after"];
 cardIn->grant[arrowtail=dot,dir=both,label="after"];
-StartN_->CMOkBalanceForget[arrowtail=diamond,dir=both,label="starts"];
+showBalance->cancel[arrowtail=dot,dir=both,label="after"];
+cardEject->tock[arrowtail=dot,dir=both,label="after"];
+tock2->tock3[arrowtail=dot,dir=both,label="after"];
+RefCashMachine->CMI[arrowhead="normalnormal",fillcolor=white,label=" "];
 CMOkBalanceForget->cardIn[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CMOkBalanceForget[label="starts"];
 }

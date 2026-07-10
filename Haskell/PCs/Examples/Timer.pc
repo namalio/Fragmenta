@@ -1,4 +1,4 @@
-PC PC_Timer@Timer
+PC PC_Timer {} @Timer
 process Timer.t@OpTimer
 operator OpTimer.If
 operator OpIfChoice.Choice

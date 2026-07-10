@@ -1,2 +1,2 @@
-CardControl = cardIn -> (cancel -> cardEject -> StopTimer(5)[[timeout <- cardSwallow,stopIt <- cardCollect]]
-      [] deny -> cardSwallow -> SKIP)
+CardControl = cardIn -> (cancel -> cardEject -> StopTimer(3)[[timeout <- cardSwallow,stopIt <- cardCollect]]
+      |~| deny -> cardSwallow -> SKIP)

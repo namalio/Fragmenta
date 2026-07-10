@@ -1,0 +1,17 @@
+PC PC_VendingMachineCardPayments {} @ CardPayments
+enum OkFail : 'ok','fail' 
+enum CPMsgs : 'payment.OkFail'
+enum CPCmds : 'chargeAmount', 'refund'
+process CardPayments@OpCardPayments
+operator OpCardPayments.Choice
+quantifiedOp CPI.IntChoice cpms : 'CPMsgs'
+quantifiedOp CPO.Choice cpcs : 'CPCmds'
+op_connector OpCardPayments->CPI
+op_connector OpCardPayments->CPO
+op_connector CPI->cpi
+op_connector CPO->cpo
+atom cpi :'frPay.cpms'
+atom cpo :'toPay.cpcs'
+reference RefCardPayments
+ref_connector RefCardPayments->CardPayments
+after CardPayments->RefCardPayments

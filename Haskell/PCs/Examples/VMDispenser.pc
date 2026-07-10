@@ -1,0 +1,15 @@
+PC PC_VendingMachineDispenser {} @Dispenser
+import VMCommon as VMCI for PC_VendingMachineCommon
+process Dispenser@OpDispenser
+operator OpDispenser.Choice
+quantifiedOp DispI.IntChoice dms : 'DispenserMsgs'
+quantifiedOp DispO.Choice dcs : 'DispenserCmds'
+op_connector OpDispenser->DispI
+op_connector OpDispenser->DispO
+op_connector DispI->adi
+op_connector DispO->ado
+atom adi :'frDisp.dms'
+atom ado :'toDisp.dcs'
+reference RefDispenser
+ref_connector RefDispenser->Dispenser
+after Dispenser->RefDispenser

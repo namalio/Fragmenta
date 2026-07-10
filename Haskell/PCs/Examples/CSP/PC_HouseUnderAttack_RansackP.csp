@@ -2,9 +2,9 @@ Ransack =
    let 
       IntoRoom = 
          let 
-            InRoom = IntoHall
-                  [] (([] e : {grabLaptop,grabJewels} @ e -> SKIP); InRoom)
-                  [] roomWindow -> SKIP
+            InRoom = roomWindow -> SKIP
+                  [] ([] e : {grabLaptop,grabJewels} @ e -> InRoom)
+                  [] IntoHall
          within
             intoRoom -> InRoom
       IntoHall = 

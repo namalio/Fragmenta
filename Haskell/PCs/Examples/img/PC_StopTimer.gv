@@ -1,13 +1,14 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_StopTimer];
+
 StopTimer [shape=box,fillcolor=deepskyblue,style = filled,label="StopTimer (t : Int)"];
 OpIfChoice [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 timeout [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {t=0}
 timeout"];
 stopIt [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {t>0}
 stopIt"];
-RefStopTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefStopTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 tock [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {t>0}
 tock"];
 STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];

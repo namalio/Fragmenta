@@ -1,7 +1,7 @@
 module PCs.PCTrees_Types (
     Type(..)
     , Subst
-    , isEventTy
+    , isEvTy
     , isDotTy
     , apply
     , freeVars
@@ -10,7 +10,11 @@ module PCs.PCTrees_Types (
     , Env
     , nilEnv
     , applyEnv
-    , removeFrEnv)
+    , removeFrEnv
+    , inEnv
+    , isSetTy
+    , isTIdTy
+    )
     where
 
 import PCs.Common(Id)
@@ -36,15 +40,22 @@ data Type
 
 type Subst = Rel Id Type
 
-isEventTy::Type->Bool
-isEventTy TEvent = True
-isEventTy (TDot _ t) = isEventTy t
-isEventTy _ = False
+isEvTy::Type->Bool
+isEvTy TEvent = True
+isEvTy (TDot _ t) = isEvTy t
+isEvTy _ = False
 
 isDotTy::Type->Bool
 isDotTy (TDot _ _) = True
 isDotTy _ = False
 
+isSetTy::Type->Bool
+isSetTy (TSet _ ) = True
+isSetTy _ = False
+
+isTIdTy::Type->Bool
+isTIdTy (TId _) = True
+isTIdTy _ = False
 --fstTy::Type->Type
 --fstTy (TDot t1 _) = t1
 --fstTy (TSet t) = t
@@ -82,19 +93,25 @@ applySS s1 s0 = fmap (\(i, t)->(i, apply s1 t)) s0
 scomp::Subst->Subst->Subst
 scomp s1 s0 = s1 `override` (applySS s1 s0) 
 
--- Environments: A mapping from identifiers to types
-type Env = SymMap Id Type 
+-- Environments: A relation from identifiers to types
+type Env = Rel Id Type 
 
 -- The empty environment
 nilEnv::Env
-nilEnv = emptySM 
+nilEnv = nil
 
 applyEnv::Subst->Env->Env
-applyEnv s env = 
-    smap $ applyEnv0 s (rel env)
-    where
-       applyEnv0 s EmptyS = EmptyS
-       applyEnv0 s (Set (id, t) r) = (id, apply s t) `intoSet` applyEnv0 s r
+applyEnv s EmptyS = EmptyS
+applyEnv s (Set (id, t) r) = (id, apply s t) `intoSet` applyEnv s r
+
+--applyEnv s env = 
+--    smap $ applyEnv0 s (rel env)
+--    where
+--       applyEnv0 s EmptyS = EmptyS
+--       applyEnv0 s (Set (id, t) r) = (id, apply s t) `intoSet` applyEnv0 s r
+
+inEnv::Id->Env->Bool
+inEnv id env = id `elem` (dom_of env)
 
 removeFrEnv::Foldable t=>Env->t Id->Env
-removeFrEnv env ids = delKeys env ids
+removeFrEnv env ids = dsub env ids

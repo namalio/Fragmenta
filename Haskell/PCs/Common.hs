@@ -1,15 +1,23 @@
 module PCs.Common 
     ( Id
-    , Type
+    , PCTypeD(..)
     , Param(..)
-    , cParam
     , OpKind(..)
     , readOp
     , toMMOp
+    , read_opctyd
+    , cParam
+    , cType
+    , gParamId
+    , gParamTy
+    , PCTypeE(..)
+    , show_pctye
+    , startN
     )
 where
 
 import ParseUtils
+   (words')
 import PCs.MM_Names
 import TheNil
 import MyMaybe
@@ -18,20 +26,56 @@ import SimpleFuns
    )
 
 type Id = String
-data Type 
+
+-- A PCT type designator — int, bool, event, some custom datatype, or some set of some type
+data PCTypeD 
     = Int 
     | Bool 
     | Event 
     | Dt Id
-    | Set Type 
-    deriving (Eq, Show)
+    | SetT PCTypeD 
+    deriving (Eq)
 
-show_ty (Dt id) = id
-show_ty (Set t) = "Set " ++ show_ty t
-show_ty t = show t
+instance Show PCTypeD where
+  show Int = "Int"
+  show Bool = "Bool"
+  show (Dt id) = strip id 
+    where strip('D':'t':'_':rest) = rest
+          strip s = s
+  show (SetT t) = "Set " ++ show t
 
+--show_ty (Dt id) = id
+--show_ty (SetT t) = "Set " ++ show_ty t
+--show_ty t = show t
 
-data Param = Param Id (Maybe Type)
+instance Read PCTypeD where
+    --read :: String -> PCTypeD
+    readsPrec _ c = 
+        let (s, r) = span (/= ' ') c
+        in case s of
+            "Int" -> [(Int, r)]
+            "Bool"    -> [(Bool, r)]
+            "Event"   -> [(Event, r)]
+            'D':'t':'_':r' -> [(Dt r', r)]
+            'S':'e':'t':'_':r' -> [(SetT $ read r', r)]
+            _->[(Dt s, r)]
+    --readsPrec s 
+    --    | startsWith "Dt_" s = Dt $ drop 3 s
+    --    | startsWith "Set_" s = SetT $ readsPrec (drop 4 s)
+
+--readType::Id->PCType
+--readType "Integer"          = Int
+--readType "Boolean"          = Bool
+--readType "Event"            = Event
+--readType s 
+--   | startsWith "Dt_" s = Dt $ drop 3 s
+--   | startsWith "Set_" s = SetT $ readType (drop 4 s)
+
+read_opctyd :: Maybe String -> Maybe PCTypeD
+read_opctyd Nothing = Nothing
+read_opctyd (Just s) = Just $ read s
+
+data Param = Param Id (Maybe PCTypeD)
     deriving(Eq) 
 
 data OpKind 
@@ -44,7 +88,7 @@ data OpKind
    deriving(Eq, Read) 
 
 instance Show Param where
-   show (Param nm oty) = nm ++ (if isSomething oty then " : " ++ (show_ty $ the oty) else "")
+   show (Param nm oty) = nm ++ (if isSomething oty then " : " ++ (show $ the oty) else "")
 
 instance Show OpKind where
     show Choice = "◻︎"
@@ -70,19 +114,49 @@ toMMOp Parallel = CMM_VOpParallel
 toMMOp Interleave = CMM_VOpInterleave
 toMMOp Throw = CMM_VOpThrow
 
-readType::Id->Type
-readType "Integer"          = Int
-readType "Boolean"          = Bool
-readType "Event"            = Event
-readType s 
-   | startsWith "Dt_" s = Dt $ drop 3 s
-   | startsWith "Set_" s = Set $ readType (drop 4 s)
---ctype0 ('D':'t':'_':rest) = Dt rest
---cType0 sty                = let (_, ty) = splitAtStr "Set_" sty in Set (cType0 ty)
+-- The name of the start node constant
+startN::String
+startN = "StartN_"
 
-cType::Maybe Id->Maybe Type
+cType::Maybe Id->Maybe PCTypeD
 cType Nothing = Nothing
-cType (Just ts) = Just $ readType ts
+cType (Just ts) = Just $ read ts
 
 cParam::Id->Maybe String->Param
 cParam id tys = Param id (cType tys)
+
+gParamId::Param->Id
+gParamId (Param id _) = id
+
+gParamTy::Param->Maybe PCTypeD
+gParamTy (Param _ t) = t
+
+-- Data type for type expressions
+data PCTypeE
+   = TyD PCTypeD
+   | TIdE Id  
+   | SetE [Id] -- A set extension
+    deriving (Eq)
+
+show_pctye::PCTypeE->String
+show_pctye (TyD Int)   = "Int"
+show_pctye (TyD Bool)  = "Bool"
+show_pctye (TyD Event) = "Event"
+show_pctye (TIdE id)   = "Id_" ++ id
+show_pctye (SetE ids)  = "SetE_" ++ foldr (\id' s->id' ++ "_" ++ s) "" ids
+
+instance Show PCTypeE where
+    show (TyD td)   = show td
+    show (TIdE id)   = id
+    show (SetE ids) = "{" ++ foldr (\id' s->id' ++ (if null s then "" else ",") ++ s) "" ids ++ "}"
+
+instance Read PCTypeE where
+    readsPrec _ c = 
+        let (s, r) = span (/= ' ') c
+        in case s of
+            "Int" -> [(TyD Int, r)]
+            "Bool"    -> [(TyD Bool, r)]
+            "Event"   -> [(TyD Event, r)]
+            'I':'d':'_':r' -> [(TIdE r', r)]
+            'S':'e':'t':'E':'_':r' -> [(SetE $ words' (=='_') r', r)]
+            _ -> error s

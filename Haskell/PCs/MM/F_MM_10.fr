@@ -1,30 +1,14 @@
 fragment F_MM_10 {
   SG SG_MM_10 {
-    proxy PNode2
-    proxy PBindable
-    proxy PAction4
-    proxy PName3
-    proxy PYesNo
-    proxy PGuarded2
-    proxy PStartOfPC
-    node Reference
-    node Renaming
-    inh Reference->PNode2
-    inh Reference->PBindable
-    inh Reference->PAction4
-    inh Reference->PGuarded2
-    inh Reference->PStartOfPC
-    relu Reference->PName3[Reference_name]:?
-    relu Reference->PYesNo[Reference_inner]
-    rel Reference->Renaming[Renamings]:1;*
-    relu Renaming->PName3[Renaming_new]
-    relu Renaming->PName3[Renaming_old]
+    proxy PConnector
+    node StartC
+    proxy PStartN
+    proxy PStartOfPC2
+    inh StartC->PConnector
+    derived StartC->PStartN[DSCSrc <-> src]:?;1
+    derived StartC->PStartOfPC2[DSCTgt <-> tgt]:?;1
   }
-  ref PNode2->Node
-  ref PBindable->Bindable
-  ref PAction4->Action
-  ref PName3->Name
-  ref PYesNo->YesNo
-  ref PGuarded2->Guarded
-  ref PStartOfPC->StartOfPC
+  ref PConnector->Connector
+  ref PStartN->StartN
+  ref PStartOfPC2->StartOfPC
 }

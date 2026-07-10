@@ -22,24 +22,25 @@ door[shape=box,fillcolor=darkolivegreen1,style="filled",label="door"];
 
 TV->StartN_[style=invis]
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse3];
-BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse "];
+
+BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse"];
 QOpGetInside [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];
 Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack (s)"];
 OpRansack [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 breakAndStealSafe [shape=ellipse,fillcolor=greenyellow,style=filled,label="breakAndStealSafe"];
 QStealO [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:Stealable>];
-RefSteal [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label="↑ 
+RefSteal [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label="
 (Inner)"];
-RefRansack3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefRansack3 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 getOutAndRun [shape=ellipse,fillcolor=greenyellow,style=filled,label="getOutAndRun"];
-RefRansack2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefRansack2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 steal [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = Other ⋁ ¬x ∊ s }
 steal.x"];
 SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
 Steal [shape=box,fillcolor=deepskyblue,style = filled,label="Steal (s)"];
-RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 break [shape=ellipse,fillcolor=greenyellow,style=filled,label="break.x"];
-GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside "];
+GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside"];
 
 {rank=same;getOutAndRun,RefRansack}
 {rank=same;getOutAndRun,RefRansack,GetInside}

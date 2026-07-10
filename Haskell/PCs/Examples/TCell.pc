@@ -1,4 +1,4 @@
-PC PC_TCell@TCell
+PC PC_TCell {} @TCell
 operator OpTCell.Parallel:'activatesPTK','inhibitorySignal','inactivatesPTK','positiveOn'
 process TCell@OpTCell
 op_connector OpTCell->RefActivation

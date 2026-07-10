@@ -17,6 +17,7 @@ toCSPBOp PCTsExp.And = CSP.And
 toCSPBOp PCTsExp.Or = CSP.Or
 toCSPBOp PCTsExp.Cup = CSP.Union
 toCSPBOp PCTsExp.Cap = CSP.Intersection
+toCSPBOp PCTsExp.SMinus = CSP.SMinus
 
 toCSPRelOp::PCTsExp.RelOp->CSP.BOp
 toCSPRelOp PCTsExp.OGT = CSP.GT
@@ -38,7 +39,7 @@ toCSPExp (PCTsExp.ExpUn op e) = CSP.ExpUOp (toCSPUOp op) (toCSPExp e)
 toCSPExp (PCTsExp.ExpSet es) = CSP.ExpSetE (map toCSPExp es)
 toCSPExp (PCTsExp.ExpId id) = CSP.ExpId id
 toCSPExp (PCTsExp.ExpInt k) = CSP.ExpToken (CSP.TokenInt k)
-toCSPExp (PCTsExp.ExpDot e1 e2) = CSP.ExpChannel (toCSPExp e1) (toCSPExp e2)
+toCSPExp (PCTsExp.ExpDot e1 e2) = CSP.ExpDotted (toCSPExp e1) (toCSPExp e2)
 toCSPExp (PCTsExp.ExpB bt) = if bt == PCTsExp.TrueT then CSP.ExpToken CSP.TokenT else CSP.ExpToken CSP.TokenF
 toCSPExp (PCTsExp.ExpPar e) = CSP.ExpPar (toCSPExp e)
 

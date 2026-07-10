@@ -1,0 +1,11 @@
+include "PC_VendingMachineDispenserP.csp"
+
+datatype DispenserCmds = dispense.OkFail
+
+datatype DispenserMsgs = itemCollectTimeout | itemCollected
+
+datatype OkFail = ok | fail
+
+channel frDisp : DispenserMsgs
+
+channel toDisp : DispenserCmds
