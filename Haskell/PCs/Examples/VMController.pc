@@ -3,28 +3,36 @@ import VMCommon as VMCI for PC_VendingMachineCommon
 process Controller@SM
 atom SM :'toO.start'
 after SM->IS
-atom IS: 'frI.itemSelected'
+atom IS: 'frI.itemSelect'
 after IS->R
 quantifiedOp R.IntChoice r : 'OkFail'
 op_connector R->OpIf1
+atom PConf:'toO.payConfirm'
 operator OpIf1.If
-op_connector_g OpIf1->ProcessPayment{r = ok}
+op_connector_g OpIf1->PConf{r = ok}
 op_else_connector OpIf1->err
 atom err :'toO.wrongItem'
-process ProcessPayment@CA
-atom CA :'toPay.chargeAmount'
-atom PBP : 'toO.payment.doing'
+after PConf->ProcessPayment
+operator OpProcessPayment.Choice
+process ProcessPayment@OpProcessPayment
+atom ICo:'frI.itemConfirm'
+atom Can:'frI.cancel'
+op_connector OpProcessPayment->ICo
+op_connector OpProcessPayment->Can
+after ICo->CA
+atom CA :'toPay.charge'
+atom PBP : 'toO.payI.doing'
 after CA->PBP
 after PBP->OpCarryPay
 operator OpCarryPay.Choice
 op_connector OpCarryPay->PC
 op_connector OpCarryPay->PF
 atom PC : 'frPay.pay.ok'
-atom POk: 'toO.payment.done'
+atom POk: 'toO.payI.done'
 after PC->POk
 after POk->R2
 atom PF:'frPay.pay.fail'
-atom IOPF:'toO.payment.error'
+atom IOPF:'toO.payI.error'
 after PF->IOPF
 quantifiedOp R2.Choice r : 'OkFail'
 atom dOkFail:'toDisp.dispense.r'
@@ -33,9 +41,11 @@ operator OpIf2.If
 after dOkFail->OpIf2
 op_connector_g OpIf2->OpCollect{r = ok}
 op_else_connector OpIf2->Refu
-atom IC :'frDisp.itemCollected'
+atom IC :'frDisp.itemCollect'
 atom Refu: 'toPay.refund'
-atom ICT :'frDisp.itemCollectTimeout'
+atom ICT :'frDisp.collectTimeout'
+atom DFail:'toO.dispenseFail'
+after Refu->DFail
 operator OpCollect.Choice
 op_connector OpCollect->IC
 op_connector OpCollect->ICT

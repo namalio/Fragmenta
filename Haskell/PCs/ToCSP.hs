@@ -282,11 +282,12 @@ cspExp (OpB OpInterleave t1 t2) =
    let (e1, e2, cds) = cspExpsFor t1 t2 (Both CSP.isComposite CSP.isComposite) in
    (CSP.Interleave e1 e2, cds)
 
-toCSP::MMI String String->PC String String->Set String->Env->(CSP.Spec, CSP.Spec)
-toCSP mmi pc is env = 
-   let pctd = consPCTD mmi pc [] 
+toCSP::MMI String String->PC String String->[PC String String]->Env->(CSP.Spec, CSP.Spec)
+toCSP mmi pc pcs env = 
+   let pctd1 = consPCTD mmi pc [] 
+       pctd2 = consPCTD mmi pc pcs
        cs = cspChannels env
-       dts = fmap cspDTD (gDTDs pctd)
-       is0 = fmap (namePCOfImport pc) is
-       is' = cspImports (fmap (++"P") ((getPCDefN pc) `intoSet` is0 )) in
-   (CSP.CSP ([is'] ++ dts ++ cs ), CSP.CSP $ cspDecl (gPTs pctd))
+       dts = fmap cspDTD (gDTDs pctd2)
+       is0 = foldr (\pc is->(getPCDefN pc) `intoSet` is) nil pcs
+       is = cspImports (fmap (++"P") ((getPCDefN pc) `intoSet` is0 )) in
+   (CSP.CSP ([is] ++ dts ++ cs ), CSP.CSP $ cspDecl (gPTs pctd1))

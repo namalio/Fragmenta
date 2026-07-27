@@ -1,39 +1,49 @@
 digraph {
+
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_SecuredHouse];
-ThisSecuredHouse [shape=box,fillcolor=deepskyblue,style = filled,label="ThisSecuredHouse "];
+
+StartN__ps[shape=rect,fillcolor=burlywood2,style="filled,dotted",label="mainDoor,roomWindow,intoRoom,intoHall,intoLivingRoom,intoKitchen,grabTV,grabJewels,grabLaptop"];
+StartN_->StartN__ps [dir=none,color="black:invis:black"];
+{rank=same;StartN_,StartN__ps}
+RefSecuredHouse [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+enterQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:ges>];
 SecuredHouse [shape=box,fillcolor=deepskyblue,style = filled,label="SecuredHouse (ges,res)"];
-Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack "];
-SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-alarmSounds [shape=ellipse,fillcolor=greenyellow,style = filled,label="alarmSounds"];
-RefRansack2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
-leave [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[leave]>];
-OpFinal [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-RefRansack [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label="↑ 
+Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack"];
+ransack [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+RefRansack [shape=rectangle,fillcolor="#CBD7EB",style="rounded,filled,dashed",label="
 (Inner)"];
-ransack [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> res<br/>[ransack]>];
-OpRansack [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-enter [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[enter]>];
-RefSecuredHouse [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+OpFinal [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+leaveQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:ges>];
+leave [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+RefRansack2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+alarmSounds [shape=ellipse,fillcolor=greenyellow,style=filled,label="alarmSounds"];
+SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+ransackQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:res>];
+OpRansack [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+enter [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+ThisSecuredHouse [shape=box,fillcolor=deepskyblue,style = filled,label="ThisSecuredHouse"];
 
 {rank=same;OpFinal,alarmSounds}
-{rank=same;alarmSounds,OpFinal,RefRansack}
+{rank=same;OpFinal,alarmSounds,RefRansack,enter}
 {rank=same;Ransack,ransack}
-{rank=same;RefRansack,alarmSounds,OpFinal,enter}
 {rank=same;ThisSecuredHouse,StartN_}
 
 alarmSounds->OpFinal[arrowtail=dot,dir=both,label="after"];
-OpFinal->RefRansack2[arrowhead="open"];
-RefRansack->alarmSounds[arrowtail=dot,dir=both,label="after"];
-ransack->Ransack[arrowtail=dot,dir=both,label="after"];
-OpRansack->SKIP[arrowhead="open"];
-RefSecuredHouse->SecuredHouse[arrowhead="normalnormal",fillcolor=white,label=" ({mainDoor,roomWindow},{intoRoom,intoHall,intoLivingRoom,intoKitchen,grabTV,grabJewels,grabLaptop})"];
-ThisSecuredHouse->RefSecuredHouse[arrowhead="onormal",penwidth=2,label="="];
-SecuredHouse->enter[arrowhead="onormal",penwidth=2,label="="];
-Ransack->OpRansack[arrowhead="onormal",penwidth=2,label="="];
-StartN_->ThisSecuredHouse[label="starts"];
-OpRansack->ransack[arrowhead="open"];
-RefRansack->Ransack[arrowhead="normalnormal",fillcolor=white,label=" "];
-enter->RefRansack[arrowtail=dot,dir=both,label="after"];
+leaveQ->leave[arrowhead="open"];
 RefRansack2->Ransack[arrowhead="normalnormal",fillcolor=white,label=" "];
-OpFinal->leave[arrowhead="open"];
+enter->RefRansack[arrowtail=dot,dir=both,label="after"];
+RefRansack->Ransack[arrowhead="normalnormal",fillcolor=white,label=" "];
+ransackQ->ransack[arrowhead="open"];
+enterQ->enter[arrowhead="open"];
+RefSecuredHouse->SecuredHouse[arrowhead="normalnormal",fillcolor=white,label=" ({mainDoor,roomWindow},{intoRoom,intoHall,intoLivingRoom,intoKitchen,grabTV,grabJewels,grabLaptop})"];
+OpRansack->ransackQ[arrowhead="open"];
+OpRansack->SKIP[arrowhead="open"];
+ransack->Ransack[arrowtail=dot,dir=both,label="after"];
+RefRansack->alarmSounds[arrowtail=dot,dir=both,label="after"];
+OpFinal->RefRansack2[arrowhead="open"];
+OpFinal->leaveQ[arrowhead="open"];
+SecuredHouse->enterQ[arrowhead="onormal",penwidth=2,label="="];
+Ransack->OpRansack[arrowhead="onormal",penwidth=2,label="="];
+ThisSecuredHouse->RefSecuredHouse[arrowhead="onormal",penwidth=2,label="="];
+StartN_->ThisSecuredHouse[label="starts"];
 }

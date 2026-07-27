@@ -96,13 +96,20 @@ instance TyCheck_PCT PCTypeD where
 -- Type expression
 instance TyCheck_PCT PCTypeE where
     tyCheck::PCTypeE->Env->Type->TyErr Subst
-    tyCheck (TyD td) env t   = tyCheck td env t
+    tyCheck (TyD td) env t   = do
+        s<-tyCheck td env t
+        beta <- newTId
+        s1<-mgu (TSet beta) (apply s t) env
+        return (s1 `scomp` s) 
     tyCheck (TIdE id) env t  = do 
         t'<-typeOf id env
         if t' == TData then
-            mgu t (TId id) env
-        else 
-            tyCheck id env t
+            mgu (TId id) t env
+        else do
+            beta <- newTId
+            s1<-mgu (TSet beta) t' env
+            s2<-mgu (apply s1 beta) t env
+            return (s2 `scomp` s1)
     tyCheck (SetE ids) env t  = do 
         beta <- newTId
         s0<-tyCheck ids env beta 
@@ -345,11 +352,6 @@ typeCheckPs (p:ps) (TFun t1 t2) env = do
     let env0 = newId (gParamId p) env (apply s t1)
     env'<- typeCheckPs ps t2 env0
     return $ applyEnv s env'
---typeCheckPs ps env t = 
---        foldM (\env (p, t)->do
---            s<-tyCheck p env t
---            env'<-newId (gParamId p) env (apply s t)
---            return $ applyEnv s env') env (zip ps ts) 
 
 instance TypeCheck_PCT [Param] where
     typeCheck ps env = 
@@ -460,14 +462,16 @@ tyCheckKHs pts env = foldM (\env' pt->tyCheckKH pt env') env pts
 
 tyCheckTOpEvs::Env->[Exp]->TyErr Env
 tyCheckTOpEvs env es = do 
-    beta<-newTId
     s <- foldM (\s e->do 
-                beta<-newTId
-                s1<-tyCheck e env beta 
-                let t = apply s1 beta
-                unless (isEvTy t) $ failure (NotOfEventType (show e) (show t))
+                --beta<-newTId
+                --when (gId e == "frI") $ failure (NotOfEventType (show e) (show env))
+                s1<-tyCheck e env TEvent
+                --let t = apply s1 beta
+               -- s2<-mgu t TEvent env
                 return (s1 `scomp` s)) nil es 
     return (applyEnv s env)
+    where gId (ExpId id) = id
+          gId (ExpDot e1 e2) = gId e1
     
 instance TypeCheck_PCT TOp where
     typeCheck::TOp->Env->TyErr Env
@@ -514,6 +518,7 @@ checkAtom e@(ExpDot e1 e2) og env = do
     unless (isExpId e1) $ (failure $ ExpNotOfIdType e1)
     let (ExpId id) = e1 
     let ot = find env id 
+    --when (id == "frI") $ (failure $ IncompatibleTypesInArithmeticExp e (show ot))
     if isSomething ot then do
         unless (isDotTy (the ot)) $ failure $ NotOfDotType (show id) (show . the $ ot)
         let (TDot t1 t2 ) = the ot
@@ -545,37 +550,31 @@ checkAtom e _ _ = failure $ InvalidAtomExpression e
 
 instance TypeCheck_PCT ROp where
     typeCheck (ROp _ id te) env = do
+        --when (te == TIdE "aes") $ failure (TyUnknown (show env))
         beta<-newTId
         s<-tyCheck te env beta
         let beta0 = apply s beta
-        --when (id == "x") $ failure (IncompatibleTypesInExp (show beta0) (show s) (show env))
-        (s1, t0)<-if (isTIdTy beta0) then do
-            beta'<-newTId
-            s1<-mgu (TSet beta') beta0 env
-            return $ (s1, apply s1 beta')
-        else
-            return (nil, beta0)
-        t<-if isSetTy beta0 then do
-               let (TSet t) = beta0
-               return t
-            else
-               return beta0
-        let env' = newId id env t
+        --(s', t)<-doRopTy beta0 env
+        let env' = newId id env (trimTy beta0)
         return $ applyEnv s env'
+        where
+            trimTy (TSet t) = t
+            trimTy t = t  
+        
 
-tyCheckParamBs::[Exp]->Env->Type->TyErr Subst
-tyCheckParamBs [] _ t = 
+tyCheckArgs::[Exp]->Env->Type->TyErr Subst
+tyCheckArgs [] _ t = 
     if t == TProc then
         return nil
     else 
         failure $ CouldNotMatchExpectedType (show TProc) (show t)
-tyCheckParamBs (b:bs) env (TFun t1 t2) = do
+tyCheckArgs (b:bs) env (TFun t1 t2) = do
+    --when (b == ExpSet [ExpId "mainDoor",ExpId "roomWindow"]) $ failure (CouldNotMatchExpectedType (show s1) (show $ apply s1 t1))
     s1<-tyCheck b env t1
-    --when (b == ExpDot (ExpId "grabTV")) $ CouldNotMatchExpectedType (show s1) (show t1)
-    s2<-tyCheckParamBs bs env (apply s1 t2)
+    s2<-tyCheckArgs bs env (apply s1 t2)
     --failure (TyUnknown (show $ s2 `scomp` s1))
     return $ s2 `scomp` s1
-tyCheckParamBs _ _ t = failure $ CouldNotMatchExpectedType "TFun" (show t)
+tyCheckArgs _ _ t = failure $ CouldNotMatchExpectedType "TFun" (show t)
 
 tyOfParamBsN::[Exp]->Env->TyErr Type
 tyOfParamBsN [] env = return TProc
@@ -604,27 +603,29 @@ instance TypeCheck_PCT PT  where
         -- checks that parameter ids are unique
         let ids = map gParamId ps
         checkIdsUnique id ids
+        --when (id == "HouseAlarm") $ failure $ TyUnknown (show env) 
         env'<-if id `inEnv` env then do
-            t<-typeForK ps env
-            s<-tyCheck id env t
-            let env0 = applyEnv s (env `override` (set1 $ (id, apply s t)))
-            env1<-typeCheckPs ps (apply s t) env0 >>= tyCheckKHs cts
+               t<-typeForK ps env
+               s<-tyCheck id env t
+               let env0 = applyEnv s (env `override` (set1 $ (id, apply s t)))
+               env1<-typeCheckPs ps (apply s t) env0 >>= tyCheckKHs cts
             --when (id == "SeizeControl") $ failure $ IncompatibleTypesInExp (show s) (show env0) (show $ apply s t)
             --env1<-tyCheckKHs cts env0
             --env0<-typeCheckPs ps (apply s t) (env `override` (set1 $ (id, apply s t))) 
             --env0<-tyCheckKHs cts (env `override` (set1 $ (id, apply s t))) 
-            env2<- typeCheck cts env1>>=typeCheck pt 
+               env2<- typeCheck cts env1
+               env3<- typeCheck pt env2 
+               --when (id == "HouseAlarm") $ failure $ IncompatibleTypesInExp  (show s) (show env3) (show $ apply s t)
             --let env' = (applyEnv s env2)
             --removeFrEnv (applyEnv s env2) (SM.keys env2 `sminus` (evIds env2) `sminus` SM.keys env)
-            return env2
-        else do
-            --env0<-typeCheck ps env
-            t<-typeForK ps env
-            let env1 = newId id env t
-            env2<-typeCheck ps env1>>=tyCheckKHs cts>>=typeCheck cts>>=typeCheck pt
-            --env3<-typeCheck cts env1>>=typeCheck pt 
-            return env2
-            -- removeFrEnv env' (SM.keys env' `sminus`  (evIds env') `sminus` SM.keys env `sminus` (set1 id)) 
+               return env3
+            else do
+               t<-typeForK ps env
+               let env1 = newId id env t
+               env2<-typeCheck ps env1>>=tyCheckKHs cts>>=typeCheck cts>>=typeCheck pt
+               --env3<-typeCheck cts env1>>=typeCheck pt 
+               return env2
+               -- removeFrEnv env' (SM.keys env' `sminus`  (evIds env') `sminus` SM.keys env `sminus` (set1 id)) 
         return $ (dsub env' ids) `union` (dres env ids)      
         --when (isAtom pt1 && (isExpDot . gExpOfAt $ pt1) && (gIdFrExp . gExp1OfDot . gExpOfAt $ pt1) == "steal") $ do
         --    let ot' = SM.lookup env' "steal"
@@ -637,7 +638,9 @@ instance TypeCheck_PCT PT  where
         --      gExp1OfDot (ExpDot e _) = e
 --    typeCheck (Kappa pd) env = typeCheck pd env
     typeCheck (OpKappa rop pt) env = do
-        env'<-typeCheck rop env >>= typeCheck pt
+        env''<-typeCheck rop env 
+        env'<-typeCheck pt env''
+        --when (gIdOfRop rop == "e") $ do failure $ TyUnknown (show env') 
         return $ dsub env' (set1 $ gIdOfRop rop) `union` (dres env (set1 $ gIdOfRop rop))
         --newId id env' TProc >>= typeCheck pt
     typeCheck (Rho id og bs rs) env = do
@@ -645,7 +648,8 @@ instance TypeCheck_PCT PT  where
         unless (img env (ran_of rs) `subseteq` singles TEvent) $ failure (NoMatchingEvents $ toList . ran_of $ rs)
         if id `inEnv` env then do
             t<-typeOf id env
-            s1<-tyCheckParamBs bs env t
+            --when (id == "HouseAlarm") $ failure (TyUnknown (show t))
+            s1<-tyCheckArgs bs env t
             s2<-tyCheck og env TBool
             --let env' = applyEnv (s2 `scomp` s1) env
             --let env'' = SM.putAll env' (ran_of rs `cross` singles TEvent)

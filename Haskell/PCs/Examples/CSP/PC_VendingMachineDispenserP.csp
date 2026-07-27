@@ -1,6 +1,6 @@
 Dispenser = 
    let 
-      Dispenser0 = ([] dms : DispenserMsgs @ frDisp.dms -> SKIP)
-            |~| (|~| dcs : DispenserCmds @ toDisp.dcs -> SKIP)
+      Dispenser0 = (|~| dms : DispMsgs @ frDisp.dms -> SKIP)
+            [] ([] dcs : DispCmds @ toDisp.dcs -> SKIP)
    within
       Dispenser0; Dispenser

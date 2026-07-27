@@ -8,6 +8,7 @@ module PCs.PCTreesAST
     , VTerm(..)
     , gDTDs
     , gPTs
+    , gGBls
     , gIdVT
     , gIdOfRop)
 where
@@ -95,6 +96,9 @@ data PCTD = PCTD Id [DTDef] [Param] [PT]
 
 gDTDs::PCTD->[DTDef]
 gDTDs (PCTD _ dtds _ _) = dtds 
+
+gGBls::PCTD->[Param]
+gGBls (PCTD _ _ ids _) = ids 
 
 gPTs::PCTD->[PT]
 gPTs (PCTD _ _ _ pts) = pts 

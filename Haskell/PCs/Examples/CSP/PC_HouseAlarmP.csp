@@ -1,7 +1,7 @@
 HouseAlarm(aes) = 
    let 
-      HouseAlarm0(active, triggered) = ([] e : aes @ active and not triggered & e -> alarmSounds -> HouseAlarm0(active, true))
-            [] not active & activateAlarm -> HouseAlarm0(true, false)
-            [] active & disableAlarm -> HouseAlarm0(false, false)
+      HouseAlarm0(active, triggered) = (|~| e : aes @ active and not triggered & e -> alarmSounds -> HouseAlarm0(active, true))
+            |~| not active & activateAlarm -> HouseAlarm0(true, false)
+            |~| active & disableAlarm -> HouseAlarm0(false, false)
    within
       HouseAlarm0(false, false)

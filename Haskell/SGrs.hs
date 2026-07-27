@@ -1273,7 +1273,7 @@ meMultOk sg me gwt =
    let r = rMultOk sg me gwt 
        s = ins gwt sg $ img (srcstMultOk sg me) [rsrcPE $ ape sg me]
        t = ins gwt sg $ img (tgtstMultOk sg me) [rtgtPE $ ape sg me] in
-   multOk r s t (appl (srcma sg) me) (appl (tgtm sg) me) -- Here
+   multOk r s t (appl (srcma sg) me) (appl (tgtm sg) me) 
 
 checkMEMultOk::(Eq a, Eq b, Show a, Show b)=>SGr a b->b->GrwT a b->ErrorTree
 checkMEMultOk sg me gwt = 
@@ -1285,7 +1285,7 @@ checkMEMultOk sg me gwt =
 -- Multiplicity compliance of all multiplicity edges (association plus derived edges)
 tyCompliesMult::(Eq a, Eq b)=>GrwT a b->SGr a b->Bool
 tyCompliesMult gwt sg = all (\me->meMultOk sg me gwt) $ esM sg
-   --let me = first . rest . rest . rest . rest . esM $ sg
+   --let me = first . rest . rest . rest . rest . esM $ sg 
    --    s = ins gwt sg $ img (srcst sg) [me] 
    --    t = ins gwt sg $ img (tgtst sg) [me] 
    --    w = dres (rPE gwt sg $ ape sg me) s in

@@ -1,45 +1,46 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_OrderGoods];
-OrderGoods [shape=box,fillcolor=deepskyblue,style = filled,label="OrderGoods "];
-orderAccepted [shape=ellipse,fillcolor=greenyellow,style = filled,label="orderAccepted"];
-OpDoOrder [shape=diamond,fillcolor=yellow,style = filled,label="|||"];
-fillOrder [shape=ellipse,fillcolor=greenyellow,style = filled,label="fillOrder"];
-OpDelivery [shape=diamond,fillcolor=yellow,style = filled,label="⊓"];
-express [shape=ellipse,fillcolor=greenyellow,style = filled,label="express"];
-receivePayment [shape=ellipse,fillcolor=greenyellow,style = filled,label="receivePayment"];
-CloseOrder [shape=box,fillcolor=deepskyblue,style = filled,label="CloseOrder "];
-closeOrder [shape=ellipse,fillcolor=greenyellow,style = filled,label="closeOrder"];
-regular [shape=ellipse,fillcolor=greenyellow,style = filled,label="regular"];
-Delivery [shape=box,fillcolor=deepskyblue,style = filled,label="Delivery "];
-sendInvoice [shape=ellipse,fillcolor=greenyellow,style = filled,label="sendInvoice"];
-DoOrder [shape=box,fillcolor=deepskyblue,style = filled,label="DoOrder "];
-orderRejected [shape=ellipse,fillcolor=greenyellow,style = filled,label="orderRejected"];
-OpAfterReceiveOrder [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-receiveOrder [shape=ellipse,fillcolor=greenyellow,style = filled,label="receiveOrder"];
 
-{rank=same;CloseOrder,DoOrder}
-{rank=same;Delivery,fillOrder}
-{rank=same;OpAfterReceiveOrder,receiveOrder}
-{rank=same;CloseOrder,DoOrder,orderAccepted}
-{rank=same;receivePayment,sendInvoice}
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_OrderGoods];
+
+receiveOrder [shape=ellipse,fillcolor=greenyellow,style=filled,label="receiveOrder"];
+OpAfterReceiveOrder [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+orderRejected [shape=ellipse,fillcolor=greenyellow,style=filled,label="orderRejected"];
+DoOrder [shape=box,fillcolor=deepskyblue,style = filled,label="DoOrder"];
+sendInvoice [shape=ellipse,fillcolor=greenyellow,style=filled,label="sendInvoice"];
+Delivery [shape=box,fillcolor=deepskyblue,style = filled,label="Delivery"];
+regular [shape=ellipse,fillcolor=greenyellow,style=filled,label="regular"];
+closeOrder [shape=ellipse,fillcolor=greenyellow,style=filled,label="closeOrder"];
+CloseOrder [shape=box,fillcolor=deepskyblue,style = filled,label="CloseOrder"];
+receivePayment [shape=ellipse,fillcolor=greenyellow,style=filled,label="receivePayment"];
+express [shape=ellipse,fillcolor=greenyellow,style=filled,label="express"];
+OpDelivery [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+fillOrder [shape=ellipse,fillcolor=greenyellow,style=filled,label="fillOrder"];
+OpDoOrder [shape=diamond,fillcolor=yellow,style=filled,label="|||"];
+orderAccepted [shape=ellipse,fillcolor=greenyellow,style=filled,label="orderAccepted"];
+OrderGoods [shape=box,fillcolor=deepskyblue,style = filled,label="OrderGoods"];
+
 {rank=same;CloseOrder,orderRejected}
+{rank=same;receivePayment,sendInvoice}
+{rank=same;CloseOrder,DoOrder,orderAccepted}
+{rank=same;OpAfterReceiveOrder,receiveOrder}
+{rank=same;Delivery,fillOrder}
 {rank=same;OrderGoods,StartN_}
 
-DoOrder->CloseOrder[arrowtail=dot,dir=both,label="after"];
-OpDelivery->regular[arrowhead="open"];
-fillOrder->Delivery[arrowtail=dot,dir=both,label="after"];
-OpDoOrder->fillOrder[arrowhead="open"];
-OpAfterReceiveOrder->orderRejected[arrowhead="open"];
-receiveOrder->OpAfterReceiveOrder[arrowtail=dot,dir=both,label="after"];
-OrderGoods->receiveOrder[arrowhead="onormal",penwidth=2,label="="];
-CloseOrder->closeOrder[arrowhead="onormal",penwidth=2,label="="];
-Delivery->OpDelivery[arrowhead="onormal",penwidth=2,label="="];
-DoOrder->OpDoOrder[arrowhead="onormal",penwidth=2,label="="];
-StartN_->OrderGoods[label="starts"];
-OpAfterReceiveOrder->orderAccepted[arrowhead="open"];
-orderAccepted->DoOrder[arrowtail=dot,dir=both,label="after"];
-OpDoOrder->sendInvoice[arrowhead="open"];
-OpDelivery->express[arrowhead="open"];
-sendInvoice->receivePayment[arrowtail=dot,dir=both,label="after"];
 orderRejected->CloseOrder[arrowtail=dot,dir=both,label="after"];
+sendInvoice->receivePayment[arrowtail=dot,dir=both,label="after"];
+OpDelivery->express[arrowhead="open"];
+OpDoOrder->sendInvoice[arrowhead="open"];
+orderAccepted->DoOrder[arrowtail=dot,dir=both,label="after"];
+OpAfterReceiveOrder->orderAccepted[arrowhead="open"];
+receiveOrder->OpAfterReceiveOrder[arrowtail=dot,dir=both,label="after"];
+OpAfterReceiveOrder->orderRejected[arrowhead="open"];
+OpDoOrder->fillOrder[arrowhead="open"];
+fillOrder->Delivery[arrowtail=dot,dir=both,label="after"];
+OpDelivery->regular[arrowhead="open"];
+DoOrder->CloseOrder[arrowtail=dot,dir=both,label="after"];
+DoOrder->OpDoOrder[arrowhead="onormal",penwidth=2,label="="];
+Delivery->OpDelivery[arrowhead="onormal",penwidth=2,label="="];
+CloseOrder->closeOrder[arrowhead="onormal",penwidth=2,label="="];
+OrderGoods->receiveOrder[arrowhead="onormal",penwidth=2,label="="];
+StartN_->OrderGoods[label="starts"];
 }

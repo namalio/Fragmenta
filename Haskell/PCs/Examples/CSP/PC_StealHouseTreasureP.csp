@@ -1,9 +1,9 @@
 StealHouseTreasure = 
    let 
-      BreakInWindow = breakinWindow -> (RobInHall; outWindow -> SKIP)
       BreakInDoor = disableCamera -> intoHall -> (RobInHall; outDoor -> SKIP)
+      BreakInWindow = breakinWindow -> (RobInHall; outWindow -> SKIP)
    within
-      BreakInWindow
-         [] BreakInDoor
+      BreakInDoor
+         [] BreakInWindow
 
 RobInHall = disableAlarm -> unlockEnterRoom -> grabTreasure -> SKIP

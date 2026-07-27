@@ -6,6 +6,6 @@ datatype Stealable = Laptop | Jewels | TV | Other
 
 channel steal : Stealable
 
-channel getOutAndRun
-
 channel break : MeansBreakIn
+
+channel getOutAndRun

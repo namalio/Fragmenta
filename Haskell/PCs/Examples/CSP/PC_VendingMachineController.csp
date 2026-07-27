@@ -1,24 +1,23 @@
+include "PC_VendingMachineCommonP.csp"
 include "PC_VendingMachineControllerP.csp"
 
 datatype CPMsgs = pay.OkFail
 
-datatype OCmds = wrongItem | start | payment.DoneDoingErr
+datatype OCmds = wrongItem | dispenseFail | start | payConfirm | payI.DoneDoingErr
 
 datatype DoneDoingErr = doing | done | error
 
-datatype IMsgs = itemSelected
+datatype OkFail = fail | ok
 
-datatype DispenserMsgs = itemCollected | itemCollectTimeout
+datatype DispMsgs = itemCollect | collectTimeout
 
-datatype OkFail = ok | fail
+datatype DispCmds = dispense.OkFail
 
-datatype DispenserCmds = dispense.OkFail
+datatype IMsgs = itemSelect | itemConfirm | cancel
 
-datatype CPCmds = chargeAmount | refund
+datatype CPCmds = charge | refund
 
-channel toDisp : DispenserCmds
-
-channel toPay : CPCmds
+channel frDisp : DispMsgs
 
 channel frI : IMsgs
 
@@ -26,4 +25,8 @@ channel toO : OCmds
 
 channel frPay : CPMsgs
 
-channel frDisp : DispenserMsgs
+channel a
+
+channel toPay : CPCmds
+
+channel toDisp : DispCmds

@@ -49,7 +49,7 @@ import PCs.Common
    )
 import PCs.TxtExpAST (leadingId)
 import PCs.ParsingTxtExp hiding (main)
-import Test.HUnit hiding (Node)
+--import Test.HUnit hiding (Node)
 
 -- A node has a name a type and possibly an associated operator
 -- A reference may be inner
@@ -1137,6 +1137,8 @@ test13b :: [(Node, String)]
 test13b = readP_to_S pcOperator "operator OpProtectedHouse.Parallel:'intoHall','mainDoor','roomWindow','intoRoom','intoKitchen','intoLivingRoom','grabTV','grabJewels','grabLaptop'"
 test13c :: [(Node, String)]
 test13c = readP_to_S pcOperator "operator OpStoppableTimer1.Throw:'arrete'"
+test13d :: [(Node, String)]
+test13d = readP_to_S pcOperator "operator OpCashMachine2.Throw:'cancel','deny'"
 
 test14a :: [(Elem, String)]
 test14a = readP_to_S pcElem "enum Stealable : 'Laptop','TV','Other'"

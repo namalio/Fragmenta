@@ -119,6 +119,7 @@ subgraph cluster_PCs_MM_rf{style=dashed;label=PCs_MM_rf;
 "BranchC"->"Action"[label="DBCTgt: tgt ▼",dir=none,taillabel="*",headlabel="",style=dotted];
 "BranchC"->"Quantification"[label="DBCSrc2: src ▼",dir=none,taillabel="",headlabel="?",style=dotted];
 "Definition"->"Custom"[label="DDTy: type ▼",dir=none,taillabel="",headlabel="",style=dotted];
+"BranchC"->"VOpParallel"[label="DOp: op ▼",dir=none,taillabel="2,0",headlabel="?",style=dotted];
 "Connector"->"Reference"[label="DRt: tgt ▼",dir=none,taillabel="1..*",headlabel="?",style=dotted];
 "Connector"->"Atom"[label="DAt: tgt ▼",dir=none,taillabel="",headlabel="?",style=dotted];
 "ReferenceC"->"RefTarget"[label="DRCTgt: tgt ▼",dir=none,taillabel="*",headlabel="?",style=dotted];

@@ -1,3 +1,3 @@
-include "PC_StealHouseTreasure_base.csp"
 include "PC_StealHouseTreasureP.csp"
 
+channel grabTreasure, unlockEnterRoom, disableAlarm, outWindow, breakinWindow, disableCamera, intoHall, outDoor

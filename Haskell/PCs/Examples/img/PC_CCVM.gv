@@ -2,10 +2,10 @@ digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CCVM];
 
-CCVM [shape=box,fillcolor=deepskyblue,style = filled,label="CCVM "];
+CCVM [shape=box,fillcolor=deepskyblue,style = filled,label="CCVM"];
 GetandGive [shape=box,fillcolor=deepskyblue,style = filled,label="GetandGive (x)"];
 OpGetandGive [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-Get [shape=box,fillcolor=deepskyblue,style = filled,label="Get "];
+Get [shape=box,fillcolor=deepskyblue,style = filled,label="Get"];
 return [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x>0}
 return"];
 espresso [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=100}
@@ -24,7 +24,7 @@ macchiato [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=100}
 macchiato"];
 OpGive [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 OpGet [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-Give [shape=box,fillcolor=deepskyblue,style = filled,label="Give "];
+Give [shape=box,fillcolor=deepskyblue,style = filled,label="Give"];
 giveMe [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≥100}
 giveMe"];
 RefGetandGive [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];

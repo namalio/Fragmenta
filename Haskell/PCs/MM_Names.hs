@@ -76,6 +76,8 @@ data PCs_CMM_Ns
     | CMM_PAtom2
     | CMM_PConnector5
     | CMM_PReference2
+    | CMM_POpParallel
+    | CMM_PBranchC
     | CMM_PName4
     | CMM_PCustom
     | CMM_PDefinition2
@@ -166,6 +168,7 @@ data PCs_CMM_Es
     | CMM_EDBCTgt
     | CMM_EDBCSrc2
     | CMM_EDDTy
+    | CMM_EDOp
     | CMM_EDRt
     | CMM_EDAt
     | CMM_EDRCTgt

@@ -1,26 +1,37 @@
 digraph {
-StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_ProtectedHouse_HouseAlarm];
-entry [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[entry]>];
-WatchOut [shape=box,fillcolor=deepskyblue,style = filled,label="WatchOut "];
-pass [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> pes<br/>[pass]>];
-alarmSounds [shape=ellipse,fillcolor=greenyellow,style = filled,label="alarmSounds"];
-exit [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> ges<br/>[exit]>];
-raise [shape=ellipse,fillcolor=greenyellow,style = filled,label=<<I>anyof</I> aes<br/>[raise]>];
-OpWatchOut [shape=diamond,fillcolor=yellow,style = filled,label="◻︎"];
-HouseAlarm [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAlarm (aes,ges,pes)"];
 
-{rank=same;alarmSounds,raise}
-{rank=same;WatchOut,entry}
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_ProtectedHouse_HouseAlarm];
+
+HouseAlarm [shape=box,fillcolor=deepskyblue,style = filled,label="HouseAlarm (aes,ges,pes)"];
+entry [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+WatchOut [shape=box,fillcolor=deepskyblue,style = filled,label="WatchOut"];
+pass [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+exit [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+raise [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
+alarmSounds [shape=ellipse,fillcolor=greenyellow,style=filled,label="alarmSounds"];
+raiseQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:aes>];
+exitQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:ges>];
+passQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:pes>];
+OpWatchOut [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+entryQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:ges>];
+
+{rank=same;WatchOut,entryQ}
+{rank=same;WatchOut,alarmSounds}
+{rank=same;WatchOut,alarmSounds,raiseQ}
 {rank=same;HouseAlarm,StartN_}
 
-pass->WatchOut[arrowtail=dot,dir=both,label="after"];
-raise->alarmSounds[arrowtail=dot,dir=both,label="after"];
-OpWatchOut->pass[arrowhead="open"];
-WatchOut->OpWatchOut[arrowhead="onormal",penwidth=2,label="="];
-HouseAlarm->entry[arrowhead="onormal",penwidth=2,label="="];
-StartN_->HouseAlarm[label="starts"];
-OpWatchOut->raise[arrowhead="open"];
-OpWatchOut->exit[arrowhead="open"];
+entryQ->WatchOut[arrowtail=dot,dir=both,label="after"];
 alarmSounds->WatchOut[arrowtail=dot,dir=both,label="after"];
-entry->WatchOut[arrowtail=dot,dir=both,label="after"];
+OpWatchOut->exitQ[arrowhead="open"];
+OpWatchOut->raiseQ[arrowhead="open"];
+exitQ->exit[arrowhead="open"];
+entryQ->entry[arrowhead="open"];
+passQ->pass[arrowhead="open"];
+raiseQ->raise[arrowhead="open"];
+OpWatchOut->passQ[arrowhead="open"];
+raiseQ->alarmSounds[arrowtail=dot,dir=both,label="after"];
+passQ->WatchOut[arrowtail=dot,dir=both,label="after"];
+HouseAlarm->entryQ[arrowhead="onormal",penwidth=2,label="="];
+WatchOut->OpWatchOut[arrowhead="onormal",penwidth=2,label="="];
+StartN_->HouseAlarm[label="starts"];
 }

@@ -10,7 +10,6 @@ module PCs.Main
    , checkWFAndGeneratePCTree
    , checkWF
    , outputDrawing
-   , outputCSP
    ) where
 
 import Gr_Cls
@@ -58,18 +57,6 @@ csp_path = "PCs/Examples/CSP/"
 img_path :: String
 img_path = "PCs/Examples/img/"
 
---getImportedAtoms::FilePath->SGr String String->PC String String->IO (Set String)
---getImportedAtoms pcs_path sg_mm pc = do
---   let is = fmap (fNameOfImport pc) $ importsOf sg_mm pc
---   as <- forM is (\n-> do 
---      opc<-loadPC sg_mm (pcs_path ++ n ++".pc") 
---      (if isSomething opc then do
---         as <- getImportedAtoms pcs_path sg_mm (the opc)
---         return (as `union` set (getAtoms sg_mm $ the opc))
---      else do
---        return nil))
---   return (gunion as)
-
 getImports::FilePath->SGr String String->PC String String->IO (Set (String, String))
 getImports pcs_path sg_mm pc = do
    let is0 = importsOf sg_mm pc
@@ -116,11 +103,8 @@ check_MM mmi = do
 checkWF::MMI String String->PC String String->IO Bool
 checkWF mmi pc = do
    let pc_nm = getPCDefN pc
-   putStrLn $ "Checking"
    let errs = faultsGM' pc_nm (Just TotalM) (pc, gCRSG mmi) 
-   putStrLn $ "Checked:" ++ (show $ is_nil errs)
    unless (is_nil errs) $ show_wf_msg ("PC " ++ pc_nm) errs
-   putStrLn $ "Returning"
    return (is_nil errs)
 
 
@@ -150,21 +134,23 @@ checkWF mmi pc = do
 --   writeFile (csp_path ++ (getPCDef pc) ++ ".csp") (wrCSP cspb)
 --   return (gks `union` (gunion gks' `union` gks''))
 
-wrCSPToFile :: FilePath -> String -> MMI String String -> PC String String -> Env->IO ()
-wrCSPToFile pcs_path csp_path mmi pc env = do
-   let sg_mm = gCRSG mmi
-   is <-getImports pcs_path sg_mm pc 
-   forM (fmap fst is) (\n-> do
-      opc<-loadPC sg_mm (pcs_path ++ (fNameOfImport pc n) ++".pc") 
-      (if isSomething opc then
-         wrCSPToFile pcs_path csp_path mmi (the opc) env
-      else 
-         return ()))
-   putStrLn "Writing the CSP file..." 
-   let (cspb, cspp) = toCSP mmi pc (fmap snd is) env 
+wrCSPToFile :: FilePath -> String -> MMI String String -> PC String String ->[PC String String]->Env->Set (String)->IO (Set (String))
+wrCSPToFile pcs_path csp_path mmi pc pcs env gpcs = do
+   gpcs'<-foldM (\gpcs_ pc'-> do
+      let pcnm' = getPCName pc'
+      --putStrLn $ pcnm' ++ ": " ++ (show gpcs_)
+      if (pcnm' `elem ` gpcs_) then 
+         return gpcs_
+      else do
+         pcs' <-loadImportedPCs pcs_path mmi pc'
+         gpcs'<-wrCSPToFile pcs_path csp_path mmi pc' pcs' env (pcnm' `intoSet` gpcs_)
+         return (pcnm' `intoSet` gpcs' `union` gpcs_)) gpcs pcs
+   let pcnm = getPCName pc
+   putStrLn $ "Writing the CSP file for '" ++ pcnm ++ "'..." 
+   let (cspb, cspp) = toCSP mmi pc pcs env 
    writeFile (csp_path ++ (getPCDefN pc) ++ "P.csp") (wrCSP cspp)
    writeFile (csp_path ++ (getPCDefN pc) ++ ".csp") (wrCSP cspb)
-   return ()
+   return (pcnm `intoSet` gpcs `union` gpcs')
 
 
 wrPCDrawingToFile ::String->MMI String String -> PC String String -> IO ()
@@ -201,9 +187,9 @@ showWithinRel _ _ _ mmi pc= do
 drawPCToFile _ img_path _ mmi pc = do
     wrPCDrawingToFile img_path mmi pc
 
-writeCSPToFile :: FilePath -> p -> FilePath -> MMI String String -> PC String String -> Env->IO ()
-writeCSPToFile pcs_path _ csp_path mmi pc env = 
-   wrCSPToFile pcs_path csp_path mmi pc env >> putStrLn ""
+writeCSPToFile :: FilePath -> p -> FilePath -> MMI String String -> PC String String ->[PC String String]-> Env->IO ()
+writeCSPToFile pcs_path _ csp_path mmi pc pcs env = 
+   wrCSPToFile pcs_path csp_path mmi pc pcs env nil >> putStrLn ""
 
 --writeCSPToFile :: FilePath -> FilePath -> MMI String String -> PC String String -> IO ()
 --writeCSPToFile pcs_path csp_path mmi pc = 
@@ -218,68 +204,47 @@ menuStr = "1 - show graph and morphism\n"
    ++ "6 - generate CSP\n"
    ++ "0 - quit\n"
 
---dispatch =  [ (1, showPCAsGwT) 
---            , (2, showAfterERel)  
---            , (3, showPCTree)
---            , (4, showWithinRel)
---            , (5, drawPCToFile)  
---            , (6, writeCSPToFile)  
---            ]  
-
---optionsPCs pcs_path img_path csp_path mmi pc = do
---    putStrLn menuStr
---    putStr "Which option? "  
---    optStr <- getLine 
---    let opt = (read optStr)
---    when (opt > 0 && opt <= 6) $ do
---       let (Just action) = lookup opt dispatch   
---       action pcs_path img_path csp_path mmi pc
---       optionsPCs pcs_path img_path csp_path mmi pc
+loadAndCheckz::String->String->MMI String String->Set String->IO (Either Bool (PC String String), Set String)
+loadAndCheckz pcs_path pcnm mmi cpcs = do
+  if pcnm `elem` cpcs then
+     return (Left False, cpcs)
+  else do 
+      opc<-loadPC (gCRSG mmi) (pcs_path ++ pcnm ++ ".pc")
+      if (isSomething opc) then do 
+          b <- checkWF mmi (the opc)
+          if not b then do
+            putStrLn ("PC '" ++ pcnm ++ "' is not well-formed.") 
+            return (Left True, cpcs) 
+          else do
+            putStrLn ("PC '" ++ pcnm ++ "' is well-formed.")
+            let is = getImportedPCNs mmi (the opc) 
+            (bf, cpcs') <- foldM (\(b', cpcs') pcnm'-> do 
+               (r, cpcs_) <- loadAndCheckz pcs_path pcnm' mmi (pcnm `intoSet` cpcs')
+               return (calcRes r b', pcnm `intoSet` cpcs' `union` cpcs_ )) (b, cpcs) is
+            return (if bf then Right (the opc) else Left False, pcnm `intoSet` (cpcs' `union` cpcs))
+      else
+         return (Left False, cpcs)
+   where calcRes (Left False) b = b
+         calcRes (Left True) b = False
+         calcRes (Right _) b = b
 
 loadAndCheck::String->String->MMI String String->IO (Maybe (PC String String))
-loadAndCheck pcs_path fnm mmi = do
-  opc <- loadPC (gCRSG mmi) (pcs_path ++ fnm)
-  (if (isSomething opc) then do 
-     b <- checkWF mmi (the opc)
-     print b
-     if b then
-         putStrLn ("PC '" ++ fnm ++ "' is well-formed.")
-     else
-         putStrLn ("PC '" ++ fnm ++ "' is not well-formed.") 
-     let is = fmap (fNameOfImport (the opc)) $ importsOf (gCRSG mmi) (the opc)
-     chs <- forM is (\fn-> do 
-        opc <- loadAndCheck pcs_path (fn ++".pc") mmi
-        return $ isSomething opc)
-     return (boolMaybe (all (== True) (b `intoSet` chs)) (the opc))
-   else do
-      return opc) >>= return
+loadAndCheck pcs_path pcnm mmi = do
+   (r, _)<-loadAndCheckz pcs_path pcnm mmi nil
+   return . calcRes $ r
+   where calcRes (Left _) = Nothing
+         calcRes (Right pc) = Just pc
 
---askLoadAndOpsPCs :: MMI String String -> IO ()
---askLoadAndOpsPCs mmi = do
---  putStrLn "Name of directory with PC definitions? [enter for current directory]"
---  d <- getLine 
---  putStrLn "Name of PC file?"
---  fn <- getLine 
---  opc <- loadAndCheck d fn mmi
---  when (isSomething opc) $ do optionsPCs d (d++"img/") (d++"CSP/") mmi (the opc)
-
---startPCOps :: IO ()
---startPCOps = do
---    mmi<-load_mm_info mm_path
---    b <- check_MM mmi
---    if b
---        then askLoadAndOpsPCs mmi
---        else putStrLn "Errors in the metamodel definition."
 
 outputDrawing :: String -> String -> p -> String -> MMI String String -> IO ()
 outputDrawing pcs_path img_path csp_path fn mmi = do
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do drawPCToFile pcs_path img_path csp_path mmi (the opc) 
 
-outputCSP :: FilePath -> FilePath -> FilePath -> String -> MMI String String -> Env-> IO ()
-outputCSP pcs_path img_path csp_path fn mmi env = do
-   opc <- loadAndCheck pcs_path fn mmi
-   when (isSomething opc) $ writeCSPToFile pcs_path img_path csp_path mmi (the opc) env
+--outputCSP :: FilePath -> FilePath -> FilePath -> String -> MMI String String -> Env-> IO ()
+--outputCSP pcs_path img_path csp_path fn mmi env = do
+--   opc <- loadAndCheck pcs_path fn mmi
+--   when (isSomething opc) $ writeCSPToFile pcs_path img_path csp_path mmi (the opc) env
 
 check :: String -> MMI String String -> String -> IO ()
 check pcs_path mmi fn = do
@@ -288,32 +253,40 @@ check pcs_path mmi fn = do
 
 --main = startPCOps
 
-loadImportedPCs0::Foldable t=>String-> MMI String String->t String->IO [PC String String]
-loadImportedPCs0 pcs_path mmi pcns = 
-   foldM (\pcs pcn->do
-           opc <-loadPC (gCRSG mmi) (pcs_path ++ pcn ++".pc") 
-           pcs'<-
+getImportedPCNs::MMI String String->PC String String->Set String
+getImportedPCNs mmi pc = 
+   foldr(\i is->(fNameOfImport pc i) `intoSet` is) nil (importsOf (gCRSG mmi) pc)
+
+loadImportedPCs0::Foldable t=>String-> MMI String String->t String->Set String->IO ([PC String String], Set String)
+loadImportedPCs0 pcs_path mmi pcns lis = 
+   foldM (\(pcs, lis') pcn->do
+           opc <-if pcn `elem` lis' then 
+                    return Nothing
+                 else 
+                    loadPC (gCRSG mmi) (pcs_path ++ pcn ++".pc") 
+           (pcs', lis_)<-
               (if isSomething opc then do 
-                 let is' = fmap (fNameOfImport (the opc)) (importsOf (gCRSG mmi) (the opc))
-                 loadImportedPCs0 pcs_path mmi is'
-              else do
-                  return nil)
-           return ((the opc):(pcs'++pcs))) [] pcns
+                 let is' = getImportedPCNs mmi (the opc) 
+                 loadImportedPCs0 pcs_path mmi is' (pcn `intoSet` lis')
+              else
+                  return ([], lis'))
+           return (pcs'++pcs++(maybeToLs opc), lis' `union` set1 pcn `union` lis_)
+           ) ([], lis) pcns
 
 loadImportedPCs::String -> MMI String String->PC String String->IO [PC String String]
 loadImportedPCs pcs_path mmi pc = do
-   let is = fmap (fNameOfImport pc) (importsOf (gCRSG mmi) pc)
-   loadImportedPCs0 pcs_path mmi is
+   let is = getImportedPCNs mmi pc 
+   (pcs, _)<-loadImportedPCs0 pcs_path mmi is nil
+   return pcs
    
 -- pcs' <- forM is' (\fn-> do 
 --              pcs' <- loadImportedPCs pcs_path mmi (fn ++".pc") mmi
 --              return pcs')
 --           return $ if isSomething opc then ((the opc):(pcs'++pcs)) else pcs) [] pcns
 
-typeCheckPC::MMI String String->PC String String->IO (Maybe Env)
-typeCheckPC mmi pc = do 
+typeCheckPC::MMI String String->PC String String->[PC String String]->IO (Maybe Env)
+typeCheckPC mmi pc pcs = do 
    --let is = fmap (fNameOfImport pc) (importsOf (gCRSG mmi) pc)
-   pcs <-loadImportedPCs pcs_path mmi pc
    let pctd = consPCTD mmi pc pcs
    putStrLn $ show_pctd pctd
    let (r, _) = runState (runExceptT $ typecheck_pctd pctd) 0
@@ -334,33 +307,14 @@ check_generate pcs_path img_path csp_path mmi fn = do
    putStrLn $ "Processing '" ++ fn ++ "'" 
    opc <- loadAndCheck pcs_path fn mmi
    when (isSomething opc) $ do
+      pcs <-loadImportedPCs pcs_path mmi (the opc)
       putStrLn $ "Typechecking '" ++ fn ++ "'"
-      oenv<-typeCheckPC mmi (the opc)
+      oenv<-typeCheckPC mmi (the opc) pcs
       if isNil (oenv) then do
          putStrLn $ "The PC is not type correct!"
       else do
          drawPCToFile pcs_path img_path csp_path mmi (the opc)
-         writeCSPToFile pcs_path img_path csp_path mmi (the opc) (the oenv)
-
-generate_Clock :: MMI String String -> IO ()
-generate_Clock mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_Clock.pc"
-
-generate_Clock_ref :: MMI String String -> IO ()
-generate_Clock_ref mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_Clock_ref.pc"
-
-generate_GreetChat :: MMI String String -> IO ()
-generate_GreetChat mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_GreetChat.pc"
-
-generate_VM :: MMI String String -> IO ()
-generate_VM mmi = do
-  check_generate pcs_path img_path csp_path mmi "PC_VM.pc"
-
-generate_VM2 :: MMI String String -> IO ()
-generate_VM2 mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_VM2.pc"
+         writeCSPToFile pcs_path img_path csp_path mmi (the opc) pcs (the oenv)
 
 generate_CCVM :: MMI String String -> IO ()
 generate_CCVM mmi = do
@@ -481,7 +435,7 @@ load_check_show_tree mmi fnm = do
 generate :: String -> IO ()
 generate fnm = do
   mmi<-load_mm_info mm_path
-  check_generate pcs_path img_path csp_path mmi (fnm ++ ".pc")
+  check_generate pcs_path img_path csp_path mmi fnm
 
 showPCT :: String -> IO ()
 showPCT fnm = do
@@ -496,7 +450,8 @@ showTypePCT fnm = do
    mmi<-load_mm_info mm_path
    opc <- loadPC (gCRSG mmi) (pcs_path ++ fnm ++ ".pc") 
    when (isSomething opc) $ do
-      typeCheckPC mmi (the opc) >>= print
+      pcs <-loadImportedPCs pcs_path mmi (the opc)
+      typeCheckPC mmi (the opc) pcs >>= print
       --when (isSomething oenv) $ putStrLn $ show (the oenv)
       return ()
       --is<-getImports pcs_path (gCRSG mmi) (the opc)
@@ -658,19 +613,3 @@ test = do
     --print $ img (tgt (the opc)) $ img (inv $ src (the opc)) ["BiscuitJar"] `intersec`  es_of_ety (the opc)  (show_cmm_e CMM_EHasParams)
     --is<-getImports pcs_path (gCRSG mmi) pc
     --putStrLn $ show is
-    --let pc = the opc
-    --let sg = gCRSG mmi
-    --print $ rMultOk sg (show_cmm_e CMM_ERenamings) pc
-    --print $ img (inv . fE $ pc) [show_cmm_e CMM_ERenamings]
-    --print $ img (srcst sg) [show_cmm_e CMM_ERenamings]
-    --pc <- loadPC (gCRSG mmi) (pcs_path ++ "PC_GreetChat.pc")
-    --putStrLn $ tyOfN "OpChat" pc
-    --putStrLn $ tyOfN "OpChoice_Val" pc
-    --print $ isNodeOfTys "OpChoice_Val" [CMM_Operator] (gCRSG mmi) pc
-    --putStrLn $ show $ appl (fV pc) $ appl (tgt pc) (first $ img (inv $ src pc) ["OpChat"] `intersec` es_of_ety pc (show_cmm_e CMM_ECombination_op))
-    --putStrLn $ show $ opValOfOp (gCRSG mmi) pc "OpChat"
-    --putStrLn $ show $ inner_Ref pc "RefGive"
-    --putStrLn $ show $ nmOfRefF mmi pc "RefGive"
-    --putStrLn $ "Inner ks: " ++ (show $ innerKs mmi pc "SecuredHouse")
-    --putStrLn $ "Common Inner ks: " ++ (show $ commonInnerKs mmi pc "GetandGive")
-    --putStrLn $ "Inner ps: " ++ (show $ innerRefKs mmi pc "SecuredHouse")

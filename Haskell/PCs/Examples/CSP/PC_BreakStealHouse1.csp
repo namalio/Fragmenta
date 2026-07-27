@@ -4,4 +4,4 @@ datatype MeansBreakIn = stolenKey | window | door
 
 channel stealTV
 
-channel break : MeansBreakIn
+channel break : a0

@@ -1,124 +1,74 @@
 digraph {
-subgraph cluster_CPMsgs {
-style="filled,rounded";
-label =CPMsgs;
-fillcolor = cadetblue1;
-pay[shape=box,fillcolor=darkolivegreen1,style="filled",label="pay.OkFail"];
-}
 
-subgraph cluster_OCmds {
-style="filled,rounded";
-label =OCmds;
-fillcolor = cadetblue1;
-wrongItem[shape=box,fillcolor=darkolivegreen1,style="filled",label="wrongItem"];
-start[shape=box,fillcolor=darkolivegreen1,style="filled",label="start"];
-payment[shape=box,fillcolor=darkolivegreen1,style="filled",label="payment.DoneDoingErr"];
-}
-
-subgraph cluster_DoneDoingErr {
-style="filled,rounded";
-label =DoneDoingErr;
-fillcolor = cadetblue1;
-doing[shape=box,fillcolor=darkolivegreen1,style="filled",label="doing"];
-done[shape=box,fillcolor=darkolivegreen1,style="filled",label="done"];
-error[shape=box,fillcolor=darkolivegreen1,style="filled",label="error"];
-}
-
-subgraph cluster_IMsgs {
-style="filled,rounded";
-label =IMsgs;
-fillcolor = cadetblue1;
-itemSelected[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemSelected"];
-}
-
-subgraph cluster_DispenserMsgs {
-style="filled,rounded";
-label =DispenserMsgs;
-fillcolor = cadetblue1;
-itemCollected[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemCollected"];
-itemCollectTimeout[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemCollectTimeout"];
-}
-
-subgraph cluster_OkFail {
-style="filled,rounded";
-label =OkFail;
-fillcolor = cadetblue1;
-ok[shape=box,fillcolor=darkolivegreen1,style="filled",label="ok"];
-fail[shape=box,fillcolor=darkolivegreen1,style="filled",label="fail"];
-}
-
-subgraph cluster_DispenserCmds {
-style="filled,rounded";
-label =DispenserCmds;
-fillcolor = cadetblue1;
-dispense[shape=box,fillcolor=darkolivegreen1,style="filled",label="dispense.OkFail"];
-}
-
-subgraph cluster_CPCmds {
-style="filled,rounded";
-label =CPCmds;
-fillcolor = cadetblue1;
-chargeAmount[shape=box,fillcolor=darkolivegreen1,style="filled",label="chargeAmount"];
-refund[shape=box,fillcolor=darkolivegreen1,style="filled",label="refund"];
-}
-
-
-pay->StartN_[style=invis]
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineController];
 
-Controller [shape=box,fillcolor=deepskyblue,style = filled,label="Controller"];
-IS [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemSelected"];
+VMCI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineCommon];
+SM [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.start"];
+R [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ r:OkFail>];
 OpIf1 [shape=diamond,fillcolor=yellow,style=filled,label="If"];
-ProcessPayment [shape=box,fillcolor=deepskyblue,style = filled,label="ProcessPayment"];
-PBP [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payment.doing"];
-PC [shape=ellipse,fillcolor=greenyellow,style=filled,label="frPay.pay.ok"];
-PF [shape=ellipse,fillcolor=greenyellow,style=filled,label="frPay.pay.fail"];
-R2 [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ r:OkFail>];
-OpIf2 [shape=diamond,fillcolor=yellow,style=filled,label="If"];
-Refu [shape=ellipse,fillcolor=greenyellow,style=filled,label="toPay.refund"];
+OpProcessPayment [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+ICo [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemConfirm"];
+CA [shape=ellipse,fillcolor=greenyellow,style=filled,label="toPay.charge"];
+OpCarryPay [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+POk [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payI.done"];
+IOPF [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payI.error"];
+dOkFail [shape=ellipse,fillcolor=greenyellow,style=filled,label="toDisp.dispense.r"];
+IC [shape=ellipse,fillcolor=greenyellow,style=filled,label="frDisp.itemCollect"];
+ICT [shape=ellipse,fillcolor=greenyellow,style=filled,label="frDisp.collectTimeout"];
 OpCollect [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 RefController [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-ICT [shape=ellipse,fillcolor=greenyellow,style=filled,label="frDisp.itemCollectTimeout"];
-IC [shape=ellipse,fillcolor=greenyellow,style=filled,label="frDisp.itemCollected"];
-dOkFail [shape=ellipse,fillcolor=greenyellow,style=filled,label="toDisp.dispense.r"];
-IOPF [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payment.error"];
-POk [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payment.done"];
-OpCarryPay [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-CA [shape=ellipse,fillcolor=greenyellow,style=filled,label="toPay.chargeAmount"];
+DFail [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.dispenseFail"];
+Refu [shape=ellipse,fillcolor=greenyellow,style=filled,label="toPay.refund"];
+OpIf2 [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+R2 [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ r:OkFail>];
+PF [shape=ellipse,fillcolor=greenyellow,style=filled,label="frPay.pay.fail"];
+PC [shape=ellipse,fillcolor=greenyellow,style=filled,label="frPay.pay.ok"];
+PBP [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payI.doing"];
+Can [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.cancel"];
+ProcessPayment [shape=box,fillcolor=deepskyblue,style = filled,label="ProcessPayment"];
 err [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.wrongItem"];
-R [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ r:OkFail>];
-SM [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.start"];
+PConf [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payConfirm"];
+IS [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemSelect"];
+Controller [shape=box,fillcolor=deepskyblue,style = filled,label="Controller"];
 
 {rank=same;RefController,Controller}
-{rank=same;OpIf2,dOkFail}
-{rank=same;IOPF,PF}
-{rank=same;R2,POk,PC}
-{rank=same;OpCarryPay,PBP,CA}
-{rank=same;R,IS}
+{rank=same;DFail,Refu}
+{rank=same;R2,POk}
+{rank=same;OpCarryPay,PBP}
+{rank=same;OpCarryPay,PBP,CA,ICo}
 {rank=same;R,IS,SM}
+{rank=same;ProcessPayment,PConf}
+{rank=same;R2,POk,PC}
+{rank=same;IOPF,PF}
+{rank=same;OpIf2,dOkFail}
 {rank=same;Controller,StartN_}
 
 Controller->RefController[arrowtail=dot,dir=both,label="after"];
 OpCollect->ICT[arrowhead="open"];
-OpIf2->Refu[arrowhead="open",label="Else"];
-dOkFail->OpIf2[arrowtail=dot,dir=both,label="after"];
-PF->IOPF[arrowtail=dot,dir=both,label="after"];
-PC->POk[arrowtail=dot,dir=both,label="after"];
-OpCarryPay->PC[arrowhead="open"];
-CA->PBP[arrowtail=dot,dir=both,label="after"];
-OpIf1->ProcessPayment[arrowhead="open",label="r = ok"];
-IS->R[arrowtail=dot,dir=both,label="after"];
-SM->IS[arrowtail=dot,dir=both,label="after"];
-R->OpIf1[arrowhead="open"];
-OpIf1->err[arrowhead="open",label="Else"];
-PBP->OpCarryPay[arrowtail=dot,dir=both,label="after"];
-OpCarryPay->PF[arrowhead="open"];
-POk->R2[arrowtail=dot,dir=both,label="after"];
-R2->dOkFail[arrowhead="open"];
+Refu->DFail[arrowtail=dot,dir=both,label="after"];
 OpIf2->OpCollect[arrowhead="open",label="r = ok"];
+R2->dOkFail[arrowhead="open"];
+POk->R2[arrowtail=dot,dir=both,label="after"];
+OpCarryPay->PF[arrowhead="open"];
+PBP->OpCarryPay[arrowtail=dot,dir=both,label="after"];
+ICo->CA[arrowtail=dot,dir=both,label="after"];
+OpProcessPayment->ICo[arrowhead="open"];
+OpIf1->err[arrowhead="open",label="Else"];
+R->OpIf1[arrowhead="open"];
+SM->IS[arrowtail=dot,dir=both,label="after"];
+IS->R[arrowtail=dot,dir=both,label="after"];
+OpIf1->PConf[arrowhead="open",label="r = ok"];
+PConf->ProcessPayment[arrowtail=dot,dir=both,label="after"];
+OpProcessPayment->Can[arrowhead="open"];
+CA->PBP[arrowtail=dot,dir=both,label="after"];
+OpCarryPay->PC[arrowhead="open"];
+PC->POk[arrowtail=dot,dir=both,label="after"];
+PF->IOPF[arrowtail=dot,dir=both,label="after"];
+dOkFail->OpIf2[arrowtail=dot,dir=both,label="after"];
+OpIf2->Refu[arrowhead="open",label="Else"];
 OpCollect->IC[arrowhead="open"];
 RefController->Controller[arrowhead="normalnormal",fillcolor=white,label=" "];
+ProcessPayment->OpProcessPayment[arrowhead="onormal",penwidth=2,label="="];
 Controller->SM[arrowhead="onormal",penwidth=2,label="="];
-ProcessPayment->CA[arrowhead="onormal",penwidth=2,label="="];
 StartN_->Controller[label="starts"];
 }

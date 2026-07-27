@@ -1,16 +1,17 @@
 Controller = 
    let 
-      Controller0 = toO.start -> frI.itemSelected -> ([] r : OkFail @ if r == ok
+      Controller0 = toO.start -> frI.itemSelect -> (|~| r : OkFail @ if r == ok
          then
-            ProcessPayment
+            toO.payConfirm -> ProcessPayment
          else
             toO.wrongItem -> SKIP)
-      ProcessPayment = toPay.chargeAmount -> toO.payment.doing -> (frPay.pay.fail -> toO.payment.error -> SKIP
-            |~| frPay.pay.ok -> toO.payment.done -> (|~| r : OkFail @ toDisp.dispense.r -> if r == ok
+      ProcessPayment = frI.cancel -> SKIP
+            [] frI.itemConfirm -> toPay.charge -> toO.payI.doing -> (frPay.pay.ok -> toO.payI.done -> ([] r : OkFail @ toDisp.dispense.r -> if r == ok
          then
-            frDisp.itemCollected -> SKIP
-            |~| frDisp.itemCollectTimeout -> SKIP
+            frDisp.itemCollect -> SKIP
+            [] frDisp.collectTimeout -> SKIP
          else
-            toPay.refund -> SKIP))
+            toPay.refund -> toO.dispenseFail -> SKIP)
+            [] frPay.pay.fail -> toO.payI.error -> SKIP)
    within
       Controller0; Controller

@@ -1,41 +1,15 @@
 digraph {
-subgraph cluster_IOCmds {
-style="filled,rounded";
-label =IOCmds;
-fillcolor = cadetblue1;
-getSelecteditem[shape=box,fillcolor=darkolivegreen1,style="filled",label="getSelecteditem"];
-payment[shape=box,fillcolor=darkolivegreen1,style="filled",label="payment.OkFail"];
-startMsg[shape=box,fillcolor=darkolivegreen1,style="filled",label="startMsg"];
-wrongItemMsg[shape=box,fillcolor=darkolivegreen1,style="filled",label="wrongItemMsg"];
-paymentBeingProcessedMsg[shape=box,fillcolor=darkolivegreen1,style="filled",label="paymentBeingProcessedMsg"];
-}
 
-subgraph cluster_IOMsgs {
-style="filled,rounded";
-label =IOMsgs;
-fillcolor = cadetblue1;
-itemSelected[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemSelected"];
-}
-
-subgraph cluster_OkFail {
-style="filled,rounded";
-label =OkFail;
-fillcolor = cadetblue1;
-ok[shape=box,fillcolor=darkolivegreen1,style="filled",label="ok"];
-fail[shape=box,fillcolor=darkolivegreen1,style="filled",label="fail"];
-}
-
-
-getSelecteditem->StartN_[style=invis]
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineIOProcessor];
 
-IOProcessor [shape=box,fillcolor=deepskyblue,style = filled,label="IOProcessor"];
-I [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ ioms:IOMsgs>];
-ai [shape=ellipse,fillcolor=greenyellow,style=filled,label="frIO.ioms"];
-RefIOProcessor [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-ao [shape=ellipse,fillcolor=greenyellow,style=filled,label="toIO.iocs"];
-O [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ iocs:IOCmds>];
+VMCI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineCommon];
 OpIOProcessor [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+O [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ iocs:OCmds>];
+ao [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.iocs"];
+RefIOProcessor [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+ai [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.ioms"];
+I [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ ioms:IMsgs>];
+IOProcessor [shape=box,fillcolor=deepskyblue,style = filled,label="IOProcessor"];
 
 {rank=same;RefIOProcessor,IOProcessor}
 {rank=same;IOProcessor,StartN_}

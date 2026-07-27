@@ -2,9 +2,9 @@ digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseUnderAttack];
 
-StartN__bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="grabTV,grabLaptop,grabJewels,mainDoor,roomWindow"];
-StartN_->StartN__bs [dir=none,color="black:invis:black"];
-{rank=same;StartN_,StartN__bs}
+StartN__ps[shape=rect,fillcolor=burlywood2,style="filled,dotted",label="grabTV,grabLaptop,grabJewels,mainDoor,roomWindow"];
+StartN_->StartN__ps [dir=none,color="black:invis:black"];
+{rank=same;StartN_,StartN__ps}
 OpHouseUnderAttack [shape=diamond,fillcolor=yellow,style=filled,label="||"];
 OpHouseUnderAttack_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="grabTV,grabLaptop,grabJewels,mainDoor,roomWindow"];
 OpHouseUnderAttack->OpHouseUnderAttack_bs [dir=none,color="black:invis:black"];
@@ -13,7 +13,7 @@ RansackI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_Hou
 SeizeI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_HouseUnderAttack_Seize];
 RefSeize [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Seize "];
 RefRansack [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Ransack "];
-HouseUnderAttack [shape=box,fillcolor=deepskyblue,style = filled,label="HouseUnderAttack "];
+HouseUnderAttack [shape=box,fillcolor=deepskyblue,style = filled,label="HouseUnderAttack"];
 
 {rank=same;HouseUnderAttack,StartN_}
 

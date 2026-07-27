@@ -77,8 +77,8 @@ wrToken TokenT = "true"
 wrToken TokenF = "false"
 
 wrChL::ChL->String
-wrChL Int = "[]"
-wrChL Ext = "|~|"
+wrChL Int = "|~|"
+wrChL Ext = "[]"
 
 wrExp :: Int -> Exp -> String
 wrExp _ (ExpId id) = id 

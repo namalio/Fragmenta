@@ -2,32 +2,32 @@ digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_HouseUnderAttack_Ransack];
 
-StartN__bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="grabLaptop,grabJewels"];
-StartN_->StartN__bs [dir=none,color="black:invis:black"];
-{rank=same;StartN_,StartN__bs}
+StartN__ps[shape=rect,fillcolor=burlywood2,style="filled,dotted",label="grabLaptop,grabJewels"];
+StartN_->StartN__ps [dir=none,color="black:invis:black"];
+{rank=same;StartN_,StartN__ps}
 OpInHouse [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 mainDoor [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
 intoHall [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoHall"];
-IntoRoom [shape=box,fillcolor=deepskyblue,style = filled,label="IntoRoom "];
+IntoRoom [shape=box,fillcolor=deepskyblue,style = filled,label="IntoRoom"];
 intoLivingRoom [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoLivingRoom"];
 RefIntoRoom [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IntoRoom "];
 OpInLivingRoom [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 RefIntoHall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IntoHall "];
 intoRoom [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoRoom"];
-InRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InRoom "];
+InRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InRoom"];
 seizeQ [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ e:{grabLaptop,grabJewels}>];
 roomWindow2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="roomWindow"];
 RefIntoHall2 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IntoHall "];
 seize [shape=ellipse,fillcolor=greenyellow,style=filled,label="e"];
 OpInRoom [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 grabTV [shape=ellipse,fillcolor=greenyellow,style=filled,label="grabTV"];
-InLivingRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InLivingRoom "];
+InLivingRoom [shape=box,fillcolor=deepskyblue,style = filled,label="InLivingRoom"];
 mainDoor2 [shape=ellipse,fillcolor=greenyellow,style=filled,label="mainDoor"];
 intoKitchen [shape=ellipse,fillcolor=greenyellow,style=filled,label="intoKitchen"];
 OpInHall [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-IntoHall [shape=box,fillcolor=deepskyblue,style = filled,label="IntoHall "];
+IntoHall [shape=box,fillcolor=deepskyblue,style = filled,label="IntoHall"];
 roomWindow [shape=ellipse,fillcolor=greenyellow,style=filled,label="roomWindow"];
-Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack "];
+Ransack [shape=box,fillcolor=deepskyblue,style = filled,label="Ransack"];
 
 {rank=same;InRoom,intoRoom}
 {rank=same;OpInHall,intoHall}

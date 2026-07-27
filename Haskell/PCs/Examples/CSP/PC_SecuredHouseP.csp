@@ -1,9 +1,8 @@
-ThisSecuredHouse = SecuredHouse({mainDoor, roomWindow}, {intoRoom, intoHall, intoLivingRoom, intoKitchen, grabTV, grabJewels, grabLaptop})
+ThisSecuredHouse = SecuredHouse({mainDoor,roomWindow}, {intoRoom,intoHall,intoLivingRoom,intoKitchen,grabTV,grabJewels,grabLaptop})
 
 SecuredHouse(ges, res) = 
    let 
       Ransack = SKIP
-             |~| (([] e : res @ e -> SKIP); Ransack)
+            |~| ([] e : res @ e -> Ransack)
    within
-      ([] e : ges @ e -> SKIP); Ransack; alarmSounds -> (Ransack
-         [] ([] e : ges @ e -> SKIP))
+      [] e : ges @ e -> Ransack

@@ -40,6 +40,9 @@ import PCs.PCTreesAST
   , ROp(..)
   , VTerm(..)
   , gPTs
+  , gDTDs
+  , gGBls
+  , gIdVT
   )
 import MMI
 import SimpleFuns 
@@ -73,9 +76,9 @@ show_top :: TOp -> String
 show_top OpExtChoice = "◻︎"
 show_top OpIntChoice = "⊓"
 show_top OpSeq = "⇥"
-show_top (OpParallel ps) = "∥" ++ (show ps)
+show_top (OpParallel ps) = "∥" ++ (showExps ps)
 show_top (OpInterleave) = "⦀"
-show_top (OpThrow ps) = "𝛩" ++ (show ps)
+show_top (OpThrow ps) = "𝛩" ++ (showExps ps)
 show_top (OpIf g) = "𝜄" ++ (showExp g)
 
 --show_pt :: PT -> String
@@ -93,8 +96,8 @@ show_params ps =
 --show_binding :: Foldable t => (t String) -> String
 --show_binding bs = if null bs then "" else "(" ++ (showStrs bs ",") ++ ")"
 
-showPCExps::(Foldable t, Functor t) => t Exp -> String
-showPCExps es = if null es then "" else "(" ++ showStrs (fmap showExp es) "," ++ ")"
+showExps::(Foldable t, Functor t) => t Exp -> String
+showExps es = if null es then "" else "(" ++ showStrs (fmap showExp es) "," ++ ")"
 
 --show_bindings :: Foldable t => (t PCExp) -> String
 --show_bindings bss = if null bss then "" else "(" ++ showStrs bss "," ++ ")"
@@ -123,7 +126,7 @@ show_pt (Atom e og) = "𝛼 " ++ showExp e ++ (show_guard og)
 show_pt (Kappa id ps cpts pt) =  "𝜅 " ++ id ++ (show_params ps) ++ "{" ++ (show_pts cpts) ++ "} @ " ++ (show_pt pt)
 show_pt (OpKappa bop pt) = "𝛾𝜅 " ++ (show_rop bop) ++ " @ " ++ (show_pt pt)
 show_pt (OpB op pt1 pt2) = "(𝛾 " ++ show_top op ++ ")" ++ (show_pt pt1) ++ " [" ++ (show_pt pt2) ++ "]"
-show_pt (Rho id og es rs) = "𝜌 " ++ id ++ (showPCExps es) ++ (show_renamings rs) ++ (show_guard og)
+show_pt (Rho id og es rs) = "𝜌 " ++ id ++ (showExps es) ++ (show_renamings rs) ++ (show_guard og)
 show_pt NilT = "𝜑"
 show_pt StopT = "𝛉"
 show_pt SkipT = "𝜉"
@@ -210,6 +213,7 @@ combinedPr mmi pc n gps =
   let (t, pts, urs, gps2) = consPT mmi pc (quantifiedOpStart mmi pc n) (gunion [singles n, gps]) 
       (v, te) = varBQuantifiedOp pc n in  
   (OpKappa (bOpOf (opCombinable (gCRSG mmi)  pc n) v (read te)) t, pts, urs, gunion [singles n, gps, gps2])
+  `withOp`  (OpSeq, (optPT mmi pc (nextAfterN mmi pc n) (n `intoSet` gps)))
 
 gParams::PC String String->Id->[Param]
 gParams pc n = fmap (\(id, ot)->Param id (read_opctyd ot)) $ paramsOf pc n
@@ -227,8 +231,8 @@ atque (pt, urs, gks) (pt', pts, urs', gks') =
   if pt' == NilT then (pt, urs, gks) else (pt, urs, gks) `andAfter` (pt', pts, urs', gks')
 
 prPT::MMI String String->PC String String->Id->Set Id->(PT, Set Id, Set Id)
-prPT mmi pc n gks =
-  (process mmi pc n gks) `atque` (optPT mmi pc (nextAfterN mmi pc n) (n `intoSet` gks))
+prPT mmi pc n gps =
+  (process mmi pc n gps) `atque` (optPT mmi pc (nextAfterN mmi pc n) (n `intoSet` gps))
 
 --cWUnionAt4::Eq d=>(Set d)->(a, b, c, Set d)->(a, b, c, Set d)
 --cWUnionAt4 w (x, y, z, w')  = (x, y, z, w `union` w')
@@ -321,11 +325,12 @@ toPCTD mmi pc =
 -- Constructs a PCTD from a PCs model
 consPCTD::MMI String String->PC String String->[PC String String]->PCTD
 consPCTD mmi pc ipcs = 
-   let pts' = toPTs ipcs 
+   let pctds = fmap (toPCTD mmi) ipcs
        PCTD id ds ids pts = toPCTD mmi pc in
-   PCTD id ds ids (pts'++pts)
-   where toPTs [] = []
-         toPTs (pc:pcs) = (toPTs pcs) ++ (gPTs $ toPCTD mmi pc)
+   PCTD id ((concatMap gDTDs pctds) ++ ds) ((concatMap gGBls pctds) ++ ids) ((concatMap gPTs pctds) ++ pts)
+   --where toPCTDs [] = []
+   --      toPCTDs (pc:pcs) = (toPCTD mmi pc) ++ (toPCTDs pcs)
+   --      to
 
 -- Need to make more general here in the future
 revname :: Exp -> Id -> Id -> Exp

@@ -1,7 +1,5 @@
 PC PC_VendingMachineCardPayments {} @ CardPayments
-enum OkFail : 'ok','fail' 
-enum CPMsgs : 'payment.OkFail'
-enum CPCmds : 'chargeAmount', 'refund'
+import VMCommon as VMCI for PC_VendingMachineCommon
 process CardPayments@OpCardPayments
 operator OpCardPayments.Choice
 quantifiedOp CPI.IntChoice cpms : 'CPMsgs'

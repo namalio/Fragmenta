@@ -2,7 +2,7 @@ BreakAndStealHouse =
    let 
       GetInside = 
          let 
-            GetInside0 = [] x : MeansBreakIn @ break.x -> SKIP
+            GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
          within
             GetInside0; stealTV -> SKIP
    within

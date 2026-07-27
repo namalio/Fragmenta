@@ -2,7 +2,7 @@ BreakAndStealHouse =
    let 
       GetInside = 
          let 
-            GetInside0 = [] x : MeansBreakIn @ break.x -> SKIP
+            GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
          within
             GetInside0; (Ransack({}); getOutAndRun -> SKIP)
    within
@@ -10,8 +10,8 @@ BreakAndStealHouse =
 
 Ransack(s) = 
    let 
-      Steal(s) = [] x : Stealable @ x == Other or not member (x, s) & steal.x -> Ransack(union (s, {x}))
+      Steal(s) = |~| x : Stealable @ x == Other or not member (x, s) & steal.x -> Ransack(union (s, {x}))
    within
       SKIP
-         [] (Steal(s)
-         [] breakAndStealSafe -> Ransack(s))
+         |~| (Steal(s)
+         |~| breakAndStealSafe -> Ransack(s))
