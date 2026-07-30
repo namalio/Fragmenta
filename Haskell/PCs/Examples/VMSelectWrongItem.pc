@@ -1,0 +1,11 @@
+PC PC_VendingMachineSelectWrongItem {} @ SelectWrongItem
+process SelectWrongItem@St
+atom St:'toO.start'
+atom SI:'frI.itemSelected'
+atom WI:'toO.wrongItem'
+after St->SI
+after SI->WI
+reference RefPCVendingMachineOverall:VMOverall
+import VMOverall as VMOI for PC_VendingMachineOverall
+ref_connector RefPCVendingMachineOverall->VMOI
+after WI->RefPCVendingMachineOverall

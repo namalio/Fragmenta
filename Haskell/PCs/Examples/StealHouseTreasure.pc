@@ -1,0 +1,27 @@
+PC PC_StealHouseTreasure {} @StealHouseTreasure
+operator OpStealHouseTreasure.Choice
+process StealHouseTreasure@OpStealHouseTreasure
+atom :'breakinWindow'
+atom :'disableCamera'
+process BreakInWindow@breakinWindow
+process BreakInDoor@disableCamera
+op_connector OpStealHouseTreasure->BreakInWindow
+op_connector OpStealHouseTreasure->BreakInDoor
+atom :'outWindow'
+atom :'unlockEnterRoom'
+atom :'disableAlarm'
+process RobInHall@disableAlarm
+reference RefRobInHall
+ref_connector RefRobInHall->RobInHall
+after breakinWindow->RefRobInHall
+after RefRobInHall->outWindow
+after disableAlarm->unlockEnterRoom
+atom :'grabTreasure'
+after unlockEnterRoom->grabTreasure
+atom :'intoHall'
+after disableCamera->intoHall
+reference RefRobInHall2
+ref_connector RefRobInHall2->RobInHall
+after intoHall->RefRobInHall2
+atom :'outDoor'
+after RefRobInHall2->outDoor

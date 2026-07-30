@@ -1,0 +1,11 @@
+PC PC_VendingMachineCancelSelectedItem {} @ CancelSelectedItem
+process CancelSelectedItem@St
+atom St:'toO.start'
+atom SI:'frI.itemSelected'
+atom Ca:'frI.cancel'
+after St->SI
+after SI->Ca
+reference RefPCVendingMachineOverall:VMOverall
+import VMOverall as VMOI for PC_VendingMachineOverall
+ref_connector RefPCVendingMachineOverall->VMOI
+after Ca->RefPCVendingMachineOverall

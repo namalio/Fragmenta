@@ -1,0 +1,3 @@
+include "PC_VendingMachineCancelSelectedItem.csp"
+
+assert VMOverall [T= CancelSelectedItem

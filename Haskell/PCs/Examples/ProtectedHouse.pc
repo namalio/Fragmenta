@@ -1,0 +1,11 @@
+PC PC_ProtectedHouse {intoHall,mainDoor,roomWindow,intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop} @ProtectedHouse
+operator OpProtectedHouse.Parallel:'intoHall','mainDoor','roomWindow','intoRoom','intoKitchen','intoLivingRoom','grabTV','grabJewels','grabLaptop'
+process ProtectedHouse@OpProtectedHouse
+reference RefHouseUnderAttack:HouseUnderAttack
+import HouseUnderAttack as HUAI for PC_HouseUnderAttack
+ref_connector RefHouseUnderAttack->HUAI
+import ProtectedHouse_HouseAlarm as PHHAI for PC_ProtectedHouse_HouseAlarm
+reference RefHouseAlarm:HouseAlarm.'{intoHall}','{mainDoor,roomWindow}','{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}'
+ref_connector RefHouseAlarm->PHHAI
+op_connector OpProtectedHouse->RefHouseUnderAttack
+op_connector OpProtectedHouse->RefHouseAlarm

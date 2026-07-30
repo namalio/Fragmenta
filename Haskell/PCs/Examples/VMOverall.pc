@@ -1,0 +1,23 @@
+PC PC_VendingMachineOverall {} @VMOverall
+operator OpIO.Parallel:'frI.itemSelect', 'toO.start', 'toO.wrongItem', 'toO.payI.done', 'toO.payI.doing', 'toO.payI.error','toO.dispenseFail'
+process VMOverall@OpIO
+op_connector OpIO->OpPay
+op_connector OpIO->RefIO
+import VMIOProcessor as IOI for PC_VendingMachineIOProcessor
+reference RefIO:IOProcessor
+ref_connector RefIO->IOI
+operator OpPay.Parallel:'frPay.pay.ok', 'frPay.pay.fail', 'toPay.charge', 'toPay.refund'
+op_connector OpPay->OpControllerDispenser
+op_connector OpPay->RefCP
+operator OpControllerDispenser.Parallel:'frDisp.itemCollect', 'frDisp.collectTimeout', 'toDisp.dispense.ok','toDisp.dispense.fail'
+op_connector OpControllerDispenser->RefController
+op_connector OpControllerDispenser->RefVMDisp
+import VMDispenser as DispI for PC_VendingMachineDispenser
+reference RefVMDisp:Dispenser
+ref_connector RefVMDisp->DispI
+import VMController as CoI for PC_VendingMachineController
+reference RefController:Controller
+ref_connector RefController->CoI
+import VMCardPayments as CPI for PC_VendingMachineCardPayments
+reference RefCP:CardPayments
+ref_connector RefCP->CPI

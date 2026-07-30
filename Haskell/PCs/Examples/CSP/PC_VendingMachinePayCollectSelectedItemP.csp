@@ -1,0 +1,1 @@
+PayCollectSelectedItem = toO.start -> frI.itemSelected -> frI.itemConfirmed -> toPay.charge -> toO.payment.doing -> frPay.pay.ok -> toO.payment.done -> toDisp.dispense.ok -> frDisp.collectTimeout -> VMOverall

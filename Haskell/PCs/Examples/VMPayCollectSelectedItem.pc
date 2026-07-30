@@ -1,0 +1,23 @@
+PC PC_VendingMachinePayCollectSelectedItem {} @ PayCollectSelectedItem
+process PayCollectSelectedItem@St
+atom St:'toO.start'
+atom SI:'frI.itemSelected'
+atom IC:'frI.itemConfirmed'
+after St->SI
+after SI->IC
+atom Ca:'toPay.charge'
+atom Pdoing:'toO.payment.doing'
+after IC->Ca
+after Ca->Pdoing
+atom Pok:'frPay.pay.ok'
+atom Pdone:'toO.payment.done'
+after Pdoing->Pok
+after Pok->Pdone
+atom dok:'toDisp.dispense.ok'
+atom IColl:'frDisp.itemCollected'
+after Pdone->dok
+after dok->IColl
+reference RefPCVendingMachineOverall:VMOverall
+import VMOverall as VMOI for PC_VendingMachineOverall
+ref_connector RefPCVendingMachineOverall->VMOI
+after IColl->RefPCVendingMachineOverall

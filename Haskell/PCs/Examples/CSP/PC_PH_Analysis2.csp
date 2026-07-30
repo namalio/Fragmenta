@@ -1,0 +1,5 @@
+include "PC_SuccessfulHouseAttackP.csp"
+include "PC_ProtectedHouse.csp"
+
+
+assert  ProtectedHouse [T= SuccessfulHouseAttack

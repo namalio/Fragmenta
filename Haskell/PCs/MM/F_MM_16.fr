@@ -1,0 +1,9 @@
+fragment F_MM_16 {
+  SG SG_MM_16 {
+    proxy POpParallel
+    proxy PBranchC
+    derived PBranchC->POpParallel[DOp <-> op]:0,2;?
+  }
+  ref POpParallel->VOpParallel
+  ref PBranchC->BranchC
+}

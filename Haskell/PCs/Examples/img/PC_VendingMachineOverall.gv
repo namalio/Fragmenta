@@ -1,0 +1,41 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineOverall];
+
+OpIO [shape=diamond,fillcolor=yellow,style=filled,label="||"];
+OpIO_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="frI.itemSelect,toO.start,toO.wrongItem,toO.payI.done,toO.payI.doing,toO.payI.error,toO.dispenseFail"];
+OpIO->OpIO_bs [dir=none,color="black:invis:black"];
+{rank=same;OpIO,OpIO_bs}
+IOI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineIOProcessor];
+OpPay [shape=diamond,fillcolor=yellow,style=filled,label="||"];
+OpPay_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="frPay.pay.ok,frPay.pay.fail,toPay.charge,toPay.refund"];
+OpPay->OpPay_bs [dir=none,color="black:invis:black"];
+{rank=same;OpPay,OpPay_bs}
+DispI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineDispenser];
+CoI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineController];
+CPI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineCardPayments];
+RefCP [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CardPayments "];
+RefController [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Controller "];
+RefVMDisp [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Dispenser "];
+OpControllerDispenser [shape=diamond,fillcolor=yellow,style=filled,label="||"];
+OpControllerDispenser_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="frDisp.itemCollect,frDisp.collectTimeout,toDisp.dispense.ok,toDisp.dispense.fail"];
+OpControllerDispenser->OpControllerDispenser_bs [dir=none,color="black:invis:black"];
+{rank=same;OpControllerDispenser,OpControllerDispenser_bs}
+RefIO [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="IOProcessor "];
+VMOverall [shape=box,fillcolor=deepskyblue,style = filled,label="VMOverall"];
+
+{rank=same;VMOverall,StartN_}
+
+RefCP->CPI[arrowhead="normalnormal",fillcolor=white,label=" "];
+RefVMDisp->DispI[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpControllerDispenser->RefController[arrowhead="open"];
+OpPay->OpControllerDispenser[arrowhead="open"];
+OpIO->RefIO[arrowhead="open"];
+OpIO->OpPay[arrowhead="open"];
+RefIO->IOI[arrowhead="normalnormal",fillcolor=white,label=" "];
+OpPay->RefCP[arrowhead="open"];
+OpControllerDispenser->RefVMDisp[arrowhead="open"];
+RefController->CoI[arrowhead="normalnormal",fillcolor=white,label=" "];
+VMOverall->OpIO[arrowhead="onormal",penwidth=2,label="="];
+StartN_->VMOverall[label="starts"];
+}

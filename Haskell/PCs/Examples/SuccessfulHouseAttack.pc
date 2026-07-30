@@ -1,0 +1,11 @@
+PC PC_SuccessfulHouseAttack {} @SuccessfulHouseAttack
+atom :'roomWindow'
+process SuccessfulHouseAttack@roomWindow
+atom :'intoRoom'
+after roomWindow->intoRoom
+atom :'grabJewels'
+atom :'grabLaptop'
+after intoRoom->grabJewels
+after grabJewels->grabLaptop
+atom roomWindow2:'roomWindow'
+after grabLaptop->roomWindow2

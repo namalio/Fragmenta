@@ -1,0 +1,80 @@
+digraph {
+subgraph cluster_CPMsgs {
+style="filled,rounded";
+label =CPMsgs;
+fillcolor = cadetblue1;
+pay[shape=box,fillcolor=darkolivegreen1,style="filled",label="pay.OkFail"];
+}
+
+subgraph cluster_OCmds {
+style="filled,rounded";
+label =OCmds;
+fillcolor = cadetblue1;
+wrongItem[shape=box,fillcolor=darkolivegreen1,style="filled",label="wrongItem"];
+dispenseFail[shape=box,fillcolor=darkolivegreen1,style="filled",label="dispenseFail"];
+start[shape=box,fillcolor=darkolivegreen1,style="filled",label="start"];
+payConfirm[shape=box,fillcolor=darkolivegreen1,style="filled",label="payConfirm"];
+payI[shape=box,fillcolor=darkolivegreen1,style="filled",label="payI.DoneDoingErr"];
+}
+
+subgraph cluster_DoneDoingErr {
+style="filled,rounded";
+label =DoneDoingErr;
+fillcolor = cadetblue1;
+doing[shape=box,fillcolor=darkolivegreen1,style="filled",label="doing"];
+done[shape=box,fillcolor=darkolivegreen1,style="filled",label="done"];
+error[shape=box,fillcolor=darkolivegreen1,style="filled",label="error"];
+}
+
+subgraph cluster_OkFail {
+style="filled,rounded";
+label =OkFail;
+fillcolor = cadetblue1;
+fail[shape=box,fillcolor=darkolivegreen1,style="filled",label="fail"];
+ok[shape=box,fillcolor=darkolivegreen1,style="filled",label="ok"];
+}
+
+subgraph cluster_DispMsgs {
+style="filled,rounded";
+label =DispMsgs;
+fillcolor = cadetblue1;
+itemCollect[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemCollect"];
+collectTimeout[shape=box,fillcolor=darkolivegreen1,style="filled",label="collectTimeout"];
+}
+
+subgraph cluster_DispCmds {
+style="filled,rounded";
+label =DispCmds;
+fillcolor = cadetblue1;
+dispense[shape=box,fillcolor=darkolivegreen1,style="filled",label="dispense.OkFail"];
+}
+
+subgraph cluster_IMsgs {
+style="filled,rounded";
+label =IMsgs;
+fillcolor = cadetblue1;
+itemSelect[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemSelect"];
+itemConfirm[shape=box,fillcolor=darkolivegreen1,style="filled",label="itemConfirm"];
+cancel[shape=box,fillcolor=darkolivegreen1,style="filled",label="cancel"];
+}
+
+subgraph cluster_CPCmds {
+style="filled,rounded";
+label =CPCmds;
+fillcolor = cadetblue1;
+charge[shape=box,fillcolor=darkolivegreen1,style="filled",label="charge"];
+refund[shape=box,fillcolor=darkolivegreen1,style="filled",label="refund"];
+}
+
+
+pay->StartN_[style=invis]
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineCommon];
+
+a [shape=ellipse,fillcolor=greenyellow,style=filled,label="a"];
+A [shape=box,fillcolor=deepskyblue,style = filled,label="A"];
+
+{rank=same;A,StartN_}
+
+A->a[arrowhead="onormal",penwidth=2,label="="];
+StartN_->A[label="starts"];
+}

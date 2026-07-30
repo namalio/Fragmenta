@@ -1,0 +1,25 @@
+PC PC_ProtectedHouse_HouseAlarm {} @HouseAlarm
+process HouseAlarm.aes,ges,pes@entryQ
+quantifiedOp entryQ.Choice e : 'ges'
+atom entry:'e'
+op_connector entryQ->entry
+after entryQ->WatchOut
+operator OpWatchOut.Choice
+process WatchOut@OpWatchOut
+quantifiedOp passQ.Choice e : 'pes'
+atom pass:'e'
+op_connector passQ->pass
+quantifiedOp exitQ.Choice e : 'ges'
+atom exit:'e'
+op_connector exitQ->exit
+quantifiedOp raiseQ.Choice e : 'aes'
+op_connector raiseQ->raise
+atom raise:'e'
+op_connector OpWatchOut->raiseQ
+op_connector OpWatchOut->passQ
+op_connector OpWatchOut->exitQ
+atom :'alarmSounds'
+after raiseQ->alarmSounds
+after alarmSounds->WatchOut
+after passQ->WatchOut
+after entryQ->WatchOut

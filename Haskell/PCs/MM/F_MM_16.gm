@@ -1,0 +1,8 @@
+Morphism F_MM_16 {
+	nodes {
+		POpParallel->Attribute
+		PBranchC->Connector
+	}
+	edges {
+	}
+}

@@ -2,15 +2,13 @@ PC PC_CM_OkWithdraw {} @CMOkWithdraw
 process CMOkWithdraw@cardIn
 atom :'cardIn'
 atom :'grant'
-atom :'optWithdraw'
 atom :'withdraw'
 atom :'cashDispense'
 atom :'cancel'
 atom :'cardEject'
 atom :'cardCollect'
 after cardIn->grant
-after grant->optWithdraw
-after optWithdraw->withdraw
+after grant->withdraw
 after withdraw->cashDispense
 after cashDispense->cancel
 after cancel->cardEject

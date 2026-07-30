@@ -1,0 +1,23 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineCancelSelectedItem];
+
+CancelSelectedItem [shape=box,fillcolor=deepskyblue,style = filled,label="CancelSelectedItem"];
+SI [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemSelected"];
+RefPCVendingMachineOverall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="VMOverall "];
+VMOI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineOverall];
+Ca [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.cancel"];
+St [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.start"];
+
+{rank=same;RefPCVendingMachineOverall,Ca}
+{rank=same;RefPCVendingMachineOverall,Ca,SI}
+{rank=same;RefPCVendingMachineOverall,Ca,SI,St}
+{rank=same;CancelSelectedItem,StartN_}
+
+Ca->RefPCVendingMachineOverall[arrowtail=dot,dir=both,label="after"];
+SI->Ca[arrowtail=dot,dir=both,label="after"];
+St->SI[arrowtail=dot,dir=both,label="after"];
+RefPCVendingMachineOverall->VMOI[arrowhead="normalnormal",fillcolor=white,label=" "];
+CancelSelectedItem->St[arrowhead="onormal",penwidth=2,label="="];
+StartN_->CancelSelectedItem[label="starts"];
+}

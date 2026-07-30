@@ -1,0 +1,14 @@
+digraph {graph[label=F_MM_14,labelloc=tl,labelfontsize=12];
+subgraph cluster_F_MM_14{style=dashed;label=F_MM_14;
+"PAtom2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Atom2<br/>(P)>];
+"PConnector5"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Connector5<br/>(P)>];
+"PReference2"[shape=box,fillcolor=lightgray,style ="rounded,filled,dotted",label=<Reference2<br/>(P)>];
+
+"PConnector5"->"PAtom2"[label="DAt: tgt ▼",dir=none,taillabel="",headlabel="?",style=dotted];
+"PConnector5"->"PReference2"[label="DRt: tgt ▼",dir=none,taillabel="1..*",headlabel="?",style=dotted];
+
+}
+
+
+
+}

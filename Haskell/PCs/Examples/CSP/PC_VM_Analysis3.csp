@@ -1,0 +1,3 @@
+include "PC_VendingMachinePayCollectSelectedItem.csp"
+
+assert VMOverall [T= PayCollectSelectedItem

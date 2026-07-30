@@ -1,0 +1,31 @@
+PC PC_SecuredHouse {mainDoor,roomWindow,intoRoom,intoHall,intoLivingRoom,intoKitchen,grabTV,grabJewels,grabLaptop} @ThisSecuredHouse
+reference RefSecuredHouse
+ref_connector RefSecuredHouse->SecuredHouse.'{mainDoor,roomWindow}','{intoRoom,intoHall,intoLivingRoom,intoKitchen,grabTV,grabJewels,grabLaptop}'
+process ThisSecuredHouse@RefSecuredHouse
+quantifiedOp enterQ.Choice e : 'ges'
+atom enter:'e'
+process SecuredHouse.ges,res@enterQ
+op_connector enterQ->enter
+operator OpRansack.IntChoice
+process Ransack@OpRansack
+quantifiedOp ransackQ.Choice e : 'res'
+atom ransack:'e'
+op_connector OpRansack->ransackQ
+op_connector ransackQ->ransack
+skip SKIP
+op_connector OpRansack->SKIP
+reference inner RefRansack
+ref_connector RefRansack->Ransack
+after ransack->Ransack
+after enter->RefRansack
+atom :'alarmSounds'
+after RefRansack->alarmSounds
+operator OpFinal.Choice
+reference RefRansack2
+ref_connector RefRansack2->Ransack
+op_connector OpFinal->RefRansack2
+quantifiedOp leaveQ.Choice e : 'ges'
+atom leave:'e'
+op_connector leaveQ->leave
+op_connector OpFinal->leaveQ
+after alarmSounds->OpFinal

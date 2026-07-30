@@ -1,1 +1,1 @@
-CMOkWithdraw = cardIn -> grant -> optWithdraw -> withdraw -> cashDispense -> cancel -> cardEject -> cardCollect -> CashMachine
+CMOkWithdraw = cardIn -> grant -> withdraw -> cashDispense -> cancel -> cardEject -> cardCollect -> CashMachine

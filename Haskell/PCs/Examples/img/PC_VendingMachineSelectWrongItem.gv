@@ -1,0 +1,23 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachineSelectWrongItem];
+
+SelectWrongItem [shape=box,fillcolor=deepskyblue,style = filled,label="SelectWrongItem"];
+SI [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemSelected"];
+RefPCVendingMachineOverall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="VMOverall "];
+VMOI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineOverall];
+WI [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.wrongItem"];
+St [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.start"];
+
+{rank=same;RefPCVendingMachineOverall,WI}
+{rank=same;RefPCVendingMachineOverall,WI,SI}
+{rank=same;RefPCVendingMachineOverall,WI,SI,St}
+{rank=same;SelectWrongItem,StartN_}
+
+WI->RefPCVendingMachineOverall[arrowtail=dot,dir=both,label="after"];
+SI->WI[arrowtail=dot,dir=both,label="after"];
+St->SI[arrowtail=dot,dir=both,label="after"];
+RefPCVendingMachineOverall->VMOI[arrowhead="normalnormal",fillcolor=white,label=" "];
+SelectWrongItem->St[arrowhead="onormal",penwidth=2,label="="];
+StartN_->SelectWrongItem[label="starts"];
+}

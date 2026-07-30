@@ -1,0 +1,38 @@
+digraph {
+
+StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_VendingMachinePayNoCollectSelectedItem];
+
+PayNoCollectSelectedItem [shape=box,fillcolor=deepskyblue,style = filled,label="PayNoCollectSelectedItem"];
+SI [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemSelected"];
+Ca [shape=ellipse,fillcolor=greenyellow,style=filled,label="toPay.charge"];
+Pok [shape=ellipse,fillcolor=greenyellow,style=filled,label="frPay.pay.ok"];
+dok [shape=ellipse,fillcolor=greenyellow,style=filled,label="toDisp.dispense.ok"];
+RefPCVendingMachineOverall [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="VMOverall "];
+VMOI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_VendingMachineOverall];
+CTo [shape=ellipse,fillcolor=greenyellow,style=filled,label="frDisp.collectTimeout"];
+Pdone [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payment.done"];
+Pdoing [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.payment.doing"];
+IC [shape=ellipse,fillcolor=greenyellow,style=filled,label="frI.itemConfirmed"];
+St [shape=ellipse,fillcolor=greenyellow,style=filled,label="toO.start"];
+
+{rank=same;RefPCVendingMachineOverall,CTo}
+{rank=same;RefPCVendingMachineOverall,CTo,dok}
+{rank=same;CTo,RefPCVendingMachineOverall,dok,Pdone,Pok}
+{rank=same;RefPCVendingMachineOverall,CTo,dok,Pdone,Pok,Pdoing,Ca}
+{rank=same;Pdone,RefPCVendingMachineOverall,CTo,dok,Pdoing,Pok,Ca,IC,SI}
+{rank=same;RefPCVendingMachineOverall,dok,CTo,Pdone,Pok,Pdoing,Ca,IC,SI,St}
+{rank=same;PayNoCollectSelectedItem,StartN_}
+
+CTo->RefPCVendingMachineOverall[arrowtail=dot,dir=both,label="after"];
+dok->CTo[arrowtail=dot,dir=both,label="after"];
+Pok->Pdone[arrowtail=dot,dir=both,label="after"];
+Ca->Pdoing[arrowtail=dot,dir=both,label="after"];
+SI->IC[arrowtail=dot,dir=both,label="after"];
+St->SI[arrowtail=dot,dir=both,label="after"];
+IC->Ca[arrowtail=dot,dir=both,label="after"];
+Pdoing->Pok[arrowtail=dot,dir=both,label="after"];
+Pdone->dok[arrowtail=dot,dir=both,label="after"];
+RefPCVendingMachineOverall->VMOI[arrowhead="normalnormal",fillcolor=white,label=" "];
+PayNoCollectSelectedItem->St[arrowhead="onormal",penwidth=2,label="="];
+StartN_->PayNoCollectSelectedItem[label="starts"];
+}

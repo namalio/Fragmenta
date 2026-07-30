@@ -4,29 +4,27 @@ StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC
 
 CMOkWithdraw [shape=box,fillcolor=deepskyblue,style = filled,label="CMOkWithdraw"];
 grant [shape=ellipse,fillcolor=greenyellow,style=filled,label="grant"];
-withdraw [shape=ellipse,fillcolor=greenyellow,style=filled,label="withdraw"];
-cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
-cardCollect [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardCollect"];
-CMI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachine];
-RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
-cardEject [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardEject"];
 cashDispense [shape=ellipse,fillcolor=greenyellow,style=filled,label="cashDispense"];
-optWithdraw [shape=ellipse,fillcolor=greenyellow,style=filled,label="optWithdraw"];
+cardEject [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardEject"];
+RefCashMachine [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="CashMachine "];
+CMI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_CashMachine];
+cardCollect [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardCollect"];
+cancel [shape=ellipse,fillcolor=greenyellow,style=filled,label="cancel"];
+withdraw [shape=ellipse,fillcolor=greenyellow,style=filled,label="withdraw"];
 cardIn [shape=ellipse,fillcolor=greenyellow,style=filled,label="cardIn"];
 
 {rank=same;RefCashMachine,cardCollect}
 {rank=same;RefCashMachine,cardCollect,cardEject}
 {rank=same;cardCollect,RefCashMachine,cardEject,cancel,cashDispense}
-{rank=same;RefCashMachine,cardCollect,cardEject,cancel,cashDispense,withdraw,optWithdraw}
-{rank=same;cancel,RefCashMachine,cardCollect,cardEject,withdraw,cashDispense,optWithdraw,grant,cardIn}
+{rank=same;RefCashMachine,cardCollect,cardEject,cancel,cashDispense,withdraw,grant}
+{rank=same;cardEject,RefCashMachine,cardCollect,cashDispense,cancel,withdraw,grant,cardIn}
 {rank=same;CMOkWithdraw,StartN_}
 
 cardCollect->RefCashMachine[arrowtail=dot,dir=both,label="after"];
 cardEject->cardCollect[arrowtail=dot,dir=both,label="after"];
 cashDispense->cancel[arrowtail=dot,dir=both,label="after"];
-optWithdraw->withdraw[arrowtail=dot,dir=both,label="after"];
+grant->withdraw[arrowtail=dot,dir=both,label="after"];
 cardIn->grant[arrowtail=dot,dir=both,label="after"];
-grant->optWithdraw[arrowtail=dot,dir=both,label="after"];
 withdraw->cashDispense[arrowtail=dot,dir=both,label="after"];
 cancel->cardEject[arrowtail=dot,dir=both,label="after"];
 RefCashMachine->CMI[arrowhead="normalnormal",fillcolor=white,label=" "];

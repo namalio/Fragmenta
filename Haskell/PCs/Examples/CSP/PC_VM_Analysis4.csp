@@ -1,0 +1,3 @@
+include "PC_VendingMachinePayNoCollectSelectedItem.csp"
+
+assert VMOverall [T= PayNoCollectSelectedItem
