@@ -49,9 +49,8 @@ import PCs.Common
    )
 import PCs.TxtExpAST (leadingId)
 import PCs.ParsingTxtExp hiding (main)
---import Test.HUnit hiding (Node)
 
--- A node has a name a type and possibly an associated operator
+-- A node has a name a type and possibly and associated operator
 -- A reference may be inner
 type TxtExp = String
 type Guard = Maybe TxtExp 
@@ -1157,39 +1156,4 @@ test15b = readP_to_S pcImport "import StopTimer as STI for PC_StopTimer"
 test15c :: [(Node, String)]
 test15c = readP_to_S pcImport "import VMCommon as VMCI for PC_VendingMachineCommon"
 
---chopForTesting :: [Param] ->[String]
---chopForTesting ps = map (\(Param id _)->id) ps
 
---testParams1 :: Test
---testParams1 = 
---    let res = chopForTesting $ readP_to_S (pcParams $ Just '.') ".abc1,abc2@" in 
---    TestCase(
---      assertBool "Parameters 1" 
---        (any (\l->all (`elem`["abc1", "abc2"]) (map fst l)) res))
-
---testParams2 :: Test
---testParams2 = 
---    let res = chopForTesting $ readP_to_S (pcParams $ Just '.') ".x@" in 
---    TestCase (
---      assertBool "Parameters 2" 
---        (any (\l->all (`elem` ["x"]) (map fst l)) res))
-
---testParams3 :: Test
---testParams3 = 
---   let l = ["{intoHall}",{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}]
---   let res = chopForTesting $ readP_to_S (pcExps '.') ".{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}" in 
---    TestCase (
---      assertBool "PC Expressions" 
---        (any (\l->all (`elem` ["x"]) (map fst l)) res))
-
---test3c :: [([TxtExp], String)]
---test3c = readP_to_S (pcExps '.') ".{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}"
-
---testList = TestList 
---   [testParams1
---   , testParams2 ]
-
---main :: IO()
---main = do
---    runTestTT testList
---    return ()
