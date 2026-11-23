@@ -1,7 +1,7 @@
-PC PC_BiscuitJar {} @BiscuitJar
+PC PC_BiscuitJar @BiscuitJar
 atom :'openJar'
-process BiscuitJar.n,m@openJar
-process JarOpened.n,m@OpJarOpenedIf
+process BiscuitJar(n,m)@openJar
+process JarOpened(n,m)@OpJarOpenedIf
 stop STOP
 operator OpJarOpenedIf.If
 op_connector_g OpJarOpenedIf->OpJarOpened{n≥0 ⋀ n≤m}
@@ -14,14 +14,14 @@ op_connector OpJarOpened->takeBiscuit
 op_connector OpJarOpened->dropBiscuit
 op_connector OpJarOpened->closeJar
 reference RefJarOpened
-ref_connector RefJarOpened->JarOpened.'n','m'
+ref_connector RefJarOpened->JarOpened('n','m')
 after openJar->RefJarOpened
 reference RefJarOpenedTake
-ref_connector RefJarOpenedTake->JarOpened.'n-1','m'
+ref_connector RefJarOpenedTake->JarOpened('n-1','m')
 reference RefJarOpenedDrop
-ref_connector RefJarOpenedDrop->JarOpened.'n+1','m'
+ref_connector RefJarOpenedDrop->JarOpened('n+1','m')
 after takeBiscuit->RefJarOpenedTake
 after dropBiscuit->RefJarOpenedDrop
 reference RefBiscuitJar
-ref_connector RefBiscuitJar->BiscuitJar.'n','m'
+ref_connector RefBiscuitJar->BiscuitJar('n','m')
 after closeJar->RefBiscuitJar

@@ -1,14 +1,14 @@
-CCVM = GetandGive(0); CCVM
+CCVM = doCCVM(0); CCVM
 
-GetandGive(x) = 
+doCCVM(x) = 
    let 
-      Get = x <= 100 & coin50p -> GetandGive(x + 50)
-            [] x <= 50 & coinPound -> GetandGive(x + 100)
-      Give = x >= 100 & giveMe -> (x == 150 & cappuccino -> SKIP
-            |~| (x == 100 & espresso -> SKIP
+      Receive = x <= 50 & coinPound -> doCCVM(x + 100)
+            [] x <= 100 & coin50p -> doCCVM(x + 50)
+      Dispense = dispense -> (x == 100 & espresso -> SKIP
+            |~| (x == 150 & latte -> SKIP
             |~| (x == 100 & macchiato -> SKIP
-            |~| x == 150 & latte -> SKIP)))
+            |~| x == 150 & cappuccino -> SKIP)))
    within
-      x > 0 & return -> SKIP
-         [] Get
-         [] Give
+      x >= 0 & return -> SKIP
+         [] Receive
+         [] Dispense

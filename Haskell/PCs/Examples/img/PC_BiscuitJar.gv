@@ -2,42 +2,42 @@ digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BiscuitJar];
 
-openJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="openJar"];
-JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n,m)"];
-OpJarOpenedIf [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+BiscuitJar [shape=box,fillcolor=deepskyblue,style = filled,label="BiscuitJar (n,m)"];
+RefJarOpened1f4d2e68 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+OpIf17752474 [shape=diamond,fillcolor=yellow,style=filled,label="If"];
+Stop71b85c62 [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
+RefBiscuitJar61836503 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
+dropBiscuit"];
+RefJarOpened3c206c5d [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefJarOpened19efc594 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 takeBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n>0}
 takeBiscuit"];
 closeJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="closeJar"];
-RefJarOpenedTake [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-RefBiscuitJar [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-RefJarOpenedDrop [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-RefJarOpened [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-dropBiscuit [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {n<m}
-dropBiscuit"];
-OpJarOpened [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-BiscuitJar [shape=box,fillcolor=deepskyblue,style = filled,label="BiscuitJar (n,m)"];
+Op7701253 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+JarOpened [shape=box,fillcolor=deepskyblue,style = filled,label="JarOpened (n,m)"];
+openJar [shape=ellipse,fillcolor=greenyellow,style=filled,label="openJar"];
 
-{rank=same;RefBiscuitJar,closeJar}
-{rank=same;RefJarOpenedDrop,dropBiscuit}
-{rank=same;RefJarOpened,openJar}
-{rank=same;RefJarOpenedTake,takeBiscuit}
+{rank=same;RefJarOpened19efc594,dropBiscuit}
+{rank=same;RefJarOpened1f4d2e68,openJar}
+{rank=same;RefBiscuitJar61836503,closeJar}
+{rank=same;RefJarOpened3c206c5d,takeBiscuit}
 {rank=same;BiscuitJar,StartN_}
 
-closeJar->RefBiscuitJar[arrowtail=dot,dir=both,label="after"];
-dropBiscuit->RefJarOpenedDrop[arrowtail=dot,dir=both,label="after"];
-RefJarOpenedDrop->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n+1,m)"];
-openJar->RefJarOpened[arrowtail=dot,dir=both,label="after"];
-OpJarOpened->closeJar[arrowhead="open"];
-OpJarOpened->takeBiscuit[arrowhead="open"];
-OpJarOpenedIf->OpJarOpened[arrowhead="open",label="n≥0 ⋀ n≤m"];
-OpJarOpenedIf->STOP[arrowhead="open",label="Else"];
-OpJarOpened->dropBiscuit[arrowhead="open"];
-RefJarOpened->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
-RefJarOpenedTake->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n-1,m)"];
-takeBiscuit->RefJarOpenedTake[arrowtail=dot,dir=both,label="after"];
-RefBiscuitJar->BiscuitJar[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
-JarOpened->OpJarOpenedIf[arrowhead="onormal",penwidth=2,label="="];
+RefJarOpened3c206c5d->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n-1,m)"];
+dropBiscuit->RefJarOpened19efc594[arrowtail=dot,dir=both,label="after"];
+RefBiscuitJar61836503->BiscuitJar[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
+Op7701253->dropBiscuit[arrowhead="open"];
+Op7701253->closeJar[arrowhead="open"];
+OpIf17752474->Op7701253[arrowhead="open",label="n≥0 ⋀ n≤m"];
+openJar->RefJarOpened1f4d2e68[arrowtail=dot,dir=both,label="after"];
+RefJarOpened1f4d2e68->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n,m)"];
+OpIf17752474->Stop71b85c62[arrowhead="open",label="Else"];
+Op7701253->takeBiscuit[arrowhead="open"];
+closeJar->RefBiscuitJar61836503[arrowtail=dot,dir=both,label="after"];
+takeBiscuit->RefJarOpened3c206c5d[arrowtail=dot,dir=both,label="after"];
+RefJarOpened19efc594->JarOpened[arrowhead="normalnormal",fillcolor=white,label=" (n+1,m)"];
 BiscuitJar->openJar[arrowhead="onormal",penwidth=2,label="="];
+JarOpened->OpIf17752474[arrowhead="onormal",penwidth=2,label="="];
 StartN_->BiscuitJar[label="starts"];
 }

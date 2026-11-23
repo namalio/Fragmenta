@@ -1,0 +1,13 @@
+PC PC_VM2 {} @ VM2
+   process VM2 @ coin
+   atom :'coin'
+   after coin->Op2229ce7e
+   operator Op2229ce7e.Choice
+   op_connector Op2229ce7e->water
+   op_connector Op2229ce7e->choc
+   atom :'water'
+   after water->Ref20286a6b
+   atom :'choc'
+   after choc->Ref20286a6b
+   reference Ref20286a6b
+   ref_connector Ref20286a6b->VM2

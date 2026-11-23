@@ -1,4 +1,4 @@
-PC PC_FaultyClock@FaultyClock
+PC PC_FaultyClock {} @FaultyClock
 atom :'tick'
 process FaultyClock@OpFaultyClock
 operator OpFaultyClock.IntChoice

@@ -3,57 +3,56 @@ digraph {
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_CCVM];
 
 CCVM [shape=box,fillcolor=deepskyblue,style = filled,label="CCVM"];
-GetandGive [shape=box,fillcolor=deepskyblue,style = filled,label="GetandGive (x)"];
-OpGetandGive [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-Get [shape=box,fillcolor=deepskyblue,style = filled,label="Get"];
-return [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x>0}
-return"];
-espresso [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=100}
-espresso"];
-cappuccino [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=150}
-cappuccino"];
-coin50p [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤100}
-coin50p"];
-RefGot50p [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-RefGotPound [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+doCCVM [shape=box,fillcolor=deepskyblue,style = filled,label="doCCVM (x)"];
+Dispense [shape=box,fillcolor=deepskyblue,style = filled,label="Dispense"];
+Op20286a6b [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 coinPound [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤50}
 coinPound"];
-latte [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=150}
+RefdoCCVM7b9359ca [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+dispense [shape=ellipse,fillcolor=greenyellow,style=filled,label="dispense"];
+latte [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 150}
 latte"];
-macchiato [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x=100}
+espresso [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 100}
+espresso"];
+cappuccino [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 150}
+cappuccino"];
+macchiato [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 100}
 macchiato"];
-OpGive [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
-OpGet [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-Give [shape=box,fillcolor=deepskyblue,style = filled,label="Give"];
-giveMe [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≥100}
-giveMe"];
-RefGetandGive [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+Op5e1913ec [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+RefdoCCVM9a86873 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+return [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x ≥ 0}
+return"];
+coin50p [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤100}
+coin50p"];
+Op2d21b460 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+Receive [shape=box,fillcolor=deepskyblue,style = filled,label="Receive"];
+RefdoCCVM2229ce7e [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 
-{rank=same;RefGotPound,coinPound}
-{rank=same;OpGive,giveMe}
-{rank=same;CCVM,RefGetandGive}
-{rank=same;RefGot50p,coin50p}
+{rank=same;Op5e1913ec,dispense}
+{rank=same;RefdoCCVM7b9359ca,coin50p}
+{rank=same;CCVM,RefdoCCVM2229ce7e}
+{rank=same;RefdoCCVM9a86873,coinPound}
 {rank=same;CCVM,StartN_}
 
-coinPound->RefGotPound[arrowtail=dot,dir=both,label="after"];
-RefGotPound->GetandGive[arrowhead="normalnormal",fillcolor=white,label=" (x+100)"];
-OpGet->coinPound[arrowhead="open"];
-OpGive->latte[arrowhead="open"];
-OpGive->macchiato[arrowhead="open"];
-giveMe->OpGive[arrowtail=dot,dir=both,label="after"];
-OpGetandGive->Give[arrowhead="open"];
-RefGetandGive->CCVM[arrowtail=dot,dir=both,label="after"];
-RefGetandGive->GetandGive[arrowhead="normalnormal",fillcolor=white,label=" (0)"];
-OpGetandGive->Get[arrowhead="open"];
-OpGetandGive->return[arrowhead="open"];
-OpGive->espresso[arrowhead="open"];
-OpGive->cappuccino[arrowhead="open"];
-OpGet->coin50p[arrowhead="open"];
-RefGot50p->GetandGive[arrowhead="normalnormal",fillcolor=white,label=" (x+50)"];
-coin50p->RefGot50p[arrowtail=dot,dir=both,label="after"];
-CCVM->RefGetandGive[arrowhead="onormal",penwidth=2,label="="];
-GetandGive->OpGetandGive[arrowhead="onormal",penwidth=2,label="="];
-Get->OpGet[arrowhead="onormal",penwidth=2,label="="];
-Give->giveMe[arrowhead="onormal",penwidth=2,label="="];
+Op5e1913ec->cappuccino[arrowhead="open"];
+Op5e1913ec->macchiato[arrowhead="open"];
+dispense->Op5e1913ec[arrowtail=dot,dir=both,label="after"];
+RefdoCCVM7b9359ca->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (x+50)"];
+coin50p->RefdoCCVM7b9359ca[arrowtail=dot,dir=both,label="after"];
+Op20286a6b->coin50p[arrowhead="open"];
+Op2d21b460->Dispense[arrowhead="open"];
+RefdoCCVM2229ce7e->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (0)"];
+RefdoCCVM2229ce7e->CCVM[arrowtail=dot,dir=both,label="after"];
+Op2d21b460->Receive[arrowhead="open"];
+Op2d21b460->return[arrowhead="open"];
+Op20286a6b->coinPound[arrowhead="open"];
+coinPound->RefdoCCVM9a86873[arrowtail=dot,dir=both,label="after"];
+RefdoCCVM9a86873->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (x+100)"];
+Op5e1913ec->latte[arrowhead="open"];
+Op5e1913ec->espresso[arrowhead="open"];
+CCVM->RefdoCCVM2229ce7e[arrowhead="onormal",penwidth=2,label="="];
+doCCVM->Op2d21b460[arrowhead="onormal",penwidth=2,label="="];
+Dispense->dispense[arrowhead="onormal",penwidth=2,label="="];
+Receive->Op20286a6b[arrowhead="onormal",penwidth=2,label="="];
 StartN_->CCVM[label="starts"];
 }

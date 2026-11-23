@@ -3,27 +3,25 @@ subgraph cluster_MeansBreakIn {
 style="filled,rounded";
 label =MeansBreakIn;
 fillcolor = cadetblue1;
-stolenKey[shape=box,fillcolor=darkolivegreen1,style="filled",label="stolenKey"];
 window[shape=box,fillcolor=darkolivegreen1,style="filled",label="window"];
-door[shape=box,fillcolor=darkolivegreen1,style="filled",label="door"];
+key[shape=box,fillcolor=darkolivegreen1,style="filled",label="key"];
+openDoor[shape=box,fillcolor=darkolivegreen1,style="filled",label="openDoor"];
 }
 
 
-stolenKey->StartN_[style=invis]
+window->StartN_[style=invis]
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse1];
 
-BreakAndStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakAndStealHouse"];
-BreakIn [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];
+BreakStealHouse [shape=box,fillcolor=deepskyblue,style = filled,label="BreakStealHouse"];
 stealTV [shape=ellipse,fillcolor=greenyellow,style=filled,label="stealTV"];
 break [shape=ellipse,fillcolor=greenyellow,style=filled,label="break.x"];
-GetInside [shape=box,fillcolor=deepskyblue,style = filled,label="GetInside"];
+Qabc1e05 [shape=hexagon,fillcolor=gold1,style=filled,label=<⊓ x:MeansBreakIn>];
 
-{rank=same;stealTV,GetInside}
-{rank=same;BreakAndStealHouse,StartN_}
+{rank=same;stealTV,Qabc1e05}
+{rank=same;BreakStealHouse,StartN_}
 
-GetInside->stealTV[arrowtail=dot,dir=both,label="after"];
-BreakIn->break[arrowhead="open"];
-BreakAndStealHouse->GetInside[arrowhead="onormal",penwidth=2,label="="];
-GetInside->BreakIn[arrowhead="onormal",penwidth=2,label="="];
-StartN_->BreakAndStealHouse[label="starts"];
+Qabc1e05->break[arrowhead="open"];
+Qabc1e05->stealTV[arrowtail=dot,dir=both,label="after"];
+BreakStealHouse->Qabc1e05[arrowhead="onormal",penwidth=2,label="="];
+StartN_->BreakStealHouse[label="starts"];
 }

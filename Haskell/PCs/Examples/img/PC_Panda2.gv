@@ -1,21 +1,22 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Panda2];
-OpEats [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+
+PandaEatsAtABar [shape=box,fillcolor=deepskyblue,style = filled,label="PandaEatsAtABar"];
 shoots [shape=ellipse,fillcolor=greenyellow,style=filled,label="shoots"];
-SKIP [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
-RefPandaEats [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="↑ "];
+Skip27045ea [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+RefPandaEatsAtABar6caca8ed [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 leaves [shape=ellipse,fillcolor=greenyellow,style=filled,label="leaves"];
-PandaEatsAtABar [shape=box,fillcolor=deepskyblue,style = filled,label="PandaEatsAtABar "];
+Op19ceff86 [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 
 {rank=same;PandaEatsAtABar,StartN_}
 
-RefPandaEats->PandaEatsAtABar[arrowhead="normalnormal",fillcolor=white,label=" "];
-shoots->RefPandaEats[arrowtail=dot,dir=both,label="after"];
-OpEats->leaves[arrowhead="open"];
-OpEats->shoots[arrowhead="open"];
-OpEats->SKIP[arrowhead="open"];
-leaves->RefPandaEats[arrowtail=dot,dir=both,label="after"];
-PandaEatsAtABar->OpEats[arrowhead="onormal",penwidth=2,label="="];
+RefPandaEatsAtABar6caca8ed->PandaEatsAtABar[arrowhead="normalnormal",fillcolor=white,label=" "];
+shoots->RefPandaEatsAtABar6caca8ed[arrowtail=dot,dir=both,label="after"];
+Op19ceff86->leaves[arrowhead="open"];
+Op19ceff86->shoots[arrowhead="open"];
+Op19ceff86->Skip27045ea[arrowhead="open"];
+leaves->RefPandaEatsAtABar6caca8ed[arrowtail=dot,dir=both,label="after"];
+PandaEatsAtABar->Op19ceff86[arrowhead="onormal",penwidth=2,label="="];
 StartN_->PandaEatsAtABar[label="starts"];
 }

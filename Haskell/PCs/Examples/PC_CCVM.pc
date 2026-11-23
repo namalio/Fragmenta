@@ -1,0 +1,35 @@
+PC PC_CCVM @ CCVM
+   process CCVM  @ RefdoCCVM2229ce7e
+   after RefdoCCVM2229ce7e->CCVM
+   reference RefdoCCVM2229ce7e
+   ref_connector RefdoCCVM2229ce7e->doCCVM('0')
+   process doCCVM (x) @ Op2d21b460
+   process Receive  @ Op20286a6b
+   process Dispense  @ dispense
+   operator Op2d21b460.Choice
+   op_connector Op2d21b460->Receive
+   op_connector Op2d21b460->Dispense
+   op_connector Op2d21b460->return
+   operator Op20286a6b.Choice
+   op_connector Op20286a6b->coin50p
+   op_connector Op20286a6b->coinPound
+   after coin50p->RefdoCCVM7b9359ca
+   atom :'coin50p' {x≤100}  
+   after coinPound->RefdoCCVM9a86873
+   atom :'coinPound' {x≤50}  
+   atom :'return' {x ≥ 0}  
+   reference RefdoCCVM7b9359ca
+   ref_connector RefdoCCVM7b9359ca->doCCVM('x+50')
+   reference RefdoCCVM9a86873
+   ref_connector RefdoCCVM9a86873->doCCVM('x+100')
+   after dispense->Op5e1913ec
+   atom :'dispense' 
+   operator Op5e1913ec.IntChoice
+   op_connector Op5e1913ec->latte
+   op_connector Op5e1913ec->macchiato
+   op_connector Op5e1913ec->espresso
+   op_connector Op5e1913ec->cappuccino
+   atom :'latte' {x = 150}  
+   atom :'macchiato' {x = 100}  
+   atom :'espresso' {x = 100}  
+   atom :'cappuccino' {x = 150}  

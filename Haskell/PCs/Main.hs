@@ -5,6 +5,7 @@
 -- Description: A utilities runner module for PCs
 -- Author: Nuno Amálio
 --------------------------------------------------
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module PCs.Main
    ( writeCSPToFile
    , checkWFAndGeneratePCTree
@@ -470,7 +471,8 @@ drawPC fnm = do
 main :: IO ()
 main = do
   args <- getArgs
-  generate (head args)
+  --maybeFrLs args >>= (\x->generate x)
+  when (length(args)>0) $ generate (head args)
 
 test :: IO ()
 test = do 

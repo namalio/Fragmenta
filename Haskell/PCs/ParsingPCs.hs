@@ -169,6 +169,7 @@ parseSetIds = do
    ids<-parseIds ","
    skipSpaces
    char '}'
+   skipSpaces
    return ids
 
 pcStartDef::ReadP(Maybe Name)
@@ -183,21 +184,14 @@ pcStart = do
    skipSpaces
    nm<-parseId  -- PC's name
    skipSpaces
-   char '{' -- Starts the global declarations
-   skipSpaces
-   ps<-pcParams Nothing 
-   skipSpaces
-   char '}'
+   -- char '{' -- Starts the global declarations
+   -- skipSpaces
+   ps<-pcParams '{' '}'<++ return []
+   -- skipSpaces
+   -- char '}'
    skipSpaces
    st<-pcStartDef <++ return Nothing
-   --ch<-option '\n' (char '@')
-   --st<-if ch == '@' then do 
-   --   fmap Just parseId
-   --else 
-   --   return Nothing
    skipSpaces
-   --st<- (parseId >>= return . Just) <++ return Nothing -- the starting defintion
-   --skipSpaces
    return (nm, st, ps)
 
 --parseParam::ReadP String
@@ -262,11 +256,17 @@ parseParam = do
    skipSpaces
    return $ Param nm oty
 
+commaSep :: ReadP ()
+commaSep = skipSpaces >> char ',' >> skipSpaces
 
-pcParams::Maybe Char->ReadP [Param]
-pcParams och = do
-   when (isSomething och) $ char (the och) >> return ()
-   parseTokens "," parseParam
+pcParams::Char->Char->ReadP [Param]
+pcParams op cl = do
+   char op
+   skipSpaces
+   ps<-parseTokens "," parseParam
+   skipSpaces
+   char cl
+   return ps
 
 --parseSingleExp::ReadP TxtExp
 --parseSingleExp = do
@@ -290,21 +290,29 @@ parseTxtExp' = parseTxtExp '\'' '\''
 
 --   parseSetExp <|> parseSingleExp
 
-pcExps::Char->ReadP [TxtExp]
-pcExps ch = do
-   char ch
-   parseTokens "," (parseTxtExp '\'' '\'')
+pcExps::Char->Char->ReadP [TxtExp]
+pcExps op cl = do
+   char op
+   skipSpaces
+   ts<-parseTokens "," (parseTxtExp '\'' '\'')
+   skipSpaces
+   char cl
+   skipSpaces
+   return ts
 
 pcProcess :: ReadP Node
 pcProcess = do
    string "process"
    skipSpaces
-   cnm<-parse_until_chs "@."
-   ps<-pcParams (Just '.') <++return []
+   nm<-parseId
+   skipSpaces
+   ps<-pcParams '(' ')' <++return []
+   skipSpaces
    char '@'
+   skipSpaces
    start<-parseWord 
    skipSpaces
-   return (Node cnm $ Process start ps)
+   return (Node nm $ Process start ps)
 
 pcQuantifiedOp :: ReadP Node
 pcQuantifiedOp = do
@@ -396,7 +404,7 @@ pcOperator = do
    char '.'
    op<-pcOpKind
    skipSpaces
-   bs<-(pcExps ':')<++return []
+   bs<-(pcExps '(' ')')<++return []
    skipSpaces
    return (Node o_nm $ Operator op bs)
 
@@ -418,7 +426,8 @@ pcRefToP::ReadP (String, [TxtExp], [(String, String)])
 pcRefToP = do
    char ':'
    rnm<-parseId
-   bs<-pcExps '.' <++ return []
+   skipSpaces
+   bs<-pcExps '(' ')' <++ return []
    skipSpaces
    rs<- pcRenamings <++ return []
    return (rnm, bs, rs)
@@ -443,7 +452,7 @@ pcStop :: ReadP Node
 pcStop = do
    string "stop"
    skipSpaces
-   nm<-parse_until_chs "\n "
+   nm<-parseId
    skipSpaces
    return (Node nm Stop)
 
@@ -451,7 +460,7 @@ pcSkip :: ReadP Node
 pcSkip = do
    string "skip"
    skipSpaces
-   nm<-parse_until_chs "\n "
+   nm<-parseId
    skipSpaces
    return (Node nm Skip)
 
@@ -543,7 +552,7 @@ pc_referenceC  = do
    skipSpaces
    (proxy, ref)<-pc_C_fr_to
    skipSpaces
-   bs<-(pcExps '.') <++ return []
+   bs<-(pcExps '(' ')') <++ return []
    skipSpaces
    return (Connector (Ref bs hidden) proxy ref)
 
@@ -997,7 +1006,7 @@ process_pc_def fn = do
    putStrLn $ show pc
 
 tb_pc_def :: String
-tb_pc_def = "PC PC_BreakStealHouse2 {} @ BreakAndStealHouse\n"
+tb_pc_def = "PC PC_BreakStealHouse2 @ BreakAndStealHouse\n"
    ++ "enum Stealable : 'Laptop','TV','Other'\n"
    ++ "import VMCommon as VMCI for PC_VendingMachineCommon\n"
    ++ "process BreakAndStealHouse@GetInside\n"
@@ -1016,13 +1025,13 @@ def_path :: String
 def_path = "PCs/Examples/"
 
 test1a :: [((Name, Maybe Name, [Param]), String)]
-test1a = readP_to_S pcStart "PC PC_BreakStealHouse2 {} @ BreakAndStealHouse\n"
+test1a = readP_to_S pcStart "PC PC_BreakStealHouse2 @ BreakAndStealHouse\n"
 
 test1b :: [((Name, Maybe Name, [Param]), String)]
 test1b = readP_to_S pcStart "PC PC_HouseUnderAttack_Seize {grabTV,grabLaptop,grabJewels} @ Seize\n"
 
 test1c :: [((Name, Maybe Name, [Param]), String)]
-test1c = readP_to_S pcStart "PC PC_Something {}\n"
+test1c = readP_to_S pcStart "PC PC_Something\n"
 
 test1d :: [(PCDef, String)]
 test1d = readP_to_S pcDef tb_pc_def
@@ -1031,7 +1040,7 @@ test1e :: [(PCDef, String)]
 test1e = readP_to_S pcDef tb_pc_def2
 
 test1f :: [(PCDef, String)]
-test1f = readP_to_S pcDef "PC PC_VendingMachineCommon {} @\n"
+test1f = readP_to_S pcDef "PC PC_VendingMachineCommon @\n"
 
 test2a :: IO ()
 test2a = process_pc_def (def_path ++ "PC_CashMachine.pc")
@@ -1040,11 +1049,11 @@ test2b :: IO ()
 test2b = process_pc_def (def_path ++ "PC_CashMachineOps.pc")
 
 test3a :: [([Param], String)]
-test3a = readP_to_S (pcParams $ Just '.') ".abc1,abc2@"
+test3a = readP_to_S (pcParams '(' ')') "(abc1,abc2)@"
 test3b :: [([Param], String)]
-test3b = readP_to_S (pcParams $ Just '.') ".x@"
+test3b = readP_to_S (pcParams '(' ')') "(x)@"
 test3c :: [([TxtExp], String)]
-test3c = readP_to_S (pcExps '.') ".{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}"
+test3c = readP_to_S (pcExps '(' ')') "({intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop})"
 
 test4a :: [(TxtExp, String)]
 test4a = readP_to_S parseTxtExp' "'diff(ges, {e})'"
@@ -1082,38 +1091,38 @@ test6g :: [(Node, String)]
 test6g = readP_to_S pcAtom "atom :'coin50p'{x≤100}"
 
 test7a :: [(Node, String)]
-test7a = readP_to_S pcReference "reference RefTimer:Timer.'3'[timeout/mute]"
+test7a = readP_to_S pcReference "reference RefTimer:Timer('3')[timeout/mute]"
 test7b :: [(Node, String)]
 test7b = readP_to_S pcReference "reference RefTimer"
 test7c :: [(Node, String)]
 test7c = readP_to_S pcReference "reference RefHouseUnderAttack:HouseUnderAttack"
 test7d :: [(Node, String)]
-test7d = readP_to_S pcReference "reference RefHouseAlarm:HouseAlarm.{intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}"
+test7d = readP_to_S pcReference "reference RefHouseAlarm:HouseAlarm('{intoHall}','{mainDoor,roomWindow}','{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop}')"
 test7e :: [(Node, String)]
 test7e = readP_to_S pcReference "reference RefIntoRoom:IntoRoom"
 
 test8a :: [(Connector, String)]
-test8a = readP_to_S pc_referenceC "ref_connector RefHouseAttacker->HouseAttacker.'bes','mes','ses'"
+test8a = readP_to_S pc_referenceC "ref_connector RefHouseAttacker->HouseAttacker('bes','mes','ses')"
 test8b :: [(Connector, String)]
-test8b = readP_to_S pc_referenceC "ref_connector RefJarOpenedTake->JarOpened.'n-1','m'"
+test8b = readP_to_S pc_referenceC "ref_connector RefJarOpenedTake->JarOpened('n-1','m')"
 test8c :: [(Connector, String)]
-test8c = readP_to_S pc_referenceC "ref_connector RefJarOpenedDrop->JarOpened.'n+1','m'"
+test8c = readP_to_S pc_referenceC "ref_connector RefJarOpenedDrop->JarOpened('n+1','m')"
 test8d :: [(Connector, String)]
-test8d = readP_to_S pc_referenceC "ref_connector RefHouseAlarm0->HouseAlarm0.'false','false'"
+test8d = readP_to_S pc_referenceC "ref_connector RefHouseAlarm0->HouseAlarm0('false','false')"
 test8e :: [(Connector, String)]
-test8e = readP_to_S pc_referenceC "ref_connector RefGetandGive->GetandGive.'0'"
+test8e = readP_to_S pc_referenceC "ref_connector RefGetandGive->GetandGive('0')"
 test8f :: [(Connector, String)]
 test8f = readP_to_S pc_referenceC "ref_connector RefTimer->PC_Timer"
 test8g :: [(Connector, String)]
 test8g = readP_to_S pc_referenceC "ref_connector hidden RefIntoHall->IntoHall"
 test8h :: [(Connector, String)]
-test8h = readP_to_S pc_referenceC "ref_connector RefSeizeControl2->SeizeControl.'diff(ges, {e})'"
+test8h = readP_to_S pc_referenceC "ref_connector RefSeizeControl2->SeizeControl('diff(ges, {e})')"
 
 test9a :: [([TxtExp], String)]
-test9a = readP_to_S (pcExps '.') ".'n-1','m'"
+test9a = readP_to_S (pcExps '(' ')') "('n-1','m')"
 
 test9b :: [([TxtExp], String)]
-test9b = readP_to_S (pcExps '.') ".'n+1','m'"
+test9b = readP_to_S (pcExps '(' ')') "('n+1','m')"
 
 test10 :: [(Connector, String)]
 test10 = readP_to_S pcAfterC "after open a->b"
@@ -1122,22 +1131,22 @@ test11 :: [(Connector, String)]
 test11 = readP_to_S pc_opBG "op_connector_g OpAuthenticate->OpAuthenticateChoice{n>0}\n"
 
 test12a :: [(Node, String)]
-test12a = readP_to_S pcProcess "process GetandGive.x@OpGetandGive"
+test12a = readP_to_S pcProcess "process GetandGive(x)@OpGetandGive"
 test12b :: [(Node, String)]
 test12b = readP_to_S pcProcess "process Clock@tick"
 test12c :: [(Node, String)]
-test12c = readP_to_S pcProcess "process JarOpened.n,m@OpJarOpenedIf"
+test12c = readP_to_S pcProcess "process JarOpened(n,m)@OpJarOpenedIf"
 test12d :: [(Node, String)]
-test12d = readP_to_S pcProcess "process StopTimer.t:Int@OpStopTimer"
+test12d = readP_to_S pcProcess "process StopTimer(t:Int)@OpStopTimer"
 
 test13a :: [(Node, String)]
-test13a = readP_to_S pcOperator "operator OpCashMachine2.Throw:'cancel','deny'"
+test13a = readP_to_S pcOperator "operator OpCashMachine2.Throw('cancel','deny')"
 test13b :: [(Node, String)]
-test13b = readP_to_S pcOperator "operator OpProtectedHouse.Parallel:'intoHall','mainDoor','roomWindow','intoRoom','intoKitchen','intoLivingRoom','grabTV','grabJewels','grabLaptop'"
+test13b = readP_to_S pcOperator "operator OpProtectedHouse.Parallel('intoHall','mainDoor','roomWindow','intoRoom','intoKitchen','intoLivingRoom','grabTV','grabJewels','grabLaptop')"
 test13c :: [(Node, String)]
-test13c = readP_to_S pcOperator "operator OpStoppableTimer1.Throw:'arrete'"
+test13c = readP_to_S pcOperator "operator OpStoppableTimer1.Throw('arrete')"
 test13d :: [(Node, String)]
-test13d = readP_to_S pcOperator "operator OpCashMachine2.Throw:'cancel','deny'"
+test13d = readP_to_S pcOperator "operator OpCashMachine2.Throw('cancel','deny')"
 
 test14a :: [(Elem, String)]
 test14a = readP_to_S pcElem "enum Stealable : 'Laptop','TV','Other'"

@@ -1,16 +1,17 @@
 digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_FaultyClock];
+
+FaultyClock [shape=box,fillcolor=deepskyblue,style = filled,label="FaultyClock"];
+Op17e1125 [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+Stopb53b6c8 [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
 tick [shape=ellipse,fillcolor=greenyellow,style=filled,label="tick"];
-OpFaultyClock [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
-STOP [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-FaultyClock [shape=box,fillcolor=deepskyblue,style = filled,label="FaultyClock "];
 
 {rank=same;FaultyClock,StartN_}
 
+Op17e1125->Stopb53b6c8[arrowhead="open"];
 tick->FaultyClock[arrowtail=dot,dir=both,label="after"];
-OpFaultyClock->tick[arrowhead="open"];
-OpFaultyClock->STOP[arrowhead="open"];
-FaultyClock->OpFaultyClock[arrowhead="onormal",penwidth=2,label="="];
+Op17e1125->tick[arrowhead="open"];
+FaultyClock->Op17e1125[arrowhead="onormal",penwidth=2,label="="];
 StartN_->FaultyClock[label="starts"];
 }

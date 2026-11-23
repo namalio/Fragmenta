@@ -1,0 +1,6 @@
+PC PC_VM {} @ VM
+   process VM @ coin
+   atom :'coin'
+   after coin->choc
+   atom :'choc'
+   after choc->VM
