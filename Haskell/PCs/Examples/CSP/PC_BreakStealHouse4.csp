@@ -1,11 +1,11 @@
 include "PC_BreakStealHouse4P.csp"
 
-datatype MeansBreakIn = window | stolenKey | door
+datatype Stealable = Jewels | TV | Laptop | Other
 
-datatype Stealable = TV | Money | Laptop | Other | Jewels
+datatype MeansBreakIn = stolenKey | window | door
 
-channel alarmSounds, getOutandRun
+channel steal : Stealable
 
 channel break : MeansBreakIn
 
-channel steal : Stealable
+channel getOutAndRun, alarmSounds, breakSafe

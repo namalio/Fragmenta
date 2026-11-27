@@ -1,0 +1,33 @@
+PC PC_BreakStealHouse4 @ BreakStealHouse
+   enum MeansBreakIn : 'stolenKey','window','door'
+   enum Stealable : 'Laptop','Jewels','TV','Other'
+   after BreakStealHouse->getOutAndRun
+   process BreakStealHouse  @ Op6ff1b8dc
+   atom :'getOutAndRun' 
+   operator Op6ff1b8dc.Interleave
+   op_connector Op6ff1b8dc->alarmSounds
+   op_connector Op6ff1b8dc->DoBurglary
+   atom :'alarmSounds' 
+   process DoBurglary  @ Q79bb074b
+   after Q79bb074b->RefSteal1bee77f8
+   quantifiedOp Q79bb074b.Choice x : 'MeansBreakIn'
+   op_connector Q79bb074b->break
+   atom :'break.x' 
+   reference RefSteal1bee77f8
+   ref_connector RefSteal1bee77f8->Steal ('{Laptop, TV, Other}', '{}')
+   process Steal (s, t) @ Op66353861
+   operator Op66353861.Choice
+   op_connector Op66353861->Skipe8cc2e8
+   op_connector Op66353861->Q4c9aaf7f
+   op_connector Op66353861->breakSafe
+   skip Skipe8cc2e8
+   quantifiedOp Q4c9aaf7f.Choice x : 'Stealable'
+   op_connector Q4c9aaf7f->steal
+   after steal->RefSteal3d9d761
+   atom :'steal.x' {x = Other ⋁ x ∉ t ⋀ x ∈ s}  
+   reference RefSteal3d9d761
+   ref_connector RefSteal3d9d761->Steal ('s', '{x} ∪ t')
+   after breakSafe->RefSteal1aa16132
+   atom :'breakSafe' {Jewels ∉ s}  
+   reference RefSteal1aa16132
+   ref_connector RefSteal1aa16132->Steal ('s ∪ {Jewels}', 't')

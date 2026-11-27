@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module GwTDraw(wrGwTAsGraphviz) where
 
 import Gr_Cls

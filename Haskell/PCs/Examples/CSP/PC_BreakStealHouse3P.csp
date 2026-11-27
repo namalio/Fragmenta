@@ -5,5 +5,5 @@ BreakStealHouse =
       BreakStealHouse0; getOutRun -> SKIP
 
 Ransack(s, t) = SKIP
-      [] ([] x : Stealable @ x == Other or x not member s & steal.x -> Ransack(s, union (t, {x})))
+      [] ([] x : Stealable @ x == Other or x not member t and member (x, s) & steal.x -> Ransack(s, union (t, {x})))
       [] Jewels not member s & breakSafe -> Ransack(union (s, {Jewels}), t)

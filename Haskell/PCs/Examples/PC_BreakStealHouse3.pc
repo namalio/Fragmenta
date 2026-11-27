@@ -2,25 +2,27 @@ PC PC_BreakStealHouse3 @ BreakStealHouse
    enum Stealable : 'TV','Money','Laptop','Other','Jewels'
    enum MeansBreakIn : 'window','stolenKey','door'
    after BreakStealHouse->getOutRun
-   process BreakStealHouse  @ Q59536fcc
-   after Q59536fcc->RefRansack6542b430
-   quantifiedOp Q59536fcc.Choice x : 'MeansBreakIn'
-   op_connector Q59536fcc->break
+   process BreakStealHouse  @ Q74ab91e6
+   after Q74ab91e6->RefRansack47b7f154
+   quantifiedOp Q74ab91e6.Choice x : 'MeansBreakIn'
+   op_connector Q74ab91e6->break
    atom :'break.x' 
-   reference RefRansack6542b430
-   ref_connector RefRansack6542b430->Ransack ('{TV, Money, Laptop}', '{}')
+   reference RefRansack47b7f154
+   ref_connector RefRansack47b7f154->Ransack ('{TV, Money, Laptop}', '{}')
    atom :'getOutRun' 
-   process Ransack (s, t) @ Op74d978e6
-   operator Op74d978e6.Choice
-   op_connector Op74d978e6->Q2baeb3ce
-   op_connector Op74d978e6->breakSafe
-   quantifiedOp Q2baeb3ce.Choice x : 'Stealable'
-   op_connector Q2baeb3ce->steal
-   after steal->RefRansack3c4c72de
-   atom :'steal.x' {x = Other ⋁ x ∉ s }  
-   reference RefRansack25c215b6
-   ref_connector RefRansack25c215b6->Ransack ('s ∪ {Jewels}', 't')
-   after breakSafe->RefRansack25c215b6
+   process Ransack (s, t) @ Op25d4cf47
+   operator Op25d4cf47.Choice
+   op_connector Op25d4cf47->Q5d11a7f8
+   op_connector Op25d4cf47->breakSafe
+   op_connector Op25d4cf47->Skip4281b58d
+   quantifiedOp Q5d11a7f8.Choice x : 'Stealable'
+   op_connector Q5d11a7f8->steal
+   after steal->RefRansack11d2b5c7
+   atom :'steal.x' {x = Other ⋁ x ∉ t ⋀ x ∈ s}  
+   reference RefRansack41592ea3
+   ref_connector RefRansack41592ea3->Ransack ('s ∪ {Jewels}', 't')
+   after breakSafe->RefRansack41592ea3
    atom :'breakSafe' {Jewels ∉ s}  
-   reference RefRansack3c4c72de
-   ref_connector RefRansack3c4c72de->Ransack ('s', 't ∪ {x}')
+   reference RefRansack11d2b5c7
+   ref_connector RefRansack11d2b5c7->Ransack ('s', 't ∪ {x}')
+   skip Skip4281b58d

@@ -1,18 +1,10 @@
-BreakAndStealHouse = 
+BreakStealHouse = 
    let 
-      DoBurglary = 
-         let 
-            DoBurglary0 = GetInside
-                   |~| alarmSounds -> SKIP
-            GetInside = 
-               let 
-                  GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
-               within
-                  GetInside0; Steal({})
-         within
-            DoBurglary0; getOutandRun -> SKIP
+      BreakStealHouse0 = DoBurglary ||| alarmSounds -> SKIP
+      DoBurglary = [] x : MeansBreakIn @ break.x -> SKIP; Steal({Laptop,TV,Other}, {})
    within
-      DoBurglary
+      BreakStealHouse0; getOutAndRun -> SKIP
 
-Steal(s) = SKIP
-       |~| (|~| x : Stealable @ x == Other or not member (x, s) & steal.x -> Steal(union (s, {x})))
+Steal(s, t) = Jewels not member s & breakSafe -> Steal(union (s, {Jewels}), t)
+      [] SKIP
+      [] ([] x : Stealable @ x == Other or x not member t and member (x, s) & steal.x -> Steal(s, union ({x}, t)))
