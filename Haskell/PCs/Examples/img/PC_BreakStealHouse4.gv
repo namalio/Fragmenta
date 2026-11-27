@@ -22,47 +22,57 @@ door[shape=box,fillcolor="#FFE7DD",style="filled",label="door"];
 Jewels->StartN_[style=invis]
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_BreakStealHouse4];
 
+StartN__ps[shape=rect,fillcolor=burlywood2,style="filled,dotted",label="alarmSounds"];
+StartN_->StartN__ps [dir=none,color="black:invis:black"];
+{rank=same;StartN_,StartN__ps}
 BreakStealHouse [shape=box,fillcolor="#70E2FF",style = filled,label="BreakStealHouse"];
-Op6ff1b8dc [shape=diamond,fillcolor=yellow,style=filled,label="|||"];
+Op2cc6eaf6 [shape=diamond,fillcolor=yellow,style=filled,label="Θ"];
+Op2cc6eaf6_bs[shape=rect,fillcolor=yellow,style="filled,dotted",label="alarmSounds"];
+Op2cc6eaf6->Op2cc6eaf6_bs [dir=none,color="black:invis:black"];
+{rank=same;Op2cc6eaf6,Op2cc6eaf6_bs}
 DoBurglary [shape=box,fillcolor="#70E2FF",style = filled,label="DoBurglary"];
 break [shape=ellipse,fillcolor="#B1FF8A",style=filled,label="break.x"];
 Steal [shape=box,fillcolor="#70E2FF",style = filled,label="Steal (s,t)"];
-Skipe8cc2e8 [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+Skip20f1913b [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
 steal [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x = Other ⋁ x ∉ t ⋀ x ∈ s}
 steal.x"];
 breakSafe [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {Jewels ∉ s}
 breakSafe"];
-RefSteal1aa16132 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-RefSteal3d9d761 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-Q4c9aaf7f [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ x:Stealable>];
-Op66353861 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-RefSteal1bee77f8 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-Q79bb074b [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ x:MeansBreakIn>];
+Op3a1f99c2 [shape=diamond,fillcolor=yellow,style=filled,label="|||"];
+Skip4a55b6c9 [shape=box,fillcolor="#B9E0A5",style = filled,label="SKIP"];
+RefSteal74432d4b [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefSteal2a786799 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+Q7af48227 [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ x:Stealable>];
+Op3767f4e1 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+RefSteal913c254 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+Q59558b3f [shape=hexagon,fillcolor=gold1,style=filled,label=<◻︎ x:MeansBreakIn>];
 alarmSounds [shape=ellipse,fillcolor="#B1FF8A",style=filled,label="alarmSounds"];
 getOutAndRun [shape=ellipse,fillcolor="#B1FF8A",style=filled,label="getOutAndRun"];
 
-{rank=same;RefSteal1bee77f8,Q79bb074b}
+{rank=same;RefSteal913c254,Q59558b3f}
 {rank=same;getOutAndRun,BreakStealHouse}
-{rank=same;RefSteal3d9d761,steal}
-{rank=same;RefSteal1aa16132,breakSafe}
+{rank=same;RefSteal2a786799,steal}
+{rank=same;RefSteal74432d4b,breakSafe}
 {rank=same;BreakStealHouse,StartN_}
 
-RefSteal1aa16132->Steal[arrowhead="normalnormal",fillcolor=white,label=" (s ∪ {Jewels},t)"];
-RefSteal3d9d761->Steal[arrowhead="normalnormal",fillcolor=white,label=" (s,{x} ∪ t)"];
-Q4c9aaf7f->steal[arrowhead="open"];
-Op66353861->Q4c9aaf7f[arrowhead="open"];
-RefSteal1bee77f8->Steal[arrowhead="normalnormal",fillcolor=white,label=" ({Laptop, TV, Other},{})"];
-Q79bb074b->RefSteal1bee77f8[arrowtail=dot,dir=both,label="after"];
-Op6ff1b8dc->alarmSounds[arrowhead="open"];
+Op3a1f99c2->alarmSounds[arrowhead="open"];
+RefSteal74432d4b->Steal[arrowhead="normalnormal",fillcolor=white,label=" (s ∪ {Jewels},t)"];
+RefSteal2a786799->Steal[arrowhead="normalnormal",fillcolor=white,label=" (s,{x} ∪ t)"];
+Q7af48227->steal[arrowhead="open"];
+Op3767f4e1->Q7af48227[arrowhead="open"];
+RefSteal913c254->Steal[arrowhead="normalnormal",fillcolor=white,label=" ({Laptop, TV, Other},{})"];
+Q59558b3f->RefSteal913c254[arrowtail=dot,dir=both,label="after"];
+Op2cc6eaf6->Skip4a55b6c9[arrowhead="open",label="Jump"];
 BreakStealHouse->getOutAndRun[arrowtail=dot,dir=both,label="after"];
-Op6ff1b8dc->DoBurglary[arrowhead="open"];
-Q79bb074b->break[arrowhead="open"];
-Op66353861->Skipe8cc2e8[arrowhead="open"];
-Op66353861->breakSafe[arrowhead="open"];
-steal->RefSteal3d9d761[arrowtail=dot,dir=both,label="after"];
-breakSafe->RefSteal1aa16132[arrowtail=dot,dir=both,label="after"];
-BreakStealHouse->Op6ff1b8dc[arrowhead="onormal",penwidth=2,label="="];
-DoBurglary->Q79bb074b[arrowhead="onormal",penwidth=2,label="="];
-Steal->Op66353861[arrowhead="onormal",penwidth=2,label="="];
+Op2cc6eaf6->DoBurglary[arrowhead="open"];
+Q59558b3f->break[arrowhead="open"];
+Op3767f4e1->Skip20f1913b[arrowhead="open"];
+Op3767f4e1->breakSafe[arrowhead="open"];
+steal->RefSteal2a786799[arrowtail=dot,dir=both,label="after"];
+breakSafe->RefSteal74432d4b[arrowtail=dot,dir=both,label="after"];
+Op3a1f99c2->Q59558b3f[arrowhead="open"];
+BreakStealHouse->Op2cc6eaf6[arrowhead="onormal",penwidth=2,label="="];
+DoBurglary->Op3a1f99c2[arrowhead="onormal",penwidth=2,label="="];
+Steal->Op3767f4e1[arrowhead="onormal",penwidth=2,label="="];
 StartN_->BreakStealHouse[label="starts"];
 }

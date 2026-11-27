@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module GrsDraw(wrGAsGraphviz) where
 
 import Gr_Cls

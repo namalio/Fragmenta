@@ -165,11 +165,11 @@ getEDefs es = map getD $ getElemsOfKind isDefinition es
 parseSetIds::ReadP [Id]
 parseSetIds = do
    skipSpaces
-   char '{'
+   char '('
    skipSpaces
    ids<-parseIds ","
    skipSpaces
-   char '}'
+   char ')'
    skipSpaces
    return ids
 
@@ -185,11 +185,7 @@ pcStart = do
    skipSpaces
    nm<-parseId  -- PC's name
    skipSpaces
-   -- char '{' -- Starts the global declarations
-   -- skipSpaces
-   ps<-pcParams '{' '}'<++ return []
-   -- skipSpaces
-   -- char '}'
+   ps<-pcParams<++ return []
    skipSpaces
    st<-pcStartDef <++ return Nothing
    skipSpaces
@@ -260,13 +256,13 @@ parseParam = do
 commaSep :: ReadP ()
 commaSep = skipSpaces >> char ',' >> skipSpaces
 
-pcParams::Char->Char->ReadP [Param]
-pcParams op cl = do
-   char op
+pcParams::ReadP [Param]
+pcParams = do
+   char '('
    skipSpaces
    ps<-parseTokens "," parseParam
    skipSpaces
-   char cl
+   char ')'
    return ps
 
 parseTxtExp::Char->Char->ReadP TxtExp
@@ -293,7 +289,7 @@ pcProcess = do
    skipSpaces
    nm<-parseId
    skipSpaces
-   ps<-pcParams '(' ')' <++return []
+   ps<-pcParams<++return []
    skipSpaces
    char '@'
    skipSpaces
@@ -1016,7 +1012,7 @@ test1a :: [((Name, Maybe Name, [Param]), String)]
 test1a = readP_to_S pcStart "PC PC_BreakStealHouse2 @ BreakAndStealHouse\n"
 
 test1b :: [((Name, Maybe Name, [Param]), String)]
-test1b = readP_to_S pcStart "PC PC_HouseUnderAttack_Seize {grabTV,grabLaptop,grabJewels} @ Seize\n"
+test1b = readP_to_S pcStart "PC PC_HouseUnderAttack_Seize (grabTV,grabLaptop,grabJewels) @ Seize\n"
 
 test1c :: [((Name, Maybe Name, [Param]), String)]
 test1c = readP_to_S pcStart "PC PC_Something\n"
@@ -1037,15 +1033,15 @@ test2b :: IO ()
 test2b = process_pc_def (def_path ++ "PC_CashMachineOps.pc")
 
 test3a :: [([Param], String)]
-test3a = readP_to_S (pcParams '(' ')') "(abc1,abc2)"
+test3a = readP_to_S (pcParams) "(abc1,abc2)"
 test3b :: [([Param], String)]
-test3b = readP_to_S (pcParams '(' ')') "(x)"
+test3b = readP_to_S (pcParams) "(x)"
 test3c :: [([Param], String)]
-test3c = readP_to_S (pcParams '(' ')') "(x:Int)"
+test3c = readP_to_S (pcParams) "(x:Int)"
 test3d :: [([Param], String)]
-test3d = readP_to_S (pcParams '(' ')') "(x : set Int)"
+test3d = readP_to_S (pcParams) "(x : set Int)"
 test3e :: [([Param], String)]
-test3e = readP_to_S (pcParams '(' ')') "(x : set Thing)"
+test3e = readP_to_S (pcParams) "(x : set Thing)"
 test3f :: [([TxtExp], String)]
 test3f = readP_to_S (pcExps '(' ')') "({intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop})"
 

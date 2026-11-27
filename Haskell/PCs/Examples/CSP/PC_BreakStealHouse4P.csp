@@ -1,7 +1,7 @@
 BreakStealHouse = 
    let 
-      BreakStealHouse0 = DoBurglary ||| alarmSounds -> SKIP
-      DoBurglary = [] x : MeansBreakIn @ break.x -> SKIP; Steal({Laptop,TV,Other}, {})
+      BreakStealHouse0 = DoBurglary[|{alarmSounds}|>SKIP
+      DoBurglary = ([] x : MeansBreakIn @ break.x -> SKIP; Steal({Laptop,TV,Other}, {})) ||| alarmSounds -> SKIP
    within
       BreakStealHouse0; getOutAndRun -> SKIP
 

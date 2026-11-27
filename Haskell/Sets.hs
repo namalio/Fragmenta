@@ -190,7 +190,8 @@ intersec sa = foldl (\s e->if e `elem` sa then e `intoSet` s else s) EmptyS
 
 -- generalised intersection
 gintersec ::Eq a=>[Set a]-> Set a
-gintersec ss = if null ss then nil else foldl intersec (head ss) (tail ss)
+gintersec [] = nil
+gintersec (x:xs) = foldl intersec x xs
    --if null ss then [] else foldr (\s si->(s `intersec` si)) (head ss) (tail ss)
 
 --disjoint_set :: Eq a => Set a -> Bool
