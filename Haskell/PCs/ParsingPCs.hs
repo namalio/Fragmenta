@@ -4,6 +4,7 @@
 -- Description: Parses textual descriptions of PCs
 -- Author: Nuno Amálio
 ----------------------------------------------------
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module PCs.ParsingPCs(loadPC) where
 
 import Text.ParserCombinators.ReadP
@@ -218,11 +219,11 @@ parseSet =
    string "set" >> skipSpaces >> parsePCType0 >>= return . SetT
 
 parsePCType0::ReadP PCTypeD
-parsePCType0 = parseInt <|> parseBool <|> parseEvent <|> parseSet
+parsePCType0 = parseInt <|> parseBool <|> parseEvent <|> parseSet <|> parseIdTy
 
 parsePCType::ReadP (Maybe PCTypeD)
 parsePCType = 
-   (char ':' >> parsePCType0 >>= return . Just) <++ return Nothing
+   (char ':' >> skipSpaces >> parsePCType0 >>= return . Just) <++ return Nothing
 
 parsePCTypeETyD::ReadP PCTypeE
 parsePCTypeETyD =
@@ -267,20 +268,6 @@ pcParams op cl = do
    skipSpaces
    char cl
    return ps
-
---parseSingleExp::ReadP TxtExp
---parseSingleExp = do
---   char '\''
---   b<-parseAnyStr "'" 
---   char '\''
---   return . BVal $ b
-
---parseSetExp::ReadP TxtExp
---parseSetExp = do
---   char '{'
---   bs<-parseTokens "," (parseAnyStr "},")
---   char '}'
---   return . BSet $ bs
 
 parseTxtExp::Char->Char->ReadP TxtExp
 parseTxtExp l r = between (char l) (char r)  (parseAnyStr (r:""))
@@ -425,6 +412,7 @@ pcRenamings = do
 pcRefToP::ReadP (String, [TxtExp], [(String, String)])
 pcRefToP = do
    char ':'
+   skipSpaces
    rnm<-parseId
    skipSpaces
    bs<-pcExps '(' ')' <++ return []
@@ -1049,11 +1037,17 @@ test2b :: IO ()
 test2b = process_pc_def (def_path ++ "PC_CashMachineOps.pc")
 
 test3a :: [([Param], String)]
-test3a = readP_to_S (pcParams '(' ')') "(abc1,abc2)@"
+test3a = readP_to_S (pcParams '(' ')') "(abc1,abc2)"
 test3b :: [([Param], String)]
-test3b = readP_to_S (pcParams '(' ')') "(x)@"
-test3c :: [([TxtExp], String)]
-test3c = readP_to_S (pcExps '(' ')') "({intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop})"
+test3b = readP_to_S (pcParams '(' ')') "(x)"
+test3c :: [([Param], String)]
+test3c = readP_to_S (pcParams '(' ')') "(x:Int)"
+test3d :: [([Param], String)]
+test3d = readP_to_S (pcParams '(' ')') "(x : set Int)"
+test3e :: [([Param], String)]
+test3e = readP_to_S (pcParams '(' ')') "(x : set Thing)"
+test3f :: [([TxtExp], String)]
+test3f = readP_to_S (pcExps '(' ')') "({intoHall},{mainDoor,roomWindow},{intoRoom,intoKitchen,intoLivingRoom,grabTV,grabJewels,grabLaptop})"
 
 test4a :: [(TxtExp, String)]
 test4a = readP_to_S parseTxtExp' "'diff(ges, {e})'"
@@ -1138,6 +1132,8 @@ test12c :: [(Node, String)]
 test12c = readP_to_S pcProcess "process JarOpened(n,m)@OpJarOpenedIf"
 test12d :: [(Node, String)]
 test12d = readP_to_S pcProcess "process StopTimer(t:Int)@OpStopTimer"
+test12e :: [(Node, String)]
+test12e = readP_to_S pcProcess "process DoSteal(s:set Stealable)@OpSteal"
 
 test13a :: [(Node, String)]
 test13a = readP_to_S pcOperator "operator OpCashMachine2.Throw('cancel','deny')"

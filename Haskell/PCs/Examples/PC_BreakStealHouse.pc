@@ -1,8 +1,8 @@
 PC PC_BreakStealHouse1 @ BreakStealHouse
    enum MeansBreakIn : 'key','window','openDoor'
-   process BreakStealHouse  @ Qabc1e05
-   after Qabc1e05->stealTV
-   quantifiedOp Qabc1e05.IntChoice x : 'MeansBreakIn'
-   op_connector Qabc1e05->break
+   process BreakStealHouse  @ Q6f6f8896
+   after Q6f6f8896->stealTV
+   quantifiedOp Q6f6f8896.Choice x : 'MeansBreakIn'
+   op_connector Q6f6f8896->break
    atom :'stealTV' 
    atom :'break.x' 

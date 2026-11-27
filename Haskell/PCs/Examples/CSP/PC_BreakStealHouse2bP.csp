@@ -2,7 +2,7 @@ BreakAndStealHouse =
    let 
       GetInside = 
          let 
-            GetInside0 = |~| x : MeansBreakIn @ break.x -> SKIP
+            GetInside0 = [] x : MeansBreakIn @ break.x -> SKIP
             Steal = DoSteal({}); getOutAndRun -> SKIP
          within
             GetInside0; Steal
@@ -10,4 +10,4 @@ BreakAndStealHouse =
       GetInside
 
 DoSteal(s) = (|~| x : Stealable @ x == Other or not member (x, s) & steal.x -> DoSteal(union ({x}, s)))
-       |~| SKIP
+      [] SKIP

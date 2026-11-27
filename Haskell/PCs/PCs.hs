@@ -13,7 +13,7 @@ module PCs.PCs
   , getPCStart
   , load_mm_info
   , startPoint
-  , getPCDefN
+  , getPCDefName
   , getPCName
   , srcOf
   , tgtOf
@@ -204,12 +204,12 @@ nextAfterN :: MMI String String -> PC String String -> String -> Maybe String
 nextAfterN mmi pc n = maybeFrSet $ nextNodesAfter mmi pc n
 
 -- Gets PC's definitional (or root) node 
-getPCDefN ::PC String String -> String
-getPCDefN pc = appl (inv . fV $ pc) (show_cmm_n CMM_PCDef)
+getPCDefName ::PC String String -> String
+getPCDefName pc = appl (inv . fV $ pc) (show_cmm_n CMM_PCDef)
 
 -- Gets name of PC, which is name associated with PC's definitional (or root) node
 getPCName :: PC String String -> String
-getPCName pc = nmOfNamed pc (getPCDefN pc)
+getPCName pc = nmOfNamed pc (getPCDefName pc)
 
 srcOf :: Eq a => MMI a String -> PC a String-> a -> a
 srcOf mmi pc c = the $ predecessorsOfC mmi pc c

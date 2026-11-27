@@ -2,22 +2,22 @@ digraph {
 
 StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC_Buzzer];
 
-TmI [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_Timer];
-buzz [shape=ellipse,fillcolor=greenyellow,style=filled,label="buzz"];
-Buzzing [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzing"];
-RefTimer [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Timer (3)
-⟦timeout/mute⟧"];
-Muted [shape=box,fillcolor=deepskyblue,style = filled,label="Muted"];
 Buzzer [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzer"];
+buzz [shape=ellipse,fillcolor="#B1FF8A",style=filled,label="buzz"];
+I26cf5bdc [shape=hexagon,fillcolor=orangered,style="filled,rounded",label =PC_Timer];
+Ref27ef2419 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label="Timer (3)
+⟦timeout/mute⟧"];
+Buzzing [shape=box,fillcolor=deepskyblue,style = filled,label="Buzzing"];
+Muted [shape=box,fillcolor=deepskyblue,style = filled,label="Muted"];
 
 {rank=same;Buzzing,buzz}
 {rank=same;Buzzer,StartN_}
 
-Buzzing->Muted[arrowtail=dot,dir=both,label="after"];
-RefTimer->TmI[arrowhead="normalnormal",fillcolor=white,label=" "];
+Ref27ef2419->I26cf5bdc[arrowhead="normalnormal",fillcolor=white,label=" "];
 buzz->Buzzing[arrowtail=dot,dir=both,label="after"];
-Buzzing->RefTimer[arrowhead="onormal",penwidth=2,label="="];
-Muted->buzz[arrowhead="onormal",penwidth=2,label="="];
+Buzzing->Muted[arrowtail=dot,dir=both,label="after"];
 Buzzer->Muted[arrowhead="onormal",penwidth=2,label="="];
+Buzzing->Ref27ef2419[arrowhead="onormal",penwidth=2,label="="];
+Muted->buzz[arrowhead="onormal",penwidth=2,label="="];
 StartN_->Buzzer[label="starts"];
 }

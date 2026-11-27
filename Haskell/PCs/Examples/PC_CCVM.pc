@@ -1,34 +1,34 @@
 PC PC_CCVM @ CCVM
-   process CCVM  @ RefdoCCVM2229ce7e
-   after RefdoCCVM2229ce7e->CCVM
-   reference RefdoCCVM2229ce7e
-   ref_connector RefdoCCVM2229ce7e->doCCVM('0')
-   process doCCVM (x) @ Op2d21b460
-   process Receive  @ Op20286a6b
+   process CCVM  @ RefdoCCVM260224c7
+   after RefdoCCVM260224c7->CCVM
+   reference RefdoCCVM260224c7
+   ref_connector RefdoCCVM260224c7->doCCVM ('0')
+   process doCCVM (x) @ Op4cf8cb78
+   process Receive  @ Op64173135
    process Dispense  @ dispense
-   operator Op2d21b460.Choice
-   op_connector Op2d21b460->Receive
-   op_connector Op2d21b460->Dispense
-   op_connector Op2d21b460->return
-   operator Op20286a6b.Choice
-   op_connector Op20286a6b->coin50p
-   op_connector Op20286a6b->coinPound
-   after coin50p->RefdoCCVM7b9359ca
+   operator Op4cf8cb78.Choice
+   op_connector Op4cf8cb78->Receive
+   op_connector Op4cf8cb78->Dispense
+   op_connector Op4cf8cb78->return
+   operator Op64173135.Choice
+   op_connector Op64173135->coin50p
+   op_connector Op64173135->coinPound
+   after coin50p->RefdoCCVM6c748c4e
    atom :'coin50p' {x≤100}  
-   after coinPound->RefdoCCVM9a86873
+   after coinPound->RefdoCCVM6334ae13
    atom :'coinPound' {x≤50}  
    atom :'return' {x ≥ 0}  
-   reference RefdoCCVM7b9359ca
-   ref_connector RefdoCCVM7b9359ca->doCCVM('x+50')
-   reference RefdoCCVM9a86873
-   ref_connector RefdoCCVM9a86873->doCCVM('x+100')
-   after dispense->Op5e1913ec
+   reference RefdoCCVM6c748c4e
+   ref_connector RefdoCCVM6c748c4e->doCCVM ('x+50')
+   reference RefdoCCVM6334ae13
+   ref_connector RefdoCCVM6334ae13->doCCVM ('x+100')
+   after dispense->Op7935d8bf
    atom :'dispense' 
-   operator Op5e1913ec.IntChoice
-   op_connector Op5e1913ec->latte
-   op_connector Op5e1913ec->macchiato
-   op_connector Op5e1913ec->espresso
-   op_connector Op5e1913ec->cappuccino
+   operator Op7935d8bf.IntChoice
+   op_connector Op7935d8bf->latte
+   op_connector Op7935d8bf->macchiato
+   op_connector Op7935d8bf->espresso
+   op_connector Op7935d8bf->cappuccino
    atom :'latte' {x = 150}  
    atom :'macchiato' {x = 100}  
    atom :'espresso' {x = 100}  

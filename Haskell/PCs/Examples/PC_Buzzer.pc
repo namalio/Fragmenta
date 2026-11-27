@@ -1,0 +1,10 @@
+PC PC_Buzzer @ Buzzer
+   process Buzzer  @ Muted
+   process Muted  @ buzz
+   after buzz->Buzzing
+   atom :'buzz' 
+   after Buzzing->Muted
+   process Buzzing  @ Ref27ef2419
+   import PC_Timer as I26cf5bdc for PC_Timer
+   reference Ref27ef2419 : Timer('3')[timeout/mute]
+   ref_connector Ref27ef2419->I26cf5bdc

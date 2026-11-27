@@ -200,7 +200,7 @@ checkRelExp::RelOp->Exp->Exp->Env->Type->TyErr Subst
 checkRelExp op e1 e2 env t 
     | op `elem` [OGT, OLT, OLEQ, OGEQ] = checkRelExpInts e1 e2 env t
     | op `elem` [OEQ, ONEQ] = checkRelExpEq e1 e2 env t
-    | op `elem` [OIN] = checkRelExpIn e1 e2 env t
+    | op `elem` [OIN, ONOTIN] = checkRelExpIn e1 e2 env t
 
 checkBinExpSet::Exp->Exp->Env->Type->TyErr Subst 
 checkBinExpSet e1 e2 env t = do

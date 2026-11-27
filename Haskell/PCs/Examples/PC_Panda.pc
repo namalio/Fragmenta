@@ -1,0 +1,7 @@
+PC PC_Panda @ Panda
+   process Panda  @ eats
+   atom :'eats' 
+   after eats->shoots
+   atom :'shoots' 
+   after shoots->leaves
+   atom :'leaves' 

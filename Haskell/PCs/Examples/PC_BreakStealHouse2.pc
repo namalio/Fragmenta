@@ -1,0 +1,25 @@
+PC PC_BreakStealHouse2 @ BreakStealHouse
+   enum MeansBreakIn : 'stolenKey','window','door'
+   atom :'break.x' 
+   process BreakStealHouse  @ GetInside
+   after GetInside->Steal
+   process GetInside  @ Q179f9f90
+   process Steal  @ RefDoSteal23f22146
+   quantifiedOp Q179f9f90.Choice x : 'MeansBreakIn'
+   op_connector Q179f9f90->break
+   enum Stealable : 'Laptop','Jewels','TV','Other'
+   after RefDoSteal23f22146->getOutAndRun
+   reference RefDoSteal23f22146
+   ref_connector RefDoSteal23f22146->DoSteal ('{}')
+   atom :'getOutAndRun' 
+   process DoSteal (s) @ Op2025402
+   operator Op2025402.IntChoice
+   op_connector Op2025402->Skip224ac885
+   op_connector Op2025402->Q7fb2fde3
+   skip Skip224ac885
+   quantifiedOp Q7fb2fde3.Choice x : 'Stealable'
+   op_connector Q7fb2fde3->steal
+   after steal->RefDoSteal1ae75c8e
+   atom :'steal.x' {x = Other ⋁ ¬x ∈ s}  
+   reference RefDoSteal1ae75c8e
+   ref_connector RefDoSteal1ae75c8e->DoSteal ('{x} ∪ s')

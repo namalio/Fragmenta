@@ -1,4 +1,4 @@
-
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module ParseUtils(
    words'
    , splitAt'

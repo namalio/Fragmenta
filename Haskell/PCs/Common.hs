@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module PCs.Common 
     ( Id
     , PCTypeD(..)
@@ -17,7 +18,8 @@ module PCs.Common
 where
 
 import ParseUtils
-   (words')
+   (words'
+   ,splitAt')
 import PCs.MM_Names
 import TheNil
 import MyMaybe
@@ -37,8 +39,10 @@ data PCTypeD
     deriving (Eq)
 
 instance Show PCTypeD where
+  show :: PCTypeD -> String
   show Int = "Int"
   show Bool = "Bool"
+  show Event = "Event"
   show (Dt id) = strip id 
     where strip('D':'t':'_':rest) = rest
           strip s = s
@@ -51,14 +55,15 @@ instance Show PCTypeD where
 instance Read PCTypeD where
     --read :: String -> PCTypeD
     readsPrec _ c = 
-        let (s, r) = span (/= ' ') c
+        let (s, r) = splitAt' (== ' ') c
         in case s of
             "Int" -> [(Int, r)]
             "Bool"    -> [(Bool, r)]
             "Event"   -> [(Event, r)]
-            'D':'t':'_':r' -> [(Dt r', r)]
-            'S':'e':'t':'_':r' -> [(SetT $ read r', r)]
-            _->[(Dt s, r)]
+            "Set"     -> let (s', r') = splitAt' (== ' ') r in [(SetT $ read s', r')]
+            "Dt"      -> let (s', r') = splitAt' (== ' ') r in [(Dt $ read s', r')]
+            _         ->[(Dt s, r)]
+              
     --readsPrec s 
     --    | startsWith "Dt_" s = Dt $ drop 3 s
     --    | startsWith "Set_" s = SetT $ readsPrec (drop 4 s)

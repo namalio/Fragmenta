@@ -1,27 +1,27 @@
 PC PC_BiscuitJar @ BiscuitJar
    process BiscuitJar (n, m) @ openJar
+   after openJar->RefJarOpened48a9d59f
    atom :'openJar' 
-   after openJar->RefJarOpened1f4d2e68
-   reference RefJarOpened1f4d2e68
-   ref_connector RefJarOpened1f4d2e68->JarOpened('n', 'm')
-   process JarOpened (n, m) @ OpIf17752474
-   operator OpIf17752474.If
-   op_connector_g OpIf17752474->Op7701253{n≥0 ⋀ n≤m}
-   op_else_connector OpIf17752474->Stop71b85c62
-   operator Op7701253.Choice
-   op_connector Op7701253->closeJar
-   op_connector Op7701253->takeBiscuit
-   op_connector Op7701253->dropBiscuit
-   stop Stop71b85c62
-   atom :'closeJar' 
-   after closeJar->RefBiscuitJar61836503
-   reference RefBiscuitJar61836503
-   ref_connector RefBiscuitJar61836503->BiscuitJar('n', 'm')
+   reference RefJarOpened48a9d59f
+   ref_connector RefJarOpened48a9d59f->JarOpened ('n', 'm')
+   process JarOpened (n, m) @ OpIf5c837905
+   operator OpIf5c837905.If
+   op_connector_g OpIf5c837905->Op76e86096{n≥0 ⋀ n≤m}
+   op_else_connector OpIf5c837905->Stop2d5464f
+   stop Stop2d5464f
+   operator Op76e86096.Choice
+   op_connector Op76e86096->takeBiscuit
+   op_connector Op76e86096->dropBiscuit
+   op_connector Op76e86096->closeJar
+   after takeBiscuit->RefJarOpenedc25494f
    atom :'takeBiscuit' {n>0}  
-   after takeBiscuit->RefJarOpened3c206c5d
+   after dropBiscuit->RefJarOpened789d1e69
    atom :'dropBiscuit' {n<m}  
-   after dropBiscuit->RefJarOpened19efc594
-   reference RefJarOpened19efc594
-   ref_connector RefJarOpened19efc594->JarOpened('n+1', 'm')
-   reference RefJarOpened3c206c5d
-   ref_connector RefJarOpened3c206c5d->JarOpened('n-1', 'm')
+   after closeJar->RefBiscuitJar1b20c952
+   atom :'closeJar' 
+   reference RefBiscuitJar1b20c952
+   ref_connector RefBiscuitJar1b20c952->BiscuitJar ('n', 'm')
+   reference RefJarOpened789d1e69
+   ref_connector RefJarOpened789d1e69->JarOpened ('n+1', 'm')
+   reference RefJarOpenedc25494f
+   ref_connector RefJarOpenedc25494f->JarOpened ('n-1', 'm')

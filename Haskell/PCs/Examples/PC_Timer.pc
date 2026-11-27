@@ -1,0 +1,14 @@
+PC PC_Timer @ Timer
+   process Timer (t) @ OpIf3378007b
+   operator OpIf3378007b.If
+   op_connector_g OpIf3378007b->Op49419096{t≥0}
+   op_else_connector OpIf3378007b->Stop202ab08b
+   operator Op49419096.Choice
+   op_connector Op49419096->tock
+   op_connector Op49419096->timeout
+   after tock->RefTimer60fa176d
+   atom :'tock' {t > 0}  
+   atom :'timeout' {t = 0}  
+   stop Stop202ab08b
+   reference RefTimer60fa176d 
+   ref_connector RefTimer60fa176d->Timer ('t-1')

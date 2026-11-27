@@ -1,0 +1,13 @@
+PC PC_Panda2 @ PandaEatsAtABar
+   process PandaEatsAtABar  @ Op19ceff86
+   operator Op19ceff86.IntChoice
+   op_connector Op19ceff86->shoots
+   op_connector Op19ceff86->leaves
+   op_connector Op19ceff86->Skip27045ea
+   atom :'shoots' 
+   after shoots->RefPandaEatsAtABar6caca8ed
+   atom :'leaves' 
+   after leaves->RefPandaEatsAtABar6caca8ed
+   skip Skip27045ea
+   reference RefPandaEatsAtABar6caca8ed
+   ref_connector RefPandaEatsAtABar6caca8ed->PandaEatsAtABar

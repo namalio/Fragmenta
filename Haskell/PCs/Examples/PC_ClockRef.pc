@@ -1,0 +1,6 @@
+PC PC_ClockRef @ Clock
+   process Clock  @ tick
+   after tick->RefClock68602c26
+   atom :'tick' 
+   reference RefClock68602c26
+   ref_connector RefClock68602c26->Clock

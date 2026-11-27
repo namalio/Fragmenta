@@ -5,7 +5,7 @@ StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC
 FaultyClock [shape=box,fillcolor=deepskyblue,style = filled,label="FaultyClock"];
 Op17e1125 [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
 Stopb53b6c8 [shape=box,fillcolor=mistyrose2,style = filled,label="STOP"];
-tick [shape=ellipse,fillcolor=greenyellow,style=filled,label="tick"];
+tick [shape=ellipse,fillcolor="#B1FF8A",style=filled,label="tick"];
 
 {rank=same;FaultyClock,StartN_}
 

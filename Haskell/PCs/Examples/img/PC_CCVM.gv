@@ -5,54 +5,54 @@ StartN_ [shape = cds,color=burlywood2,style=filled,height=.2,width=.2, label =PC
 CCVM [shape=box,fillcolor=deepskyblue,style = filled,label="CCVM"];
 doCCVM [shape=box,fillcolor=deepskyblue,style = filled,label="doCCVM (x)"];
 Dispense [shape=box,fillcolor=deepskyblue,style = filled,label="Dispense"];
-Op20286a6b [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
-coinPound [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤50}
+Op64173135 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+coinPound [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x≤50}
 coinPound"];
-RefdoCCVM7b9359ca [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-dispense [shape=ellipse,fillcolor=greenyellow,style=filled,label="dispense"];
-latte [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 150}
+RefdoCCVM6c748c4e [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+dispense [shape=ellipse,fillcolor="#B1FF8A",style=filled,label="dispense"];
+latte [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x = 150}
 latte"];
-espresso [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 100}
+espresso [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x = 100}
 espresso"];
-cappuccino [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 150}
+cappuccino [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x = 150}
 cappuccino"];
-macchiato [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x = 100}
+macchiato [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x = 100}
 macchiato"];
-Op5e1913ec [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
-RefdoCCVM9a86873 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
-return [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x ≥ 0}
+Op7935d8bf [shape=diamond,fillcolor=yellow,style=filled,label="⊓"];
+RefdoCCVM6334ae13 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+return [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x ≥ 0}
 return"];
-coin50p [shape=ellipse,fillcolor=greenyellow,style=filled,label=" {x≤100}
+coin50p [shape=ellipse,fillcolor="#B1FF8A",style=filled,label=" {x≤100}
 coin50p"];
-Op2d21b460 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
+Op4cf8cb78 [shape=diamond,fillcolor=yellow,style=filled,label="◻︎"];
 Receive [shape=box,fillcolor=deepskyblue,style = filled,label="Receive"];
-RefdoCCVM2229ce7e [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
+RefdoCCVM260224c7 [shape=rectangle,fillcolor=gray,style="rounded,filled,dashed",label=""];
 
-{rank=same;Op5e1913ec,dispense}
-{rank=same;RefdoCCVM7b9359ca,coin50p}
-{rank=same;CCVM,RefdoCCVM2229ce7e}
-{rank=same;RefdoCCVM9a86873,coinPound}
+{rank=same;Op7935d8bf,dispense}
+{rank=same;RefdoCCVM6c748c4e,coin50p}
+{rank=same;CCVM,RefdoCCVM260224c7}
+{rank=same;RefdoCCVM6334ae13,coinPound}
 {rank=same;CCVM,StartN_}
 
-Op5e1913ec->cappuccino[arrowhead="open"];
-Op5e1913ec->macchiato[arrowhead="open"];
-dispense->Op5e1913ec[arrowtail=dot,dir=both,label="after"];
-RefdoCCVM7b9359ca->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (x+50)"];
-coin50p->RefdoCCVM7b9359ca[arrowtail=dot,dir=both,label="after"];
-Op20286a6b->coin50p[arrowhead="open"];
-Op2d21b460->Dispense[arrowhead="open"];
-RefdoCCVM2229ce7e->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (0)"];
-RefdoCCVM2229ce7e->CCVM[arrowtail=dot,dir=both,label="after"];
-Op2d21b460->Receive[arrowhead="open"];
-Op2d21b460->return[arrowhead="open"];
-Op20286a6b->coinPound[arrowhead="open"];
-coinPound->RefdoCCVM9a86873[arrowtail=dot,dir=both,label="after"];
-RefdoCCVM9a86873->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (x+100)"];
-Op5e1913ec->latte[arrowhead="open"];
-Op5e1913ec->espresso[arrowhead="open"];
-CCVM->RefdoCCVM2229ce7e[arrowhead="onormal",penwidth=2,label="="];
-doCCVM->Op2d21b460[arrowhead="onormal",penwidth=2,label="="];
+Op7935d8bf->cappuccino[arrowhead="open"];
+Op7935d8bf->macchiato[arrowhead="open"];
+dispense->Op7935d8bf[arrowtail=dot,dir=both,label="after"];
+RefdoCCVM6c748c4e->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (x+50)"];
+coin50p->RefdoCCVM6c748c4e[arrowtail=dot,dir=both,label="after"];
+Op64173135->coin50p[arrowhead="open"];
+Op4cf8cb78->Dispense[arrowhead="open"];
+RefdoCCVM260224c7->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (0)"];
+RefdoCCVM260224c7->CCVM[arrowtail=dot,dir=both,label="after"];
+Op4cf8cb78->Receive[arrowhead="open"];
+Op4cf8cb78->return[arrowhead="open"];
+Op64173135->coinPound[arrowhead="open"];
+coinPound->RefdoCCVM6334ae13[arrowtail=dot,dir=both,label="after"];
+RefdoCCVM6334ae13->doCCVM[arrowhead="normalnormal",fillcolor=white,label=" (x+100)"];
+Op7935d8bf->latte[arrowhead="open"];
+Op7935d8bf->espresso[arrowhead="open"];
+CCVM->RefdoCCVM260224c7[arrowhead="onormal",penwidth=2,label="="];
+doCCVM->Op4cf8cb78[arrowhead="onormal",penwidth=2,label="="];
 Dispense->dispense[arrowhead="onormal",penwidth=2,label="="];
-Receive->Op20286a6b[arrowhead="onormal",penwidth=2,label="="];
+Receive->Op64173135[arrowhead="onormal",penwidth=2,label="="];
 StartN_->CCVM[label="starts"];
 }

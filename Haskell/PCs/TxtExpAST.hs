@@ -47,6 +47,7 @@ data RelOp
     | OEQ 
     | ONEQ 
     | OIN
+    | ONOTIN
     deriving (Show, Eq)
 
 data Exp
@@ -102,6 +103,7 @@ showRO OGEQ = "≥"
 showRO OEQ  = "="
 showRO ONEQ = "≠"
 showRO OIN   = "∊"
+showRO ONOTIN   = "∉"
 
 --instance Show BinOp where
 showBO::BinOp->String

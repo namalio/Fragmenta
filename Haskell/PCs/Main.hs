@@ -75,7 +75,7 @@ getImports pcs_path sg_mm pc = do
 writeDrawingToFile :: String -> MMI String String -> PC String String -> IO ()
 writeDrawingToFile img_path mmi pc = do
    let draw_src = wrPCAsGraphviz mmi pc  
-   writeFile (img_path ++ (getPCDefN pc) ++ ".gv") draw_src
+   writeFile (img_path ++ (getPCDefName pc) ++ ".gv") draw_src
 
 --writePCDef pc m = 
 --   let pc_txt = wrPC $ frPCtoPCNot pc m in
@@ -103,7 +103,7 @@ check_MM mmi = do
 
 checkWF::MMI String String->PC String String->IO Bool
 checkWF mmi pc = do
-   let pc_nm = getPCDefN pc
+   let pc_nm = getPCDefName pc
    let errs = faultsGM' pc_nm (Just TotalM) (pc, gCRSG mmi) 
    unless (is_nil errs) $ show_wf_msg ("PC " ++ pc_nm) errs
    return (is_nil errs)
@@ -149,8 +149,8 @@ wrCSPToFile pcs_path csp_path mmi pc pcs env gpcs = do
    let pcnm = getPCName pc
    putStrLn $ "Writing the CSP file for '" ++ pcnm ++ "'..." 
    let (cspb, cspp) = toCSP mmi pc pcs env 
-   writeFile (csp_path ++ (getPCDefN pc) ++ "P.csp") (wrCSP cspp)
-   writeFile (csp_path ++ (getPCDefN pc) ++ ".csp") (wrCSP cspb)
+   writeFile (csp_path ++ (getPCDefName pc) ++ "P.csp") (wrCSP cspp)
+   writeFile (csp_path ++ (getPCDefName pc) ++ ".csp") (wrCSP cspb)
    return (pcnm `intoSet` gpcs `union` gpcs')
 
 
@@ -368,19 +368,6 @@ generate_ProtectedHouse mmi = do
     check_generate pcs_path img_path csp_path mmi "PC_ProtectedHouse_HouseAlarm.pc"
     check_generate pcs_path img_path csp_path mmi "PC_ProtectedHouse.pc"
 
-generate_SecureHouse :: MMI String String -> IO ()
-generate_SecureHouse mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_SecureHouse.pc"
-
-generate_HouseAttacker :: MMI String String -> IO ()
-generate_HouseAttacker mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_HouseAttacker.pc"
-
-generate_SecuredHouse :: MMI String String -> IO ()
-generate_SecuredHouse mmi = do
-   check_generate pcs_path img_path csp_path mmi "PC_SecuredHouse.pc"
-
-
 checkMMGenerateAll :: IO ()
 checkMMGenerateAll = do
     mmi<-load_mm_info mm_path
@@ -472,16 +459,19 @@ main :: IO ()
 main = do
   args <- getArgs
   --maybeFrLs args >>= (\x->generate x)
-  when (length(args)>0) $ generate (head args)
+  if (length(args)>0) then
+    generate (head args)
+  else
+    fail "A PCs text file is missing"
 
 test :: IO ()
 test = do 
    mmi<-load_mm_info mm_path
-   opc<-loadPC (gCRSG mmi) (pcs_path ++ "VMCommon.pc")
+   opc<-loadPC (gCRSG mmi) (pcs_path ++ "BreakStealHouse2b.pc")
    --print $ varBQuantifiedOp (the opc) "leftQ"
    --print $ paramsOf (the opc) "StopTimer"
    --putStrLn $ show $ expOfAtom (the opc) "right"
-   print $ first . rest . rest . rest . esM $ (gCRSG mmi)
+   --print $ first . rest . rest . rest . esM $ (gCRSG mmi)
    --print$ relKs mmi (the opc)
    --print $ innerKs mmi (the opc) "BiscuitJar"
    --print $ expsOfRef mmi (the opc) "RefJarOpenedDrop"
@@ -492,7 +482,7 @@ test = do
    --print $ expsOfRef mmi (the opc) "RefIncA"
    --print $ nextNodes mmi (the opc) $ getPCStart (gCRSG mmi) (the opc)
    --print $ startNode mmi (the opc)
-   --print $ paramsOf (the opc) "DoSteal"
+   print $ paramsOf (the opc) "DoSteal"
    --print $ toPCDrawing mmi (the opc)
    --let r = relKs mmi (the opc)
    --print $ ns_of_ntys (the opc) (gCRSG mmi) [show_cmm_n CMM_TxtExp]

@@ -27,6 +27,7 @@ toCSPRelOp PCTsExp.OGEQ = CSP.GEQ
 toCSPRelOp PCTsExp.OEQ = CSP.EQ
 toCSPRelOp PCTsExp.ONEQ = CSP.NEQ
 toCSPRelOp PCTsExp.OIN = CSP.Member
+toCSPRelOp PCTsExp.ONOTIN = CSP.NotMember
 
 toCSPUOp::PCTsExp.UnOp->CSP.UOp
 toCSPUOp PCTsExp.UMinus = CSP.UMinus

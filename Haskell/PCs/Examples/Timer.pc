@@ -1,5 +1,5 @@
-PC PC_Timer {} @Timer
-process Timer.t@OpTimer
+PC PC_Timer @Timer
+process Timer(t)@OpTimer
 operator OpTimer.If
 operator OpIfChoice.Choice
 stop STOP
@@ -11,4 +11,4 @@ op_connector OpIfChoice->timeout
 op_connector OpIfChoice->tock
 reference RefTimer
 after tock->RefTimer
-ref_connector RefTimer->Timer.'t-1'
+ref_connector RefTimer->Timer('t-1')

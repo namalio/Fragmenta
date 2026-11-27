@@ -40,12 +40,13 @@ import PCs.Common(Id)
       ','             { TokenComma }
       '∪'             { TokenCup }
       '∩'             { TokenCap }
-      '∊'             { TokenIn }
+      '∉'             { TokenNotIn }
+      '∈'             { TokenIn }
       '∖'             { TokenSetMinus }
 
 %left '⋀' '⋁'
 %left '¬'
-%nonassoc '>' '<' '≤' '≥' '=' '≠' '∊'
+%nonassoc '>' '<' '≤' '≥' '=' '≠' '∈' '∉'
 %left '+' '-' '∪' '∖'
 %left '*' '/' '%' '∩'
 %right '.'
@@ -59,8 +60,9 @@ Exp   : Exp '⋀' Exp            { ExpBin And $1 $3 }
       | Exp '<' Exp            { ExpRel OLT $1 $3 }
       | Exp '>' Exp            { ExpRel OGT $1 $3 } 
       | Exp '≥' Exp            { ExpRel OGEQ $1 $3 } 
-      | Exp '≤' Exp            { ExpRel OLEQ $1 $3 } 
-      | Exp '∊' Exp            { ExpRel OIN $1 $3 } 
+      | Exp '≤' Exp            { ExpRel OLEQ $1 $3 }
+      | Exp '∉' Exp            { ExpRel ONOTIN $1 $3 }  
+      | Exp '∈' Exp            { ExpRel OIN $1 $3 }
       | '¬' Exp                { ExpUn UNot $2 }
       | Exp '+' Exp            { ExpBin Plus $1 $3 }
       | Exp '-' Exp            { ExpBin Minus $1 $3 }
@@ -116,6 +118,7 @@ data Token
       | TokenCup
       | TokenCap
       | TokenIn
+      | TokenNotIn
       | TokenSetMinus
      deriving Show
 
@@ -148,7 +151,7 @@ data Token
 
 tokenChars::[Char]
 tokenChars = ['(', ')', '.', '<', '>', '≤', '≥', '=', '≠', '+', '-', '*', '/',
-      '%', '⋀', '⋁', '¬', '{', '}', ',', '∪', '∩', '∊', '∖']
+      '%', '⋀', '⋁', '¬', '{', '}', ',', '∪', '∩', '∈', '∉', '∖']
 
 isToken::Char->Bool
 isToken c = c `elem` tokenChars
@@ -176,7 +179,8 @@ toToken '}' = TokenCB
 toToken ',' = TokenComma
 toToken '∪' = TokenCup
 toToken '∩' = TokenCap
-toToken '∊' = TokenIn
+toToken '∈' = TokenIn
+toToken '∉' = TokenNotIn
 toToken '∖' = TokenSetMinus
  
 lexer :: String -> [Token]
@@ -313,8 +317,11 @@ test12d::IO()
 test12d = show_test_exp "{1, 2, 3} ∖ {3, 4, 5, 6}"
 
 test13a::IO()
-test13a = show_test_exp "1 ∊ {1, 2, 3}"
+test13a = show_test_exp "1 ∈ {1, 2, 3}"
 
 test13b::IO()
-test13b = show_test_exp "¬10 ∊ {5, 6, 7, 8}"
+test13b = show_test_exp "¬10 ∈ {5, 6, 7, 8}"
+
+test13c::IO()
+test13c = show_test_exp "10 ∉ {5, 6, 7, 8}"
 }

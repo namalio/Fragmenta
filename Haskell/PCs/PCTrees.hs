@@ -215,14 +215,14 @@ combinedPr mmi pc n gps =
   (OpKappa (bOpOf (opCombinable (gCRSG mmi)  pc n) v (read te)) t, pts, urs, gunion [singles n, gps, gps2])
   `withOp`  (OpSeq, (optPT mmi pc (nextAfterN mmi pc n) (n `intoSet` gps)))
 
-gParams::PC String String->Id->[Param]
-gParams pc n = fmap (\(id, ot)->Param id (read_opctyd ot)) $ paramsOf pc n
+consParams::PC String String->Id->[Param]
+consParams pc n = fmap (\(id, ot)->Param id (read_opctyd ot)) $ paramsOf pc n
 
 process::MMI String String->PC String String->Id->Set Id->(PT, Set Id, Set Id)
 process mmi pc n gks = 
   let gks1 = n `intoSet` gks
       (t, pds, urs, gks2) = consPT mmi pc (the $ processStart mmi pc n) gks1 
-      ps = gParams pc n in
+      ps = consParams pc n in
   (Kappa n ps pds t, urs, gunion [gks1, gks2])
 
 -- atque is latin for and then
@@ -320,7 +320,7 @@ toPCTD::MMI String String->PC String String->PCTD
 toPCTD mmi pc = 
   let ds = foldr (\d ds'->consDef pc d:ds') [] (ntyNsPC (gCRSG mmi) pc CMM_Definition)
       (pts, _) = seqPTs mmi pc (set1 $ startPoint mmi pc) nil in 
-  PCTD (getPCName pc) ds (gParams pc startN) pts
+  PCTD (getPCName pc) ds (consParams pc startN) pts
 
 -- Constructs a PCTD from a PCs model
 consPCTD::MMI String String->PC String String->[PC String String]->PCTD
@@ -328,9 +328,7 @@ consPCTD mmi pc ipcs =
    let pctds = fmap (toPCTD mmi) ipcs
        PCTD id ds ids pts = toPCTD mmi pc in
    PCTD id ((concatMap gDTDs pctds) ++ ds) ((concatMap gGBls pctds) ++ ids) ((concatMap gPTs pctds) ++ pts)
-   --where toPCTDs [] = []
-   --      toPCTDs (pc:pcs) = (toPCTD mmi pc) ++ (toPCTDs pcs)
-   --      to
+
 
 -- Need to make more general here in the future
 revname :: Exp -> Id -> Id -> Exp

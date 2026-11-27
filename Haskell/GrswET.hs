@@ -17,7 +17,7 @@ import Grs (
     emptyGM
     , fE
     , fV
-    , TK
+   {-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-} , TK
     , unionG
     , unionGM
     , Gr )

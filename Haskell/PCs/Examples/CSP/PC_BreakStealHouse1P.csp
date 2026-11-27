@@ -1,1 +1,1 @@
-BreakStealHouse = |~| x : MeansBreakIn @ break.x -> SKIP; stealTV -> SKIP
+BreakStealHouse = [] x : MeansBreakIn @ break.x -> SKIP; stealTV -> SKIP

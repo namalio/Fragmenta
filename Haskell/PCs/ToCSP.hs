@@ -11,6 +11,12 @@ module PCs.ToCSP
    ) where
 
 import PCs.PCs
+    ( nmOfRef
+    , ntyNsPC
+    , opCombinable
+    , successorsOf
+    , PC
+    , getPCDefName )
 import qualified CSP.CSP_AST as CSP
 import Relations
 import Sets
@@ -288,6 +294,6 @@ toCSP mmi pc pcs env =
        pctd2 = consPCTD mmi pc pcs
        cs = cspChannels env
        dts = fmap cspDTD (gDTDs pctd2)
-       is0 = foldr (\pc is->(getPCDefN pc) `intoSet` is) nil pcs
-       is = cspImports (fmap (++"P") ((getPCDefN pc) `intoSet` is0 )) in
+       is0 = foldr (\pc is->(getPCDefName pc) `intoSet` is) nil pcs
+       is = cspImports (fmap (++"P") ((getPCDefName pc) `intoSet` is0 )) in
    (CSP.CSP ([is] ++ dts ++ cs ), CSP.CSP $ cspDecl (gPTs pctd1))

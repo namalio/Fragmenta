@@ -40,7 +40,7 @@ import PCs.TxtExpAST
    ( toTerms
    )
 import ParseUtils
-   ( splitAtStr
+   ( splitAt'
    )
 import PCs.ParsingTxtExp
 
@@ -210,8 +210,8 @@ wrStartParams nm ps = "\n"++ nm ++ "_ps" ++  "[shape=rect,fillcolor=burlywood2,s
 
 -- Writes graphviz code of a PC node
 drawNode :: Node ->String
-drawNode (Node nm (Process ps)) =  nm ++ " [shape=box,fillcolor=deepskyblue,style = filled,label=" ++ (wrWParams nm ps) ++ "];" 
-drawNode (Node nm (Atom rnm g)) =  nm ++ " [shape=ellipse,fillcolor=greenyellow,style=filled,label=" ++ "\"" ++ (wrGuard g False) ++ rnm ++ "\"];"
+drawNode (Node nm (Process ps)) =  nm ++ " [shape=box,fillcolor=\"#70E2FF\",style = filled,label=" ++ (wrWParams nm ps) ++ "];" 
+drawNode (Node nm (Atom rnm g)) =  nm ++ " [shape=ellipse,fillcolor=\"#B1FF8A\",style=filled,label=" ++ "\"" ++ (wrGuard g False) ++ rnm ++ "\"];"
 drawNode (Node nm (Reference b rnm bs rs g)) = nm 
     ++ " [shape=rectangle,fillcolor=" ++ fillColor 
     ++ ",style=\"rounded,filled,dashed\",label="++ (wrRefLabelPsRens rnm bs rs g b) ++"];"
@@ -242,21 +242,23 @@ wrConnector (Connector nm ek s t) = s ++ "->" ++ t ++ (wrConnectorSettings ek)
 
 
 drawDefTerm::String->String
-drawDefTerm t = (strip t) ++ "[shape=box,fillcolor=darkolivegreen1,style=\"filled\",label=\"" ++ t ++"\"];\n" 
-   where strip s = fst $ splitAtStr "." s 
+drawDefTerm t = (strip t) ++ "[shape=box,fillcolor=\"#FFE7DD\",style=\"filled\",label=\"" ++ t ++"\"];\n" 
+   where strip s = fst $ splitAt' (== '.') s 
 
 drawDef :: Definition -> String
 drawDef (Definition nm ts) =  
    "subgraph cluster_" ++ nm ++ " {\n" ++ "style=\"filled,rounded\";\n"
    ++ "label =" ++ nm ++ ";\n"
-   ++ "fillcolor = cadetblue1;\n"
+   ++ "fillcolor = \"#D0F5E9\";\n"
    ++ foldr (\t s->drawDefTerm t ++ s) "" ts
    ++ "}\n"
 
 drawDefs :: [Definition] -> String ->String
-drawDefs ds sn = foldr (\d ds'-> (drawDef d)++ "\n" ++ ds') "" ds
-   ++ if (not . null $ ds) then "\n" ++ drawInvisEdge (head ds) else ""
-   where drawInvisEdge (Definition _ vs) = (fst $ splitAtStr "." (first vs)) ++ "->" ++ sn ++ "[style=invis]"
+drawDefs ds sn = foldr (\d ds'-> (drawDef d)++ "\n" ++ ds') "" ds ++ drawDefsAux ds
+   where drawDefsAux [] = ""
+         drawDefsAux (d:_) = "\n" ++ drawInvisEdge d
+         drawInvisEdge (Definition _ vs) = (fst $ splitAt' (== '.') (first vs)) ++ "->" ++ sn ++ "[style=invis]"
+          
 
 drawNodes :: Foldable t => t Node -> String
 drawNodes = foldr (\n ns'-> (drawNode n)++ "\n" ++ns') ""

@@ -1,0 +1,3 @@
+include "PC_Clock2P.csp"
+
+channel tick

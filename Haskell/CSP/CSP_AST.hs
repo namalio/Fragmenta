@@ -38,7 +38,7 @@ data Decl = Channel (Set Id) (Maybe Ty) | EqDecl Exp Exp | Include (Set Id) | Da
    deriving(Show) 
 
 data BOp = Plus | Minus | Product | Div | Remainder | Or | And | GEQ | LEQ | GT | LT | EQ | NEQ 
-         | Member | Union | Intersection | SMinus
+         | Member | NotMember | Union | Intersection | SMinus
    deriving(Show, Eq) 
 
 data UOp = UMinus | UNot

@@ -1,0 +1,8 @@
+PC PC_FaultyClock {} @ FaultyClock
+   process FaultyClock @ Op17e1125
+   atom :'tick'
+   after tick->FaultyClock
+   operator Op17e1125.IntChoice
+   op_connector Op17e1125->tick
+   op_connector Op17e1125->Stopb53b6c8
+   stop Stopb53b6c8
