@@ -86,7 +86,7 @@ wrExp _ (ExpId id) = id
 wrExp ind (ExpPar e) = "(" ++ (wrExp ind e) ++ ")" 
 wrExp ind (ExpApp id bs) = id ++ "(" ++ (wrSepElems (map (wrExp ind) bs) ", " False False 0) ++ ")" 
 wrExp ind (ExpBOp e1 op e2) 
-   | op `elem` [Member, Union, Intersection, SMinus] = wrBOp op ++ " (" ++ (wrExp ind e1) ++ ", " ++ (wrExp ind e2) ++ ")"
+   | op `elem` [NotMember, Member, Union, Intersection, SMinus] = wrBOp op ++ " (" ++ (wrExp ind e1) ++ ", " ++ (wrExp ind e2) ++ ")"
    | otherwise = (wrExp ind e1) ++ " " ++ wrBOp op ++ " " ++ (wrExp ind e2)
 wrExp ind (ExpUOp op e) = wrUOp op ++ (wrExp ind e)
 wrExp ind (ExpToken t) = wrToken t

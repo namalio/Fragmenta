@@ -5,6 +5,6 @@ BreakStealHouse =
    within
       BreakStealHouse0; getOutAndRun -> SKIP
 
-Steal(s, t) = Jewels not member s & breakSafe -> Steal(union (s, {Jewels}), t)
+Steal(s, t) = not member (Jewels, s) & breakSafe -> Steal(union (s, {Jewels}), t)
       [] SKIP
-      [] ([] x : Stealable @ x == Other or x not member t and member (x, s) & steal.x -> Steal(s, union ({x}, t)))
+      [] ([] x : Stealable @ x == Other or not member (x, t) and member (x, s) & steal.x -> Steal(s, union ({x}, t)))

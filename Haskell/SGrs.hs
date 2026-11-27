@@ -5,7 +5,7 @@
 -- Author: Nuno Amálio
 -------------------------------------
 {-# LANGUAGE MultiParamTypeClasses #-}
-
+{-# OPTIONS_GHC -Wno-x-partial -Wno-unrecognised-warning-flags #-}
 module SGrs(SGr
    , SGVCEOP(..)
    , consSG
